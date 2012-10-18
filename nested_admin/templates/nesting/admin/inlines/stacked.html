@@ -1,0 +1,92 @@
+{% load i18n adminmedia grp_tags nested_admin %}
+{% with inline_admin_formset.opts as opts %}
+<div class="group grp-group stacked djnesting-stacked djnesting-stacked-parent"
+    id="{{ inline_admin_formset.formset.prefix }}-group"
+    data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
+    data-lookup-related-fk="{% get_safe_related_lookup_fields_fk opts %}"
+    data-lookup-related-m2m="{% get_safe_related_lookup_fields_m2m opts %}"
+    data-lookup-related-generic='{% get_safe_related_lookup_fields_generic opts %}'
+    data-lookup-autocomplete-fk="{% get_safe_autocomplete_lookup_fields_fk opts %}"
+    data-lookup-autocomplete-m2m="{% get_safe_autocomplete_lookup_fields_m2m opts %}"
+    data-lookup-autocomplete-generic="{% get_safe_autocomplete_lookup_fields_generic opts %}"
+    data-inline-model="{{ opts.opts.module_name }}">
+{% endwith %}
+    <h2 class="collapse-handler grp-collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
+    <ul class="tools">
+        <li class="open-handler-container"><a href="javascript://" class="icon open-handler" title="{% trans 'Open All Items' %}"></a></li>
+        <li class="close-handler-container"><a href="javascript://" class="icon close-handler" title="{% trans 'Close All Items' %}"></a></li>
+        <li class="add-handler-container"><a href="javascript://" class="icon add-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Add Item' %}"> </a></li>
+    </ul>
+    {{ inline_admin_formset.formset.management_form }}
+    {{ inline_admin_formset.formset.non_form_errors }}
+    <div class="items">
+        {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
+        {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
+            <div class="module grp-module {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+                id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{{ forloop.counter0 }}{% endif %}">
+                <h3 class="collapse-handler grp-collapse-handler">{{ inline_admin_formset.opts.verbose_name|strip_parent_name:opts.verbose_name|title }}&nbsp;{% if inline_admin_form.original %}:&nbsp;{{ inline_admin_form.original }}{% endif %}</h3>
+                <ul class="tools">
+                    {% if inline_admin_form.show_url %}<li class="viewsite-link-container"><a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>{% endif %}
+                    {% if inline_admin_formset.opts.sortable_field_name %}
+                        <li class="drag-handler-container"><a href="javascript://" class="icon drag-handler" title="{% trans 'Move Item' %}"></a></li>
+                    {% endif %}
+                    {% if inline_admin_formset.formset.can_delete %}
+                        {% if inline_admin_form.original %}
+                            <li class="delete-handler-container grp-delete-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon delete-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
+                        {% else %}
+                            <li class="remove-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon remove-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                {% if inline_admin_form.form.non_field_errors %}
+                    <ul class="errorlist">
+                        <li>{{ inline_admin_form.form.non_field_errors }}</li>
+                    </ul>
+                {% endif %}
+                {% for fieldset in inline_admin_form %}
+                    {% include "nesting/admin/includes/inline.html" %}
+                {% endfor %}
+                {{ inline_admin_form.pk_field.field }}
+                {{ inline_admin_form.fk_field.field }}
+                {% if inline_admin_form.form.inlines %}
+                    {% for nested in inline_admin_form.form.inlines %}
+                      {% include nested.opts.template %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if forloop.last %}
+                    {% if inline_admin_formset.inlines %}
+                        {% for nested in inline_admin_formset.inlines %}
+                            {% include nested.opts.template %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+
+            </div>
+        {% endfor %}
+        {% endwith %}
+        {% if inline_admin_form.inlines %}
+            {% for nested in inline_admin_form.inlines %}
+              {% include nested.opts.template %}
+            {% endfor %}
+        {% endif %}
+        {{ inline_admin_formset.extra_forms }}
+    </div>
+    <div class="module grp-module add-item grp-add-item">
+        <a href="javascript://" class="add-handler {{ inline_admin_formset.opts.opts.module_name }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</a>
+        <ul class="tools">
+            <li class="add-handler-container"><a href="javascript://" class="icon add-handler" title="{% trans 'Add Item' %}"> </a></li>
+        </ul><br clear="all" />
+    </div>
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        var prefix = "{{ inline_admin_formset.formset.prefix }}";
+        if (prefix.indexOf('-empty') == -1 && prefix.indexOf('__prefix__') == -1) {
+            DJNesting.register_formset(prefix);            
+        }
+    });
+})((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);
+</script>
