@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django import forms
 
 from .formsets import NestedInlineFormSet
-from .options import ModelAdmin, StackedInline
+from .options import ModelAdmin, InlineModelAdmin
 
 
 class NestedAdmin(ModelAdmin):
@@ -54,6 +54,8 @@ class NestedAdmin(ModelAdmin):
         try:
             while True:
                 formset = formset_iterator.next()
+                if not hasattr(formset, 'nesting_depth'):
+                    formset.nesting_depth = 0
                 inline = inline_iterator.next()
                 yield formset
                 if inline.inlines and request.method == 'POST':
@@ -68,6 +70,7 @@ class NestedAdmin(ModelAdmin):
                             # there is an error in the POST and we have to create
                             # inline admin formsets.
                             nested_formset.is_nested = True
+                            nested_formset.nesting_depth = formset.nesting_depth + 1
                             yield nested_formset            
         except StopIteration:
             raise
@@ -149,8 +152,11 @@ class NestedAdmin(ModelAdmin):
             raise
 
 
-class NestedStackedInline(StackedInline):
+class NestedInlineModelAdmin(InlineModelAdmin):
 
     formset = NestedInlineFormSet
-    inline_classes = ('collapse grp-collapse closed grp-closed',)
-    template = "nesting/admin/inlines/stacked_nested.html"
+
+
+class NestedStackedInline(NestedInlineModelAdmin):
+
+    template = 'nesting/admin/inlines/stacked.html'

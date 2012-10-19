@@ -12,13 +12,25 @@ class NestedInlineFormSetMixin(object):
         self.changed_objects = []
         self.deleted_objects = []
         self.new_objects = []
+
+        # Copied lines are from BaseModelFormSet.save()
         if not commit:
             self.saved_forms = []
             def save_m2m():
                 for form in self.saved_forms:
                     form.save_m2m()
             self.save_m2m = save_m2m
+        # End copied lines from BaseModelFormSet.save()
+        # The above if clause is the entirety of BaseModelFormSet.save(),
+        # along with the following return:
+        # return self.save_existing_objects(commit) + self.save_new_objects(commit)
 
+        # Iterate through self.forms and add properties `_list_position`
+        # and `_is_initial` so that the forms can be put back in the
+        # proper order at the end of the save method.
+        #
+        # We need to re-sort the forms because we can get ForeignKey
+        # constraint errors if we save nested formsets in their default order.
         initial_form_count = self.initial_form_count()
         forms = []
         for i, form in enumerate(self.forms):
@@ -26,47 +38,17 @@ class NestedInlineFormSetMixin(object):
             form._is_initial = bool(i < initial_form_count)
             forms.append(form)
 
-        # Sort on position
-        sortable_field_name = getattr(self, 'sortable_field_name', None)
-        if sortable_field_name is not None:
-            default_data = {}
-            default_data[sortable_field_name] = 0
-            def sort_form(f):
-                data = getattr(f, 'cleaned_data', default_data)
-                return data.get(sortable_field_name, 0)
-            forms.sort(key=sort_form)
+        # Perform the sort (and allow extended logic in child classes)
+        forms = self.process_forms_pre_save(forms)
 
         form_instances = []
         saved_instances = []
 
-        for i, form in enumerate(forms):
-            # if not self._should_delete_form(form) and form.cleaned_data['is_subarticle']:
-            #     if form.cleaned_data['parent_article'] is None:
-            #         # Loop backwards until we find the parent instance id
-            #         parent_instance = None
-            #         for prev_instance in reversed(form_instances):
-            #             if not prev_instance.is_subarticle:
-            #                 parent_instance = prev_instance
-            #                 break
-            # 
-            #         if parent_instance is None:
-            #             raise ValidationError("There was an error saving supporting articles.")
-            #         else:
-            #             data_key = form.add_prefix('parent_article')
-            #             form.data[data_key] = unicode(parent_instance.pk)
-            #             form.cleaned_data['parent_article'] = unicode(parent_instance.pk)
-            #             # Reset _changed_data so _get_changed_data() gets called again
-            #             form._changed_data = None
-
-            if form._is_initial:
-                instances = self.save_existing_objects([form], commit)
-            else:
-                instances = self.save_new_objects([form], commit)
-            # Save instances so we can reference it for sub-instanced nested
-            # beneath not-yet-saved instanced.
-            if len(instances):
-                instance = instances[0]
-                instance._list_position = form._list_position
+        for form in forms:
+            instance = self.get_saved_instance_for_form(form, commit, form_instances)
+            if instance is not None:
+                # Store saved instances so we can reference it for
+                # sub-instanced nested beneath not-yet-saved instances.
                 saved_instances += [instance]
             else:
                 instance = form.instance
@@ -77,7 +59,38 @@ class NestedInlineFormSetMixin(object):
         saved_instances.sort(key=lambda i: i._list_position)
         return saved_instances
 
-    def save_existing_objects(self, initial_forms=[], commit=True):
+    def process_forms_pre_save(self, forms):
+        """
+        Sort by the sortable_field_name of the formset, if it has been set.
+
+        Allows customizable sorting and modification of self.forms before
+        they're iterated through in save().
+
+        Returns list of forms. 
+        """
+        sortable_field_name = getattr(self, 'sortable_field_name', None)
+        if sortable_field_name is not None:
+            default_data = {}
+            default_data[sortable_field_name] = 0
+            def sort_form(f):
+                data = getattr(f, 'cleaned_data', default_data)
+                return data.get(sortable_field_name, 0)
+            forms.sort(key=sort_form)
+        return forms
+
+    def get_saved_instance_for_form(self, form, commit, form_instances=None):
+        if form._is_initial:
+            instances = self.save_existing_objects([form], commit)
+        else:
+            instances = self.save_new_objects([form], commit)
+        if len(instances):
+            instance = instances[0]
+            instance._list_position = form._list_position
+            return instance
+        else:
+            return None
+
+    def save_existing_objects(self, initial_forms=None, commit=True):
         """
         Identical to parent class, except ``self.initial_forms`` is replaced
         with ``initial_forms``, passed as parameter.
@@ -86,6 +99,10 @@ class NestedInlineFormSetMixin(object):
             return []
 
         saved_instances = []
+
+        if initial_forms is None:
+            return []
+
         for form in initial_forms:
             pk_name = self._pk_field.name
             raw_pk_value = form._raw_value(pk_name)
@@ -107,11 +124,17 @@ class NestedInlineFormSetMixin(object):
                     self.saved_forms.append(form)
         return saved_instances
 
-    def save_new_objects(self, extra_forms=[], commit=True):
+    def save_new_objects(self, extra_forms=None, commit=True):
         """
         Identical to parent class, except ``self.extra_forms`` is replaced
-        with ``extra_forms``, passed as parameter.
+        with ``extra_forms``, passed as parameter, and self.new_objects is
+        replaced with ``new_objects``.
         """
+        new_objects = []
+
+        if extra_forms is None:
+            return new_objects
+
         for form in extra_forms:
             if not form.has_changed():
                 continue
@@ -119,17 +142,25 @@ class NestedInlineFormSetMixin(object):
             # object.
             if self.can_delete and self._should_delete_form(form):
                 continue
-            self.new_objects.append(self.save_new(form, commit=commit))
+            new_objects.append(self.save_new(form, commit=commit))
             if not commit:
                 self.saved_forms.append(form)
-        return self.new_objects
+
+        self.new_objects.extend(new_objects)
+        return new_objects
 
 
 class NestedInlineFormSet(NestedInlineFormSetMixin, BaseInlineFormSet):
+    """
+    The nested InlineFormSet for the common case (ForeignKey inlines)
+    """
     pass
 
 
 class GenericNestedInlineFormSet(NestedInlineFormSetMixin, BaseGenericInlineFormSet):
+    """
+    The nested InlineFormSet for inlines of generic content-type relations
+    """
 
     @classmethod
     def get_default_prefix(cls):

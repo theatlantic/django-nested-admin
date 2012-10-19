@@ -34,7 +34,11 @@ from django.contrib.admin.options import csrf_protect_m, IncorrectLookupParamete
     BaseModelAdmin as _BaseModelAdmin, ModelAdmin as _ModelAdmin, \
     InlineModelAdmin as _InlineModelAdmin
 
+from .formsets import NestedInlineFormSet
+
+
 class BaseModelAdminMixin(object):
+
     def inline_has_permissions(self, request, inline):
         has_add_perms = has_change_perms = has_delete_perms = True
         if hasattr(inline, 'has_add_permission'):
@@ -49,13 +53,11 @@ class BaseModelAdminMixin(object):
         return has_perms
 
     def get_inline_instances(self, request, obj=None):
-        inline_instances = []
         for inline_class in self.inlines:
             inline = inline_class(self.model, self.admin_site)
             if request:
                 if not self.inline_has_permissions(request, inline):
                     continue
-
             yield inline
 
 
@@ -573,8 +575,14 @@ class InlineModelAdmin(BaseModelAdminMixin, _InlineModelAdmin):
 
 
 class StackedInline(InlineModelAdmin):
-    template = 'nesting/admin/inlines/stacked.html'
+    """
+    The standard StackedInline. If using NestedAdmin, use
+    nesting.nested_admin.NestedStackedInline.
+    """
+
+    template = 'admin/edit_inline/stacked.html'
 
 
 class TabularInline(InlineModelAdmin):
+
     template = 'admin/edit_inline/tabular.html'

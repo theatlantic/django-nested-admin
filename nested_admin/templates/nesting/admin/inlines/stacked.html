@@ -1,7 +1,10 @@
 {% load i18n adminmedia grp_tags nested_admin %}
+{% with inline_admin_formset.formset.is_nested as is_nested %}
+
 {% with inline_admin_formset.opts as opts %}
-<div class="group grp-group stacked djnesting-stacked djnesting-stacked-parent"
+<div class="group grp-group stacked djnesting-stacked{% if is_nested %} djnesting-stacked-nested{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
+    {% block group_data_attributes %}
     data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
     data-lookup-related-fk="{% get_safe_related_lookup_fields_fk opts %}"
     data-lookup-related-m2m="{% get_safe_related_lookup_fields_m2m opts %}"
@@ -9,7 +12,8 @@
     data-lookup-autocomplete-fk="{% get_safe_autocomplete_lookup_fields_fk opts %}"
     data-lookup-autocomplete-m2m="{% get_safe_autocomplete_lookup_fields_m2m opts %}"
     data-lookup-autocomplete-generic="{% get_safe_autocomplete_lookup_fields_generic opts %}"
-    data-inline-model="{{ opts.opts.module_name }}">
+    data-field-names='{"pk": "{{ opts.opts.pk.name }}"{% if opts.sortable_field_name %}, "position": "{{ opts.sortable_field_name }}"{% endif %}}'
+    data-inline-model="{{ opts.opts.module_name }}"{% endblock %}>
 {% endwith %}
     <h2 class="collapse-handler grp-collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
     <ul class="tools">
@@ -19,11 +23,15 @@
     </ul>
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
-    <div class="items">
+    <div class="items{% if is_nested %} nested-sortable-container{% endif %}">
         {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
         {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
-            <div class="module grp-module {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
-                id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{{ forloop.counter0 }}{% endif %}">
+            {% if is_nested %}
+            {{ inline_admin_form.management_form }}
+            <div class="{% if not forloop.last %}nested-sortable-item{% else %}empty-form-container{% endif %}">
+            {% endif %}
+            <div class="module grp-module {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}{% if is_nested %} inline-related{% endif %}"
+                id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{%if is_nested %}-{% endif %}{{ forloop.counter0 }}{% endif %}">
                 <h3 class="collapse-handler grp-collapse-handler">{{ inline_admin_formset.opts.verbose_name|strip_parent_name:opts.verbose_name|title }}&nbsp;{% if inline_admin_form.original %}:&nbsp;{{ inline_admin_form.original }}{% endif %}</h3>
                 <ul class="tools">
                     {% if inline_admin_form.show_url %}<li class="viewsite-link-container"><a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>{% endif %}
@@ -34,7 +42,7 @@
                         {% if inline_admin_form.original %}
                             <li class="delete-handler-container grp-delete-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon delete-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
                         {% else %}
-                            <li class="remove-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon remove-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
+                            <li class="remove-handler-container grp-remove-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon remove-handler {{ inline_admin_formset.opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
                         {% endif %}
                     {% endif %}
                 </ul>
@@ -43,23 +51,34 @@
                         <li>{{ inline_admin_form.form.non_field_errors }}</li>
                     </ul>
                 {% endif %}
+
                 {% for fieldset in inline_admin_form %}
                     {% include "nesting/admin/includes/inline.html" %}
                 {% endfor %}
-                {{ inline_admin_form.pk_field.field }}
+                {% if inline_admin_form.has_auto_field %}
+                    {{ inline_admin_form.pk_field.field }}
+                {% endif %}
                 {{ inline_admin_form.fk_field.field }}
                 {% if inline_admin_form.form.inlines %}
                     {% for nested in inline_admin_form.form.inlines %}
-                      {% include nested.opts.template %}
+                        {% with nested as inline_admin_formset %}
+                            {% include nested.opts.template %}
+                        {% endwith %}
                     {% endfor %}
                 {% endif %}
 
                 {% if forloop.last %}
                     {% if inline_admin_formset.inlines %}
-                        {% for nested in inline_admin_formset.inlines %}
-                            {% include nested.opts.template %}
+                        {% for nested in inline_admin_form.form.inlines %}
+                            {% with nested as inline_admin_formset %}
+                                {% include nested.opts.template %}
+                            {% endwith %}
                         {% endfor %}
                     {% endif %}
+                {% endif %}
+
+                {% if is_nested %}
+                </div>
                 {% endif %}
 
             </div>
@@ -87,6 +106,18 @@
         if (prefix.indexOf('-empty') == -1 && prefix.indexOf('__prefix__') == -1) {
             DJNesting.register_formset(prefix);            
         }
+        // {% if is_nested %}
+        // === Javascript specific to nested inline items below this line ===
+        var $group = $('#' + prefix + '-group');
+        var groupData = $group.data();
+
+        // After instantiation, available at DJNesting.NestedInline.instances[prefix]
+        new DJNesting.NestedInline({
+            prefix: "{{ inline_admin_formset.formset.prefix }}",
+            fieldNames: groupData.fieldNames
+        });
+        // {% endif %}
     });
 })((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);
 </script>
+{% endwith %}{# ends {% with inline_admin_formset.formset.is_nested as is_nested %} #}
