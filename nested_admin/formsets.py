@@ -1,3 +1,4 @@
+from django.db import models
 from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
 
@@ -79,7 +80,20 @@ class NestedInlineFormSetMixin(object):
         return forms
 
     def get_saved_instance_for_form(self, form, commit, form_instances=None):
-        if form._is_initial:
+        pk_name = None
+        if form.instance and form.instance._meta.pk:
+            pk_name = form.instance._meta.pk.name
+        pk_val = None
+        if form.cleaned_data:
+            pk_val = form.cleaned_data.get(pk_name)
+        # Inherited models will show up as instances of the parent in
+        # cleaned_data
+        if isinstance(pk_val, models.Model):
+            pk_val = pk_val.pk
+        if pk_val is not None:
+            setattr(form.instance, pk_name, pk_val)
+
+        if form._is_initial or (form.instance and form.instance.pk):
             instances = self.save_existing_objects([form], commit)
         else:
             instances = self.save_new_objects([form], commit)
@@ -95,9 +109,6 @@ class NestedInlineFormSetMixin(object):
         Identical to parent class, except ``self.initial_forms`` is replaced
         with ``initial_forms``, passed as parameter.
         """
-        if not self.get_queryset():
-            return []
-
         saved_instances = []
 
         if initial_forms is None:
@@ -112,7 +123,16 @@ class NestedInlineFormSetMixin(object):
             pk_value = form.fields[pk_name].clean(raw_pk_value)
             pk_value = getattr(pk_value, 'pk', pk_value)
 
-            obj = self._existing_object(pk_value)
+            obj = None
+            if obj is None and form.instance and pk_value:
+                model_cls = form.instance.__class__
+                try:
+                    obj = model_cls.objects.get(pk=pk_value)
+                except model_cls.DoesNotExist:
+                    pass
+            if obj is None:
+                obj = self._existing_object(pk_value)
+
             if self.can_delete and self._should_delete_form(form):
                 self.deleted_objects.append(obj)
                 obj.delete()

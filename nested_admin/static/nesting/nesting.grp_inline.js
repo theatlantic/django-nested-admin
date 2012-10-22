@@ -49,7 +49,7 @@
                 // callback
                 options.onAfterInit(form);
             });
-            
+            elem.trigger('djnesting:init');
         };
     }
 

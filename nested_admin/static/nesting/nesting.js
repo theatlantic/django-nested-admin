@@ -2,6 +2,10 @@
 
     window.DJNesting = (typeof DJNesting == 'object') ? DJNesting : {};
 
+    var regexQuote = function(str) {
+        return (str+'').replace(/([\.\?\*\+\^\$\[\]\\\(\)\{\}\|\-])/g, "\\$1");
+    };
+
     // Utility jQuery functions for nested inlines
     (function() {
         if (typeof($.fn.setDjangoBooleanInput) != 'function') {
@@ -47,7 +51,105 @@
     })();
     // End utility functions
 
-    DJNesting.NestedInline = Class.extend({
+    /**
+     * Update attributes based on a regular expression
+     */
+    var updateFormAttributes = function(elem, replace_regex, replace_with, selector) {
+        if (!selector) {
+            selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module';
+        }
+        elem.find(selector).each(function() {
+            var node = $(this),
+                node_id = node.attr('id'),
+                node_name = node.attr('name'),
+                node_for = node.attr('for'),
+                node_href = node.attr("href");
+            if (node_id) { node.attr('id', node_id.replace(replace_regex, replace_with)); }
+            if (node_name) { node.attr('name', node_name.replace(replace_regex, replace_with)); }
+            if (node_for) { node.attr('for', node_for.replace(replace_regex, replace_with)); }
+            if (node_href) { node.attr('href', node_href.replace(replace_regex, replace_with)); }
+            if (node.is('.module,.grp-module')) {
+                node_id.replace(/_set-(\d+)$/, '_set$1');
+            }
+        });
+    };
+
+    var updatePositions = function(prefix) {
+        var position = 0;
+        if (!prefix) {
+            prefix = this.prefix;
+        }
+
+        var $group = $('#' + prefix + '-group');
+        var fieldNames = $group.data('fieldNames');
+
+        // Tracks whether the current/last element is marked for deletion
+        var markedForDeletion = false;
+
+        $group.find('.module.inline-related').each(function() {
+            if (!this.id || this.id.substr(-6) == '-empty') {
+                return true; // Same as continue
+            }
+            var regex = new RegExp('^(?:id_)?' + regexQuote(prefix) + '\\d+$');
+
+            if (!this.id.match(regex)) {
+                return true;
+            }
+            // Cache jQuery object
+            var $this = $(this);
+            // Skip the element if it's marked to be deleted
+            if ($this.hasClass('predelete')) {
+                // This means that an item that was marked delete because
+                // it was a child of another element marked deleted, but
+                // that it has been moved
+                if ($this.hasClass('nested-delete') && !markedForDeletion) {
+                    $this.removeClass('predelete nested-delete');
+                    $this.filterDjangoField(prefix, 'DELETE').setDjangoBooleanInput(false);
+                } else {
+                    $this.filterDjangoField(prefix, fieldNames.position).val('');
+                    markedForDeletion = true;
+                    return true;
+                }
+            }
+
+            if (!markedForDeletion) {
+                $this.filterDjangoField(prefix, fieldNames.position).val(position);
+            }
+            markedForDeletion = false;
+            position++;
+        });
+
+        var formSearch = new RegExp('(' + regexQuote(prefix) + '\\-?)(\\d+)(\\-)');
+
+        // The field name on the fieldset which is a ForeignKey to the parent model
+        var groupFkName = $group.data('formsetFkName');
+        var parentPkVal;
+        var parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
+        if (parentIdMatches) {
+            var parentPrefix = parentIdMatches[1];
+            var index = parentIdMatches[2];
+            var $parentGroup = $('#' + parentPrefix + '-group');
+            var parentFieldNames = $parentGroup.data('fieldNames');
+            var parentPkFieldName = parentFieldNames.pk;
+            var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
+            parentPkVal = parentPkField.val();
+        }
+
+        $group.find('.module.inline-related').each(function(i, module) {
+            var $module = $(module);
+            var currentModuleId = $module.attr('id');
+            var newModuleId = currentModuleId.replace(/set(\d+)$/, 'set' + i.toString());
+            $module.attr('id', newModuleId);
+            var formReplace = '$1' + i.toString() + '$3';
+            updateFormAttributes($module, formSearch, formReplace);
+            if (groupFkName && parentPkVal) {
+                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
+            }
+        });
+    };
+
+
+    DJNesting.NestedAdmin = Class.extend({
         $group: null,      // The element with id '#{prefix}-group'
         $container: null,  // The child of $group matching selector "div.items".
                            // Contains all formsets.
@@ -74,20 +176,19 @@
             if (this.prefix.indexOf('-empty') != -1) {
                 return;
             }
-            if (DJNesting.NestedInline.instances[this.prefix]) {
-                throw "DJNesting.NestedInline already created for " + this.prefix;
+            if (DJNesting.NestedAdmin.instances[this.prefix]) {
+                throw "DJNesting.NestedAdmin already created for " + this.prefix;
             }
-            this.$group = $('#' + this.prefix + '-group');
-            this.$container = $('#' + this.prefix + '-group > div.items');
+            this.$group = this.opts.$group;
+            this.$container = this.$group.children('div.items');
             this.initSubArticleNesting();
             this.createSortable();
-            this.bindSourceFieldHandlers();
             this.bindTitleChangeHandler();
-            DJNesting.NestedInline.instances[this.prefix] = this;
+            DJNesting.NestedAdmin.instances[this.prefix] = this;
         },
         bindTitleChangeHandler: function() {
             var prefix = this.prefix;
-            $('#' + this.prefix + '-group > div.items').find('.inline-related').each(function(i, inline) {
+            this.$container.find('.inline-related').each(function(i, inline) {
                 var $inline = $(inline);
                 var index = parseInt($inline.attr('id').replace(prefix + '-', ''), 10);
                 if (typeof index != 'number' || isNaN(index)) {
@@ -119,41 +220,6 @@
                 $customTitle.bind('keyup', onTitleChange);
             });
         },
-        bindSourceFieldHandlers: function() {
-            var prefix = this.prefix;
-            $('#' + this.prefix + '-group > div.items').find('.inline-related fieldset.module').each(function(i, fieldset) {
-                var $fieldset = $(fieldset);
-                var $source = $fieldset.find('.row.source').find('select');
-                var $url = $fieldset.find('.row.url');
-                var $articleId = $fieldset.find('.row.article');
-                if ($source.val() === '') {
-                    $url.hide();
-                    $articleId.hide();
-                } else if ($source.val() != 'url') {
-                    $url.hide();
-                } else {
-                    $articleId.hide();
-                }
-                $source.bind('change', function() {
-                    var index = this.id.substring(prefix.length+4, this.id.length-7);
-                    $group = $('#' + this.prefix + '-group');
-                    $url = $group.filterDjangoField(prefix, 'url', index).closest('.row');
-                    $articleId = $group.filterDjangoField(prefix, 'article', index).closest('.row');
-                    var $this = $(this);
-                    if ($this.val() === '') {
-                        $url.hide();
-                        $articleId.hide();
-                    } else if ($this.val() == 'url') {
-                        $url.show();
-                        $articleId.hide();
-                    } else {
-                        $url.hide();
-                        $articleId.show();
-                    }
-                });
-            });
-
-        },
         /**
          * When the form loads, the TocArticle formset is flat. This wraps any
          * TocArticle with is_subarticle = True in a
@@ -183,71 +249,64 @@
                 $subarticle.wrapAll('<div class="subarticle-wrapper nested-sortable-container" />');
             });
         },
-        updatePositions: function() {
-            var position = 0;
-            var prefix = this.prefix, fieldNames = this.opts.fieldNames;
-            // Tracks whether the current/last element is marked for deletion
-            var markedForDeletion = false;
-
-            this.$group.find('.module.inline-related').each(function() {
-                if (this.id && this.id.substr(-6) == '-empty') {
-                    return true; // Same as continue
-                }
-                // Cache jQuery object
-                var $this = $(this);
-                // Skip the element if it's marked to be deleted
-                if ($this.hasClass('predelete')) {
-                    // This means that an item that was marked delete because
-                    // it was a child of another element marked deleted, but
-                    // that it has been moved
-                    if ($this.hasClass('nested-delete') && !markedForDeletion) {
-                        $this.removeClass('predelete nested-delete');
-                        $this.filterDjangoField(prefix, 'DELETE').setDjangoBooleanInput(false);
-                    } else {
-                        $this.filterDjangoField(prefix, fieldNames.position).val('');
-                        markedForDeletion = true;
-                        return true;
-                    }
-                }
-
-                if (!markedForDeletion) {
-                    $this.filterDjangoField(prefix, fieldNames.position).val(position);
-                }
-                markedForDeletion = false;
-                position++;
-            });
-        },
         
         /**
          * Create ui.nestedSortable object
          */
         createSortable: function() {
-            var self = this,
-                prefix = this.prefix;
-            this.sortable = $('#' + prefix + '-group > div.items').nestedSortable({
-                handle: '> div > h3.collapse-handler',
-                items: '.nested-sortable-item',
+            this.sortable = this.$group.children('div.items').nestedSortable({
+                handle: '> div > h3.djnesting-drag-handler',
+                items: '> .nested-sortable-item',
                 forcePlaceholderSize: true,
-                placeholder: 'nested-placeholder',
+                placeholder: 'ui-sortable-placeholder',///nested-placeholder
                 helper: 'clone',
                 opacity: 0.6,
-                maxLevels: 0,
-                createContainerElement: function(parent) {
-                    var parentContainer = parent.parentNode.parentNode;
-                    
-                    console.log('parent = ', parent);
-                    console.log('parentContainer = ', parentContainer);
+                maxLevels: 3,
+                maintainNestingLevel: true,
+                tolerance: 'pointer',
+                axis: 'y',
+                createContainerElement: function(parent, insertType) {
                     var newContainer = document.createElement('DIV');
                     newContainer.setAttribute('class', 'nested-sortable-container');
-                    // parentContainer.insertBefore(newContainer, parent.parentNode);
-                    parent.appendChild(newContainer);
                     return newContainer;
                 },
                 containerElementSelector: '.nested-sortable-container',
                 listItemSelector: '.nested-sortable-item',
-            
-                update: function(event, ui) {
-                    self.updatePositions();
+                remove: function(event, ui) {
+                    var $this = $(this);
+                    var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
+                    if ($TOTAL_FORMS.length) {
+                        var prev_total_forms = parseInt($TOTAL_FORMS.val(), 10);
+                        if (!isNaN(prev_total_forms) && prev_total_forms > 0) {
+                            $TOTAL_FORMS.val(prev_total_forms - 1);
+                        }
+                    }
+                },
+                receive: function(event, ui) {
+                    var $module = ui.item.find('> .module');
+                    var $this = $(this);
+                    var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
+                    if ($TOTAL_FORMS.length) {
+                        var prev_total_forms = parseInt($TOTAL_FORMS.val(), 10);
+                        if (!isNaN(prev_total_forms)) {
+                            $TOTAL_FORMS.val(prev_total_forms + 1);
+                        }
+                    }
+                    if ($TOTAL_FORMS.length && $module.length) {
+                        $module = ($module.length == 1) ? $module : $module.first();
+                        var oldPrefix = ($module.attr('id').match(/^(.+)\d+$/) || [null, null])[1];
+                         var newPrefix = ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
+                         if (oldPrefix && newPrefix) {
+                             var oldPrefixRegex = new RegExp(regexQuote(oldPrefix));
+                             updateFormAttributes(ui.item, oldPrefixRegex, newPrefix);
+                         }
+                         if (oldPrefix) {
+                             updatePositions(oldPrefix);
+                         }
+                         if (newPrefix) {
+                             updatePositions(newPrefix);
+                         }
+                    }
                 }
             });
         },
@@ -258,7 +317,7 @@
              if (!this.sortable) {
                  return;
              }
-             this.updatePositions();
+             updatePositions(this.prefix);
              this.sortable.nestedSortable('refresh');
          },
          /**
@@ -274,9 +333,9 @@
     });
 
     // Static property, keyed on prefix. Used to prevent duplicate calls
-    // to DJNesting.NestedInline constructor on the same elements and
+    // to DJNesting.NestedAdmin constructor on the same elements and
     // allow instance lookup.
-    DJNesting.NestedInline.instances = {};
+    DJNesting.NestedAdmin.instances = {};
 
     window.dismissRelatedLookupPopup = function(win, chosenId, targetElement) {
         var name = windowname_to_id(win.name);
@@ -317,9 +376,6 @@
         if (prefix.substr(-6) == '-empty') {
             return;
         }
-        // if (prefix.indexOf('-empty-tocarticle') != -1) {
-        //     return;
-        // }
 
         if (prefix.indexOf('-empty-') != -1) {
             return;
@@ -490,7 +546,7 @@
                 if (isNested) {
                     var inlineInstance;
                     try {
-                        inlineInstance = DJNesting.NestedInline.instances[prefix];
+                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
                     } catch(e) {}
                     if (inlineInstance) {
                         inlineInstance.refresh();
@@ -503,7 +559,7 @@
                 if (isNested) {
                     var inlineInstance;
                     try {
-                        inlineInstance = DJNesting.NestedInline.instances[prefix];
+                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
                     } catch(e) {}
                     if (inlineInstance) {
                         inlineInstance.refresh();
@@ -513,13 +569,21 @@
                 }
             },
             onAfterAdded: function(form) {
+                var id = form.attr('id');
+                var formPrefix;
+                if (id) {
+                    formPrefix = (id.match(/^(.+_set)\d+$/) || [null, null])[1];
+                }
+                if (formPrefix) {
+                    updatePositions(formPrefix);
+                }
                 updateNestedFormIndex(form);
                 if (isNested) {
                     // Add nested-sortable-item class to parent div
                     form.parent().addClass('nested-sortable-item');
                     var inlineInstance;
                     try {
-                        inlineInstance = DJNesting.NestedInline.instances[prefix];
+                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
                     } catch(e) {}
                     if (inlineInstance) {
                         inlineInstance.refresh();
@@ -543,10 +607,9 @@
                     var nestedGroupData = $nestedGroup.data();
                     if (nestedGroupData.fieldNames) {
                         DJNesting.register_formset(nestedGroupPrefix);
-                        new DJNesting.NestedInline({
-                            prefix: nestedGroupPrefix,
-                            fieldNames: nestedGroupData.fieldNames
-                        });
+                        // Initializing this event adds the divs to the existing
+                        // nestedSortable object
+                        $nestedGroup.find('> div.items').trigger('djnesting:init');
                     }
                 });
                 grappelli.reinitDateTimeFields(form);
@@ -571,25 +634,6 @@
             }
         }));
 
-        if (sortable_field_name) {
-            $('#' + prefix + '-group').sortable({
-                handle: '> ul.tools a.drag-handler',
-                items: 'div.' + grpInlineOpts.formCssClass,
-                axis: 'y',
-                appendTo: 'body',
-                forceHelperSize: true,
-                placeholder: 'ui-sortable-placeholder',
-                forcePlaceholderSize: true,
-                containment: '#' + prefix + '-group > div.items',
-                tolerance: 'pointer',
-                start: function(evt, ui) {
-                    ui.placeholder.height(ui.item.height() + 12);
-                },
-                update: function(event, ui) {
-                    reorderFields();
-                }
-            });
-        }
     };
 
     $(document).ready(function() {
@@ -598,11 +642,18 @@
             return element.childNodes.length == 0;
         }).css('border-width', '0');
 
-        $('form').submit(function(e) {
-            $.each(DJNesting.NestedInline.instances, function(i, inline) {
-                inline.updatePositions();
+        $('.djnesting-stacked-root').each(function(i, group) {
+            var $group = $(group);
+            var prefix = group.getAttribute('id').replace(/-group$/, '');
+
+            new DJNesting.NestedAdmin({
+                prefix: prefix,
+                fieldNames: $group.data('fieldNames'),
+                '$group': $group
             });
+
         });
+
     });
 
 })((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);

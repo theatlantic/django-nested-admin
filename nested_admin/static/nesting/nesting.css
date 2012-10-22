@@ -94,13 +94,16 @@
     display: block !important;
 }
 
+/*
+For TOC
 .djnesting-stacked-nested.group div.items .subarticle-wrapper .inline-related,
 .nested-placeholder.ui-sortable-nested-level-2 {
     margin-left: 30px;
 }
+*/
 
-.nested-placeholder {
-    background-color: #9f9f9f;
+.nested-placeholder, .djnesting-stacked .ui-sortable-placeholder {
+    background: #9f9f9f !important;
     margin-bottom: 5px;
 }
 .nested-sortable-item .collapse .tools  .drag-handler-container {
@@ -113,4 +116,21 @@
 
 .djnesting-stacked div.module .items fieldset.module .row div.tools {
     top: -18px;
+}
+
+.nested-sortable-container {
+    overflow: hidden;
+}
+
+.nested-sortable-item.nested-do-not-drag:first-child {
+    margin-bottom: 39px;
+}
+
+.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
+.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
+    margin-top: -39px;
+}
+
+.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper {
+    margin-top: 0;
 }

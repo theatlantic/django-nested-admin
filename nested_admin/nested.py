@@ -16,19 +16,22 @@ class NestedAdmin(ModelAdmin):
         server_data_js = reverse('nesting_server_data')
         media.add_js((server_data_js,))
 
+        version = 1
+
         js_files = (
             'jquery.class.js',
+            'jquery.ui.sortable.js',
             'jquery.ui.nestedSortable.js',
             'nesting.grp_inline.js',
             'nesting.js',)
 
         for js_file in js_files:
-            js_file_url = u'%s/nesting/%s' % (settings.STATIC_URL, js_file)
+            js_file_url = u'%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
             media.add_js((js_file_url,))
 
         media.add_css({
             'all': (
-                u'%s/nesting/nesting.css' % settings.STATIC_URL,
+                u'%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
             )})
         return media
 
@@ -55,7 +58,7 @@ class NestedAdmin(ModelAdmin):
             while True:
                 formset = formset_iterator.next()
                 if not hasattr(formset, 'nesting_depth'):
-                    formset.nesting_depth = 0
+                    formset.nesting_depth = 1
                 inline = inline_iterator.next()
                 yield formset
                 if inline.inlines and request.method == 'POST':
@@ -75,13 +78,15 @@ class NestedAdmin(ModelAdmin):
         except StopIteration:
             raise
 
-    def get_nested_inlines(self, request, prefix, inline, obj=None):
+    def get_nested_inlines(self, request, prefix, inline, parent_formset=None, obj=None):
         nested_inline_formsets = []
         for nested in inline.get_inline_instances(request):
             InlineFormSet = nested.get_formset(request, obj)
             nested_prefix = '%s-%s' % (prefix, InlineFormSet.get_default_prefix())
             nested_formset = InlineFormSet(instance=obj, prefix=nested_prefix)
             nested_formset.is_nested = True
+            if parent_formset is not None:
+                nested_formset.nesting_depth = 1 + getattr(parent_formset.formset, 'nesting_depth', 1)
             nested_inline = self.get_nested_inline_admin_formset(request, nested,
                 nested_formset, obj)
             nested_inline_formsets.append(nested_inline)
@@ -123,7 +128,8 @@ class NestedAdmin(ModelAdmin):
                         instance = form.instance
                     else:
                         instance = None
-                    form_inlines = self.get_nested_inlines(request, form.prefix, inline, obj=instance)
+                    form_inlines = self.get_nested_inlines(request, form.prefix, inline,
+                        parent_formset=inline_admin_formset, obj=instance)
                     # Check whether nested inline formsets were already submitted.
                     # If so, use the submitted formset instead of the freshly generated
                     # one since it will contain error information and non-saved data
@@ -146,7 +152,7 @@ class NestedAdmin(ModelAdmin):
                 # instances in the form.
                 empty_prefix = formset.add_prefix('empty')
                 inline_admin_formset.inlines = self.get_nested_inlines(
-                    request, empty_prefix, inline)
+                    request, empty_prefix, inline, parent_formset=inline_admin_formset)
                 yield inline_admin_formset
         except StopIteration:
             raise
