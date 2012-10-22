@@ -342,7 +342,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 	_mouseStop: function(event, noPropagation) {
 
 		if(!event) return;
-console.log('mouseStop');
+
 		//If we are using droppables, inform the manager about the drop
 		if ($.ui.ddmanager && !this.options.dropBehaviour)
 			$.ui.ddmanager.drop(this, event);
