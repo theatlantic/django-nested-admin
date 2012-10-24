@@ -1,3 +1,6 @@
+var DJNesting = (typeof window.DJNesting != "undefined")
+               ? DJNesting : {};
+
 (function($) {
 
     // The "closure" functions in grappelli's $.fn.grp_inline()
@@ -142,5 +145,124 @@
             });
         };
     }
+
+    // Slight tweaks to the grappelli functions of the same name
+    // (initRelatedFields and initAutocompleteFields).
+    //
+    // The most notable tweak is the call to $.fn.grp_related_generic() (a
+    // jQuery method provided by django-curated) and the use of
+    // DJNesting.LOOKUP_URLS to determine the ajax lookup urls.
+    //
+    // We abstract this out using form prefix because the way grappelli does it
+    // (adding javascript at the bottom of each formset) doesn't really scale
+    // with nested formsets.
+
+    // The second parameter (groupData) is optional, and only exists to prevent
+    // redundant calls to jQuery() and jQuery.fn.data() in the calling context
+    DJNesting.initRelatedFields = function(prefix, groupData) {
+        if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
+            return;
+        }
+        var lookup_urls = DJNesting.LOOKUP_URLS;
+
+        if (!groupData) {
+            groupData = $('#' + prefix + '-group').data();
+        }
+        var lookup_fields = {
+            related_fk:       groupData.lookupRelatedFk,
+            related_m2m:      groupData.lookupRelatedM2m,
+            related_generic:  groupData.lookupRelatedGeneric,
+            autocomplete_fk:  groupData.lookupAutocompleteFk,
+            autocomplete_m2m: groupData.lookupAutocompleteM2m,
+            autocomplete_generic: groupData.lookupAutocompleteGeneric
+        };
+
+        $.each(lookup_fields.related_fk, function() {
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+            .grp_related_fk({lookup_url: lookup_urls.related});
+        });
+        $.each(lookup_fields.related_m2m, function() {
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+            .grp_related_m2m({lookup_url: lookup_urls.m2m});
+        });
+        $.each(lookup_fields.related_generic, function() {
+            var content_type = this[0],
+                object_id = this[1];
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find('input[name^="' + prefix + '"][name$="' + this[1] + '"]')
+            .each(function() {
+                var $this = $(this);
+                var id = $this.attr('id');
+                var idRegex = new RegExp("(\\-\\d+\\-)" + object_id + "$");
+                var i = id.match(idRegex);
+                if (i) {
+                    var ct_id = '#id_' + prefix + i[1] + content_type,
+                        obj_id = '#id_' + prefix + i[1] + object_id;
+                    $this.grp_related_generic({
+                        content_type:ct_id,
+                        object_id:obj_id,
+                        lookup_url:lookup_urls.related
+                    });
+                }
+            });
+        });
+    };
+    DJNesting.initAutocompleteFields = function(prefix, groupData) {
+        if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
+            return;
+        }
+        var lookup_urls = DJNesting.LOOKUP_URLS;
+
+        if (!groupData) {
+            groupData = $('#' + prefix + '-group').data();
+        }
+        var lookup_fields = {
+            related_fk:       groupData.lookupRelatedFk,
+            related_m2m:      groupData.lookupRelatedM2m,
+            related_generic:  groupData.lookupRelatedGeneric,
+            autocomplete_fk:  groupData.lookupAutocompleteFk,
+            autocomplete_m2m: groupData.lookupAutocompleteM2m,
+            autocomplete_generic: groupData.lookupAutocompleteGeneric
+        };
+
+        $.each(lookup_fields.autocomplete_fk, function() {
+            form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            .each(function() {
+                $(this).grp_autocomplete_fk({
+                    lookup_url: lookup_urls.related,
+                    autocomplete_lookup_url: lookup_urls.autocomplete
+                });
+            });
+        });
+        $.each(lookup_fields.autocomplete_m2m, function() {
+            form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            .each(function() {
+                $(this).grp_autocomplete_m2m({
+                    lookup_url: lookup_urls.m2m,
+                    autocomplete_lookup_url: lookup_urls.autocomplete
+                });
+            });
+        });
+        $.each(lookup_fields.autocomplete_generic, function() {
+            var content_type = this[0],
+                object_id = this[1];
+            form.find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
+            .each(function() {
+                var i = $(this).attr("id").match(/-\d+-/);
+                if (i) {
+                    var ct_id = "#id_" + prefix + i[0] + content_type,
+                        obj_id = "#id_" + prefix + i[0] + object_id;
+                    $(this).grp_autocomplete_generic({
+                        content_type:ct_id,
+                        object_id:obj_id,
+                        lookup_url:lookup_urls.related,
+                        autocomplete_lookup_url:lookup_urls.m2m
+                    });
+                }
+            });
+        });
+    };
 
 })((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);

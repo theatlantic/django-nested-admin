@@ -25,6 +25,31 @@
             };
         }
 
+        if (typeof($.fn.djangoFormPrefix) != 'function') {
+            $.fn.djangoFormPrefix = function() {
+                var $this = (this.length > 1) ? this.first() : this;
+                var id = $this.attr('id'),
+                    name = $this.attr('name'),
+                    forattr = $this.attr('for'),
+                    inlineRegex = /_set(?:\d|\-\d|\-group)/;
+                if ((!id || !id.match(inlineRegex)) && (!name || !name.match(inlineRegex)) && (!forattr || !forattr.match(inlineRegex))) {
+                    return null;
+                }
+                var $group;
+                if ($this.is('.grp,.grp-group')) {
+                    $group = $this;
+                } else {
+                    $group = $this.closest('.group,.grp-group');
+                }
+                if (!$group.length) {
+                    return null;
+                }
+                var groupId = $group.attr('id');
+                var prefix = (groupId.match(/^(.*_set)-group$/) || [null, null])[1];
+                return prefix;
+            };
+        }
+
         if (typeof($.fn.filterDjangoField) != 'function') {
             var djRegexCache = {};
             $.fn.filterDjangoField = function(prefix, fieldName, index) {
@@ -148,89 +173,63 @@
         });
     };
 
-
-    DJNesting.NestedAdmin = Class.extend({
+    DJNesting.NestedInline = Class.extend({
         $group: null,      // The element with id '#{prefix}-group'
         $container: null,  // The child of $group matching selector "div.items".
                            // Contains all formsets.
         sortable: null,    // The ui.nestedSortable object
-        prefix: null,      // Alias to opts.prefix, because it's used so frequently
+        prefix: null,      // Prefix to $group
+        fieldNames: {},
         opts: {
-            prefix: null,
             fieldNames: {
                 position: null,
                 isSortable: null,
                 parentFk: null,
-                pk: null
-            },
-            sortableFieldName: null,
-            nestedFlagFieldName: null,
-            nestedSortableFieldName: null,
-            parentSortableFieldName: null,
-            parentFkFieldName: null,
-            pkFieldName: null
+                pk: null,
+                nestedPosition: null,
+                parentPosition: null
+            }
         },
-        init: function(o) {
-            $.extend(this.opts, o);
-            this.prefix = this.opts.prefix;
-            if (this.prefix.indexOf('-empty') != -1) {
+        uniqueId: null,
+        init: function($group) {
+            this.uniqueId = this.registerUniqueId($group);
+            if (DJNesting.NestedInline.instances[this.uniqueId]) {
+                return;
+                // throw "DJNesting.NestedInline already created for " + this.prefix;
+            }
+            this.$group = $group;
+            this.prefix = $group.djangoFormPrefix();
+            if (!this.prefix || this.prefix.indexOf('-empty') != -1) {
                 return;
             }
-            if (DJNesting.NestedAdmin.instances[this.prefix]) {
-                throw "DJNesting.NestedAdmin already created for " + this.prefix;
-            }
-            this.$group = this.opts.$group;
+            this.fieldNames = $.extend({}, this.opts.fieldNames, $group.data().fieldNames || {});
             this.$container = this.$group.children('div.items');
-            this.initSubArticleNesting();
-            this.createSortable();
-            this.bindTitleChangeHandler();
-            DJNesting.NestedAdmin.instances[this.prefix] = this;
-        },
-        bindTitleChangeHandler: function() {
-            var prefix = this.prefix;
-            this.$container.find('.inline-related').each(function(i, inline) {
-                var $inline = $(inline);
-                var index = parseInt($inline.attr('id').replace(prefix + '-', ''), 10);
-                if (typeof index != 'number' || isNaN(index)) {
-                    return;
-                }
-                var $articleId = $inline.filterDjangoField(prefix, 'article', index);
-                var articleTitle = $articleId.nextAll('strong').html();
-                if (articleTitle) {
-                    var $handler = $inline.find('> h3.collapse-handler');
-                    $handler.attr('data-article-title', articleTitle);
-                }
 
-                var $customTitle = $inline.filterDjangoField(prefix, 'custom_title', index);
-                var onTitleChange = function(event) {
-                    var target = event.target;
-                    var customTitleVal = $(target).val();
-                    if (customTitleVal) {
-                        $handler.html(customTitleVal);
-                    } else {
-                        var articleTitle = $handler.data('articleTitle');
-                        if (articleTitle) {
-                            $handler.html($handler.data('articleTitle'));
-                        } else {
-                            $handler.html('Article');
-                        }
-                    }
-                };
-                $customTitle.bind('change', onTitleChange);
-                $customTitle.bind('keyup', onTitleChange);
-            });
+            this.initSubArticleNesting();
+            DJNesting.NestedInline.instances[this.uniqueId] = this;
+        },
+        registerUniqueId: function($group) {
+            var uniqueId = $group.data('nestedInlineUniqueId');
+            if (!uniqueId) {
+                uniqueId = ("00000000000000" + Math.random().toString().replace('.', '')).substr(-14);
+                $group.data('nestedInlineUniqueId', uniqueId);
+            }
+            return uniqueId;
         },
         /**
-         * When the form loads, the TocArticle formset is flat. This wraps any
-         * TocArticle with is_subarticle = True in a
+         * When the form loads, the formset is flat. This wraps any
+         * inlines with is_subarticle = True in a
          * '<div class="subarticle-wrapper nested-sortable-container"></div>'
          * and appends it to the <div class="nested-sortable-item"/> of its
          * parent article.
          */
         initSubArticleNesting: function() {
+            if (!this.fieldNames.isSubarticle) {
+                return;
+            }
             // Depending on whether subarticles are hidden or checkboxes, the selector
             // could be input[value=True] or input:checked
-            var $subarticleInputs = this.$group.find('.row.' + this.opts.fieldNames.isSubarticle)
+            var $subarticleInputs = this.$group.find('.row.' + this.fieldNames.isSubarticle)
                                                    .find('input[value=True], input:checked');
             $subarticleInputs.closest('.nested-sortable-item').each(function(i, subarticle) {
                 var $subarticle = $(subarticle);
@@ -248,30 +247,82 @@
                 // Wrap in a new container element
                 $subarticle.wrapAll('<div class="subarticle-wrapper nested-sortable-container" />');
             });
+        }
+    });
+
+    DJNesting.NestedAdmin = DJNesting.NestedInline.extend({
+        init: function($group) {
+            this._super($group);
+            if (DJNesting.NestedAdmin.instances[this.jquery]) {
+                throw "DJNesting.NestedAdmin already created for " + this.prefix;
+            }
+            this.createSortable();
+            DJNesting.NestedAdmin.instances[this.prefix] = this;
         },
-        
+
         /**
-         * Create ui.nestedSortable object
+         * NOTE: This is where most everything related to nested inlines takes place.
+         * See jquery.ui.nestedSortable.js for reference.
          */
         createSortable: function() {
             this.sortable = this.$group.children('div.items').nestedSortable({
                 handle: '> div > h3.djnesting-drag-handler',
+                /**
+                 * items: The selector for ONLY the items underneath a given
+                 *        container at that level. Not to be confused with
+                 *        listItemSelector, which is the selector for all list
+                 *        items in the nestedSortable
+                 */
                 items: '> .nested-sortable-item',
                 forcePlaceholderSize: true,
                 placeholder: 'ui-sortable-placeholder',///nested-placeholder
                 helper: 'clone',
                 opacity: 0.6,
                 maxLevels: 3,
-                maintainNestingLevel: true,
                 tolerance: 'pointer',
                 axis: 'y',
+                // maintainNestingLevel: not a standard ui.sortable parameter.
+                // Prevents dragging items up or down levels
+                maintainNestingLevel: true,
+                /**
+                 * The original jquery.ui.nestedSortable assumed that one
+                 * would only ever deal with <ol> and <li> elements in the
+                 * sortable, so when a list item was dragged under another item
+                 * and to the right, such that it needed to create a new list
+                 * nested one level deeper, it would simply perform
+                 *    document.createElement('ol')
+                 *
+                 * Since we're dealing with the django admin, we use
+                 * <div class="nested-sortable-container"> and
+                 * <div class="nested-sortable-item">
+                 * instead of <ol> and <li>, respectively.
+                 *
+                 * This method stands in place of the original plugin's hard-coded
+                 * document.createElement('ol');
+                 *
+                 * The parent element and the insert type (String, 'prepend' or
+                 * 'append') are passed to the method in case they are useful, but
+                 * for most purposes they can be ignored.
+                 */
                 createContainerElement: function(parent, insertType) {
                     var newContainer = document.createElement('DIV');
                     newContainer.setAttribute('class', 'nested-sortable-container');
                     return newContainer;
                 },
+                // The selector for ALL list containers in the nested sortable.
                 containerElementSelector: '.nested-sortable-container',
+                // The selector for ALL list items in the nested sortable.
                 listItemSelector: '.nested-sortable-item',
+                /**
+                 * Triggered when a sortable is removed from a container (to be
+                 * dropped in another; before 'receive' is triggered)
+                 *
+                 * This method decrements the TOTAL_FORMS input in the formset
+                 * from which the form is being removed.
+                 *
+                 * @param event - A jQuery Event
+                 * @param ui - An instance of the ui.nestedSortable widget
+                 */
                 remove: function(event, ui) {
                     var $this = $(this);
                     var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
@@ -282,6 +333,21 @@
                         }
                     }
                 },
+                /**
+                 * Triggered when a sortable is dropped into a container
+                 *
+                 * This method:
+                 *   - increments the TOTAL_FORMS input in the formset to
+                 *     which the form is being added
+                 *   - updates the position field in both the formset the
+                 *     sortable was removed from and the formset it has
+                 *     been added to
+                 *   - Updates "id", "name", and "for" attributes to match
+                 *     the new parent formset's prefix.
+                 *
+                 * @param event - A jQuery Event
+                 * @param ui - An instance of the ui.nestedSortable widget
+                 */
                 receive: function(event, ui) {
                     var $module = ui.item.find('> .module');
                     var $this = $(this);
@@ -313,11 +379,14 @@
         /**
          * Refresh sortable with new items
          */
-         refresh: function() {
+         refresh: function(prefix) {
+             if (!prefix) {
+                 prefix = this.prefix;
+             }
              if (!this.sortable) {
                  return;
              }
-             updatePositions(this.prefix);
+             updatePositions(prefix);
              this.sortable.nestedSortable('refresh');
          },
          /**
@@ -336,7 +405,10 @@
     // to DJNesting.NestedAdmin constructor on the same elements and
     // allow instance lookup.
     DJNesting.NestedAdmin.instances = {};
+    DJNesting.NestedInline.instances = {};
 
+    // The function called by the popup window when the user clicks on a row's
+    // link in the changelist for a foreignkey or generic foreign key lookup.
     window.dismissRelatedLookupPopup = function(win, chosenId, targetElement) {
         var name = windowname_to_id(win.name);
         var elem = document.getElementById(name);
@@ -370,8 +442,12 @@
         win.close();
     };
 
-    var lookup_urls = DJNesting.LOOKUP_URLS;
-
+    /**
+     * Registers a formset with all handlers based on the form prefix.
+     * All formsets' should be registered with this function (it currently
+     * handles the case of formsets added after load via sortable-moves and
+     * the "Add" links/buttons).
+     */
     DJNesting.register_formset = function(prefix) {
         if (prefix.substr(-6) == '-empty') {
             return;
@@ -385,100 +461,17 @@
         var groupData = $group.data();
 
         var isNested = ($group.hasClass('djnesting-stacked-nested'));
-
-        var lookup_fields = {
-            related_fk:       groupData.lookupRelatedFk,
-            related_m2m:      groupData.lookupRelatedM2m,
-            related_generic:  groupData.lookupRelatedGeneric,
-            autocomplete_fk:  groupData.lookupAutocompleteFk,
-            autocomplete_m2m: groupData.lookupAutocompleteM2m,
-            autocomplete_generic: groupData.lookupAutocompleteGeneric
-        };
-
-        var sortable_field_name = null;
-        if (groupData.sortableFieldName) {
-            sortable_field_name = groupData.sortableFieldName;
+        if (isNested) {
+            new DJNesting.NestedInline($group);
         }
+        var sortable_field_name = groupData.sortableFieldName;
 
-        var initRelatedFields = function() {
-            $.each(lookup_fields.related_fk, function() {
-                $('#' + prefix + '-group > div.items > div:not(.empty-form)')
-                .find('input[name^="' + prefix + '"][name$="' + this + '"]')
-                .grp_related_fk({lookup_url: lookup_urls.related});
-            });
-            $.each(lookup_fields.related_m2m, function() {
-                $('#' + prefix + '-group > div.items > div:not(.empty-form)')
-                .find('input[name^="' + prefix + '"][name$="' + this + '"]')
-                .grp_related_m2m({lookup_url: lookup_urls.m2m});
-            });
-            $.each(lookup_fields.related_generic, function() {
-                var content_type = this[0],
-                    object_id = this[1];
-                $('#' + prefix + '-group > div.items > div:not(.empty-form)')
-                .find('input[name^="' + prefix + '"][name$="' + this[1] + '"]')
-                .each(function() {
-                    var $this = $(this);
-                    var id = $this.attr('id');
-                    var idRegex = new RegExp("(\\-\\d+\\-)" + object_id + "$");
-                    var i = id.match(idRegex);
-                    if (i) {
-                        var ct_id = '#id_' + prefix + i[1] + content_type,
-                            obj_id = '#id_' + prefix + i[1] + object_id;
-                        $this.grp_related_generic({
-                            content_type:ct_id,
-                            object_id:obj_id,
-                            lookup_url:lookup_urls.related
-                        });
-                    }
-                });
-            });
-        };
-        var initAutocompleteFields = function() {
-            $.each(lookup_fields.autocomplete_fk, function() {
-                form.find("input[name^='" + prefix + "'][name$='" + this + "']")
-                .each(function() {
-                    $(this).grp_autocomplete_fk({
-                        lookup_url: lookup_urls.related,
-                        autocomplete_lookup_url: lookup_urls.autocomplete
-                    });
-                });
-            });
-            $.each(lookup_fields.autocomplete_m2m, function() {
-                form.find("input[name^='" + prefix + "'][name$='" + this + "']")
-                .each(function() {
-                    $(this).grp_autocomplete_m2m({
-                        lookup_url: lookup_urls.m2m,
-                        autocomplete_lookup_url: lookup_urls.autocomplete
-                    });
-                });
-            });
-            $.each(lookup_fields.autocomplete_generic, function() {
-                var content_type = this[0],
-                    object_id = this[1];
-                form.find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
-                .each(function() {
-                    var i = $(this).attr("id").match(/-\d+-/);
-                    if (i) {
-                        var ct_id = "#id_" + prefix + i[0] + content_type,
-                            obj_id = "#id_" + prefix + i[0] + object_id;
-                        $(this).grp_autocomplete_generic({
-                            content_type:ct_id,
-                            object_id:obj_id,
-                            lookup_url:lookup_urls.related,
-                            autocomplete_lookup_url:lookup_urls.m2m
-                        });
-                    }
-                });
-            });
-        };
+        DJNesting.initRelatedFields(prefix, groupData);
+        DJNesting.initAutocompleteFields(prefix, groupData);
 
-        // This will be null if grappelli is not installed
-        if (lookup_urls.related) {
-            initRelatedFields();
-            initAutocompleteFields();
-        }
-
-        var updateNestedFormIndex = function(form) {
+        // This function will update the position prefix for empty-form elements
+        // in nested forms.
+        var updateNestedFormIndex = function updateNestedFormIndex(form) {
             var index = form.attr('id').replace(prefix, '');
             var elems = form.find('*[id^="' + prefix + '-empty-"]')
                              .add('*[id^="id_' + prefix + '-empty-"]', form)
@@ -509,11 +502,12 @@
             formCssClass: 'dynamic-form-' + groupData.inlineModel
         };
 
+        // updatePositions() could take the place of this. Currently only being
+        // used to reorder top-level formsets.
         var reorderFields = function() {};
-
         if (sortable_field_name) {
             var regexp = new RegExp('^' + prefix + '-\\d+-' + sortable_field_name + '$');
-            reorderFields = function() {
+            reorderFields = function reorderFields() {
                 var i = 0;
                 $('#' + prefix + '-group').find('div.' + grpInlineOpts.formCssClass).each(function(n, form){
                     // Skip the element if it's marked to be deleted
@@ -521,7 +515,7 @@
                     if ($form.hasClass('predelete')) {
                         return true;
                     }
-                    $(form).find('input[name$="'+sortable_field_name+'"]').each(function(n, input) {
+                    $form.find('input[name$="'+sortable_field_name+'"]').each(function(m, input) {
                         if (input.getAttribute("name").match(regexp)) {
                             input.setAttribute('value', i.toString());
                             i++;
@@ -544,12 +538,14 @@
                     }
                 });
                 if (isNested) {
-                    var inlineInstance;
+                    var instance,
+                        inlinePrefix = inline.djangoFormPrefix(),
+                        $group = $('#' + inlinePrefix + '-group');
                     try {
-                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
+                        instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
                     } catch(e) {}
-                    if (inlineInstance) {
-                        inlineInstance.refresh();
+                    if (instance) {
+                        instance.refresh(inlinePrefix);
                     }
                 } else {
                     reorderFields();
@@ -557,23 +553,34 @@
             },
             onAfterDeleted: function(form) {
                 if (isNested) {
-                    var inlineInstance;
+                    var instance,
+                        formPrefix = form.djangoFormPrefix(),
+                        $group = $('#' + formPrefix + '-group');
                     try {
-                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
+                        instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
                     } catch(e) {}
-                    if (inlineInstance) {
-                        inlineInstance.refresh();
+                    if (instance) {
+                        instance.refresh(formPrefix);
                     }
                 } else {
                     reorderFields();
                 }
             },
-            onAfterAdded: function(form) {
-                var id = form.attr('id');
-                var formPrefix;
-                if (id) {
-                    formPrefix = (id.match(/^(.+_set)\d+$/) || [null, null])[1];
+            onBeforeRemoved: function(form) {
+                var formPrefix = form.djangoFormPrefix(),
+                    $group = $('#' + formPrefix + '-group'),
+                    uniqueId = $group.data('nestedInlineUniqueId');
+                if ($group.length) {
+                    if (DJNesting.NestedAdmin.instances[uniqueId]) {
+                        delete DJNesting.NestedAdmin.instances[uniqueId];
+                    }
+                    if (DJNesting.NestedInline.instances[uniqueId]) {
+                        delete DJNesting.NestedInline.instances[uniqueId];
+                    }
                 }
+            },
+            onAfterAdded: function(form) {
+                var formPrefix = form.djangoFormPrefix();
                 if (formPrefix) {
                     updatePositions(formPrefix);
                 }
@@ -581,19 +588,21 @@
                 if (isNested) {
                     // Add nested-sortable-item class to parent div
                     form.parent().addClass('nested-sortable-item');
-                    var inlineInstance;
+
+                    var instance, $group = $('#' + formPrefix + '-group');
                     try {
-                        inlineInstance = DJNesting.NestedAdmin.instances[prefix];
+                        instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
                     } catch(e) {}
-                    if (inlineInstance) {
-                        inlineInstance.refresh();
+                    if (instance) {
+                        instance.refresh(formPrefix);
                     }
                 } else {
                     reorderFields();
                 }
                 // Initialize any nested formsets
                 form.find('div.group').each(function(i, nestedGroup) {
-                    var nestedGroupId = nestedGroup.getAttribute('id');
+                    var $nestedGroup = $(nestedGroup);
+                    var nestedGroupId = $nestedGroup.attr('id');
                     if (nestedGroupId.substr(-10) != '_set-group') {
                         return true; // Skip to next
                     }
@@ -602,10 +611,8 @@
                     if (nestedGroupId.substr(0, nestedGroupId.length - 10).indexOf('_set-') == -1) {
                         return true;
                     }
-                    var nestedGroupPrefix = nestedGroupId.substr(0, nestedGroupId.length-6);
-                    var $nestedGroup = $(nestedGroup);
-                    var nestedGroupData = $nestedGroup.data();
-                    if (nestedGroupData.fieldNames) {
+                    var nestedGroupPrefix = $nestedGroup.djangoFormPrefix();
+                    if ($nestedGroup.data('fieldNames')) {
                         DJNesting.register_formset(nestedGroupPrefix);
                         // Initializing this event adds the divs to the existing
                         // nestedSortable object
@@ -614,14 +621,9 @@
                 });
                 grappelli.reinitDateTimeFields(form);
                 grappelli.updateSelectFilter(form);
-                initRelatedFields();
-                initAutocompleteFields();
-                form.grp_collapsible({
-                    toggle_handler_slctr: ".collapse-handler:first",
-                    closed_css: "closed grp-closed",
-                    open_css: "open grp-open"
-                });
-                form.find(".collapse").grp_collapsible({
+                DJNesting.initRelatedFields(formPrefix);
+                DJNesting.initAutocompleteFields(formPrefix);
+                form.find(".collapse").andSelf().grp_collapsible({
                     toggle_handler_slctr: ".collapse-handler:first",
                     closed_css: "closed grp-closed",
                     open_css: "open grp-open"
@@ -642,18 +644,11 @@
             return element.childNodes.length == 0;
         }).css('border-width', '0');
 
+        // Register the DJNesting.NestedAdmin on top level djnesting-stacked elements.
+        // It will handle recursing down the nested inlines.
         $('.djnesting-stacked-root').each(function(i, group) {
-            var $group = $(group);
-            var prefix = group.getAttribute('id').replace(/-group$/, '');
-
-            new DJNesting.NestedAdmin({
-                prefix: prefix,
-                fieldNames: $group.data('fieldNames'),
-                '$group': $group
-            });
-
+            new DJNesting.NestedAdmin($(group));
         });
-
     });
 
 })((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);
