@@ -35,7 +35,7 @@
             <div class="{% if not forloop.last %}nested-sortable-item{% else %}empty-form-container{% endif %}">
             <div class="module grp-module {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}{% if is_nested %} inline-related{% endif %}"
                 id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{%if is_nested %}{% endif %}{{ forloop.counter0 }}{% endif %}">
-                <h3 class="collapse-handler grp-collapse-handler{% if inline_admin_formset.opts.draggable %} djnesting-drag-handler{% endif %}">{{ inline_admin_formset.opts.verbose_name|strip_parent_name:opts.verbose_name|title }}&nbsp;{% if inline_admin_form.original %}:&nbsp;{{ inline_admin_form.original }}{% endif %}</h3>
+                <h3 class="collapse-handler grp-collapse-handler{% if inline_admin_formset.opts.draggable %} djnesting-drag-handler{% endif %}">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% else %}{{ inline_admin_formset.opts.verbose_name|strip_parent_name:opts.verbose_name|title }}{% endif %}</h3>
                 <ul class="tools">
                     {% if inline_admin_form.show_url %}<li class="viewsite-link-container"><a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>{% endif %}
                     {% if inline_admin_formset.opts.sortable_field_name %}
