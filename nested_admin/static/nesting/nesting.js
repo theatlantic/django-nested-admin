@@ -415,8 +415,10 @@
         if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
             elem.value += ',' + chosenId;
         } else {
-            document.getElementById(name).value = chosenId;
+            elem.value = chosenId;
         }
+        var $elem = $(elem);
+        $elem.trigger('change');
         var title = (typeof targetElement == 'object') ? targetElement.innerHTML : null;
         win.close();
         if (title) {
@@ -581,6 +583,7 @@
             },
             onAfterAdded: function(form) {
                 var formPrefix = form.djangoFormPrefix();
+                var $group = form.parent();
                 if (formPrefix) {
                     updatePositions(formPrefix);
                 }
@@ -633,6 +636,9 @@
                         $(element).curated_content_type();
                     });
                 }
+                // Fire an event on the document so other javascript applications
+                // can be alerted to the newly inserted inline
+                $(document).trigger('djnesting:added', $group);
             }
         }));
 
