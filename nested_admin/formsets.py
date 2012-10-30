@@ -1,6 +1,7 @@
 from django.db import models
 from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
+from django.utils.encoding import force_unicode
 
 
 class NestedInlineFormSetMixin(object):
@@ -115,9 +116,9 @@ class NestedInlineFormSetMixin(object):
         """
         form = super(NestedInlineFormSetMixin, self)._construct_form(i, **kwargs)
         pk_value = form.data.get(form.add_prefix(self._pk_field.name))
-        if pk_value and isinstance(pk_value, basestring) and pk_value.isdigit():
-            pk_value = int(pk_value)
-        if form.instance.pk != pk_value:
+        if pk_value == u'':
+            pk_value = None
+        if force_unicode(form.instance.pk) != force_unicode(pk_value):
             model_cls = form.instance.__class__
             try:
                 form.instance = model_cls.objects.get(pk=pk_value)
