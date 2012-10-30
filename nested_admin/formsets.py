@@ -104,6 +104,27 @@ class NestedInlineFormSetMixin(object):
         else:
             return None
 
+    def _construct_form(self, i, **kwargs):
+        """
+        Because of the fact that existing objects can be added to inlines
+        from other inlines, we sometimes get the wrong instance back.
+        For instance, if an item from inline B was dragged to the top of
+        inline A, and inline A already had items in it, form.instance would
+        be set to the instance that was originally the first item in inline A.
+        This patch fixes this problem.
+        """
+        form = super(NestedInlineFormSetMixin, self)._construct_form(i, **kwargs)
+        pk_value = form.data.get(form.add_prefix(self._pk_field.name))
+        if pk_value and isinstance(pk_value, basestring) and pk_value.isdigit():
+            pk_value = int(pk_value)
+        if form.instance.pk != pk_value:
+            model_cls = form.instance.__class__
+            try:
+                form.instance = model_cls.objects.get(pk=pk_value)
+            except model_cls.DoesNotExist:
+                pass
+        return form
+
     def save_existing_objects(self, initial_forms=None, commit=True):
         """
         Identical to parent class, except ``self.initial_forms`` is replaced

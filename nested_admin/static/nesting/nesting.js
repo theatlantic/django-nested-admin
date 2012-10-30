@@ -108,6 +108,34 @@
         var $group = $('#' + prefix + '-group');
         var fieldNames = $group.data('fieldNames');
 
+        var formSearch = new RegExp('(' + regexQuote(prefix) + '\\-?)(\\d+)(\\-)');
+
+        // The field name on the fieldset which is a ForeignKey to the parent model
+        var groupFkName = $group.data('formsetFkName');
+        var parentPkVal;
+        var parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
+        if (parentIdMatches) {
+            var parentPrefix = parentIdMatches[1];
+            var index = parentIdMatches[2];
+            var $parentGroup = $('#' + parentPrefix + '-group');
+            var parentFieldNames = $parentGroup.data('fieldNames');
+            var parentPkFieldName = parentFieldNames.pk;
+            var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
+            parentPkVal = parentPkField.val();
+        }
+
+        $group.find('.module.inline-related').each(function(i, module) {
+            var $module = $(module);
+            var currentModuleId = $module.attr('id');
+            var newModuleId = currentModuleId.replace(/set(\d+)$/, 'set' + i.toString());
+            $module.attr('id', newModuleId);
+            var formReplace = '$1' + i.toString() + '$3';
+            updateFormAttributes($module, formSearch, formReplace);
+            if (groupFkName && parentPkVal) {
+                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
+            }
+        });
+
         // Tracks whether the current/last element is marked for deletion
         var markedForDeletion = false;
 
@@ -144,32 +172,26 @@
             position++;
         });
 
-        var formSearch = new RegExp('(' + regexQuote(prefix) + '\\-?)(\\d+)(\\-)');
+    };
 
-        // The field name on the fieldset which is a ForeignKey to the parent model
-        var groupFkName = $group.data('formsetFkName');
-        var parentPkVal;
-        var parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
-        if (parentIdMatches) {
-            var parentPrefix = parentIdMatches[1];
-            var index = parentIdMatches[2];
-            var $parentGroup = $('#' + parentPrefix + '-group');
-            var parentFieldNames = $parentGroup.data('fieldNames');
-            var parentPkFieldName = parentFieldNames.pk;
-            var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
-            parentPkVal = parentPkField.val();
-        }
-
-        $group.find('.module.inline-related').each(function(i, module) {
-            var $module = $(module);
-            var currentModuleId = $module.attr('id');
-            var newModuleId = currentModuleId.replace(/set(\d+)$/, 'set' + i.toString());
-            $module.attr('id', newModuleId);
-            var formReplace = '$1' + i.toString() + '$3';
-            updateFormAttributes($module, formSearch, formReplace);
-            if (groupFkName && parentPkVal) {
-                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
+    var reorderFields = function reorderFields(prefix) {
+        var $group = $('#' + prefix + '-group');
+        var sortableFieldName = $group.data('sortableFieldName');
+        if (!$group.length || !sortableFieldName) { return; }
+        var regexp = new RegExp('^' + prefix + '-\\d+-' + sortableFieldName + '$');
+        var i = 0;
+        $group.find('> div.items > div.nested-sortable-item').each(function(n, form){
+            // Skip the element if it's marked to be deleted
+            var $form = $(form);
+            if ($form.hasClass('predelete')) {
+                return true;
             }
+            $form.find('input[name$="'+sortableFieldName+'"]').each(function(m, input) {
+                if (input.getAttribute("name").match(regexp)) {
+                    input.setAttribute('value', i.toString());
+                    i++;
+                }
+            });
         });
     };
 
@@ -333,6 +355,13 @@
                         }
                     }
                 },
+                start: function(event, ui) {
+                    ui.item.addClass('nested-sortable-item-dragging');
+                    ui.item.show();
+                },
+                stop: function(event, ui) {
+                    ui.item.removeClass('nested-sortable-item-dragging');
+                },
                 /**
                  * Triggered when a sortable is dropped into a container
                  *
@@ -350,8 +379,7 @@
                  */
                 receive: function(event, ui) {
                     var $module = ui.item.find('> .module');
-                    var $this = $(this);
-                    var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
+                    var $TOTAL_FORMS = $(this).prevAll('input[name$="TOTAL_FORMS"]').first();
                     if ($TOTAL_FORMS.length) {
                         var prev_total_forms = parseInt($TOTAL_FORMS.val(), 10);
                         if (!isNaN(prev_total_forms)) {
@@ -369,9 +397,26 @@
                          if (oldPrefix) {
                              updatePositions(oldPrefix);
                          }
-                         if (newPrefix) {
-                             updatePositions(newPrefix);
-                         }
+                    }
+                },
+                update: function(event, ui) {
+                    var $TOTAL_FORMS = $(this).prevAll('input[name$="TOTAL_FORMS"]').first();
+                    if (!$TOTAL_FORMS.length) {
+                        return;
+                    }
+                    var newPrefix = ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
+                    if (!newPrefix) { return; }
+                    updatePositions(newPrefix);
+                    // Ensure that <div class="nested-sortable-item nested-do-not-drag"/>
+                    // is the first child of the nested-sortable-container. If there
+                    // is another <div class="nested-sortable-item"/> before the
+                    // .do-not-drag element then the drag-and-drop placeholder
+                    // margins don't work correctly.
+                    var $nextItem = ui.item.nextAll('.nested-sortable-item').first();
+                    if ($nextItem.hasClass('nested-do-not-drag')) {
+                        var nextItem = $nextItem[0];
+                        var parent = nextItem.parentNode;
+                        parent.insertBefore(nextItem, parent.firstChild);
                     }
                 }
             });
@@ -466,7 +511,6 @@
         if (isNested) {
             new DJNesting.NestedInline($group);
         }
-        var sortable_field_name = groupData.sortableFieldName;
 
         DJNesting.initRelatedFields(prefix, groupData);
         DJNesting.initAutocompleteFields(prefix, groupData);
@@ -504,28 +548,6 @@
             formCssClass: 'dynamic-form-' + groupData.inlineModel
         };
 
-        // updatePositions() could take the place of this. Currently only being
-        // used to reorder top-level formsets.
-        var reorderFields = function() {};
-        if (sortable_field_name) {
-            var regexp = new RegExp('^' + prefix + '-\\d+-' + sortable_field_name + '$');
-            reorderFields = function reorderFields() {
-                var i = 0;
-                $('#' + prefix + '-group').find('div.' + grpInlineOpts.formCssClass).each(function(n, form){
-                    // Skip the element if it's marked to be deleted
-                    var $form = $(form);
-                    if ($form.hasClass('predelete')) {
-                        return true;
-                    }
-                    $form.find('input[name$="'+sortable_field_name+'"]').each(function(m, input) {
-                        if (input.getAttribute("name").match(regexp)) {
-                            input.setAttribute('value', i.toString());
-                            i++;
-                        }
-                    });
-                });
-            };
-        }
 
         $group.grp_inline($.extend(grpInlineOpts, {
             emptyCssClass: 'empty-form',
@@ -549,15 +571,12 @@
                     if (instance) {
                         instance.refresh(inlinePrefix);
                     }
-                } else {
-                    reorderFields();
                 }
             },
             onAfterDeleted: function(form) {
+                var formPrefix = form.djangoFormPrefix();
                 if (isNested) {
-                    var instance,
-                        formPrefix = form.djangoFormPrefix(),
-                        $group = $('#' + formPrefix + '-group');
+                    var instance, $group = $('#' + formPrefix + '-group');
                     try {
                         instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
                     } catch(e) {}
@@ -565,7 +584,7 @@
                         instance.refresh(formPrefix);
                     }
                 } else {
-                    reorderFields();
+                    reorderFields(formPrefix);
                 }
             },
             onBeforeRemoved: function(form) {
@@ -588,6 +607,7 @@
                     updatePositions(formPrefix);
                 }
                 updateNestedFormIndex(form);
+                var instance;
                 if (isNested) {
                     // Add nested-sortable-item class to parent div
                     form.parent().addClass('nested-sortable-item');
@@ -596,11 +616,11 @@
                     try {
                         instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
                     } catch(e) {}
-                    if (instance) {
-                        instance.refresh(formPrefix);
-                    }
+                }
+                if (instance) {
+                    instance.refresh(formPrefix);
                 } else {
-                    reorderFields();
+                    reorderFields(formPrefix);
                 }
                 // Initialize any nested formsets
                 form.find('div.group').each(function(i, nestedGroup) {
@@ -652,8 +672,17 @@
 
         // Register the DJNesting.NestedAdmin on top level djnesting-stacked elements.
         // It will handle recursing down the nested inlines.
-        $('.djnesting-stacked-root').each(function(i, group) {
-            new DJNesting.NestedAdmin($(group));
+        $('.djnesting-stacked-root').each(function(i, rootGroup) {
+            var $rootGroup = $(rootGroup);
+            nestedAdmin = new DJNesting.NestedAdmin($rootGroup);
+            $rootGroup.find('.djnesting-stacked').andSelf().each(function(i, group) {
+                var groupId = group.getAttribute('id');
+                if (!groupId || groupId.indexOf('-empty') > -1 || groupId.indexOf('__prefix__') > -1) {
+                    return;
+                }
+                var prefix = groupId.replace(/-group$/, '');
+                reorderFields(prefix);
+            });
         });
     });
 

@@ -127,10 +127,20 @@ For TOC
 }
 
 .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
-.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
+.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder,
+.nested-sortable-item-dragging + .ui-sortable-placeholder {
     margin-top: -39px;
 }
 
-.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper {
+.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper,
+.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item-dragging {
     margin-top: 0;
+}
+
+.nested-sortable-item-dragging {
+    height: 0px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
