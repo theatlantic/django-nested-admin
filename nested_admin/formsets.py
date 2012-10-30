@@ -118,7 +118,7 @@ class NestedInlineFormSetMixin(object):
         pk_value = form.data.get(form.add_prefix(self._pk_field.name))
         if pk_value == u'':
             pk_value = None
-        if force_unicode(form.instance.pk) != force_unicode(pk_value):
+        if pk_value and force_unicode(form.instance.pk) != force_unicode(pk_value):
             model_cls = form.instance.__class__
             try:
                 form.instance = model_cls.objects.get(pk=pk_value)
