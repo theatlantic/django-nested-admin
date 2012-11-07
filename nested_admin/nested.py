@@ -87,7 +87,7 @@ class NestedAdmin(ModelAdmin):
                 'instance': obj,
                 'prefix': nested_prefix,
             }
-            if request.method == 'POST':
+            if request.method == 'POST' and not prefix.endswith('-empty'):
                 nested_formset_kwargs.update({
                     'data': request.POST,
                     'files': request.FILES,
