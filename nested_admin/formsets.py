@@ -105,6 +105,42 @@ class NestedInlineFormSetMixin(object):
         else:
             return None
 
+    def get_queryset(self):
+        """
+        TODO: document this extended method
+        """
+        if not self.data:
+            return super(NestedInlineFormSetMixin, self).get_queryset()
+
+        if not hasattr(self, '__queryset'):
+            pk_keys = ["%s-%s" % (self.add_prefix(i), self.model._meta.pk.name)
+                       for i in xrange(0, self.initial_form_count())]
+            pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
+            qs = self.model._default_manager.get_query_set().filter(pk__in=pk_vals)
+
+            # If the queryset isn't already ordered we need to add an
+            # artificial ordering here to make sure that all formsets
+            # constructed from this queryset have the same form order.
+            if not qs.ordered:
+                qs = qs.order_by(self.model._meta.pk.name)
+
+            self.__queryset = qs
+        return self.__queryset
+
+    def _existing_object(self, pk):
+        """
+        TODO: document this extended method
+        """
+        if not hasattr(self, '_object_dict'):
+            self._object_dict = dict([(o.pk, o) for o in self.get_queryset()])
+        obj = self._object_dict.get(pk)
+        if not obj:
+            try:
+                obj = self.model.objects.get(pk=pk)
+            except self.model.DoesNotExist:
+                pass
+        return obj
+
     def _construct_form(self, i, **kwargs):
         """
         Because of the fact that existing objects can be added to inlines
@@ -124,6 +160,8 @@ class NestedInlineFormSetMixin(object):
                 form.instance = model_cls.objects.get(pk=pk_value)
             except model_cls.DoesNotExist:
                 pass
+            else:
+                setattr(form.instance, self.fk.get_attname(), self.instance.pk)
         return form
 
     def save_existing_objects(self, initial_forms=None, commit=True):
@@ -159,7 +197,14 @@ class NestedInlineFormSetMixin(object):
                 self.deleted_objects.append(obj)
                 obj.delete()
                 continue
-            if form.has_changed():
+
+            # fk_val: The value one should fine in the form's foreign key field
+            fk_val = self.instance.pk
+            if form.instance.pk:
+                original_instance = self.model.objects.get(pk=form.instance.pk)
+                fk_val = getattr(original_instance, self.fk.get_attname())
+
+            if form.has_changed() or self.instance.pk != fk_val:
                 self.changed_objects.append((obj, form.changed_data))
                 saved_instances.append(self.save_existing(form, obj, commit=commit))
                 if not commit:

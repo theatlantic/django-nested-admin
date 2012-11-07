@@ -83,7 +83,16 @@ class NestedAdmin(ModelAdmin):
         for nested in inline.get_inline_instances(request):
             InlineFormSet = nested.get_formset(request, obj)
             nested_prefix = '%s-%s' % (prefix, InlineFormSet.get_default_prefix())
-            nested_formset = InlineFormSet(instance=obj, prefix=nested_prefix)
+            nested_formset_kwargs = {
+                'instance': obj,
+                'prefix': nested_prefix,
+            }
+            if request.method == 'POST':
+                nested_formset_kwargs.update({
+                    'data': request.POST,
+                    'files': request.FILES,
+                })
+            nested_formset = InlineFormSet(**nested_formset_kwargs)
             nested_formset.is_nested = True
             if parent_formset is not None:
                 nested_formset.nesting_depth = 1 + getattr(parent_formset.formset, 'nesting_depth', 1)

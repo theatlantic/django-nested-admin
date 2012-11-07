@@ -25,28 +25,122 @@
             };
         }
 
-        if (typeof($.fn.djangoFormPrefix) != 'function') {
-            $.fn.djangoFormPrefix = function() {
-                var $this = (this.length > 1) ? this.first() : this;
-                var id = $this.attr('id'),
-                    name = $this.attr('name'),
-                    forattr = $this.attr('for'),
-                    inlineRegex = /_set(?:\d|\-\d|\-group)/;
-                if ((!id || !id.match(inlineRegex)) && (!name || !name.match(inlineRegex)) && (!forattr || !forattr.match(inlineRegex))) {
-                    return null;
-                }
-                var $group;
-                if ($this.is('.grp,.grp-group')) {
-                    $group = $this;
-                } else {
-                    $group = $this.closest('.group,.grp-group');
-                }
+        var prefixCache = {};
+
+        $.fn.djangoPrefixIndex = function() {
+            var $this = (this.length > 1) ? this.first() : this;
+            var id = $this.attr('id'),
+                name = $this.attr('name'),
+                forattr = $this.attr('for'),
+                inlineRegex = /^(.+_set)(?:(\d)|\-(\d)\-[^\-]+|\-group)$/,
+                matches = [null, undefined, undefined],
+                prefix, $group, groupId, cacheKey, match;
+
+            if ((match = prefixCache[id]) || (match = prefixCache[name]) || (match = prefixCache[forattr])) {
+                return match;
+            }
+
+            if ((id && (matches = id.match(inlineRegex)))
+              || (name && (matches = name.match(inlineRegex)))
+              || (forattr && (matches = forattr.match(inlineRegex)))) {
+                cacheKey = matches[0];
+                prefix = matches[1];
+                index = (typeof(matches[2]) == 'string') ? matches[2] : matches[3];
+            }
+
+            if (!prefix) {
+                $group = $this.closest('.group,.grp-group');
                 if (!$group.length) {
                     return null;
                 }
-                var groupId = $group.attr('id');
-                var prefix = (groupId.match(/^(.*_set)-group$/) || [null, null])[1];
-                return prefix;
+                groupId = $group.attr('id') || '';
+                prefix = (groupId.match(/^(.*_set)-group$/) || [null, null])[1];
+            } else {
+                if (prefix.substr(0, 3) == 'id_') {
+                    prefix = prefix.substr(3);
+                }
+
+                if (!document.getElementById(prefix + '-group')) {
+                    return null;
+                }
+            }
+
+            prefixCache[cacheKey] = [prefix, index];
+            return prefixCache[cacheKey];
+        };
+
+        $.fn.djangoFormPrefix = function() {
+            var prefixIndex = this.djangoPrefixIndex();
+            if (!prefixIndex || !prefixIndex[1]) {
+                return null;
+            }
+            return prefixIndex[0] + '-' + prefixIndex[1] + '-';
+        };
+
+        $.fn.djangoFormsetPrefix = function() {
+            var prefixIndex = this.djangoPrefixIndex();
+            if (!prefixIndex) {
+                return null;
+            } else {
+                return prefixIndex[0];
+            }
+        };
+
+        $.fn.djangoFormIsInitial = function() {
+            var pkField = this.djangoFormField('pk');
+            if (!pkField || !pkField.length) {
+                return undefined;
+            }
+            return (pkField.val() != '');
+        };
+
+        if (typeof($.djangoFormField) != 'function') {
+            $.djangoFormField = function(fieldName, prefix, index) {
+                var $empty = $([]), matches;
+                if (matches = prefix.match(/^(.+)\-(\d+)\-$/)) {
+                    prefix = matches[1];
+                    index = matches[2];
+                }
+                index = parseInt(index, 10);
+                if (isNaN(index)) {
+                    return $empty;
+                }
+                if (fieldName == 'pk' || fieldName == 'position') {
+                    var $group = $('#' + prefix + '-group'),
+                        fieldNameData = $group.data('fieldNames') || {};
+                    fieldName = fieldNameData[fieldName];
+                    if (!fieldName) { return $empty; }
+                }
+                return $('#id_' + prefix + '-' + index + '-' + fieldName);
+            };
+        }
+
+        if (typeof($.fn.djangoFormField) != 'function') {
+            /**
+             * Given a django model's field name, and the forms index in the
+             * formset, returns the field's input element, or an empty jQuery
+             * object on failure.
+             *
+             * @param String fieldName - "pk", "position", or the field's
+             *                           name in django (e.g. 'content_type',
+             *                           'url', etc.)
+             * @return jQuery object containing the field's input element, or
+             *         an empty jQuery object on failure
+             */
+            $.fn.djangoFormField = function(fieldName, index) {
+                var prefixAndIndex = this.djangoPrefixIndex();
+                var $empty = $([]);
+                if (!prefixAndIndex) {
+                    return $empty;
+                }
+                var prefix = prefixAndIndex[0];
+                if (typeof(index) == 'undefined') {
+                    index = prefixAndIndex[1];
+                    if (typeof(index) == 'undefined') {
+                        return $empty;
+                    }
+                }
+                return $.djangoFormField(fieldName, prefix, index);
             };
         }
 
@@ -220,7 +314,7 @@
                 // throw "DJNesting.NestedInline already created for " + this.prefix;
             }
             this.$group = $group;
-            this.prefix = $group.djangoFormPrefix();
+            this.prefix = $group.djangoFormsetPrefix();
             if (!this.prefix || this.prefix.indexOf('-empty') != -1) {
                 return;
             }
@@ -271,6 +365,72 @@
             });
         }
     });
+
+    var spliceInitialForm = function(oldFormsetPrefix, newFormsetPrefix, $splicingForm) {
+        var newFormsetPrefixLen = newFormsetPrefix.length,
+            $group = $('#' + newFormsetPrefix + '-group'),
+            oldFormId = ($splicingForm) ? $splicingForm.attr('id') : undefined,
+            forms = {},
+            initialForms = [],
+            newForms = [],
+            index, totalFormCount;
+
+        $group.find('.inline-related').each(function(i, form) {
+            var formId = form.getAttribute('id'),
+                formIndex = formId.substr(newFormsetPrefixLen),
+                matches;
+            if (formId == oldFormId) {
+                return;
+            }
+            if (formId.indexOf(newFormsetPrefix) === 0 && !formIndex.match(/\D/)) {
+                var $form = $(form),
+                    isInitial = $form.djangoFormIsInitial();
+                formIndex = parseInt(formIndex, 10);
+                forms[formId] = {
+                    form: $form,
+                    isInitial: isInitial,
+                    index: formIndex
+                };
+                if (isInitial) {
+                    initialForms.push($form);
+                } else {
+                    newForms.push($form);
+                }
+            }
+        });
+        initialForms.push($splicingForm);
+
+        index = totalFormCount = initialForms.length + newForms.length;
+
+        while (index >= 0) {
+            index--;
+            var newIndex = index, oldIndex = newIndex - 1;
+            var formData = forms[newFormsetPrefix + oldIndex];
+            var form = (formData) ? formData.form : undefined;
+            var isInitial = (formData) ? formData.isInitial : undefined;
+            if (!formData) {
+                continue;
+            }
+            if (!formData.isInitial) {
+                var $form = formData.form;
+                var oldFormPrefix = $form.attr('id').replace(/_set(\d+)$/, '_set-$1');
+                var oldFormsetPrefixRegex = new RegExp(regexQuote(oldFormPrefix));
+                updateFormAttributes($form, oldFormsetPrefixRegex, newFormsetPrefix + "-" + newIndex);
+                $form.attr('id', newFormsetPrefix + newIndex);
+            } else {
+                break;
+            }
+        }
+
+        var $form = $splicingForm;
+        // Replace the ids for the splice form, then stop iterating
+        var oldFormPrefix = oldFormId.replace(/_set(\d+)$/, '_set-$1');
+        var splicedFormOldIndex = parseInt(oldFormId.substr(oldFormsetPrefix), 10);
+        var oldFormsetPrefixRegex = new RegExp(regexQuote(oldFormPrefix));
+        var newIndex = initialForms.length - 1;
+        updateFormAttributes($form, oldFormsetPrefixRegex, newFormsetPrefix + "-" + newIndex);
+        $form.attr('id', newFormsetPrefix + newIndex);
+    };
 
     DJNesting.NestedAdmin = DJNesting.NestedInline.extend({
         init: function($group) {
@@ -349,9 +509,16 @@
                     var $this = $(this);
                     var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
                     if ($TOTAL_FORMS.length) {
-                        var prev_total_forms = parseInt($TOTAL_FORMS.val(), 10);
-                        if (!isNaN(prev_total_forms) && prev_total_forms > 0) {
-                            $TOTAL_FORMS.val(prev_total_forms - 1);
+                        var previousTotalForms = parseInt($TOTAL_FORMS.val(), 10);
+                        if (!isNaN(previousTotalForms) && previousTotalForms > 0) {
+                            $TOTAL_FORMS.val(previousTotalForms - 1);
+                        }
+                    }
+                    var $INITIAL_FORMS = $this.prevAll('input[name$="INITIAL_FORMS"]').first();
+                    if ($INITIAL_FORMS.length) {
+                        var previousInitialForms = parseInt($INITIAL_FORMS.val(), 10);
+                        if (!isNaN(previousInitialForms) && previousInitialForms > 0) {
+                            $INITIAL_FORMS.val(previousInitialForms - 1);
                         }
                     }
                 },
@@ -378,25 +545,48 @@
                  * @param ui - An instance of the ui.nestedSortable widget
                  */
                 receive: function(event, ui) {
-                    var $module = ui.item.find('> .module');
-                    var $TOTAL_FORMS = $(this).prevAll('input[name$="TOTAL_FORMS"]').first();
+                    var $form = ui.item.find('> .module'),
+                        $this = $(this),
+                        $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first(),
+                        previousTotalFormCount = 0,
+                        totalFormCount = 0,
+                        previousInitialFormCount = 0,
+                        initialFormCount = 0;
+
                     if ($TOTAL_FORMS.length) {
-                        var prev_total_forms = parseInt($TOTAL_FORMS.val(), 10);
-                        if (!isNaN(prev_total_forms)) {
-                            $TOTAL_FORMS.val(prev_total_forms + 1);
+                        previousTotalFormCount = totalFormCount = parseInt($TOTAL_FORMS.val(), 10);
+                        if (!isNaN(previousTotalFormCount)) {
+                            totalFormCount++;
+                            $TOTAL_FORMS.val(totalFormCount);
                         }
                     }
-                    if ($TOTAL_FORMS.length && $module.length) {
-                        $module = ($module.length == 1) ? $module : $module.first();
-                        var oldPrefix = ($module.attr('id').match(/^(.+)\d+$/) || [null, null])[1];
-                         var newPrefix = ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
-                         if (oldPrefix && newPrefix) {
-                             var oldPrefixRegex = new RegExp(regexQuote(oldPrefix));
-                             updateFormAttributes(ui.item, oldPrefixRegex, newPrefix);
-                         }
-                         if (oldPrefix) {
-                             updatePositions(oldPrefix);
-                         }
+
+                    if ($TOTAL_FORMS.length && $form.length) {
+                        $form = ($form.length == 1) ? $form : $form.first();
+                        var oldFormsetPrefix = ($form.attr('id').match(/^(.+)\d+$/) || [null, null])[1];
+                        var newFormsetPrefix = ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
+                        if (oldFormsetPrefix && newFormsetPrefix && oldFormsetPrefix != newFormsetPrefix) {
+                            var $INITIAL_FORMS = $this.prevAll('input[name$="INITIAL_FORMS"]').first(),
+                                isInitial = $form.djangoFormIsInitial();
+
+                            if ($INITIAL_FORMS.length) {
+                                previousInitialFormCount = initialFormCount = parseInt($INITIAL_FORMS.val(), 10);
+                                if (isInitial && !isNaN(initialFormCount)) {
+                                    initialFormCount++;
+                                    $INITIAL_FORMS.val(initialFormCount);
+                                }
+                            }
+
+                            if (isInitial) {
+                                spliceInitialForm(oldFormsetPrefix, newFormsetPrefix, $form);
+                            } else {
+                                var oldFormsetPrefixRegex = new RegExp(regexQuote(oldFormsetPrefix));
+                                updateFormAttributes(ui.item, oldFormsetPrefixRegex, newFormsetPrefix);
+                            }
+                        }
+                        if (oldFormsetPrefix) {
+                            updatePositions(oldFormsetPrefix);
+                        }
                     }
                 },
                 update: function(event, ui) {
@@ -517,7 +707,7 @@
 
         // This function will update the position prefix for empty-form elements
         // in nested forms.
-        var updateNestedFormIndex = function updateNestedFormIndex(form) {
+        var updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
             var index = form.attr('id').replace(prefix, '');
             var elems = form.find('*[id^="' + prefix + '-empty-"]')
                              .add('*[id^="id_' + prefix + '-empty-"]', form)
@@ -553,17 +743,40 @@
             emptyCssClass: 'empty-form',
             predeleteCssClass: 'predelete',
             onAfterRemoved: function(inline) {
-                inline.find('.' + grpInlineOpts.formCssClass).each(function() {
-                    var id = (typeof(this.id) == 'string') ? this.id : '';
-                    if (id && id.indexOf(prefix) != -1) {
-                        if (id.replace(prefix, '').indexOf('_set-') == -1) {
-                            updateNestedFormIndex($(this));
+                var inlinePrefix = inline.djangoFormsetPrefix();
+                var index = 0;
+                inline.find('.' + grpInlineOpts.formCssClass).each(function(i, form) {
+                    var id = (typeof(form.id) == 'string') ? form.id : '';
+                    if (id && id.replace(inlinePrefix, '').match(/^\d+$/)) {
+                        // The inlinePrefix should be of the form:
+                        //    'firstmodelname_set-0-secondmodelname_set'
+                        // and the form id should be of the form:
+                        //    'firstmodelname_set-0-secondmodelname_set1'
+                        // where that '1' is the zero-indexed position of the
+                        // inline form relative to its previous sibling forms.
+                        //
+                        // After an inline is removed, the id/name/for
+                        // attributes need to have their indexes changed where
+                        // appropriate. e.g. if the first form was deleted,
+                        // (id=firstmodelname_set-0-secondmodelname_set0), then
+                        // the second form (which would now be the first form)
+                        // needs to take the id
+                        // firstmodelname_set-0-secondmodelname_set0
+                        // and its child elements need to use the prefix
+                        // firstmodelname_set-0-secondmodelname_set-0
+                        var newFormId = inlinePrefix + index.toString();
+                        if (id != newFormId) {
+                            var $form = $(form);
+                            $form.attr('id', newFormId);
+                            updateNestedFormIndex($form, inlinePrefix);
                         }
+                        index++;
                     }
                 });
+
                 if (isNested) {
                     var instance,
-                        inlinePrefix = inline.djangoFormPrefix(),
+                        inlinePrefix = inline.djangoFormsetPrefix(),
                         $group = $('#' + inlinePrefix + '-group');
                     try {
                         instance = DJNesting.NestedAdmin.instances[$group.data('nestedInlineUniqueId')];
@@ -574,7 +787,7 @@
                 }
             },
             onAfterDeleted: function(form) {
-                var formPrefix = form.djangoFormPrefix();
+                var formPrefix = form.djangoFormsetPrefix();
                 if (isNested) {
                     var instance, $group = $('#' + formPrefix + '-group');
                     try {
@@ -588,7 +801,7 @@
                 }
             },
             onBeforeRemoved: function(form) {
-                var formPrefix = form.djangoFormPrefix(),
+                var formPrefix = form.djangoFormsetPrefix(),
                     $group = $('#' + formPrefix + '-group'),
                     uniqueId = $group.data('nestedInlineUniqueId');
                 if ($group.length) {
@@ -601,12 +814,12 @@
                 }
             },
             onAfterAdded: function(form) {
-                var formPrefix = form.djangoFormPrefix();
+                var formPrefix = form.djangoFormsetPrefix();
                 var $group = form.parent();
                 if (formPrefix) {
                     updatePositions(formPrefix);
                 }
-                updateNestedFormIndex(form);
+                updateNestedFormIndex(form, formPrefix);
                 var instance;
                 if (isNested) {
                     // Add nested-sortable-item class to parent div
@@ -634,7 +847,7 @@
                     if (nestedGroupId.substr(0, nestedGroupId.length - 10).indexOf('_set-') == -1) {
                         return true;
                     }
-                    var nestedGroupPrefix = $nestedGroup.djangoFormPrefix();
+                    var nestedGroupPrefix = $nestedGroup.djangoFormsetPrefix();
                     if ($nestedGroup.data('fieldNames')) {
                         DJNesting.register_formset(nestedGroupPrefix);
                         // Initializing this event adds the divs to the existing
