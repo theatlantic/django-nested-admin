@@ -110,7 +110,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         var _removeButtonHandler = window.removeButtonHandler;
         window.removeButtonHandler = function(elem, options) {
             // Use original if not a nested model
-            if (!elem.hasClass('djnesting-stacked')) {
+            if (!elem.hasClass('djnesting-icon')) {
                 return _removeButtonHandler(elem, options);
             }
             elem.bind("click", function() {
@@ -132,12 +132,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
 
                 /* ====== Start modified code ======= */
                 // update form index (for all forms)
-                var re = new RegExp('^' + options.prefix + '-\\d+-', 'g'),
-                    i = 0;
-                inline.find("." + options.formCssClass).each(function() {
-                    updateFormIndex($(this), options, re, options.prefix + "-" + i + "-");
-                    i++;
-                });
+                // var re = new RegExp('^' + options.prefix + '-\\d+-', 'g'),
+                //     i = 0;
+                // inline.find("." + options.formCssClass).each(function() {
+                //     updateFormIndex($(this), options, re, options.prefix + "-" + i + "-");
+                //     i++;
+                // });
                 /* ====== End modified code ======= */
 
                 // callback
