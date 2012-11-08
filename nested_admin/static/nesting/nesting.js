@@ -32,7 +32,7 @@
             var id = $this.attr('id'),
                 name = $this.attr('name'),
                 forattr = $this.attr('for'),
-                inlineRegex = /^(.+_set)(?:(\d)|\-(\d)\-[^\-]+|\-group)$/,
+                inlineRegex = /^(.+_set)(?:(\d+)|\-(\d+)\-(?!.*_set\d)[^\-]+|\-group)$/,
                 matches = [null, undefined, undefined],
                 prefix, $group, groupId, cacheKey, match;
 
