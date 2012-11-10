@@ -86,12 +86,37 @@
             }
         };
 
-        $.fn.djangoFormIsInitial = function() {
-            var pkField = this.djangoFormField('pk');
-            if (!pkField || !pkField.length) {
-                return undefined;
-            }
-            return (pkField.val() != '');
+        var filterDjangoFormsetForms = function(form, $group, formsetPrefix) {
+            var formId = form.getAttribute('id'),
+                formIndex;
+
+            // Check if form id matches /{prefix}\d+/
+            if (formId.indexOf(formsetPrefix) !== 0) return false;
+
+            var formIndex = formId.substr(formsetPrefix.length);
+
+            return (!formIndex.match(/\D/));
+        };
+
+        // Selects all initial forms within the same formset as the
+        // element the method is being called on.
+        $.fn.djangoFormsetForms = function() {
+            var forms = [];
+            this.each(function() {
+                var $this = $(this),
+                    formsetPrefix = $this.djangoFormsetPrefix(),
+                    $group = (formsetPrefix) ? $('#' + formsetPrefix + '-group') : null,
+                    $forms;
+
+                if (!formsetPrefix || !$group.length) return;
+
+                $forms = $group.find('.inline-related').filter(function() {
+                    return filterDjangoFormsetForms(this, $group, formsetPrefix);
+                });
+
+                Array.prototype.push.apply(forms, $forms.get());
+            });
+            return this.pushStack(forms);
         };
 
         if (typeof($.djangoFormField) != 'function') {
@@ -218,13 +243,40 @@
             parentPkVal = parentPkField.val();
         }
 
-        $group.find('.module.inline-related').each(function(i, module) {
-            var $module = $(module);
-            var currentModuleId = $module.attr('id');
-            var newModuleId = currentModuleId.replace(/set(\d+)$/, 'set' + i.toString());
-            $module.attr('id', newModuleId);
-            var formReplace = '$1' + i.toString() + '$3';
-            updateFormAttributes($module, formSearch, formReplace);
+        var initialForms = [],
+            newForms = [];
+
+        $group.djangoFormsetForms().each(function() {
+            var form = this;
+            if (form.getAttribute('data-is-initial') == 'true') {
+                initialForms.push(form);
+            } else if (form.getAttribute('data-is-initial') == 'false') {
+                newForms.push(form);
+            }
+        });
+
+        var initialFormCount = initialForms.length;
+
+        $(initialForms).each(function(i, form) {
+            var $form = $(form),
+                currentFormId = $form.attr('id'),
+                newFormId = currentFormId.replace(/set(\d+)$/, 'set' + i.toString()),
+                formReplace = '$1' + i.toString() + '$3';
+            $form.attr('id', newFormId);
+            updateFormAttributes($form, formSearch, formReplace);
+            if (groupFkName && parentPkVal) {
+                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
+            }
+        });
+
+        $(newForms).each(function(i, form) {
+            i += initialFormCount;
+            var $form = $(form),
+                currentFormId = $form.attr('id'),
+                newFormId = currentFormId.replace(/set(\d+)$/, 'set' + i.toString()),
+                formReplace = '$1' + i.toString() + '$3';
+            $form.attr('id', newFormId);
+            updateFormAttributes($form, formSearch, formReplace);
             if (groupFkName && parentPkVal) {
                 $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
             }
@@ -384,7 +436,7 @@
             }
             if (formId.indexOf(newFormsetPrefix) === 0 && !formIndex.match(/\D/)) {
                 var $form = $(form),
-                    isInitial = $form.djangoFormIsInitial();
+                    isInitial = $form.data('isInitial');
                 formIndex = parseInt(formIndex, 10);
                 forms[formId] = {
                     form: $form,
@@ -567,7 +619,7 @@
                         var newFormsetPrefix = ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
                         if (oldFormsetPrefix && newFormsetPrefix && oldFormsetPrefix != newFormsetPrefix) {
                             var $INITIAL_FORMS = $this.prevAll('input[name$="INITIAL_FORMS"]').first(),
-                                isInitial = $form.djangoFormIsInitial();
+                                isInitial = $form.data('isInitial');
 
                             if ($INITIAL_FORMS.length) {
                                 previousInitialFormCount = initialFormCount = parseInt($INITIAL_FORMS.val(), 10);
