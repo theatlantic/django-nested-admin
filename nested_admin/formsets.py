@@ -85,7 +85,7 @@ class NestedInlineFormSetMixin(object):
         if form.instance and form.instance._meta.pk:
             pk_name = form.instance._meta.pk.name
         pk_val = None
-        if form.cleaned_data:
+        if not form.errors and hasattr(form, 'cleaned_data'):
             pk_val = form.cleaned_data.get(pk_name)
         # Inherited models will show up as instances of the parent in
         # cleaned_data
