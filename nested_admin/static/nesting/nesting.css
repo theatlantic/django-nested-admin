@@ -65,7 +65,6 @@
     border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
-    margin-top: 5px;
     margin-bottom: 5px;
 }
 
@@ -94,14 +93,6 @@
     display: block !important;
 }
 
-/*
-For TOC
-.djnesting-stacked-nested.group div.items .subarticle-wrapper .inline-related,
-.nested-placeholder.ui-sortable-nested-level-2 {
-    margin-left: 30px;
-}
-*/
-
 .nested-placeholder, .djnesting-stacked .ui-sortable-placeholder {
     background: #9f9f9f !important;
     margin-bottom: 5px;
@@ -127,14 +118,24 @@ For TOC
 }
 
 .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
-.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder,
-.nested-sortable-item-dragging + .ui-sortable-placeholder {
+.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
     margin-top: -39px;
 }
 
 .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper,
 .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item-dragging {
     margin-top: 0;
+}
+
+.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
+.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .nested-sortable-item-dragging {

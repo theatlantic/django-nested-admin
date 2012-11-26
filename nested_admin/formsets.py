@@ -180,8 +180,11 @@ class NestedInlineFormSetMixin(object):
 
             # clean() for different types of PK fields can sometimes return
             # the model instance, and sometimes the PK. Handle either.
-            pk_value = form.fields[pk_name].clean(raw_pk_value)
-            pk_value = getattr(pk_value, 'pk', pk_value)
+            if self._should_delete_form(form):
+                pk_value = raw_pk_value
+            else: 
+                pk_value = form.fields[pk_name].clean(raw_pk_value)
+                pk_value = getattr(pk_value, 'pk', pk_value)
 
             obj = None
             if obj is None and form.instance and pk_value:
@@ -189,7 +192,8 @@ class NestedInlineFormSetMixin(object):
                 try:
                     obj = model_cls.objects.get(pk=pk_value)
                 except model_cls.DoesNotExist:
-                    pass
+                    if pk_value and force_unicode(form.instance.pk) == force_unicode(pk_value):
+                        obj = form.instance
             if obj is None:
                 obj = self._existing_object(pk_value)
 

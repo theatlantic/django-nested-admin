@@ -16,7 +16,7 @@ class NestedAdmin(ModelAdmin):
         server_data_js = reverse('nesting_server_data')
         media.add_js((server_data_js,))
 
-        version = 5
+        version = 6
 
         js_files = (
             'jquery.class.js',
@@ -168,6 +168,18 @@ class NestedAdmin(ModelAdmin):
 
 
 class NestedInlineModelAdmin(InlineModelAdmin):
+
+    default_sortable_options = {
+        'disabled': False,
+    }
+
+    def __init__(self, *args, **kwargs):
+        sortable_options = {}
+        sortable_options.update(self.default_sortable_options)
+        if hasattr(self, 'sortable_options'):
+            sortable_options.update(self.sortable_options)
+        self.sortable_options = sortable_options
+        super(NestedInlineModelAdmin, self).__init__(*args, **kwargs)
 
     formset = NestedInlineFormSet
 

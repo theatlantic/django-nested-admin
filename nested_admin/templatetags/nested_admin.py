@@ -18,6 +18,10 @@ strip_parent_name.is_safe = True
 # they are wrapped in mark_safe(), so we can't use them reliably inside of
 # attributes.
 
+@register.filter
+def json_encode(data):
+    return mark_for_escaping(simplejson.dumps(data))
+
 def json_else_list_tag(f):
     """
     Decorator. Registers function as a simple_tag.
