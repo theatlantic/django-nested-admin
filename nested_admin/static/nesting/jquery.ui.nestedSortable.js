@@ -147,14 +147,15 @@
                     }
                 }
 
+                // HACK!! FIX!! (django-specific logic)
                 $document.on('djnesting:init.nestedSortable', o.containerElementSelector, function(event) {
                     createChildNestedSortable(self, this);
                 });
                 this.element.find(o.containerElementSelector).each(function(i, el) {
-                    // HACK, FIXME!!!! (django-specific logic where it doesn't belong)
                     if (el.parentNode.getAttribute('id').indexOf('-empty') > -1) {
                         return;
                     }
+                    createChildNestedSortable(self, el);
                 });
             }
             $document.trigger('nestedSortable:created', [this]);
@@ -305,7 +306,7 @@
             // To find the next sibling in the list, keep stepping forward until we hit a valid list item.
             var nextItem = this.placeholder[0].nextSibling ? $(this.placeholder[0].nextSibling) : null;
             if (nextItem != null) {
-                while (!nextItem.is(this.options.listItemSelector) || nextItem.hasClass('nested-do-not-drag') || nextItem[0] == this.currentItem[0] || nextItem[0] == this.helper[0]) {
+                while (!nextItem.is(this.options.listItemSelector) || nextItem[0] == this.currentItem[0] || nextItem[0] == this.helper[0]) {
                     if (nextItem[0].nextSibling) {
                         nextItem = $(nextItem[0].nextSibling);
                     } else {
@@ -357,6 +358,7 @@
                     }
                     this.refreshPositions();
                 }
+                this._trigger("change", event, this._uiHash());
             }
             else {
                 this._isAllowed(parentItem, level, level+childLevels);
@@ -501,7 +503,7 @@
                 return;
             }
             var $item = $(item);
-            var childContainers = $item.find(this.options.containerElementSelector);
+            var childContainers = $item.nearest(this.options.containerElementSelector);
             childContainers.each(function(i, childContainer) {
                 var $childContainer = $(childContainer);
                 if (!$childContainer.children().length) {
@@ -542,6 +544,9 @@
             depth = depth || 0;
 
             $(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
+                if ($(child).hasClass('nested-do-not-drag')) {
+                    return;
+                }
                 result = Math.max(self._getChildLevels(child, depth + 1), result);
             });
 
@@ -599,7 +604,19 @@
             }
             return connectWith;
         },
-
+        _removeCurrentsFromItems: function() {
+            var list = this.currentItem.find(":data(sortable-item)");
+            for (var i=0; i < this.items.length; i++) {
+                for (var j=0; j < list.length; j++) {
+                    if (list[j] == this.items[i].item[0]) {
+                        this.items.splice(i, 1);
+                        if (i >= this.items.length) {
+                            break;
+                        }
+                    }
+                }
+            }
+        },
         createContainerElement: function(parent) {
             if (!parent.childNodes) {
                 throw new Error("Invalid element 'parent' passed to " +

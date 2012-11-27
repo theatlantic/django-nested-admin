@@ -333,7 +333,11 @@
                     if (fieldNames.nestedPosition) {
                         $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('');
                     }
-                    markedForDeletion = true;
+                    if (isSubarticle && !$this.parent().parent().closest('.nested-sortable-item').children('.nested-inline-form').hasClass('predelete')) {
+                        markedForDeletion = false;
+                    } else {
+                        markedForDeletion = true;
+                    }
                     return true;
                 }
             }
@@ -541,22 +545,6 @@
                 
             });
 
-            // $subarticleInputs.closest('.nested-sortable-item').each(function(i, subarticle) {
-            //     var $subarticle = $(subarticle);
-            //     if ($subarticle.parent().hasClass('.nested-sortable-container')) {
-            //         return;
-            //     }
-            //     var $parentArticle = $subarticle.prev('.nested-sortable-item');
-            //     // This should never happen (a sub-article without a parent before it)
-            //     // but if it did, we should bail.
-            //     if (!$parentArticle.length) {
-            //         return;
-            //     }
-            //     // Move under the parent article
-            //     $parentArticle[0].appendChild(subarticle);
-            //     // Wrap in a new container element
-            //     $subarticle.wrapAll('<div class="subarticle-wrapper nested-sortable-container" />');
-            // });
             this.$group.attr('data-nesting-init-complete', 'true');
         }
     });
@@ -651,10 +639,17 @@
                 placeholder: 'ui-sortable-placeholder',
                 helper: 'clone',
                 opacity: 0.6,
-                maxLevels: 4,
+                maxLevels: 3,
                 connectWith: '.djnesting-stacked-root > div.items',
                 tolerance: 'intersection',
                 cursorAt: {left: 5},
+                // Don't allow dragging beneath an inline that is marked for deletion
+                isAllowed: function(currentItem, parentItem, placeholder) {
+                    if (parentItem && parentItem.children('.nested-inline-form').hasClass('predelete')) {
+                        return false;
+                    }
+                    return true;
+                },
                 // fixedNestingDepth: not a standard ui.sortable parameter.
                 // Prevents dragging items up or down levels
                 fixedNestingDepth: true,
@@ -764,8 +759,8 @@
 
                     $form = ($form.length == 1) ? $form : $form.first();
 
-                    var oldFormsetPrefix = ($form.attr('id').match(/^(.+)\d+$/) || [null, null])[1],
-                        newFormsetPrefix = ($TOTAL_FORMS.length)
+                    var oldFormsetPrefix = $form.djangoFormsetPrefix(),
+                        newFormsetPrefix = (!$TOTAL_FORMS.length)
                                          ? oldFormsetPrefix
                                          : ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1],
                         prefixChanged = (oldFormsetPrefix != newFormsetPrefix);
@@ -1091,9 +1086,14 @@
 
                     if ($nestedGroup.data('fieldNames')) {
                         DJNesting.register_formset($nestedGroup.djangoFormsetPrefix());
-                        // Initializing this event adds the divs to the existing
-                        // nestedSortable object
-                        // $nestedGroup.find('> div.items').trigger('djnesting:init');
+                        $nestedGroup.find('.nested-sortable-container').each(function(i, nestedContainer) {
+                            var $nestedContainer = $(nestedContainer);
+                            var groupId = $nestedContainer.closest('.djnesting-stacked').attr('id');
+                            if (!groupId || groupId.indexOf('-empty') > -1 || groupId.indexOf('__prefix__') > -1) {
+                                return;
+                            }
+                            $nestedContainer.trigger('djnesting:init');
+                        });
                     }
                 });
                 grappelli.reinitDateTimeFields(form);
@@ -1115,16 +1115,6 @@
                 $(document).trigger('djnesting:added', [$group]);
             }
         });
-
-        $group.find('.nested-sortable-container').each(function(i, nestedContainer) {
-            var $nestedContainer = $(nestedContainer);
-            var groupId = $nestedContainer.closest('.djnesting-stacked').attr('id');
-            if (!groupId || groupId.indexOf('-empty') > -1 || groupId.indexOf('__prefix__') > -1) {
-                return;
-            }
-            $nestedContainer.trigger('djnesting:init');
-        });
-
     };
 
     $(document).ready(function() {

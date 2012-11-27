@@ -97,6 +97,10 @@
     background: #9f9f9f !important;
     margin-bottom: 5px;
 }
+.djnesting-stacked .ui-nestedSortable-error {
+    background: #9f6464 !important;
+}
+
 .nested-sortable-item .collapse .tools  .drag-handler-container {
     display: none !important;
 }

@@ -63,6 +63,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             // callback
             options.onAfterInit(form);
         });
+        elem.trigger('djnesting:init');
     };
     
     initAddButtons = function(elem, options) {
