@@ -326,12 +326,12 @@
                     $this.removeClass('predelete nested-delete');
                     $this.filterDjangoField(formPrefix, 'DELETE').setDjangoBooleanInput(false);
                 } else {
-                    $this.filterDjangoField(formPrefix, fieldNames.position, index).val('');
+                    $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0');
                     if (fieldNames.parentPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('');
+                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
                     }
                     if (fieldNames.nestedPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('');
+                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
                     }
                     if (isSubarticle && !$this.parent().parent().closest('.nested-sortable-item').children('.nested-inline-form').hasClass('predelete')) {
                         markedForDeletion = false;
@@ -348,10 +348,10 @@
 
             if (!isSubarticle && !markedForDeletion) {
                 if (fieldNames.parentPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('');
+                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
                 }
                 if (fieldNames.nestedPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('');
+                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
                 }
             }
             if (isSubarticle) {
@@ -360,10 +360,10 @@
                     $this.filterDjangoField(formPrefix, 'DELETE', index).setDjangoBooleanInput(markedForDeletion);
                     $this.filterDjangoField(formPrefix, fieldNames.position, index).val('');
                     if (fieldNames.parentPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('');
+                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
                     }
                     if (fieldNames.nestedPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('');
+                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
                     }
                     return true;
                 }
@@ -372,7 +372,7 @@
                     $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val(nestedPosition);
                 }
                 if (fieldNames.parentPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('');
+                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
                 }
                 if (fieldNames.parentFk) {
                     $this.filterDjangoField(formPrefix, fieldNames.parentFk, index).val(parentId);
@@ -387,7 +387,7 @@
                     $this.filterDjangoField(formPrefix, fieldNames.isSubarticle, index).setDjangoBooleanInput(false);
                 }
                 if (fieldNames.nestedPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('');
+                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
                 }
                 parentId = $this.filterDjangoField(formPrefix, fieldNames.pk, index).val();
                 parentPosition++;
