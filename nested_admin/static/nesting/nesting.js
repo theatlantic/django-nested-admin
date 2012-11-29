@@ -691,6 +691,7 @@
                  */
                 remove: function(event, ui) {
                     var $this = $(this);
+                    var $container = $this.closest('.nested-sortable-container:not(.subarticle-wrapper)');
                     var $form = ui.item.find('> .nested-inline-form'),
                         prefix = $form.djangoFormsetPrefix();
 
@@ -710,14 +711,14 @@
                         removedFormCounts['total']++;
                     });
 
-                    var $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first();
+                    var $TOTAL_FORMS = $container.prevAll('input[name$="TOTAL_FORMS"]').first();
                     if ($TOTAL_FORMS.length) {
                         var previousTotalForms = parseInt($TOTAL_FORMS.val(), 10);
                         if (!isNaN(previousTotalForms)) {
                             $TOTAL_FORMS.val(Math.max(0, previousTotalForms - removedFormCounts['total']));
                         }
                     }
-                    var $INITIAL_FORMS = $this.prevAll('input[name$="INITIAL_FORMS"]').first();
+                    var $INITIAL_FORMS = $container.prevAll('input[name$="INITIAL_FORMS"]').first();
                     if ($INITIAL_FORMS.length) {
                         var previousInitialForms = parseInt($INITIAL_FORMS.val(), 10);
                         if (!isNaN(previousInitialForms)) {
@@ -751,8 +752,9 @@
                 receive: function(event, ui) {
                     var $form = ui.item.find('> .module'),
                         $this = $(this),
-                        $TOTAL_FORMS = $this.prevAll('input[name$="TOTAL_FORMS"]').first(),
-                        $INITIAL_FORMS = $this.prevAll('input[name$="INITIAL_FORMS"]').first(),
+                        $container = $this.closest('.nested-sortable-container:not(.subarticle-wrapper)'),
+                        $TOTAL_FORMS = $container.prevAll('input[name$="TOTAL_FORMS"]').first(),
+                        $INITIAL_FORMS = $container.prevAll('input[name$="INITIAL_FORMS"]').first(),
                         previousTotalFormCount = 0,
                         previousInitialFormCount = 0,
                         prefix = $form.djangoFormsetPrefix();
@@ -762,12 +764,11 @@
                     var oldFormsetPrefix = $form.djangoFormsetPrefix(),
                         newFormsetPrefix = (!$TOTAL_FORMS.length)
                                          ? oldFormsetPrefix
-                                         : ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1],
-                        prefixChanged = (oldFormsetPrefix != newFormsetPrefix);
+                                         : ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
 
                     var addedFormCounts = {
-                        total: (prefixChanged) ? 1 : 0,
-                        initial: (prefixChanged && $form.data('isInitial')) ? 1 : 0
+                        total: 1,
+                        initial: ($form.data('isInitial')) ? 1 : 0
                     };
 
                     var $nestedForms = ui.item.find('.subarticle-wrapper').find('.nested-inline-form').filter(function(i, form) {
@@ -775,12 +776,10 @@
                         if ($nestedForm.djangoFormsetPrefix() != prefix) {
                             return false;
                         }
-                        if (prefixChanged) {
-                            if ($nestedForm.data('isInitial')) {
-                                addedFormCounts['initial']++;
-                            }
-                            addedFormCounts['total']++;                            
+                        if ($nestedForm.data('isInitial')) {
+                            addedFormCounts['initial']++;
                         }
+                        addedFormCounts['total']++;
                         return true;
                     });
 
@@ -792,7 +791,7 @@
                     }
 
                     if ($TOTAL_FORMS.length && $form.length) {
-                        if (oldFormsetPrefix && newFormsetPrefix && oldFormsetPrefix != newFormsetPrefix) {
+                        if (oldFormsetPrefix && newFormsetPrefix) {
                             if ($INITIAL_FORMS.length) {
                                 previousInitialFormCount = parseInt($INITIAL_FORMS.val(), 10);
                                 if (!isNaN(previousInitialFormCount)) {
