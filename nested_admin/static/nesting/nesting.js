@@ -1122,6 +1122,10 @@
             return element.childNodes.length == 0;
         }).css('border-width', '0');
 
+        // Set predelete class on any form elements with the DELETE input checked.
+        // These can occur on forms rendered after a validation error.
+        $('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.nested-inline-form').addClass('predelete');
+
         // Register the DJNesting.NestedAdmin on top level djnesting-stacked elements.
         // It will handle recursing down the nested inlines.
         $('.djnesting-stacked-root').each(function(i, rootGroup) {
