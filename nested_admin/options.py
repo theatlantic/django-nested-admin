@@ -550,7 +550,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         action_list = LogEntry.objects.filter(
             object_id = object_id,
             content_type__id__exact = ContentType.objects.get_for_model(model).id
-        ).select_related().order_by('action_time')
+        ).select_related().order_by('-action_time')
         # If no history was found, see whether this object even exists.
         obj = get_object_or_404(model, pk=unquote(object_id))
         context = {
@@ -560,12 +560,14 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             'object': obj,
             'root_path': reverse('admin:index'),
             'app_label': app_label,
+            'opts': opts,
         }
         context.update(extra_context or {})
         context_instance = template.RequestContext(request, current_app=self.admin_site.name)
         return render_to_response(self.object_history_template or [
             "admin/%s/%s/object_history.html" % (app_label, opts.object_name.lower()),
             "admin/%s/object_history.html" % app_label,
+            "custom_admin/object_history.html",
             "admin/object_history.html"
         ], context, context_instance=context_instance)
 
