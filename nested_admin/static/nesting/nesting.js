@@ -875,43 +875,6 @@
     DJNesting.NestedAdmin.instances = {};
     DJNesting.NestedInline.instances = {};
 
-    // The function called by the popup window when the user clicks on a row's
-    // link in the changelist for a foreignkey or generic foreign key lookup.
-    window.dismissRelatedLookupPopup = function(win, chosenId, targetElement) {
-        var name = windowname_to_id(win.name);
-        var elem = document.getElementById(name);
-        if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
-            elem.value += ',' + chosenId;
-        } else {
-            elem.value = chosenId;
-        }
-        var $elem = $(elem);
-        $elem.trigger('change');
-        var title = (typeof targetElement == 'object') ? targetElement.innerHTML : null;
-        win.close();
-        if (title) {
-            var $elem = $(elem);
-            var $group = $elem.closest('.group');
-            var $lookupButton = $elem.next('a.related-lookup');
-            if (title && $lookupButton) {
-                $lookupButton.next('strong').remove();
-                $('<strong>' + title + '</strong>').insertAfter($lookupButton);
-                // If this is a related on a nested inline
-                if ($group && $group.length && group.hasClass('djnesting-stacked-nested')) {
-                    var $inline = $elem.closest('.module.nested-inline-form');
-                    var $handler = $inline.find('> h3.collapse-handler');
-                    var customTitle = $inline.find('input[name$="custom_title"]').val();
-                    var newHandlerTitle = (customTitle) ? customTitle : title;
-                    $handler.html(newHandlerTitle);
-                    $handler.attr('data-article-title', title);
-                }
-            }
-        }
-        // GRAPPELLI CUSTOM: element focus
-        elem.focus();
-        win.close();
-    };
-
     // This function will update the position prefix for empty-form elements
     // in nested forms.
     var updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
