@@ -53,7 +53,7 @@ class BaseModelAdminMixin(object):
         return has_perms
 
     def get_inline_instances(self, request, obj=None):
-        for inline_class in self.inlines:
+        for inline_class in getattr(self, 'inlines', []):
             inline = inline_class(self.model, self.admin_site)
             if request:
                 if not self.inline_has_permissions(request, inline):

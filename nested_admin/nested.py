@@ -61,7 +61,7 @@ class NestedAdmin(ModelAdmin):
                     formset.nesting_depth = 1
                 inline = inline_iterator.next()
                 yield formset
-                if inline.inlines and request.method == 'POST':
+                if getattr(inline, 'inlines', []) and request.method == 'POST':
                     for form in formset.forms:
                         for nested in inline.get_inline_instances(request):
                             InlineFormSet = nested.get_formset(request, form.instance)
