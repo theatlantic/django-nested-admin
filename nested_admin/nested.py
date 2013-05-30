@@ -35,7 +35,7 @@ class NestedAdmin(ModelAdmin):
             )})
         return media
 
-    def get_formset_instances(self, request, instance, is_new=False):
+    def get_formset_instances(self, request, instance, is_new=False, **kwargs):
         obj = None
         if not is_new:
             obj = instance
@@ -51,7 +51,7 @@ class NestedAdmin(ModelAdmin):
                     'save_as_new': request.POST.has_key('_saveasnew')})
 
         formset_iterator = super(NestedAdmin, self).get_formset_instances(
-            request, instance, is_new)
+            request, instance, is_new, **kwargs)
         inline_iterator = self.get_inline_instances(request, obj)
 
         try:
@@ -64,7 +64,7 @@ class NestedAdmin(ModelAdmin):
                 if getattr(inline, 'inlines', []) and request.method == 'POST':
                     for form in formset.forms:
                         for nested in inline.get_inline_instances(request):
-                            InlineFormSet = nested.get_formset(request, form.instance)
+                            InlineFormSet = nested.get_formset(request, form.instance, **kwargs)
                             prefix = '%s-%s' % (form.prefix, InlineFormSet.get_default_prefix())
                             nested_formset = InlineFormSet(instance=form.instance, prefix=prefix,
                                 **formset_kwargs)

@@ -85,9 +85,9 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
                     break
         super(_ModelAdmin, self).__init__()
 
-    def get_formsets(self, request, obj=None):
+    def get_formsets(self, request, obj=None, **kwargs):
         for inline in self.get_inline_instances(request, obj):
-            yield inline.get_formset(request, obj)
+            yield inline.get_formset(request, obj, **kwargs)
 
     def save_form(self, request, form, change):
         """
@@ -108,8 +108,10 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         """
         formset.save()
 
-    def get_main_view_form(self, request, instance=None):
-        if instance is not None:
+    def get_main_view_form(self, request, instance=None, form_cls=None):
+        if form_cls is not None:
+            ModelForm = form_cls
+        elif instance is not None:
             ModelForm = self.get_form(request, instance)
         else:
             ModelForm = self.get_form(request)
@@ -135,7 +137,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
                     initial[k] = initial[k].split(",")
             return ModelForm(initial=initial)
 
-    def get_formset_instances(self, request, instance, is_new=False):
+    def get_formset_instances(self, request, instance, is_new=False, **kwargs):
         prefixes = {}
         obj = None
         if not is_new:
@@ -152,7 +154,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
                     'save_as_new': request.POST.has_key('_saveasnew')
                 })
 
-        for FormSet, inline in izip(self.get_formsets(request, obj), self.get_inline_instances(request, obj)):
+        for FormSet, inline in izip(self.get_formsets(request, obj, **kwargs), self.get_inline_instances(request, obj)):
             prefix = FormSet.get_default_prefix()
             prefixes[prefix] = prefixes.get(prefix, 0) + 1
             if prefixes[prefix] != 1:
