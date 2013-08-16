@@ -15,10 +15,11 @@ from django.forms.models import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin import helpers
-from django.contrib.admin.util import unquote, flatten_fieldsets, get_deleted_objects
+from django.contrib.admin.util import (unquote, flatten_fieldsets,
+    get_deleted_objects as _get_deleted_objects)
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.db import models, transaction
+from django.db import models, transaction, router
 from django.db.models.fields import FieldDoesNotExist
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
@@ -35,6 +36,20 @@ from django.contrib.admin.options import csrf_protect_m, IncorrectLookupParamete
     InlineModelAdmin as _InlineModelAdmin
 
 from .formsets import NestedInlineFormSet
+
+
+def get_deleted_objects(objs, opts, user, admin_site, using):
+    """
+    Compatibility function for django.contrib.admin.util.get_deleted_objects()
+    between Django <= 1.3 and Django >= 1.4
+    """
+    get_deleted_objects_args = inspect.getargspec(_get_deleted_objects)[0]
+    kwargs = {}
+    if 'using' in get_deleted_objects_args:
+        kwargs['using'] = using
+    protected = []
+    return (_get_deleted_objects(objs, opts, user, admin_site, **kwargs)
+            + (protected,))[0:3]
 
 
 class BaseModelAdminMixin(object):
@@ -507,12 +522,15 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') \
                 % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
 
+        using = router.db_for_write(self.model)
+
         # Populate deleted_objects, a data structure of all related objects that
         # will also be deleted.
-        (deleted_objects, perms_needed) = get_deleted_objects((obj,), opts, request.user, self.admin_site)
+        (deleted_objects, perms_needed, protected) = get_deleted_objects(
+            [obj,], opts, request.user, self.admin_site, using=using)
 
         if request.POST: # The user has already confirmed the deletion.
-            if perms_needed:
+            if perms_needed or protected:
                 raise PermissionDenied
             obj_display = force_unicode(obj)
             self.log_deletion(request, obj, obj_display)
