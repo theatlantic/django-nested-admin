@@ -32,7 +32,7 @@
             var id = $this.attr('id'),
                 name = $this.attr('name'),
                 forattr = $this.attr('for'),
-                inlineRegex = /^(.+_set)(?:(\d+)|\-(\d+)\-(?!.*_set\d)[^\-]+|\-group)$/,
+                inlineRegex = /^((?:.+_set|.+content_type.*))(?:(\d+)|\-(\d+)\-(?!.*_set\d)[^\-]+|\-group)$/,
                 matches = [null, undefined, undefined],
                 prefix, $form, $group, groupId, cacheKey, match;
 
@@ -536,13 +536,13 @@
                     $subarticles.each(function() {
                         $subarticleWrapper.append($(this));
                     });
-                    
+
                     // Wrap in a new container element
                     // $subarticles.wrapAll($subarticleWrapper);
                 } else {
                     $subarticle.append($subarticleWrapper);
                 }
-                
+
             });
 
             this.$group.attr('data-nesting-init-complete', 'true');
