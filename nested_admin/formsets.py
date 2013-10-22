@@ -68,7 +68,7 @@ class NestedInlineFormSetMixin(object):
         Allows customizable sorting and modification of self.forms before
         they're iterated through in save().
 
-        Returns list of forms. 
+        Returns list of forms.
         """
         sortable_field_name = getattr(self, 'sortable_field_name', None)
         if sortable_field_name is not None:
@@ -182,7 +182,7 @@ class NestedInlineFormSetMixin(object):
             # the model instance, and sometimes the PK. Handle either.
             if self._should_delete_form(form):
                 pk_value = raw_pk_value
-            else: 
+            else:
                 pk_value = form.fields[pk_name].clean(raw_pk_value)
                 pk_value = getattr(pk_value, 'pk', pk_value)
 
@@ -206,7 +206,9 @@ class NestedInlineFormSetMixin(object):
             fk_val = self.instance.pk
             if form.instance.pk:
                 original_instance = self.model.objects.get(pk=form.instance.pk)
-                fk_val = getattr(original_instance, self.fk.get_attname())
+                # Generic forms don't have an FK
+                if hasattr(self, 'fk'):
+                    fk_val = getattr(original_instance, self.fk.get_attname())
 
             if form.has_changed() or self.instance.pk != fk_val:
                 self.changed_objects.append((obj, form.changed_data))
@@ -258,3 +260,4 @@ class GenericNestedInlineFormSet(NestedInlineFormSetMixin, BaseGenericInlineForm
         opts = cls.model._meta
         return '-'.join((opts.app_label, opts.object_name.lower(),
                         cls.ct_field.name, cls.ct_fk_field.name))
+
