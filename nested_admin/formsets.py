@@ -1,6 +1,7 @@
 from django.db import models
-from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
+from django.contrib.contenttypes.models import ContentType
+from django.forms.models import BaseInlineFormSet
 from django.utils.encoding import force_unicode
 
 
@@ -202,19 +203,23 @@ class NestedInlineFormSetMixin(object):
                 obj.delete()
                 continue
 
-            # fk_val: The value one should fine in the form's foreign key field
-            fk_val = self.instance.pk
+            # fk_val: The value one should find in the form's foreign key field
+            new_ct_val = ct_val = ContentType.objects.get_for_model(self.instance.__class__)
+            new_fk_val = fk_val = self.instance.pk
             if form.instance.pk:
                 original_instance = self.model.objects.get(pk=form.instance.pk)
-                # Generic forms don't have an FK
-                if hasattr(self, 'fk'):
-                    fk_val = getattr(original_instance, self.fk.get_attname())
+                fk_field = getattr(self, 'fk', getattr(self, 'ct_fk_field', None))
+                if fk_field:
+                    new_fk_val = getattr(original_instance, fk_field.get_attname())
+                ct_field = getattr(self, 'ct_field', None)
+                if ct_field:
+                    new_ct_val = getattr(original_instance, ct_field.get_attname())
 
-            if form.has_changed() or self.instance.pk != fk_val:
-                self.changed_objects.append((obj, form.changed_data))
-                saved_instances.append(self.save_existing(form, obj, commit=commit))
-                if not commit:
-                    self.saved_forms.append(form)
+            if form.has_changed() or fk_val != new_fk_val or ct_val != new_ct_val:
+               self.changed_objects.append((obj, form.changed_data))
+               saved_instances.append(self.save_existing(form, obj, commit=commit))
+               if not commit:
+                   self.saved_forms.append(form)
         return saved_instances
 
     def save_new_objects(self, extra_forms=None, commit=True):
