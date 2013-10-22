@@ -74,12 +74,14 @@ class NestedAdmin(ModelAdmin):
                             # inline admin formsets.
                             nested_formset.is_nested = True
                             nested_formset.nesting_depth = formset.nesting_depth + 1
-                            yield nested_formset            
+                            yield nested_formset
         except StopIteration:
             raise
 
     def get_nested_inlines(self, request, prefix, inline, parent_formset=None, obj=None):
         nested_inline_formsets = []
+        if not hasattr(inline, 'get_inline_instances'):
+            return nested_inline_formsets
         for nested in inline.get_inline_instances(request):
             InlineFormSet = nested.get_formset(request, obj)
             nested_prefix = '%s-%s' % (prefix, InlineFormSet.get_default_prefix())
@@ -143,18 +145,19 @@ class NestedAdmin(ModelAdmin):
                     # If so, use the submitted formset instead of the freshly generated
                     # one since it will contain error information and non-saved data
                     # changes.
-                    nested_inline_cls_iterator = inline.get_inline_instances(request)
-                    for i, form_inline in enumerate(form_inlines):
-                        try:
-                            nested_inline_cls = nested_inline_cls_iterator.next()
-                        except StopIteration:
-                            break
-                        if form_inline.formset.prefix in orig_nested_formsets:
-                            orig_nested_formset = orig_nested_formsets[form_inline.formset.prefix]
-                            form_inlines[i] = self.get_nested_inline_admin_formset(request,
-                                inline=nested_inline_cls,
-                                formset=orig_nested_formset,
-                                obj=form_inline.formset.instance)
+                    if hasattr(inline, 'get_inline_instances'):
+                        nested_inline_cls_iterator = inline.get_inline_instances(request)
+                        for i, form_inline in enumerate(form_inlines):
+                            try:
+                                nested_inline_cls = nested_inline_cls_iterator.next()
+                            except StopIteration:
+                                break
+                            if form_inline.formset.prefix in orig_nested_formsets:
+                                orig_nested_formset = orig_nested_formsets[form_inline.formset.prefix]
+                                form_inlines[i] = self.get_nested_inline_admin_formset(request,
+                                    inline=nested_inline_cls,
+                                    formset=orig_nested_formset,
+                                    obj=form_inline.formset.instance)
                     form.inlines = form_inlines
                 # The empty prefix is used by django javascript when it tries
                 # to determine the ids to give to the fields of newly created

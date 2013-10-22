@@ -608,3 +608,14 @@ class StackedInline(InlineModelAdmin):
 class TabularInline(InlineModelAdmin):
 
     template = 'admin/edit_inline/tabular.html'
+
+
+try:
+    from cropduster.patch import patch_model_admin
+except ImportError:
+    pass
+else:
+    patch_model_admin(
+        ModelAdmin=ModelAdmin,
+        InlineModelAdmin=InlineModelAdmin,
+        BaseModelAdmin=BaseModelAdmin)
