@@ -212,7 +212,7 @@
         if (!selector) {
             selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,div.group';
         }
-        elem.find(selector).each(function() {
+        elem.find(selector).add(elem).each(function() {
             var node = $(this),
                 node_id = node.attr('id'),
                 node_name = node.attr('name'),
@@ -235,7 +235,7 @@
         var position = 0, parentPosition = 0, nestedPosition = 0, parentId = '',
             $group = $('#' + prefix + '-group'),
             fieldNames = $group.data('fieldNames'),
-            formSearch = new RegExp('(' + regexQuote(prefix) + '\\-?)(\\d+)(\\-)'),
+            formSearch = new RegExp('(' + regexQuote(prefix) + '\\-?)(\\d+)(\\-?)'),
             // The field name on the fieldset which is a ForeignKey to the parent model
             groupFkName = $group.data('formsetFkName'),
             parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
