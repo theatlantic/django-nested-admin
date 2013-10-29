@@ -200,9 +200,8 @@
                 intersection = $.ui.sortable.prototype._intersectsWithPointer.apply(this, arguments);
 
             this.lastItemElement = null;
-
             if (!intersection) {
-                return false;
+                return intersection;
             }
         
             // Only put the placeholder inside the current Container, skip all
@@ -249,7 +248,7 @@
                     && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))
             ) {
                 this.lastItemElement = itemElement;
-                return true;
+                return intersection;
             } else {
                 return false;
             }

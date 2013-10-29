@@ -115,15 +115,16 @@
 
 .nested-sortable-container {
     overflow: hidden;
+    position: relative;
 }
 
 .nested-sortable-item.nested-do-not-drag:first-child {
-    margin-bottom: 39px;
-}
-
-.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
-.nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
-    margin-top: -39px;
+    position: absolute;
+    height: 19px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
 }
 
 .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper,
