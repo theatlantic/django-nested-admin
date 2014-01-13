@@ -7,33 +7,7 @@ from .formsets import NestedInlineFormSet
 from .options import ModelAdmin, InlineModelAdmin
 
 
-class NestedAdmin(ModelAdmin):
-
-    @property
-    def media(self):
-        media = getattr(super(NestedAdmin, self), 'media', forms.Media())
-
-        server_data_js = reverse('nesting_server_data')
-        media.add_js((server_data_js,))
-
-        version = 10
-
-        js_files = (
-            'jquery.class.js',
-            'jquery.ui.sortable.js',
-            'jquery.ui.nestedSortable.js',
-            'nesting.grp_inline.js',
-            'nesting.js',)
-
-        for js_file in js_files:
-            js_file_url = u'%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
-            media.add_js((js_file_url,))
-
-        media.add_css({
-            'all': (
-                u'%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
-            )})
-        return media
+class NestedAdminMixin(object):
 
     def get_formset_instances(self, request, instance, is_new=False, **kwargs):
         obj = None
@@ -50,7 +24,7 @@ class NestedAdmin(ModelAdmin):
                 formset_kwargs.update({
                     'save_as_new': request.POST.has_key('_saveasnew')})
 
-        formset_iterator = super(NestedAdmin, self).get_formset_instances(
+        formset_iterator = super(NestedAdminMixin, self).get_formset_instances(
             request, instance, is_new, **kwargs)
         inline_iterator = self.get_inline_instances(request, obj)
 
@@ -62,8 +36,15 @@ class NestedAdmin(ModelAdmin):
                 inline = inline_iterator.next()
                 yield formset
                 if getattr(inline, 'inlines', []) and request.method == 'POST':
-                    for form in formset.forms:
-                        for nested in inline.get_inline_instances(request):
+                    inlines_and_formsets = [
+                        (nested, formset)
+                        for nested in inline.get_inline_instances(request)]
+                    i = 0
+                    while i < len(inlines_and_formsets):
+                        nested, formset = inlines_and_formsets[i]
+                        i += 1
+                        for form in formset.forms:
+                            formset_kwargs = formset_kwargs or {}
                             InlineFormSet = nested.get_formset(request, form.instance, **kwargs)
                             prefix = '%s-%s' % (form.prefix, InlineFormSet.get_default_prefix())
                             nested_formset = InlineFormSet(instance=form.instance, prefix=prefix,
@@ -75,6 +56,11 @@ class NestedAdmin(ModelAdmin):
                             nested_formset.is_nested = True
                             nested_formset.nesting_depth = formset.nesting_depth + 1
                             yield nested_formset
+
+                            if hasattr(nested, 'get_inline_instances'):
+                                inlines_and_formsets += [
+                                    (nested_nested, nested_formset)
+                                    for nested_nested in nested.get_inline_instances(request)]
         except StopIteration:
             raise
 
@@ -101,6 +87,7 @@ class NestedAdmin(ModelAdmin):
             nested_inline = self.get_nested_inline_admin_formset(request, nested,
                 nested_formset, obj)
             nested_inline_formsets.append(nested_inline)
+            nested_inline_formsets += self.get_nested_inlines(request, nested_prefix, nested, nested_inline, obj)
         return nested_inline_formsets
 
     def get_nested_inline_admin_formset(self, request, inline, formset, obj=None):
@@ -125,7 +112,7 @@ class NestedAdmin(ModelAdmin):
                 orig_nested_formsets[formset.prefix] = formset
             else:
                 non_nested_formsets.append(formset)
-        super_iterator = super(NestedAdmin, self).get_inline_admin_formsets(request,
+        super_iterator = super(NestedAdminMixin, self).get_inline_admin_formsets(request,
             non_nested_formsets, obj)
         formset_iterator = iter(non_nested_formsets)
         try:
@@ -170,7 +157,36 @@ class NestedAdmin(ModelAdmin):
             raise
 
 
-class NestedInlineModelAdmin(InlineModelAdmin):
+class NestedAdmin(NestedAdminMixin, ModelAdmin):
+
+    @property
+    def media(self):
+        media = getattr(super(NestedAdmin, self), 'media', forms.Media())
+
+        server_data_js = reverse('nesting_server_data')
+        media.add_js((server_data_js,))
+
+        version = 10
+
+        js_files = (
+            'jquery.class.js',
+            'jquery.ui.sortable.js',
+            'jquery.ui.nestedSortable.js',
+            'nesting.grp_inline.js',
+            'nesting.js',)
+
+        for js_file in js_files:
+            js_file_url = u'%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
+            media.add_js((js_file_url,))
+
+        media.add_css({
+            'all': (
+                u'%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
+            )})
+        return media
+
+
+class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
 
     default_sortable_options = {
         'disabled': False,
