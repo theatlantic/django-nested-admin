@@ -611,7 +611,7 @@ class TabularInline(InlineModelAdmin):
 
 
 try:
-    from cropduster.patch import patch_model_admin
+    from generic_plus.patch import patch_model_admin
 except ImportError:
     pass
 else:
