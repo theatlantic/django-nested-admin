@@ -48,10 +48,25 @@
                 index = (typeof(matches[2]) == 'string') ? matches[2] : matches[3];
             }
 
+            if (id && !prefix) {
+                prefix = (id.match(/^(.*)\-group$/) || [null, null])[1];
+            }
+
+            // Handle cases where the related_name does not end with '_set'
+            if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
+                matches = id.match(/(.*?\D)(\d+)$/) || [null, null, null];
+                cacheKey = matches[0];
+                prefix = matches[1];
+                index = matches[2];
+            }
+
             if (!prefix) {
                 $form = $this.closest('.nested-inline-form');
                 if ($form.length) {
-                    matches = $form.attr('id').match(inlineRegex) || [null, null, null];
+                    matches = $form.attr('id').match(inlineRegex) || [null, null, null, null];
+                    if (!matches[0]) {
+                        matches = $form.attr('id').match(/(.*?\D)(\d+)$/) || [null, null, null, null];
+                    }
                     cacheKey = matches[0];
                     prefix = matches[1];
                     index = (typeof(matches[2]) == 'string') ? matches[2] : matches[3];
@@ -61,7 +76,7 @@
                         return null;
                     }
                     groupId = $group.attr('id') || '';
-                    prefix = (groupId.match(/^(.*_set)-group$/) || [null, null])[1];
+                    prefix = (groupId.match(/^(.*)\-group$/) || [null, null])[1];
                 }
             } else {
                 if (prefix.substr(0, 3) == 'id_') {
