@@ -34,7 +34,7 @@
                 forattr = $this.attr('for'),
                 inlineRegex = /^((?:.+_set|.+content_type.*))(?:(\d+)|\-(\d+)\-(?!.*_set\d)[^\-]+|\-group)$/,
                 matches = [null, undefined, undefined],
-                prefix, $form, $group, groupId, cacheKey, match;
+                prefix, $form, $group, groupId, cacheKey, match, index;
 
             if ((match = prefixCache[id]) || (match = prefixCache[name]) || (match = prefixCache[forattr])) {
                 return match;
