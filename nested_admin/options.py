@@ -380,7 +380,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
 
         # Django 1.4
         if len(cl_inspect_args) == 13:
-            cl_args = cl_args[0:10] + (self.list_max_show_all,) + cl_args[10:]
+            cl_args = cl_args[0:9] + (self.list_max_show_all,) + cl_args[9:]
         try:
             cl = ChangeList(*cl_args)
         except IncorrectLookupParameters:
@@ -405,7 +405,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         if (actions and request.method == 'POST' and
                 'index' in request.POST and '_save' not in request.POST):
             if selected:
-                response = self.response_action(request, queryset=cl.get_query_set())
+                response = self.response_action(request, queryset=cl.get_query_set(request))
                 if response:
                     return response
                 else:
