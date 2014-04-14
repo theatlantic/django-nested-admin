@@ -506,19 +506,17 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         }
         context.update(extra_context or {})
 
+        change_list_template = self.change_list_template or [
+            'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
+            'admin/%s/change_list.html' % app_label,
+            'admin/change_list.html'
+        ]
+
         if TemplateResponse:
-            return TemplateResponse(request, self.change_list_template or [
-                'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
-                'admin/%s/change_list.html' % app_label,
-                'admin/change_list.html'
-            ], context, current_app=self.admin_site.name)
+            return TemplateResponse(request, change_list_template, context, current_app=self.admin_site.name)
         else:
             context_instance = template.RequestContext(request, current_app=self.admin_site.name)
-            return render_to_response(self.change_list_template or [
-                'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
-                'admin/%s/change_list.html' % app_label,
-                'admin/change_list.html'
-            ], context, context_instance=context_instance)
+            return render_to_response(change_list_template, context, context_instance=context_instance)
 
     @csrf_protect_m
     def delete_view(self, request, object_id, extra_context=None):
