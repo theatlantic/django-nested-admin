@@ -35,6 +35,11 @@ from django.contrib.admin.options import csrf_protect_m, IncorrectLookupParamete
     BaseModelAdmin as _BaseModelAdmin, ModelAdmin as _ModelAdmin, \
     InlineModelAdmin as _InlineModelAdmin
 
+try:
+    from django.template.response import TemplateResponse
+except ImportError:
+    TemplateResponse = None
+
 from .formsets import NestedInlineFormSet
 
 
@@ -500,12 +505,20 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             'actions_selection_counter': self.actions_selection_counter,
         }
         context.update(extra_context or {})
-        context_instance = template.RequestContext(request, current_app=self.admin_site.name)
-        return render_to_response(self.change_list_template or [
-            'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
-            'admin/%s/change_list.html' % app_label,
-            'admin/change_list.html'
-        ], context, context_instance=context_instance)
+
+        if TemplateResponse:
+            return TemplateResponse(request, self.change_list_template or [
+                'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
+                'admin/%s/change_list.html' % app_label,
+                'admin/change_list.html'
+            ], context, current_app=self.admin_site.name)
+        else:
+            context_instance = template.RequestContext(request, current_app=self.admin_site.name)
+            return render_to_response(self.change_list_template or [
+                'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
+                'admin/%s/change_list.html' % app_label,
+                'admin/change_list.html'
+            ], context, context_instance=context_instance)
 
     @csrf_protect_m
     def delete_view(self, request, object_id, extra_context=None):
