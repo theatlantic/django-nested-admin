@@ -244,9 +244,6 @@
     };
 
     var updatePositions = function(prefix) {
-        if (!prefix) {
-            prefix = this.prefix;
-        }
         var position = 0, parentPosition = 0, nestedPosition = 0, parentId = '',
             $group = $('#' + prefix + '-group'),
             fieldNames = $group.data('fieldNames'),
@@ -1026,9 +1023,9 @@
                 }
             },
             onAfterAdded: function(form) {
-                var formsetPrefix = form.djangoFormsetPrefix(),
-                    $group = $('#' + formsetPrefix + '-group'),
-                    instance;
+                var formsetPrefix = form.djangoFormsetPrefix() || this.prefix; // Fallback
+                var $group = $('#' + formsetPrefix + '-group');
+                var instance;
 
                 var $formParent = form.parent();
                 var $subarticleWrapper = createContainerElement();
