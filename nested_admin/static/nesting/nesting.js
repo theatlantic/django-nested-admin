@@ -32,7 +32,7 @@
             var id = $this.attr('id'),
                 name = $this.attr('name'),
                 forattr = $this.attr('for'),
-                inlineRegex = /^((?:.+_set|.+content_type.*))(?:(\d+)|\-(\d+)\-(?!.*_set\d)[^\-]+|\-group)$/,
+                inlineRegex = /^((?:.+_set|.+content_type.*))(?:(\-?\d+)|\-(\d+)\-(?!.*_set\d+)[^\-]+|\-group)$/,
                 matches = [null, undefined, undefined],
                 prefix, $form, $group, groupId, cacheKey, match, index;
 
@@ -608,7 +608,7 @@
                 var oldFormPrefix = $form.attr('id').replace(/_set(\d+)$/, '_set-$1');
                 var oldFormsetPrefixRegex = new RegExp("^(id_)?" + regexQuote(oldFormPrefix));
                 $form.attr('id', newFormsetPrefix + newIndex);
-                updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+                updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + newIndex);
             } else {
                 break;
             }
@@ -620,7 +620,7 @@
         var oldFormsetPrefixRegex = new RegExp("^(id_)?" + regexQuote(oldFormPrefix));
         var newIndex = initialForms.length - 1;
         $form.attr('id', newFormsetPrefix + newIndex);
-        updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+        updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + newIndex);
     };
 
     DJNesting.NestedAdmin = DJNesting.NestedInline.extend({
