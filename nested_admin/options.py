@@ -105,6 +105,13 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
                     break
         super(_ModelAdmin, self).__init__()
 
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        """Use the content type from the proxy model."""
+        templateresp = super(ModelAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
+        content_type_id = ContentType.objects.get_for_model(self.model, False).id
+        templateresp.context_data['content_type_id'] = content_type_id
+        return templateresp
+
     def get_formsets(self, request, obj=None, **kwargs):
         for inline in self.get_inline_instances(request, obj):
             yield inline.get_formset(request, obj, **kwargs)
