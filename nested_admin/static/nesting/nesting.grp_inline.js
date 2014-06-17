@@ -119,7 +119,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             /* ====== End modified code ======= */
 
             // update form index
-            var re = /__prefix__/g;
+            var re = /__prefix__/;
             DJNesting.updateFormAttributes(form, re, index);
             // update total forms
             totalForms.val(index + 1);
