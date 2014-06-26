@@ -109,6 +109,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             form.removeClass(options.emptyCssClass)
                 .attr("id", empty_template.attr('id').replace("-empty", index))
                 .addClass(options.formCssClass);
+            var matches = options.emptyCssClass.match(/^grp\-(.+)$/);
+            if (matches) {
+                form.removeClass(matches[1]);
+            } else {
+                form.removeClass('grp-' + options.emptyCssClass);
+            }
             if (isNested) {
                 form.wrap('<div></div>')
                     .parent()
@@ -372,7 +378,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             addCssClass: "grp-add-handler",             // CSS class applied to the add link
             removeCssClass: "grp-remove-handler",       // CSS class applied to the remove link
             deleteCssClass: "grp-delete-handler",       // CSS class applied to the delete link
-            emptyCssClass: "grp-empty-form",            // CSS class applied to the empty row
+            emptyCssClass: "empty-form",            // CSS class applied to the empty row
             formCssClass: "grp-dynamic-form",           // CSS class applied to each form in a formset
             predeleteCssClass: "grp-predelete",
             onBeforeInit: function(form) {},        // Function called before a form is initialized

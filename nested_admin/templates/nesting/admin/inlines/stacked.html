@@ -1,8 +1,8 @@
-{% load i18n adminmedia grp_tags nested_admin %}
+{% load i18n grp_tags nested_admin %}
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
-<div class="group grp-group stacked djnesting-stacked{% if is_nested %} djnesting-stacked-nested{% else %} djnesting-stacked-root{% endif %}"
+<div class="group grp-group stacked grp-stacked djnesting-stacked{% if is_nested %} djnesting-stacked-nested{% else %} djnesting-stacked-root{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
     {% block group_data_attributes %}
     data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
@@ -17,7 +17,7 @@
     data-field-names='{"pk": "{{ inline_opts.opts.pk.name }}"{% if inline_opts.sortable_field_name %}, "position": "{{ inline_opts.sortable_field_name }}"{% endif %}}'
     data-inline-model="{{ inline_opts.opts.module_name }}"{% endblock %}>
     <h2 class="collapse-handler grp-collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
-    <ul class="tools">
+    <ul class="tools grp-tools">
         <li class="open-handler-container"><a href="javascript://" class="icon open-handler" title="{% trans 'Open All Items' %}"></a></li>
         <li class="close-handler-container"><a href="javascript://" class="icon close-handler" title="{% trans 'Close All Items' %}"></a></li>
         <li class="add-handler-container"><a href="javascript://" class="icon add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Add Item' %}"> </a></li>
@@ -26,7 +26,7 @@
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
 
-    <div class="items nested-sortable-container"
+    <div class="items nested-sortable-container grp-items"
       {% if inline_admin_formset.opts.sortable_options %}
       data-sortable-options="{{ inline_admin_formset.opts.sortable_options|json_encode }}"
       {% endif %}>
@@ -38,7 +38,7 @@
             {% endif %}
             {{ inline_admin_form.management_form }}
             <div class="{% if not forloop.last %}nested-sortable-item{% else %}empty-form-container{% endif %}">
-            <div class="module grp-module nested-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}{% if is_nested %} inline-related{% endif %}"
+            <div class="module grp-module nested-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form grp-empty-form{% endif %}{% if is_nested %} inline-related{% endif %}"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}

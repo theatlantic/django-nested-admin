@@ -1,7 +1,7 @@
 from functools import wraps
+import json
 
 from django import template
-from django.utils import simplejson
 from django.utils.safestring import mark_for_escaping
 
 register = template.Library()
@@ -20,7 +20,7 @@ strip_parent_name.is_safe = True
 
 @register.filter
 def json_encode(data):
-    return mark_for_escaping(simplejson.dumps(data))
+    return mark_for_escaping(json.dumps(data))
 
 def json_else_list_tag(f):
     """
@@ -31,7 +31,7 @@ def json_else_list_tag(f):
     @wraps(f)
     def inner(model_admin):
         try:
-            return mark_for_escaping(simplejson.dumps(f(model_admin)))
+            return mark_for_escaping(json.dumps(f(model_admin)))
         except:
             return []
     return register.simple_tag(inner)

@@ -943,7 +943,7 @@
             addCssClass: 'add-handler.' + groupData.inlineModel,
             deleteCssClass: 'delete-handler.' + groupData.inlineModel,
             formCssClass: 'dynamic-form-' + groupData.inlineModel,
-            emptyCssClass: 'empty-form',
+            emptyCssClass: 'grp-empty-form',
             predeleteCssClass: 'predelete',
             onAfterRemoved: function(inline) {
                 var formsetPrefix = inline.djangoFormsetPrefix(),

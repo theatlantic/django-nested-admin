@@ -1,8 +1,8 @@
 import textwrap
+import json
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import HttpResponse, HttpResponseForbidden
-from django.utils.simplejson import simplejson
 
 
 def server_data_js(request):
@@ -26,7 +26,7 @@ def server_data_js(request):
         var DJNesting = (typeof window.DJNesting != "undefined")
                        ? DJNesting : {};
         DJNesting.LOOKUP_URLS = %s;""" % (
-            simplejson.dumps(grappelli_lookup_urls),))
+            json.dumps(grappelli_lookup_urls),))
 
     return HttpResponse(server_data_js.strip(),
         mimetype='application/javascript')

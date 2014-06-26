@@ -6,7 +6,13 @@ from django.db import models
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
-from django.utils.encoding import force_unicode
+
+try:
+    # Django 1.6
+    from django.utils.encoding import force_text as force_unicode
+except ImportError:
+    # Django <= 1.5
+    from django.utils.encoding import force_unicode
 
 
 class NestedInlineFormSetMixin(object):
@@ -28,6 +34,7 @@ class NestedInlineFormSetMixin(object):
                     form.save_m2m()
             self.save_m2m = save_m2m
         # End copied lines from BaseModelFormSet.save()
+
         # The above if clause is the entirety of BaseModelFormSet.save(),
         # along with the following return:
         # return self.save_existing_objects(commit) + self.save_new_objects(commit)
@@ -121,7 +128,16 @@ class NestedInlineFormSetMixin(object):
             pk_keys = ["%s-%s" % (self.add_prefix(i), self.model._meta.pk.name)
                        for i in xrange(0, self.initial_form_count())]
             pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
-            qs = self.model._default_manager.get_query_set().filter(pk__in=pk_vals)
+
+            mgr = self.model._default_manager
+            if hasattr(mgr, 'get_queryset'):
+                # Django 1.6
+                qs = mgr.get_queryset()
+            else:
+                # Django <= 1.5
+                qs = mgr.get_query_set()
+
+            qs = qs.filter(pk__in=pk_vals)
 
             # If the queryset isn't already ordered we need to add an
             # artificial ordering here to make sure that all formsets
@@ -174,10 +190,18 @@ class NestedInlineFormSetMixin(object):
         Identical to parent class, except ``self.initial_forms`` is replaced
         with ``initial_forms``, passed as parameter.
         """
+        if not initial_forms:
+            return []
+
         saved_instances = []
 
-        if initial_forms is None:
-            return []
+        if hasattr(self, 'deleted_forms'):
+            # Django 1.6
+            forms_to_delete = self.deleted_forms
+        else:
+            # Django <= 1.5
+            forms_to_delete = [f for f in initial_forms
+                               if self.can_delete and self._should_delete_form(f)]
 
         for form in initial_forms:
             pk_name = self._pk_field.name
@@ -202,7 +226,7 @@ class NestedInlineFormSetMixin(object):
             if obj is None:
                 obj = self._existing_object(pk_value)
 
-            if self.can_delete and self._should_delete_form(form):
+            if form in forms_to_delete:
                 self.deleted_objects.append(obj)
                 obj.delete()
                 continue
