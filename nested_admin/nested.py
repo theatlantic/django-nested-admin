@@ -1,3 +1,5 @@
+import six
+
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.core.urlresolvers import reverse
@@ -22,7 +24,7 @@ class NestedAdminMixin(object):
 
             if is_new:
                 formset_kwargs.update({
-                    'save_as_new': request.POST.has_key('_saveasnew')})
+                    'save_as_new': '_saveasnew' in request.POST})
 
         formset_iterator = super(NestedAdminMixin, self).get_formset_instances(
             request, instance, is_new, **kwargs)
@@ -30,10 +32,10 @@ class NestedAdminMixin(object):
 
         try:
             while True:
-                formset = formset_iterator.next()
+                formset = six.next(formset_iterator)
                 if not hasattr(formset, 'nesting_depth'):
                     formset.nesting_depth = 1
-                inline = inline_iterator.next()
+                inline = six.next(inline_iterator)
                 yield formset
                 if getattr(inline, 'inlines', []) and request.method == 'POST':
                     inlines_and_formsets = [
@@ -117,9 +119,9 @@ class NestedAdminMixin(object):
         formset_iterator = iter(non_nested_formsets)
         try:
             while True:
-                formset = formset_iterator.next()
-                inline = inline_iterator.next()
-                inline_admin_formset = super_iterator.next()
+                formset = six.next(formset_iterator)
+                inline = six.next(inline_iterator)
+                inline_admin_formset = six.next(super_iterator)
 
                 for form in inline_admin_formset.formset.forms:
                     if form.instance.pk:
@@ -136,7 +138,7 @@ class NestedAdminMixin(object):
                         nested_inline_cls_iterator = inline.get_inline_instances(request)
                         for i, form_inline in enumerate(form_inlines):
                             try:
-                                nested_inline_cls = nested_inline_cls_iterator.next()
+                                nested_inline_cls = six.next(nested_inline_cls_iterator)
                             except StopIteration:
                                 break
                             if form_inline.formset.prefix in orig_nested_formsets:
@@ -176,12 +178,12 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
             'nesting.js',)
 
         for js_file in js_files:
-            js_file_url = u'%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
+            js_file_url = '%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
             media.add_js((js_file_url,))
 
         media.add_css({
             'all': (
-                u'%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
+                '%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
             )})
         return media
 

@@ -1,3 +1,7 @@
+from __future__ import absolute_import, unicode_literals
+
+from six.moves import xrange
+
 from django.db import models
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
@@ -153,7 +157,7 @@ class NestedInlineFormSetMixin(object):
         """
         form = super(NestedInlineFormSetMixin, self)._construct_form(i, **kwargs)
         pk_value = form.data.get(form.add_prefix(self._pk_field.name))
-        if pk_value == u'':
+        if pk_value == '':
             pk_value = None
         if pk_value and force_unicode(form.instance.pk) != force_unicode(pk_value):
             model_cls = form.instance.__class__

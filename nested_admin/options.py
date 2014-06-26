@@ -5,6 +5,7 @@ ModelAdmin add_view and change_view easier. Any functional differences from
 that module should be considered a bug.
 """
 import sys
+from six.moves import zip
 
 import inspect
 from itertools import izip
@@ -178,10 +179,10 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             })
             if is_new:
                 formset_kwargs.update({
-                    'save_as_new': request.POST.has_key('_saveasnew')
+                    'save_as_new': '_saveasnew' in request.POST
                 })
 
-        for FormSet, inline in izip(self.get_formsets(request, obj, **kwargs), self.get_inline_instances(request, obj)):
+        for FormSet, inline in zip(self.get_formsets(request, obj, **kwargs), self.get_inline_instances(request, obj)):
             prefix = FormSet.get_default_prefix()
             prefixes[prefix] = prefixes.get(prefix, 0) + 1
             if prefixes[prefix] != 1:
@@ -206,7 +207,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             self.log_change(request, instance, change_message)
 
     def get_inline_admin_formsets(self, request, formsets, obj=None):
-        for inline, formset in izip(self.get_inline_instances(request, obj), formsets):
+        for inline, formset in zip(self.get_inline_instances(request, obj), formsets):
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
             inline_admin_formset = helpers.InlineAdminFormSet(inline, formset,
@@ -263,7 +264,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         context = {
             'title': _('Add %s') % force_unicode(opts.verbose_name),
             'adminform': adminForm,
-            'is_popup': request.REQUEST.has_key('_popup'),
+            'is_popup': '_popup' in request.REQUEST,
             'show_delete': False,
             'media': mark_safe(media),
             'inline_admin_formsets': inline_admin_formsets,
@@ -290,7 +291,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') \
                 % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
 
-        if request.method == 'POST' and request.POST.has_key("_saveasnew"):
+        if request.method == 'POST' and '_saveasnew' in request.POST:
             return self.add_view(request, form_url='../add/')
 
         formsets = []
@@ -335,7 +336,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             'adminform': adminForm,
             'object_id': object_id,
             'original': obj,
-            'is_popup': request.REQUEST.has_key('_popup'),
+            'is_popup': '_popup' in request.REQUEST,
             'media': mark_safe(media),
             'inline_admin_formsets': inline_admin_formsets,
             'errors': helpers.AdminErrorList(form, formsets),
