@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include nested_admin/static *
+recursive-include nested_admin/templates *
