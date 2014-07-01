@@ -27,4 +27,5 @@ setup(
         'Framework :: Django',
     ],
     include_package_data=True,
-    zip_safe=False)
+    zip_safe=False,
+    long_description=open('README.rst').read())
