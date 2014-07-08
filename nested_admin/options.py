@@ -91,8 +91,6 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         for inline_class in self.inlines:
             inline_instance = inline_class(self.model, self.admin_site)
             self.inline_instances.append(inline_instance)
-        if 'action_checkbox' not in self.list_display and self.actions is not None:
-            self.list_display = ['action_checkbox'] +  list(self.list_display)
         if not self.list_display_links:
             for name in self.list_display:
                 if name != 'action_checkbox':
@@ -343,7 +341,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         extra_context.update({
             'root_path': reverse('admin:index'),
         })
-        return super(ModelAdmin, self).changelist_view(request, extra_context)    
+        return super(ModelAdmin, self).changelist_view(request, extra_context)
 
     @csrf_protect_m
     @transaction_wrap
@@ -352,7 +350,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         extra_context.update({
             'root_path': reverse('admin:index'),
         })
-        return super(ModelAdmin, self).delete_view(request, object_id, extra_context)    
+        return super(ModelAdmin, self).delete_view(request, object_id, extra_context)
 
     def history_view(self, request, object_id, extra_context=None):
         "The 'history' admin view for this model."
