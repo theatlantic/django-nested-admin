@@ -91,11 +91,6 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         for inline_class in self.inlines:
             inline_instance = inline_class(self.model, self.admin_site)
             self.inline_instances.append(inline_instance)
-        if not self.list_display_links:
-            for name in self.list_display:
-                if name != 'action_checkbox':
-                    self.list_display_links = [name]
-                    break
         super(_ModelAdmin, self).__init__()
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
