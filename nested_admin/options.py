@@ -46,6 +46,8 @@ try:
 except ImportError:
     TemplateResponse = None
 
+from .formsets import NestedInlineFormSet  # Used for the export
+
 
 transaction_wrap = getattr(transaction, 'atomic', transaction.commit_on_success)
 
