@@ -289,7 +289,7 @@
                 formReplace = '$1' + i.toString() + '$3';
             $form.attr('id', newFormId);
             updateFormAttributes($form, formSearch, formReplace);
-            if (groupFkName && parentPkVal) {
+            if (groupFkName && typeof(parentPkVal) != 'undefined') {
                 $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
             }
         });
@@ -302,7 +302,7 @@
                 formReplace = '$1' + i.toString() + '$3';
             $form.attr('id', newFormId);
             updateFormAttributes($form, formSearch, formReplace);
-            if (groupFkName && parentPkVal) {
+            if (groupFkName && typeof(parentPkVal) != 'undefined') {
                 $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
             }
         });
