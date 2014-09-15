@@ -1077,7 +1077,10 @@
                 form.find(".collapse").andSelf().grp_collapsible({
                     toggle_handler_slctr: ".collapse-handler:first",
                     closed_css: "closed grp-closed",
-                    open_css: "open grp-open"
+                    open_css: "open grp-open",
+                    on_toggle: function(elem, options) {
+                        $(document).trigger('djnesting:toggle', [$group]);
+                    }
                 });
                 if (typeof $.fn.curated_content_type == 'function') {
                     form.find('.curated-content-type-select').each(function(index, element) {
