@@ -1048,13 +1048,12 @@
                 form.find('div.group').each(function(i, nestedGroup) {
                     var $nestedGroup = $(nestedGroup),
                         nestedGroupId = $nestedGroup.attr('id');
-
-                    if (nestedGroupId.substr(-10) != '_set-group') {
+                    if (nestedGroupId.substr(-6) != '-group') {
                         return true; // Skip to next
                     }
                     // Extra check that it is nested (i.e. that there are
                     // two '_set-' strings in the id)
-                    if (nestedGroupId.substr(0, nestedGroupId.length - 10).indexOf('_set-') == -1) {
+                    if (!nestedGroupId.substr(0, nestedGroupId.length - 6).match(/\-\d\-/)) {
                         return true;
                     }
 
