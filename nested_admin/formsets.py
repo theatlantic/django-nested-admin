@@ -106,7 +106,7 @@ class NestedInlineFormSetMixin(object):
         if pk_val is not None:
             setattr(form.instance, pk_name, pk_val)
 
-        if form._is_initial or (form.instance and form.instance.pk):
+        if form._is_initial:
             instances = self.save_existing_objects([form], commit)
         else:
             instances = self.save_new_objects([form], commit)

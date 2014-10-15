@@ -9,6 +9,62 @@ from .formsets import NestedInlineFormSet
 from .options import ModelAdmin, InlineModelAdmin
 
 
+class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
+
+    def __init__(self, *args, **kwargs):
+        self.submitted_formsets = kwargs.pop('submitted_formsets', None) or {}
+        self.request = kwargs.pop('request', None)
+        super(NestedInlineAdminFormset, self).__init__(*args, **kwargs)
+
+        for form in self.formset.forms:
+            obj = form.instance if form.instance.pk else None
+            form.inlines = self._get_nested_inlines(form.prefix, obj=obj)
+
+        # The empty prefix is used by django javascript when it tries
+        # to determine the ids to give to the fields of newly created
+        # instances in the form.
+        self.inlines = self._get_nested_inlines(self.formset.add_prefix('empty'))
+
+    def _get_nested_inlines(self, prefix, obj=None):
+        nested_inline_formsets = []
+        if not hasattr(self.opts, 'get_inline_instances'):
+            return nested_inline_formsets
+
+        for nested_inline in self.opts.get_inline_instances(self.request):
+            InlineFormSet = nested_inline.get_formset(self.request, obj)
+            nested_prefix = '%s-%s' % (prefix, InlineFormSet.get_default_prefix())
+            # Check whether nested inline formsets were already submitted.
+            # If so, use the submitted formset instead of the freshly generated
+            # one since it will contain error information and non-saved data
+            # changes.
+            if nested_prefix in self.submitted_formsets:
+                nested_formset = self.submitted_formsets[nested_prefix]
+            else:
+                nested_formset_kwargs = {
+                    'instance': obj,
+                    'prefix': nested_prefix,
+                }
+                if self.request.method == 'POST' and not prefix.endswith('-empty'):
+                    nested_formset_kwargs.update({
+                        'data': self.request.POST,
+                        'files': self.request.FILES,
+                    })
+                nested_formset = InlineFormSet(**nested_formset_kwargs)
+                nested_formset.is_nested = True
+                nested_formset.nesting_depth = 1 + getattr(self.formset, 'nesting_depth', 1)
+
+            nested_inline_formsets.append(
+                NestedInlineAdminFormset(
+                    inline=nested_inline,
+                    formset=nested_formset,
+                    fieldsets=nested_inline.get_fieldsets(self.request, obj),
+                    model_admin=self.model_admin,
+                    request=self.request,
+                    submitted_formsets=self.submitted_formsets))
+
+        return nested_inline_formsets
+    
+
 class NestedAdminMixin(object):
 
     def get_formset_instances(self, request, instance, is_new=False, **kwargs):
@@ -66,38 +122,7 @@ class NestedAdminMixin(object):
         except StopIteration:
             raise
 
-    def get_nested_inlines(self, request, prefix, inline, parent_formset=None, obj=None):
-        nested_inline_formsets = []
-        if not hasattr(inline, 'get_inline_instances'):
-            return nested_inline_formsets
-        for nested in inline.get_inline_instances(request):
-            InlineFormSet = nested.get_formset(request, obj)
-            nested_prefix = '%s-%s' % (prefix, InlineFormSet.get_default_prefix())
-            nested_formset_kwargs = {
-                'instance': obj,
-                'prefix': nested_prefix,
-            }
-            if request.method == 'POST' and not prefix.endswith('-empty'):
-                nested_formset_kwargs.update({
-                    'data': request.POST,
-                    'files': request.FILES,
-                })
-            nested_formset = InlineFormSet(**nested_formset_kwargs)
-            nested_formset.is_nested = True
-            if parent_formset is not None:
-                nested_formset.nesting_depth = 1 + getattr(parent_formset.formset, 'nesting_depth', 1)
-            nested_inline = self.get_nested_inline_admin_formset(request, nested,
-                nested_formset, obj)
-            nested_inline_formsets.append(nested_inline)
-            nested_inline_formsets += self.get_nested_inlines(request, nested_prefix, nested, nested_inline, obj)
-        return nested_inline_formsets
-
-    def get_nested_inline_admin_formset(self, request, inline, formset, obj=None):
-        return helpers.InlineAdminFormSet(inline, formset,
-            inline.get_fieldsets(request, obj))
-
     def get_inline_admin_formsets(self, request, formsets, obj=None):
-        inline_iterator = self.get_inline_instances(request, obj)
         # The only reason a nested inline admin formset would show up
         # here is if there was an error in the POST.
         # inline_admin_formsets are for display, not data submission,
@@ -114,49 +139,17 @@ class NestedAdminMixin(object):
                 orig_nested_formsets[formset.prefix] = formset
             else:
                 non_nested_formsets.append(formset)
-        super_iterator = super(NestedAdminMixin, self).get_inline_admin_formsets(request,
-            non_nested_formsets, obj)
-        formset_iterator = iter(non_nested_formsets)
-        try:
-            while True:
-                formset = six.next(formset_iterator)
-                inline = six.next(inline_iterator)
-                inline_admin_formset = six.next(super_iterator)
 
-                for form in inline_admin_formset.formset.forms:
-                    if form.instance.pk:
-                        instance = form.instance
-                    else:
-                        instance = None
-                    form_inlines = self.get_nested_inlines(request, form.prefix, inline,
-                        parent_formset=inline_admin_formset, obj=instance)
-                    # Check whether nested inline formsets were already submitted.
-                    # If so, use the submitted formset instead of the freshly generated
-                    # one since it will contain error information and non-saved data
-                    # changes.
-                    if hasattr(inline, 'get_inline_instances'):
-                        nested_inline_cls_iterator = inline.get_inline_instances(request)
-                        for i, form_inline in enumerate(form_inlines):
-                            try:
-                                nested_inline_cls = six.next(nested_inline_cls_iterator)
-                            except StopIteration:
-                                break
-                            if form_inline.formset.prefix in orig_nested_formsets:
-                                orig_nested_formset = orig_nested_formsets[form_inline.formset.prefix]
-                                form_inlines[i] = self.get_nested_inline_admin_formset(request,
-                                    inline=nested_inline_cls,
-                                    formset=orig_nested_formset,
-                                    obj=form_inline.formset.instance)
-                    form.inlines = form_inlines
-                # The empty prefix is used by django javascript when it tries
-                # to determine the ids to give to the fields of newly created
-                # instances in the form.
-                empty_prefix = formset.add_prefix('empty')
-                inline_admin_formset.inlines = self.get_nested_inlines(
-                    request, empty_prefix, inline, parent_formset=inline_admin_formset)
-                yield inline_admin_formset
-        except StopIteration:
-            raise
+        inline_admin_formsets = super(NestedAdminMixin, self).get_inline_admin_formsets(
+            request, non_nested_formsets, obj)
+
+        for f in inline_admin_formsets:
+            yield NestedInlineAdminFormset(f.opts, f.formset, f.fieldsets,
+                prepopulated_fields=f.prepopulated_fields,
+                readonly_fields=f.readonly_fields,
+                model_admin=f.model_admin,
+                request=request,
+                submitted_formsets=orig_nested_formsets)
 
 
 class NestedAdmin(NestedAdminMixin, ModelAdmin):
