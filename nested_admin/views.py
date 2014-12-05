@@ -29,4 +29,4 @@ def server_data_js(request):
             json.dumps(grappelli_lookup_urls),))
 
     return HttpResponse(server_data_js.strip(),
-        mimetype='application/javascript')
+        content_type='application/javascript')
