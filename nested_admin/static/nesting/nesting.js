@@ -1053,7 +1053,7 @@
                     }
                     // Extra check that it is nested (i.e. that there are
                     // two '_set-' strings in the id)
-                    if (!nestedGroupId.substr(0, nestedGroupId.length - 6).match(/\-\d\-/)) {
+                    if (!nestedGroupId.substr(0, nestedGroupId.length - 6).match(/\-\d+\-/)) {
                         return true;
                     }
 
