@@ -18,9 +18,9 @@
     data-inline-model="{{ inline_opts.opts.module_name }}"{% endblock %}>
     <h2 class="collapse-handler grp-collapse-handler">{% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}</h2>
     <ul class="tools grp-tools">
-        <li class="open-handler-container"><a href="javascript://" class="icon open-handler" title="{% trans 'Open All Items' %}"></a></li>
-        <li class="close-handler-container"><a href="javascript://" class="icon close-handler" title="{% trans 'Close All Items' %}"></a></li>
-        <li class="add-handler-container"><a href="javascript://" class="icon add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Add Item' %}"> </a></li>
+        <li class="open-handler-container"><a href="javascript://" class="icon open-handler grp-icon grp-open-handler" title="{% trans 'Open All Items' %}"></a></li>
+        <li class="close-handler-container"><a href="javascript://" class="icon close-handler grp-icon grp-close-handler" title="{% trans 'Close All Items' %}"></a></li>
+        <li class="add-handler-container"><a href="javascript://" class="icon add-handler grp-icon grp-add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Add Item' %}"> </a></li>
     </ul>
 
     {{ inline_admin_formset.formset.management_form }}
@@ -44,16 +44,16 @@
                  {% endif %}
                  id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{%if is_nested %}{% endif %}{{ forloop.counter0 }}{% endif %}">
                 <h3 class="collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djnesting-drag-handler{% endif %}">{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% else %}{{ inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title }}{% endif %}</h3>
-                <ul class="tools">
+                <ul class="tools grp-tools">
                     {% if inline_admin_form.show_url %}<li class="viewsite-link-container"><a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>{% endif %}
                     {% if inline_admin_formset.opts.sortable_field_name %}
-                        <li class="drag-handler-container"><a href="javascript://" class="icon drag-handler" title="{% trans 'Move Item' %}"></a></li>
+                        <li class="drag-handler-container"><a href="javascript://" class="icon drag-handler grp-icon grp-drag-handler" title="{% trans 'Move Item' %}"></a></li>
                     {% endif %}
                     {% if inline_admin_formset.formset.can_delete %}
                         {% if inline_admin_form.original %}
-                            <li class="delete-handler-container grp-delete-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon delete-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
+                            <li class="delete-handler-container grp-delete-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon delete-handler grp-icon grp-delete-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
                         {% else %}
-                            <li class="remove-handler-container grp-remove-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon remove-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
+                            <li class="remove-handler-container grp-remove-handler-container">{{ inline_admin_form.deletion_field.field }}<a href="javascript://" class="icon remove-handler grp-icon grp-remove-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}" title="{% trans 'Delete Item' %}"></a></li>
                         {% endif %}
                     {% endif %}
                 </ul>
@@ -99,8 +99,8 @@
         {{ inline_admin_formset.extra_forms }}
     </div>
     <div class="module grp-module add-item grp-add-item">
-        <a href="javascript://" class="add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add {{ verbose_name }}{% endblocktrans %}</a>
-        <ul class="tools">
+        <a href="javascript://" class="add-handler grp-add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.module_name }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add {{ verbose_name }}{% endblocktrans %}</a>
+        <ul class="tools grp-tools">
             <li class="add-handler-container"><a href="javascript://" class="icon add-handler djnesting-icon" title="{% trans 'Add Item' %}"> </a></li>
         </ul><br clear="all" />
     </div>

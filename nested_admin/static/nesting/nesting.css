@@ -13,6 +13,9 @@
 
 .djnesting-stacked.group .module .djnesting-stacked-nested.group {
     margin: 0 10px;
+    width: auto;
+    float: none;
+    background: transparent;
 }
 
 #content-inner > .container-flexible {
@@ -117,7 +120,9 @@
     overflow: hidden;
     position: relative;
 }
-
+.nested-sortable-item {
+    overflow: hidden;
+}
 .nested-sortable-item.nested-do-not-drag:first-child {
     position: absolute;
     height: 19px;
