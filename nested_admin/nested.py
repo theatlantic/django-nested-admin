@@ -51,6 +51,8 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                     })
                 nested_formset = InlineFormSet(**nested_formset_kwargs)
                 nested_formset.is_nested = True
+                nested_formset.is_template = prefix.endswith('-empty')
+                nested_formset.is_real_formset = not(prefix.endswith('-empty') or '-empty-' in prefix)
                 nested_formset.nesting_depth = 1 + getattr(self.formset, 'nesting_depth', 1)
 
             nested_inline_formsets.append(
@@ -63,7 +65,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                     submitted_formsets=self.submitted_formsets))
 
         return nested_inline_formsets
-    
+
 
 class NestedAdminMixin(object):
 
@@ -167,7 +169,9 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
             'jquery.class.js',
             'jquery.ui.sortable.js',
             'jquery.ui.nestedSortable.js',
-            'nesting.grp_inline.js',
+            'nesting.utils.js',
+            'nesting.sortable.js',
+            'nesting.formset.js',
             'nesting.js',)
 
         for js_file in js_files:
