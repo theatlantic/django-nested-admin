@@ -157,7 +157,7 @@
                 $document.on('djnesting:init.nestedSortable', o.containerElementSelector, function(event) {
                     createChildNestedSortable(self, this);
                 });
-                this.element.find(o.containerElementSelector).each(function(i, el) {
+                this.element.find(o.containerElementSelector+':not(.subarticle-wrapper)').each(function(i, el) {
                     if (el.parentNode.getAttribute('id').indexOf('-empty') > -1) {
                         return;
                     }
@@ -182,6 +182,9 @@
                 return;
             }
             uniqueId = element[0][$.expando];
+            if (typeof this.options.connectWith == 'string') {
+                return;
+            }
             if (this._connectWithMap[uniqueId]) {
                 return;
             }

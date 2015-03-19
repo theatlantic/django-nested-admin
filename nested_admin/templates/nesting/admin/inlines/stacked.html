@@ -107,14 +107,4 @@
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
 
-<script type="text/javascript">
-(function($) {
-    $(document).ready(function() {
-        var prefix = "{{ inline_admin_formset.formset.prefix }}";
-        if (prefix.indexOf('-empty') == -1 && prefix.indexOf('__prefix__') == -1) {
-            DJNesting.register_formset(prefix);            
-        }
-    });
-})((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);
-</script>
 {% endwith %}{# ends {% with inline_admin_formset.formset.is_nested as is_nested %} #}
