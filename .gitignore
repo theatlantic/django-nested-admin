@@ -10,3 +10,4 @@ __pycache__
 pip-log.txt
 .DS_Store
 *swp
+.tox
