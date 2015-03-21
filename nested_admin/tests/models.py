@@ -1,3 +1,5 @@
+import six
+
 from django.core.urlresolvers import reverse
 from django.db import models
 
@@ -8,6 +10,11 @@ class Group(models.Model):
 
     class Meta:
         app_label = "nested_admin"
+
+    def __str__(self):
+        if six.PY2 and isinstance(self.slug, unicode):
+            return self.slug.encode('utf-8')
+        return self.slug
 
     def __unicode__(self):
         return self.slug
@@ -37,6 +44,12 @@ class Section(models.Model):
             parts.insert(0, u"%s" % self.group)
         return u"/".join(parts)
 
+    def __str__(self):
+        if six.PY2:
+            return self.__unicode__().encode('utf-8')
+        else:
+            return self.__unicode__()
+
 
 class Item(models.Model):
 
@@ -53,3 +66,9 @@ class Item(models.Model):
         if self.section:
             parts.insert(0, u"%s" % self.section)
         return u"/".join(parts)
+
+    def __str__(self):
+        if six.PY2:
+            return self.__unicode__().encode('utf-8')
+        else:
+            return self.__unicode__()

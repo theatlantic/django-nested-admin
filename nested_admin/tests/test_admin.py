@@ -74,15 +74,15 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(map(repr, section_a.item_set.all().order_by('position')), [
-            '<Item: group/a[0]/Item A 0[0]>',
-            '<Item: group/a[0]/Item B 2[1]>',
-            '<Item: group/a[0]/Item A 1[2]>',
-            '<Item: group/a[0]/Item A 2[3]>'])
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item A 0[0]',
+            'group/a[0]/Item B 2[1]',
+            'group/a[0]/Item A 1[2]',
+            'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(map(repr, section_b.item_set.all().order_by('position')), [
-            '<Item: group/b[1]/Item B 0[0]>',
-            '<Item: group/b[1]/Item B 1[1]>'])
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item B 0[0]',
+            'group/b[1]/Item B 1[1]'])
 
     def test_drag_new_item_between_sections(self):
         group = Group.objects.create(slug='group')
@@ -119,12 +119,12 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(map(repr, section_a.item_set.all().order_by('position')), [
-            '<Item: group/a[0]/Item A 0[0]>',
-            '<Item: group/a[0]/Item B 2[1]>',
-            '<Item: group/a[0]/Item A 1[2]>',
-            '<Item: group/a[0]/Item A 2[3]>'])
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item A 0[0]',
+            'group/a[0]/Item B 2[1]',
+            'group/a[0]/Item A 1[2]',
+            'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(map(repr, section_b.item_set.all().order_by('position')), [
-            '<Item: group/b[1]/Item B 0[0]>',
-            '<Item: group/b[1]/Item B 1[1]>'])
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item B 0[0]',
+            'group/b[1]/Item B 1[1]'])
