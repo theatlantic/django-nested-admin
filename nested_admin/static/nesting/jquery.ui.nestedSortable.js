@@ -122,7 +122,13 @@
         },
 
         _create: function() {
+            if (this.element.data('uiNestedSortable')) {
+                this.element.data('nestedSortable', this.element.data('uiNestedSortable'));
+            }
             this.element.data('sortable', this.element.data('nestedSortable'));
+            if (this.element.data('uiNestedSortable')) {
+                this.element.data('uiSortable', this.element.data('nestedSortable'));
+            }
             // if (!this.element.is(this.options.containerElementSelector)) {
             //  throw new Error('nestedSortable: Please check that the ' +
             //                  'containerElementSelector option matches ' +
