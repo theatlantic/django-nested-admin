@@ -95,27 +95,6 @@
             // fixedNestingDepth: not a standard ui.sortable parameter.
             // Prevents dragging items up or down levels
             fixedNestingDepth: true,
-            /**
-             * The original jquery.ui.nestedSortable assumed that one
-             * would only ever deal with <ol> and <li> elements in the
-             * sortable, so when a list item was dragged under another item
-             * and to the right, such that it needed to create a new list
-             * nested one level deeper, it would simply perform
-             *    document.createElement('ol')
-             *
-             * Since we're dealing with the django admin, we use
-             * <div class="nested-sortable-container"> and
-             * <div class="nested-sortable-item">
-             * instead of <ol> and <li>, respectively.
-             *
-             * This method stands in place of the original plugin's hard-coded
-             * document.createElement('ol');
-             *
-             * The parent element and the insert type (String, 'prepend' or
-             * 'append') are passed to the method in case they are useful, but
-             * for most purposes they can be ignored.
-             */
-            createContainerElement:  DJNesting.createContainerElement,
             // The selector for ALL list containers in the nested sortable.
             containerElementSelector: '.nested-sortable-container',
             // The selector for ALL list items in the nested sortable.

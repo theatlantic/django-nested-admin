@@ -293,14 +293,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
     }
 
     DJNesting.createContainerElement = function(parent) {
-        var newContainer = document.createElement('DIV'),
-            newItem = document.createElement('DIV'),
-            emptyItem = document.createElement('DIV');
-        newContainer.setAttribute('class', 'nested-sortable-container');
-        newItem.setAttribute('class', 'nested-sortable-item nested-do-not-drag');
-        newItem.appendChild(emptyItem);
-        newContainer.appendChild(newItem);
-        return $(newContainer);
+        return;
     };
 
     // Slight tweaks to the grappelli functions of the same name
