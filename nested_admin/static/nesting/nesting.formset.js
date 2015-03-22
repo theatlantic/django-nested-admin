@@ -102,7 +102,7 @@
             var form_re = new RegExp(DJNesting.regexQuote(this.prefix) + '\\-\\d+\\-');
 
             this.$inline.find("." + this.opts.formClass).each(function(i, el) {
-                DJNesting.updateFormIndex($(el), null, form_re, self.prefix + '-' + i + '-');
+                DJNesting.updateFormAttributes($(el), form_re, self.prefix + '-' + i + '-');
             });
 
             DJNesting.updatePositions(this.prefix);
