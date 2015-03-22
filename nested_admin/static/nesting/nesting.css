@@ -119,6 +119,7 @@
 .nested-sortable-container {
     overflow: hidden;
     position: relative;
+    min-height: 10px;
 }
 .nested-sortable-item {
     overflow: hidden;
