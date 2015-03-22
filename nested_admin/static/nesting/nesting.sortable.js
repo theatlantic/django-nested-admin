@@ -117,7 +117,6 @@
             containerElementSelector: '.nested-sortable-container',
             // The selector for ALL list items in the nested sortable.
             listItemSelector: '.nested-sortable-item',
-            nestedContainerSelector: '.subarticle-wrapper',
             /**
              * Triggered when a sortable is removed from a container (to be
              * dropped in another; before 'receive' is triggered)
@@ -137,17 +136,6 @@
                     initial: ($form.data('isInitial')) ? 1 : 0,
                     total: 1
                 };
-
-                ui.item.find('.subarticle-wrapper').find('.nested-inline-form').each(function(i, form) {
-                    var $nestedForm = $(form);
-                    if ($nestedForm.djangoFormsetPrefix() != prefix) {
-                        return;
-                    }
-                    if ($nestedForm.data('isInitial')) {
-                        removedFormCounts['initial']++;
-                    }
-                    removedFormCounts['total']++;
-                });
 
                 var $TOTAL_FORMS = $inline.find('> input[name$="TOTAL_FORMS"]').first();
                 if ($TOTAL_FORMS.length) {
@@ -208,18 +196,6 @@
                     initial: ($form.data('isInitial')) ? 1 : 0
                 };
 
-                var $nestedForms = ui.item.find('.subarticle-wrapper').find('.nested-inline-form').filter(function(i, form) {
-                    var $nestedForm = $(form);
-                    if ($nestedForm.djangoFormsetPrefix() != prefix) {
-                        return false;
-                    }
-                    if ($nestedForm.data('isInitial')) {
-                        addedFormCounts['initial']++;
-                    }
-                    addedFormCounts['total']++;
-                    return true;
-                });
-
                 if ($TOTAL_FORMS.length) {
                     previousTotalFormCount = parseInt($TOTAL_FORMS.val(), 10);
                     if (!isNaN(previousTotalFormCount)) {
@@ -236,7 +212,7 @@
                             }
                         }
 
-                        $form.add($nestedForms).each(function(i, newForm) {
+                        $form.each(function(i, newForm) {
                             var $newForm = $(newForm);
                             if ($newForm.data('isInitial')) {
                                 spliceInitialForm(oldFormsetPrefix, newFormsetPrefix, $newForm);
@@ -244,7 +220,7 @@
                                 var oldFormPrefixRegex = new RegExp("^(id_)?" + DJNesting.regexQuote($form.djangoFormPrefix()));
                                 var newFormIndex = previousTotalFormCount + i;
                                 var newFormPrefix = newFormsetPrefix + '-' + newFormIndex + "-";
-                                $form.attr('id', newFormsetPrefix + newFormIndex);
+                                $newForm.attr('id', newFormsetPrefix + newFormIndex);
                                 DJNesting.updateFormAttributes($newForm.parent(), oldFormPrefixRegex, "$1" + newFormPrefix);
                             }
                         });

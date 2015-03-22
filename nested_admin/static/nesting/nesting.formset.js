@@ -41,7 +41,7 @@
                 DJNesting.createSortable(this.$inline);
             }
 
-            DJNesting.initSubArticleNesting(this.$inline);
+            $(document).trigger('djnesting:initialized', [this.$inline, this]);
         },
         _initializeForms: function() {
             var totalForms = this.mgmtVal('TOTAL_FORMS');
