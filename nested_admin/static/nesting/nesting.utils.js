@@ -535,7 +535,8 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         };
 
         $.each(lookup_fields.autocomplete_fk, function() {
-            $inline.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_fk({
                     lookup_url: lookup_urls.related,
@@ -544,7 +545,8 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             });
         });
         $.each(lookup_fields.autocomplete_m2m, function() {
-            $inline.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_m2m({
                     lookup_url: lookup_urls.m2m,
@@ -555,7 +557,8 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         $.each(lookup_fields.autocomplete_generic, function() {
             var content_type = this[0],
                 object_id = this[1];
-            $inline.find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
+            $('#' + prefix + '-group > div.items > div:not(.empty-form)')
+            .find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
             .each(function() {
                 var i = $(this).attr("id").match(/-\d+-/);
                 if (i) {
