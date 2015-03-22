@@ -37,31 +37,34 @@
 
         index = totalFormCount = initialForms.length + newForms.length;
 
+        var $form, oldFormPrefixRegex, newIndex;
+
         while (index >= 0) {
             index--;
-            var newIndex = index, oldIndex = newIndex - 1;
+            newIndex = index;
+            var oldIndex = newIndex - 1;
             var formData = forms[newFormsetPrefix + oldIndex];
             if (!formData) {
                 continue;
             }
             if (!formData.isInitial) {
-                var $form = formData.form;
-                var oldFormPrefix = $form.attr('id').replace(/_set(\d+)$/, '_set-$1');
-                var oldFormsetPrefixRegex = new RegExp("^(id_)?" + DJNesting.regexQuote(oldFormPrefix));
+                $form = formData.form;
+                oldFormPrefixRegex = new RegExp("^(id_)?"
+                    + DJNesting.regexQuote($form.attr('id').replace(/_set(\d+)$/, '_set-$1')));
                 $form.attr('id', newFormsetPrefix + newIndex);
-                DJNesting.updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+                DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
             } else {
                 break;
             }
         }
 
-        var $form = $splicingForm;
+        $form = $splicingForm;
         // Replace the ids for the splice form, then stop iterating
-        var oldFormPrefix = oldFormId.replace(/_set(\d+)$/, '_set-$1');
-        var oldFormsetPrefixRegex = new RegExp("^(id_)?" + DJNesting.regexQuote(oldFormPrefix));
-        var newIndex = initialForms.length - 1;
+        oldFormPrefixRegex = new RegExp("^(id_)?"
+            + DJNesting.regexQuote($form.attr('id').replace(/_set(\d+)$/, '_set-$1')));
+        newIndex = initialForms.length - 1;
         $form.attr('id', newFormsetPrefix + newIndex);
-        DJNesting.updateFormAttributes($form, oldFormsetPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+        DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
     };
 
     DJNesting.createSortable = function($group) {
@@ -128,28 +131,15 @@
              * @param ui - An instance of the ui.nestedSortable widget
              */
             remove: function(event, ui) {
-                var $inline = $(this).closest('.djnesting-stacked');
-                var $form = ui.item.find('> .nested-inline-form'),
-                    prefix = $form.djangoFormsetPrefix();
+                var $inline = $(this).closest('.djnesting-stacked'),
+                    $form = ui.item.find('> .nested-inline-form'),
+                    nestedFormset = $inline.nestedFormset(),
+                    previousTotalFormCount = nestedFormset.mgmtVal('TOTAL_FORMS'),
+                    previousInitialFormCount = nestedFormset.mgmtVal('INITIAL_FORMS');
 
-                var removedFormCounts = {
-                    initial: ($form.data('isInitial')) ? 1 : 0,
-                    total: 1
-                };
-
-                var $TOTAL_FORMS = $inline.find('> input[name$="TOTAL_FORMS"]').first();
-                if ($TOTAL_FORMS.length) {
-                    var previousTotalForms = parseInt($TOTAL_FORMS.val(), 10);
-                    if (!isNaN(previousTotalForms)) {
-                        $TOTAL_FORMS.val(Math.max(0, previousTotalForms - removedFormCounts['total']));
-                    }
-                }
-                var $INITIAL_FORMS = $inline.find('> input[name$="INITIAL_FORMS"]').first();
-                if ($INITIAL_FORMS.length) {
-                    var previousInitialForms = parseInt($INITIAL_FORMS.val(), 10);
-                    if (!isNaN(previousInitialForms)) {
-                        $INITIAL_FORMS.val(Math.max(0, previousInitialForms - removedFormCounts['initial']));
-                    }
+                nestedFormset.mgmtVal('TOTAL_FORMS', previousTotalFormCount - 1);
+                if ($form.data('isInitial')) {
+                    nestedFormset.mgmtVal('INITIAL_FORMS', previousInitialFormCount - 1);
                 }
             },
             start: function(event, ui) {
@@ -176,62 +166,28 @@
              * @param ui - An instance of the ui.nestedSortable widget
              */
             receive: function(event, ui) {
-                var $form = ui.item.find('> .module'),
+                var $form = ui.item.find('> .module').first(),
                     $inline = $(this).closest('.djnesting-stacked'),
-                    $TOTAL_FORMS = $inline.find('> input[name$="TOTAL_FORMS"]').first(),
-                    $INITIAL_FORMS = $inline.find('> input[name$="INITIAL_FORMS"]').first(),
-                    previousTotalFormCount = 0,
-                    previousInitialFormCount = 0,
-                    prefix = $form.djangoFormsetPrefix();
+                    nestedFormset = $inline.nestedFormset(),
+                    previousTotalFormCount = nestedFormset.mgmtVal('TOTAL_FORMS'),
+                    previousInitialFormCount = nestedFormset.mgmtVal('INITIAL_FORMS'),
+                    oldFormsetPrefix = $form.djangoFormsetPrefix(),
+                    newFormsetPrefix = nestedFormset.prefix;
 
-                $form = ($form.length == 1) ? $form : $form.first();
+                nestedFormset.mgmtVal('TOTAL_FORMS', previousTotalFormCount + 1);
 
-                var oldFormsetPrefix = $form.djangoFormsetPrefix(),
-                    newFormsetPrefix = (!$TOTAL_FORMS.length)
-                                     ? oldFormsetPrefix
-                                     : ($TOTAL_FORMS.attr('id').match(/^id_(.+)-TOTAL_FORMS$/) || [null, null])[1];
-
-                var addedFormCounts = {
-                    total: 1,
-                    initial: ($form.data('isInitial')) ? 1 : 0
-                };
-
-                if ($TOTAL_FORMS.length) {
-                    previousTotalFormCount = parseInt($TOTAL_FORMS.val(), 10);
-                    if (!isNaN(previousTotalFormCount)) {
-                        $TOTAL_FORMS.val(previousTotalFormCount + addedFormCounts['total']);
-                    }
+                if ($form.data('isInitial')) {
+                    nestedFormset.mgmtVal('INITIAL_FORMS', previousInitialFormCount + 1);
+                    spliceInitialForm(oldFormsetPrefix, newFormsetPrefix, $form);
+                } else {
+                    var oldFormPrefixRegex = new RegExp("^(id_)?"
+                        + DJNesting.regexQuote($form.djangoFormPrefix()));
+                    var newFormPrefix = newFormsetPrefix + '-' + previousTotalFormCount + "-";
+                    $form.attr('id', newFormsetPrefix + previousTotalFormCount);
+                    DJNesting.updateFormAttributes($form.parent(), oldFormPrefixRegex, "$1" + newFormPrefix);
                 }
-
-                if ($TOTAL_FORMS.length && $form.length) {
-                    if (oldFormsetPrefix && newFormsetPrefix) {
-                        if ($INITIAL_FORMS.length) {
-                            previousInitialFormCount = parseInt($INITIAL_FORMS.val(), 10);
-                            if (!isNaN(previousInitialFormCount)) {
-                                $INITIAL_FORMS.val(previousInitialFormCount + addedFormCounts['initial']);
-                            }
-                        }
-
-                        $form.each(function(i, newForm) {
-                            var $newForm = $(newForm);
-                            if ($newForm.data('isInitial')) {
-                                spliceInitialForm(oldFormsetPrefix, newFormsetPrefix, $newForm);
-                            } else {
-                                var oldFormPrefixRegex = new RegExp("^(id_)?" + DJNesting.regexQuote($form.djangoFormPrefix()));
-                                var newFormIndex = previousTotalFormCount + i;
-                                var newFormPrefix = newFormsetPrefix + '-' + newFormIndex + "-";
-                                $newForm.attr('id', newFormsetPrefix + newFormIndex);
-                                DJNesting.updateFormAttributes($newForm.parent(), oldFormPrefixRegex, "$1" + newFormPrefix);
-                            }
-                        });
-                    }
-                    if (oldFormsetPrefix) {
-                        DJNesting.updatePositions(oldFormsetPrefix);
-                    }
-                    if (newFormsetPrefix) {
-                        DJNesting.updatePositions(newFormsetPrefix);
-                    }
-                }
+                DJNesting.updatePositions(oldFormsetPrefix);
+                DJNesting.updatePositions(newFormsetPrefix);
             },
             update: function(event, ui) {
                 // Ensure that <div class="nested-sortable-item nested-do-not-drag"/>
