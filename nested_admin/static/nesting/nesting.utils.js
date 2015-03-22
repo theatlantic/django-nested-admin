@@ -372,20 +372,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         };
     }
 
-    DJNesting.updateFormIndex = function(elem, options, replace_regex, replace_with) {
-        elem.find(':input,span,table,iframe,label,a,ul,p,img').each(function() {
-            var node = $(this),
-                node_id = node.attr('id'),
-                node_name = node.attr('name'),
-                node_for = node.attr('for'),
-                node_href = node.attr("href");
-            if (node_id) { node.attr('id', node_id.replace(replace_regex, replace_with)); }
-            if (node_name) { node.attr('name', node_name.replace(replace_regex, replace_with)); }
-            if (node_for) { node.attr('for', node_for.replace(replace_regex, replace_with)); }
-            if (node_href) { node.attr('href', node_href.replace(replace_regex, replace_with)); }
-        });
-    };
-
     DJNesting.createContainerElement = function(parent) {
         var newContainer = document.createElement('DIV'),
             newItem = document.createElement('DIV'),
@@ -463,26 +449,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         });
 
         $inline.attr('data-nesting-init-complete', 'true');
-    };
-
-    DJNesting.updateFormAttributes = function(elem, replace_regex, replace_with, selector) {
-        if (!selector) {
-            selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,div.group';
-        }
-        elem.find(selector).each(function() {
-            var node = $(this),
-                node_id = node.attr('id'),
-                node_name = node.attr('name'),
-                node_for = node.attr('for'),
-                node_href = node.attr("href");
-            if (node_id) { node.attr('id', node_id.replace(replace_regex, replace_with)); }
-            if (node_name) { node.attr('name', node_name.replace(replace_regex, replace_with)); }
-            if (node_for) { node.attr('for', node_for.replace(replace_regex, replace_with)); }
-            if (node_href) { node.attr('href', node_href.replace(replace_regex, replace_with)); }
-            if (node_id && node.is('.module,.grp-module')) {
-                node.attr('id', node.attr('id').replace(/_set-(\d+)$/, '_set$1'));
-            }
-        });
     };
 
     // Slight tweaks to the grappelli functions of the same name
