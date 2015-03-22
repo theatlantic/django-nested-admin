@@ -31,18 +31,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
     };
 
     DJNesting.updatePositions = function(prefix) {
-        var position = 0, parentPosition = 0, nestedPosition = 0, parentId = '',
+        var position = 0,
             $group = $('#' + prefix + '-group'),
             fieldNames = $group.data('fieldNames'),
             // The field name on the fieldset which is a ForeignKey to the parent model
             groupFkName = $group.data('formsetFkName'),
             parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
-
-        // If this is a formset that uses sub-articles, and they have not yet
-        // been initialized, return.
-        if (fieldNames.isSubarticle && !$group.data('nestingInitComplete')) {
-            return;
-        }
 
         if (parentIdMatches) {
             var parentPrefix = parentIdMatches[1];
@@ -58,9 +52,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             $group.filterDjangoField(prefix, groupFkName).val(parentPkVal);
         }
 
-        // Tracks whether the current/last element is marked for deletion
-        var markedForDeletion = false;
-
         $group.find('.module.nested-inline-form').each(function() {
             if (!this.id || this.id.substr(-6) == '-empty') {
                 return true; // Same as continue
@@ -72,7 +63,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             }
             // Cache jQuery object
             var $this = $(this),
-                isSubarticle = $this.closest('.nested-sortable-container').hasClass('subarticle-wrapper'),
                 prefixAndIndex = $this.djangoPrefixIndex() || [null, null],
                 formPrefix = prefixAndIndex[0],
                 index = prefixAndIndex[1];
@@ -82,81 +72,11 @@ var DJNesting = (typeof window.DJNesting != "undefined")
 
             // Skip the element if it's marked to be deleted
             if ($this.hasClass('predelete') || $this.hasClass('grp-predelete')) {
-                // This means that an item that was marked delete because
-                // it was a child of another element marked deleted, but
-                // that it has been moved
-                if ($this.hasClass('nested-delete') && (!isSubarticle || !markedForDeletion)) {
-                    $this.removeClass('predelete nested-delete');
-                    $this.filterDjangoField(formPrefix, 'DELETE').setDjangoBooleanInput(false);
-                } else {
-                    $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0');
-                    if (fieldNames.parentPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
-                    }
-                    if (fieldNames.nestedPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
-                    }
-                    if (isSubarticle && !$this.parent().parent().closest('.nested-sortable-item').children('.nested-inline-form').hasClass('predelete')) {
-                        markedForDeletion = false;
-                    } else {
-                        markedForDeletion = true;
-                    }
-                    return true;
-                }
-            }
-
-            if (!isSubarticle || !markedForDeletion) {
-                $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position);
-            }
-
-            if (!isSubarticle && !markedForDeletion) {
-                if (fieldNames.parentPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
-                }
-                if (fieldNames.nestedPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
-                }
-            }
-            if (isSubarticle) {
-                if (markedForDeletion) {
-                    $this.addClass('predelete nested-delete');
-                    $this.filterDjangoField(formPrefix, 'DELETE', index).setDjangoBooleanInput(markedForDeletion);
-                    $this.filterDjangoField(formPrefix, fieldNames.position, index).val('');
-                    if (fieldNames.parentPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
-                    }
-                    if (fieldNames.nestedPosition) {
-                        $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
-                    }
-                    return true;
-                }
-                $this.filterDjangoField(formPrefix, fieldNames.isSubarticle, index).setDjangoBooleanInput(true);
-                if (fieldNames.nestedPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val(nestedPosition);
-                }
-                if (fieldNames.parentPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val('0');
-                }
-                if (fieldNames.parentFk) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentFk, index).val(parentId);
-                }
-                nestedPosition++;
+                $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0');
             } else {
-                nestedPosition = 0;
-                if (fieldNames.parentPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.parentPosition, index).val(parentPosition);
-                }
-                if (fieldNames.isSubarticle) {
-                    $this.filterDjangoField(formPrefix, fieldNames.isSubarticle, index).setDjangoBooleanInput(false);
-                }
-                if (fieldNames.nestedPosition) {
-                    $this.filterDjangoField(formPrefix, fieldNames.nestedPosition, index).val('0');
-                }
-                parentId = $this.filterDjangoField(formPrefix, fieldNames.pk, index).val();
-                parentPosition++;
+                $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position);
+                position++;
             }
-            position++;
-            markedForDeletion = false;
         });
 
         $(document).trigger('djnesting:mutate', [$group]);
@@ -376,79 +296,11 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         var newContainer = document.createElement('DIV'),
             newItem = document.createElement('DIV'),
             emptyItem = document.createElement('DIV');
-        newContainer.setAttribute('class', 'nested-sortable-container subarticle-wrapper');
+        newContainer.setAttribute('class', 'nested-sortable-container');
         newItem.setAttribute('class', 'nested-sortable-item nested-do-not-drag');
         newItem.appendChild(emptyItem);
         newContainer.appendChild(newItem);
         return $(newContainer);
-    };
-
-    DJNesting.initSubArticleNesting = function($inline) {
-        var fieldNames = $inline.data('fieldNames') || {};
-        if (!fieldNames.isSubarticle) {
-            return;
-        }
-        // Depending on whether subarticles are hidden or checkboxes, the selector
-        // could be input[value=True] or input:checked
-        var inputType = $inline.find('.row.' + fieldNames.isSubarticle + ' input').first().prop('type');
-        var inputSelector = ' .row.' + fieldNames.isSubarticle + ' input';
-        var inputTrueSelector, inputFalseSelector;
-        if (inputType == 'checkbox') {
-            inputTrueSelector = inputSelector + ':checked';
-            inputFalseSelector = inputSelector + ':not(:checked)';
-        } else {
-            inputTrueSelector = inputSelector + '[value="True"]';
-            inputFalseSelector = inputSelector + '[value="False"]';
-        }
-
-        var $isSubarticleInputs = $inline.find('.row.' + fieldNames.isSubarticle).find('input');
-
-        var formsetPrefix = $inline.djangoFormsetPrefix();
-
-        $.each($isSubarticleInputs.get().reverse(), function(i, input) {
-            var $input = $(input),
-                isSubarticle = ($input.val() == 'True' || $input.is(':checked')),
-                $subarticle = $input.closest('.nested-sortable-item'),
-                $subarticles = $subarticle.prevUntil('.nested-sortable-item:has(' + inputFalseSelector + ')', '.nested-sortable-item:has(' + inputTrueSelector + ')').andSelf(),
-                $parentArticles = $subarticle.first().prevAll('.nested-sortable-item:has(' + inputFalseSelector + ')'),
-                $parentArticle = $parentArticles.first(),
-                parentArticleFormId = $parentArticle.children('.nested-inline-form').attr('id'),
-                $subarticleWrapper;
-
-            if ($input.djangoFormsetPrefix() != formsetPrefix) {
-                return;
-            }
-            if ($subarticle.closest('.subarticle-wrapper').length) {
-                return;
-            }
-            if ($subarticle.parent().hasClass('.nested-sortable-container')) {
-                return;
-            }
-            if ($subarticle.find('.subarticle-wrapper').length) {
-                return;
-            }
-            $parentArticle = $subarticle.prev('.nested-sortable-item');
-            // This should never happen (a sub-article without a parent before it)
-            // but if it did, we'll say that the article is not in fact a sub-article
-            if (isSubarticle && !$parentArticle.length) {
-                isSubarticle = false;
-            }
-            $subarticleWrapper = DJNesting.createContainerElement();
-
-            if (isSubarticle) {
-                $parentArticle = $('#' + parentArticleFormId).parent();
-                $parentArticle[0].appendChild($subarticleWrapper[0]);
-                $subarticleWrapper = $parentArticle.children('.subarticle-wrapper').last();
-                $subarticles.each(function() {
-                    $subarticleWrapper.append($(this));
-                });
-            } else {
-                $subarticle.append($subarticleWrapper);
-            }
-
-        });
-
-        $inline.attr('data-nesting-init-complete', 'true');
     };
 
     // Slight tweaks to the grappelli functions of the same name
