@@ -34,7 +34,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         var position = 0, parentPosition = 0, nestedPosition = 0, parentId = '',
             $group = $('#' + prefix + '-group'),
             fieldNames = $group.data('fieldNames'),
-            formSearch = new RegExp('(' + DJNesting.regexQuote(prefix) + '\\-?)(\\d+)(\\-?)'),
             // The field name on the fieldset which is a ForeignKey to the parent model
             groupFkName = $group.data('formsetFkName'),
             parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
@@ -55,44 +54,9 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             parentPkVal = parentPkField.val();
         }
 
-        var initialForms = [],
-            newForms = [];
-
-        $group.djangoFormsetForms().each(function() {
-            var form = this;
-            if (form.getAttribute('data-is-initial') == 'true') {
-                initialForms.push(form);
-            } else if (form.getAttribute('data-is-initial') == 'false') {
-                newForms.push(form);
-            }
-        });
-
-        var initialFormCount = initialForms.length;
-
-        $(initialForms).each(function(i, form) {
-            var $form = $(form),
-                currentFormId = $form.attr('id'),
-                newFormId = currentFormId.replace(/set(\d+)$/, 'set' + i.toString()),
-                formReplace = '$1' + i.toString() + '$3';
-            $form.attr('id', newFormId);
-            DJNesting.updateFormAttributes($form, formSearch, formReplace);
-            if (groupFkName && typeof(parentPkVal) != 'undefined') {
-                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
-            }
-        });
-
-        $(newForms).each(function(i, form) {
-            i += initialFormCount;
-            var $form = $(form),
-                currentFormId = $form.attr('id'),
-                newFormId = currentFormId.replace(/set(\d+)$/, 'set' + i.toString()),
-                formReplace = '$1' + i.toString() + '$3';
-            $form.attr('id', newFormId);
-            DJNesting.updateFormAttributes($form, formSearch, formReplace);
-            if (groupFkName && typeof(parentPkVal) != 'undefined') {
-                $group.filterDjangoField(prefix, groupFkName, i).val(parentPkVal);
-            }
-        });
+        if (groupFkName && typeof(parentPkVal) != 'undefined') {
+            $group.filterDjangoField(prefix, groupFkName).val(parentPkVal);
+        }
 
         // Tracks whether the current/last element is marked for deletion
         var markedForDeletion = false;
@@ -451,10 +415,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             inputFalseSelector = inputSelector + '[value="False"]';
         }
 
-        // var inputTrueSelector = inputSelector + ':checked, ' + inputSelector + '[value="True"]';
-        // var inputFalseSelector = inputSelector + ':not(:checked), ' + inputSelector + '[value="False"]';
-        var $subarticleInputs = $inline.find('.row.' + fieldNames.isSubarticle)
-                                               .find('input[value="True"], input:checked');
         var $isSubarticleInputs = $inline.find('.row.' + fieldNames.isSubarticle).find('input');
 
         var formsetPrefix = $inline.djangoFormsetPrefix();
@@ -467,7 +427,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
                 $parentArticles = $subarticle.first().prevAll('.nested-sortable-item:has(' + inputFalseSelector + ')'),
                 $parentArticle = $parentArticles.first(),
                 parentArticleFormId = $parentArticle.children('.nested-inline-form').attr('id'),
-                $subarticleWrapper, $subarticleItemUndraggable;
+                $subarticleWrapper;
 
             if ($input.djangoFormsetPrefix() != formsetPrefix) {
                 return;
@@ -488,23 +448,14 @@ var DJNesting = (typeof window.DJNesting != "undefined")
                 isSubarticle = false;
             }
             $subarticleWrapper = DJNesting.createContainerElement();
-            // $subarticleItemUndraggable = $('<div class="nested-sortable-item nested-do-not-drag"><div/></div>');
-            // $subarticleWrapper.prepend($subarticleItemUndraggable);
 
             if (isSubarticle) {
-                // var $allSubarticles = $subarticles.add($subarticle);
-                // $allSubarticles.wrapAll($subarticleWrapper)
-                // Move under the parent article
-                // $parentArticle.append($subarticles);
                 $parentArticle = $('#' + parentArticleFormId).parent();
                 $parentArticle[0].appendChild($subarticleWrapper[0]);
                 $subarticleWrapper = $parentArticle.children('.subarticle-wrapper').last();
                 $subarticles.each(function() {
                     $subarticleWrapper.append($(this));
                 });
-
-                // Wrap in a new container element
-                // $subarticles.wrapAll($subarticleWrapper);
             } else {
                 $subarticle.append($subarticleWrapper);
             }
@@ -603,8 +554,10 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         }
         var lookup_urls = DJNesting.LOOKUP_URLS;
 
+        var $inline = $('#' + prefix + '-group');
+
         if (!groupData) {
-            groupData = $('#' + prefix + '-group').data();
+            groupData = $inline.data();
         }
         var lookup_fields = {
             related_fk:       groupData.lookupRelatedFk,
@@ -616,7 +569,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         };
 
         $.each(lookup_fields.autocomplete_fk, function() {
-            form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            $inline.find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_fk({
                     lookup_url: lookup_urls.related,
@@ -625,7 +578,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             });
         });
         $.each(lookup_fields.autocomplete_m2m, function() {
-            form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+            $inline.find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_m2m({
                     lookup_url: lookup_urls.m2m,
@@ -636,7 +589,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         $.each(lookup_fields.autocomplete_generic, function() {
             var content_type = this[0],
                 object_id = this[1];
-            form.find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
+            $inline.find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
             .each(function() {
                 var i = $(this).attr("id").match(/-\d+-/);
                 if (i) {
