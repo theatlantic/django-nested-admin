@@ -2,41 +2,6 @@
 
     window.DJNesting = (typeof DJNesting == 'object') ? DJNesting : {};
 
-    var spliceForm = function(oldFormsetPrefix, newFormsetPrefix, $splicingForm) {
-            var $inline = $('#' + newFormsetPrefix + '-group'),
-            nestedFormset = $inline.nestedFormset(),
-            index,
-            initialFormCount = nestedFormset.mgmtVal('INITIAL_FORMS'),
-            totalFormCount = nestedFormset.mgmtVal('TOTAL_FORMS'),
-            $form, oldFormPrefixRegex, newIndex;
-
-        if ($splicingForm.data('isInitial')) {
-            for (index = totalFormCount - 1; index >= initialFormCount; index--) {
-                $form = $('#' + newFormsetPrefix + index);
-                newIndex = index + 1;
-                oldFormPrefixRegex = new RegExp("^(id_)?"
-                    + DJNesting.regexQuote(newFormsetPrefix + "-" + index));
-                $form.attr('id', newFormsetPrefix + newIndex);
-                DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
-            }
-        }
-
-        // Replace the ids for the splice form
-        oldFormPrefixRegex = new RegExp("^(id_)?"
-            + DJNesting.regexQuote($splicingForm.attr('id').replace(/_set(\d+)$/, '_set-$1')));
-        newIndex = ($splicingForm.data('isInitial')) ? initialFormCount : totalFormCount;
-        $splicingForm.attr('id', newFormsetPrefix + newIndex);
-        DJNesting.updateFormAttributes($splicingForm, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
-
-        if ($splicingForm.data('isInitial')) {
-            nestedFormset.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
-        }
-        nestedFormset.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
-
-        DJNesting.updatePositions(oldFormsetPrefix);
-        DJNesting.updatePositions(newFormsetPrefix);
-    };
-
     DJNesting.createSortable = function($group) {
         return $group.children('div.items').nestedSortable({
             handle: '> div > h3.djnesting-drag-handler',
@@ -69,28 +34,6 @@
             containerElementSelector: '.nested-sortable-container',
             // The selector for ALL list items in the nested sortable.
             listItemSelector: '.nested-sortable-item',
-            /**
-             * Triggered when a sortable is removed from a container (to be
-             * dropped in another; before 'receive' is triggered)
-             *
-             * This method decrements the TOTAL_FORMS input in the formset
-             * from which the form is being removed.
-             *
-             * @param event - A jQuery Event
-             * @param ui - An instance of the ui.nestedSortable widget
-             */
-            remove: function(event, ui) {
-                var $inline = $(this).closest('.djnesting-stacked'),
-                    $form = ui.item.find('> .nested-inline-form'),
-                    nestedFormset = $inline.nestedFormset(),
-                    previousTotalFormCount = nestedFormset.mgmtVal('TOTAL_FORMS'),
-                    previousInitialFormCount = nestedFormset.mgmtVal('INITIAL_FORMS');
-
-                nestedFormset.mgmtVal('TOTAL_FORMS', previousTotalFormCount - 1);
-                if ($form.data('isInitial')) {
-                    nestedFormset.mgmtVal('INITIAL_FORMS', previousInitialFormCount - 1);
-                }
-            },
             start: function(event, ui) {
                 ui.item.addClass('nested-sortable-item-dragging');
                 ui.item.show();
@@ -100,28 +43,11 @@
             },
             /**
              * Triggered when a sortable is dropped into a container
-             *
-             * This method:
-             *   - increments the TOTAL_FORMS input in the formset to
-             *     which the form is being added
-             *   - updates the position field in both the formset the
-             *     sortable was removed from and the formset it has
-             *     been added to
-             *   - Updates "id", "name", and "for" attributes to match
-             *     the new parent formset's prefix and the old parent
-             *     formset's prefix.
-             *
-             * @param event - A jQuery Event
-             * @param ui - An instance of the ui.nestedSortable widget
              */
             receive: function(event, ui) {
                 var $form = ui.item.find('> .module').first(),
-                    $inline = $(this).closest('.djnesting-stacked'),
-                    nestedFormset = $inline.nestedFormset(),
-                    oldFormsetPrefix = $form.djangoFormsetPrefix(),
-                    newFormsetPrefix = nestedFormset.prefix;
-
-                spliceForm(oldFormsetPrefix, newFormsetPrefix, $form);
+                    $inline = $(this).closest('.djnesting-stacked');
+                $inline.nestedFormset().spliceInto($form);
             },
             update: function(event, ui) {
                 // Ensure that <div class="nested-sortable-item nested-do-not-drag"/>
