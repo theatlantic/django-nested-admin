@@ -79,7 +79,7 @@
                 var $form = $(this).closest('.' + self.opts.formClass);
                 var $deleteInput = $('#id_' + $form.djangoFormPrefix() + 'DELETE');
                 if (!$deleteInput.is(':checked')) {
-                    self.delete($form);
+                    self['delete']($form);
                 } else {
                     self.undelete($form);
                 }
@@ -107,7 +107,7 @@
 
             DJNesting.updatePositions(this.prefix);
         },
-        delete: function(form) {
+        "delete": function(form) {
             var $form = $(form),
                 formPrefix = $form.djangoFormPrefix(),
                 $deleteInput = $('#id_' + formPrefix + 'DELETE');
@@ -226,8 +226,7 @@
         args = $.makeArray(arguments).slice(1);
 
         if (fn in NestedFormset.prototype) {
-            var nestedFormset = $el.data(pluginName);
-            return nestedFormset[fn](args);
+            return $el.data(pluginName)[fn](args);
         } else {
             throw new Error("Unknown function call " + fn + " for $.fn." + pluginName);
         }
