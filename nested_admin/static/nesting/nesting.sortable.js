@@ -73,6 +73,7 @@
                     return;
                 }
                 DJNesting.updatePositions($form.djangoFormsetPrefix());
+                $(document).trigger('djnesting:mutate', [$('#' + $form.djangoFormsetPrefix() + '-group')]);
             }
         });
     };

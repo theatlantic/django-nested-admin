@@ -86,10 +86,11 @@
             });
         },
         remove: function(form) {
-            var self = this;
             var $form = $(form);
             var totalForms = this.mgmtVal('TOTAL_FORMS');
             var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
+            var index = $form.djangoFormIndex();
+            var isInitial = $form.data('isInitial');
 
             $form.remove();
 
@@ -99,13 +100,10 @@
                 this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').show();
             }
 
-            var form_re = new RegExp(DJNesting.regexQuote(this.prefix) + '\\-\\d+\\-');
-
-            this.$inline.find("." + this.opts.formClass).each(function(i, el) {
-                DJNesting.updateFormAttributes($(el), form_re, self.prefix + '-' + i + '-');
-            });
+            this._fillGap(index, isInitial);
 
             DJNesting.updatePositions(this.prefix);
+            $(document).trigger('djnesting:mutate', [this.$formset]);
         },
         "delete": function(form) {
             var $form = $(form),
@@ -122,6 +120,7 @@
             }
 
             DJNesting.updatePositions(this.prefix);
+            $(document).trigger('djnesting:mutate', [this.$formset]);
         },
         undelete: function(form) {
             var $form = $(form),
@@ -137,6 +136,7 @@
             }
 
             DJNesting.updatePositions(this.prefix);
+            $(document).trigger('djnesting:mutate', [this.$formset]);
         },
         add: function() {
             var self = this;
@@ -165,6 +165,7 @@
 
             DJNesting.updateNestedFormIndex($form, this.prefix);
             DJNesting.updatePositions(this.prefix);
+            $(document).trigger('djnesting:mutate', [this.$formset]);
 
             grappelli.reinitDateTimeFields($form);
             grappelli.updateSelectFilter($form);
@@ -197,6 +198,35 @@
             $(document).trigger('djnesting:added', [this.$inline, $form]);
 
             return $form;
+        },
+        _fillGap: function(index, isInitial) {
+            var $initialForm, $newForm;
+            this.$inline.djangoFormsetForms().each(function() {
+                var $form = $(this);
+                var i = $form.djangoFormIndex();
+                if (i <= index) {
+                    return;
+                }
+                if ($form.data('isInitial')) {
+                    $initialForm = $form;
+                } else {
+                    $newForm = $form;
+                }
+            });
+            var $form = (isInitial) ? $initialForm || $newForm : $newForm;
+            if (!$form) {
+                return;
+            }
+            var oldIndex = $form.djangoFormIndex();
+            oldFormPrefixRegex = new RegExp("^(id_)?"
+                + DJNesting.regexQuote(this.prefix + "-" + oldIndex));
+            $form.attr('id', this.prefix + index);
+            DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + this.prefix + "-" + index);
+            $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+
+            if (isInitial && $initialForm && $newForm) {
+                this._fillGap(oldIndex, false);
+            }
         },
         /**
          * Splice a form into the current formset at new position `index`.
@@ -242,18 +272,11 @@
                         }
                     }
                 }
+
+                oldNestedFormset._fillGap($form.djangoFormIndex(), isInitial);
+
                 if (isInitial) {
                     oldNestedFormset.mgmtVal('INITIAL_FORMS', oldNestedFormset.mgmtVal('INITIAL_FORMS') - 1);
-
-                    // Re-index the non-initial form attributes
-                    for (i = totalFormCount - 1; i >= initialFormCount; i--) {
-                        var $f = $('#' + newFormsetPrefix + i);
-                        newIndex = i + 1;
-                        oldFormPrefixRegex = new RegExp("^(id_)?"
-                            + DJNesting.regexQuote(newFormsetPrefix + "-" + i));
-                        $f.attr('id', newFormsetPrefix + newIndex);
-                        DJNesting.updateFormAttributes($f, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
-                    }
                 }
 
                 // Replace the ids for the splice form
@@ -262,6 +285,7 @@
                 newIndex = (isInitial) ? initialFormCount : totalFormCount;
                 $form.attr('id', newFormsetPrefix + newIndex);
                 DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+                $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
                 if (isInitial) {
                     this.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
@@ -269,9 +293,11 @@
                 this.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
 
                 DJNesting.updatePositions(oldFormsetPrefix);
+                $(document).trigger('djnesting:mutate', [$oldInline]);
             }
 
             DJNesting.updatePositions(newFormsetPrefix);
+            $(document).trigger('djnesting:mutate', [this.$formset]);
         },
         mgmtVal: function(name, newValue) {
             var $field = this.$inline.find('#id_' + this.prefix + '-' + name);
