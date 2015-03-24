@@ -78,8 +78,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
                 position++;
             }
         });
-
-        $(document).trigger('djnesting:mutate', [$group]);
     };
 
     if (typeof($.fn.setDjangoBooleanInput) != 'function') {
@@ -176,6 +174,14 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         return prefixIndex[0] + '-' + prefixIndex[1] + '-';
     };
 
+    $.fn.djangoFormIndex = function() {
+        var prefixIndex = this.djangoPrefixIndex();
+        if (!prefixIndex || !prefixIndex[1]) {
+            return null;
+        }
+        return parseInt(prefixIndex[1], 10);
+    };
+
     $.fn.djangoFormsetPrefix = function() {
         var prefixIndex = this.djangoPrefixIndex();
         if (!prefixIndex) {
@@ -212,8 +218,11 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             $forms = $group.find('.nested-inline-form').filter(function() {
                 return filterDjangoFormsetForms(this, $group, formsetPrefix);
             });
-
-            Array.prototype.push.apply(forms, $forms.get());
+            var sortedForms = $forms.toArray().sort(function(a, b) {
+                var aIndex = $(a).djangoFormIndex(), bIndex = $(b).djangoFormIndex;
+                return (aIndex == bIndex) ? 0 : (aIndex < bIndex) ? -1 : 1;
+            });
+            Array.prototype.push.apply(forms, sortedForms);
         });
         return this.pushStack(forms);
     };
