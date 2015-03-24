@@ -210,16 +210,27 @@
                 totalFormCount = this.mgmtVal('TOTAL_FORMS'),
                 oldFormsetPrefix = $form.djangoFormsetPrefix(),
                 newFormsetPrefix = this.prefix,
-                index, newIndex;
+                index, newIndex,
+                isInitial = $form.data('isInitial');
 
             var $oldInline = $('#' + oldFormsetPrefix + '-group');
             var oldNestedFormset = $oldInline.nestedFormset();
             oldNestedFormset.mgmtVal('TOTAL_FORMS', oldNestedFormset.mgmtVal('TOTAL_FORMS') - 1);
-            if ($form.data('isInitial')) {
-                oldNestedFormset.mgmtVal('INITIAL_FORMS', oldNestedFormset.mgmtVal('INITIAL_FORMS') - 1);
-            }
 
-            if ($form.data('isInitial')) {
+            if (isInitial) {
+                var $parentInline = this.$inline.parent().closest('.djnesting-stacked');
+                if ($parentInline.length) {
+                    var $parentForm = this.$inline.closest('.nested-inline-form');
+                    var parentPkField = $parentInline.data('fieldNames').pk;
+                    var $parentPk = $parentForm.djangoFormField(parentPkField);
+                    if (!$parentPk.val()) {
+                        isInitial = false;
+                    }
+                }
+            }
+            if (isInitial) {
+                oldNestedFormset.mgmtVal('INITIAL_FORMS', oldNestedFormset.mgmtVal('INITIAL_FORMS') - 1);
+
                 // Re-index the non-initial form attributes
                 for (index = totalFormCount - 1; index >= initialFormCount; index--) {
                     var $f = $('#' + newFormsetPrefix + index);
@@ -234,11 +245,11 @@
             // Replace the ids for the splice form
             oldFormPrefixRegex = new RegExp("^(id_)?"
                 + DJNesting.regexQuote($form.attr('id').replace(/_set(\d+)$/, '_set-$1')));
-            newIndex = ($form.data('isInitial')) ? initialFormCount : totalFormCount;
+            newIndex = (isInitial) ? initialFormCount : totalFormCount;
             $form.attr('id', newFormsetPrefix + newIndex);
             DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
 
-            if ($form.data('isInitial')) {
+            if (isInitial) {
                 this.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
             }
             this.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
