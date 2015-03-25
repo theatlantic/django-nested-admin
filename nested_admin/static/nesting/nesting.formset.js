@@ -228,6 +228,22 @@
                 this._fillGap(oldIndex, false);
             }
         },
+        _makeRoomForInsert: function() {
+            var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
+                totalFormCount = this.mgmtVal('TOTAL_FORMS'),
+                gapIndex = initialFormCount,
+                $existingForm = $('#' + this.prefix + gapIndex);
+
+            if (!$existingForm.length) {
+                return;
+            }
+
+            var oldFormPrefixRegex = new RegExp("^(id_)?"
+                + DJNesting.regexQuote(this.prefix) + "-" + gapIndex);
+            $existingForm.attr('id', this.prefix + totalFormCount);
+            DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, "$1" + this.prefix + "-" + totalFormCount);
+            $(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
+        },
         /**
          * Splice a form into the current formset at new position `index`.
          */
@@ -277,6 +293,7 @@
 
                 if (isInitial) {
                     oldNestedFormset.mgmtVal('INITIAL_FORMS', oldNestedFormset.mgmtVal('INITIAL_FORMS') - 1);
+                    this._makeRoomForInsert();
                 }
 
                 // Replace the ids for the splice form
