@@ -169,6 +169,49 @@ class TestAdmin(BaseNestedAdminTestCase):
             'group/b[1]/Item B 2[1]',
             'group/b[1]/Item B 3[2]'])
 
+    def test_drag_middle_item_between_sections_after_adding_new_item_to_other_section(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item A 1', section=section_a, position=1)
+        Item.objects.create(name='Item A 2', section=section_a, position=2)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+        Item.objects.create(name='Item B 2', section=section_b, position=2)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        with self.clickable_selector('#section_set-0-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+            el.click()
+        with self.clickable_selector('#id_section_set-0-item_set-3-name') as el:
+            el.send_keys("Item A 3")
+
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+
+        self.wait_page_loaded()
+
+        item_b_1 = Item.objects.get(name='Item B 1')
+        self.assertEqual(item_b_1.section, section_a, "item was not moved to the correct section")
+        self.assertEqual(item_b_1.position, 1, "item was not moved to the correct position")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item A 0[0]',
+            'group/a[0]/Item B 1[1]',
+            'group/a[0]/Item A 1[2]',
+            'group/a[0]/Item A 2[3]',
+            'group/a[0]/Item A 3[4]'])
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item B 0[0]',
+            'group/b[1]/Item B 2[1]'])
+
     def test_drag_new_item_between_sections(self):
         group = Group.objects.create(slug='group')
         section_a = Section.objects.create(slug='a', group=group, position=0)
