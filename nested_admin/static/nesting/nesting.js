@@ -13,12 +13,12 @@
         // Register the nested formset on top level djnesting-stacked elements.
         // It will handle recursing down the nested inlines.
         $('.djnesting-stacked-root').each(function(i, rootGroup) {
-            $(rootGroup).nestedFormset();
+            $(rootGroup).djangoFormset();
         });
         $('form').submit(function() {
             $('.djnesting-stacked').each(function() {
                 DJNesting.updatePositions($(this).djangoFormsetPrefix());
-                $(document).trigger('djnesting:mutate', [$(this).nestedFormset().$inline]);
+                $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
             });
         });
     });

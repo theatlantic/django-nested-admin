@@ -1,8 +1,8 @@
 (function($) {
 
-    var pluginName = "nestedFormset";
+    var pluginName = "djangoFormset";
 
-    var NestedFormset = Class.extend({
+    var DjangoFormset = Class.extend({
         opts: {
             emptyClass: 'empty-form grp-empty-form',
             predeleteClass: 'grp-predelete'
@@ -274,8 +274,8 @@
                     $before.after($item);
                 }
 
-                var oldNestedFormset = $oldInline.nestedFormset();
-                oldNestedFormset.mgmtVal('TOTAL_FORMS', oldNestedFormset.mgmtVal('TOTAL_FORMS') - 1);
+                var oldDjangoFormset = $oldInline.djangoFormset();
+                oldDjangoFormset.mgmtVal('TOTAL_FORMS', oldDjangoFormset.mgmtVal('TOTAL_FORMS') - 1);
 
                 if (isInitial) {
                     var $parentInline = this.$inline.parent().closest('.djnesting-stacked');
@@ -289,10 +289,10 @@
                     }
                 }
 
-                oldNestedFormset._fillGap($form.djangoFormIndex(), isInitial);
+                oldDjangoFormset._fillGap($form.djangoFormIndex(), isInitial);
 
                 if (isInitial) {
-                    oldNestedFormset.mgmtVal('INITIAL_FORMS', oldNestedFormset.mgmtVal('INITIAL_FORMS') - 1);
+                    oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
                     this._makeRoomForInsert();
                 }
 
@@ -332,18 +332,18 @@
 
         if (arguments.length === 0 || (arguments.length === 1 && $.type(arguments[0]) != 'string')) {
             options = arguments[0];
-            var nestedFormset = $el.data(pluginName);
-            if (!nestedFormset) {
-                nestedFormset = new NestedFormset($el, options);
-                $el.data(pluginName, nestedFormset);
+            var djangoFormset = $el.data(pluginName);
+            if (!djangoFormset) {
+                djangoFormset = new DjangoFormset($el, options);
+                $el.data(pluginName, djangoFormset);
             }
-            return nestedFormset;
+            return djangoFormset;
         }
 
         fn = arguments[0];
         args = $.makeArray(arguments).slice(1);
 
-        if (fn in NestedFormset.prototype) {
+        if (fn in DjangoFormset.prototype) {
             return $el.data(pluginName)[fn](args);
         } else {
             throw new Error("Unknown function call " + fn + " for $.fn." + pluginName);

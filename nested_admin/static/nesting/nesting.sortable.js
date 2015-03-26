@@ -47,7 +47,7 @@
             receive: function(event, ui) {
                 var $form = ui.item.find('> .module').first(),
                     $inline = $(this).closest('.djnesting-stacked');
-                $inline.nestedFormset().spliceInto($form);
+                $inline.djangoFormset().spliceInto($form);
             },
             update: function(event, ui) {
                 // Ensure that <div class="nested-sortable-item nested-do-not-drag"/>
