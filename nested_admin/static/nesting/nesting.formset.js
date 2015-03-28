@@ -138,7 +138,7 @@
             DJNesting.updatePositions(this.prefix);
             $(document).trigger('djnesting:mutate', [this.$formset]);
         },
-        add: function() {
+        add: function(spliceIndex) {
             var self = this;
             var $form = this._$template.clone();
             var index = this.mgmtVal('TOTAL_FORMS');
@@ -165,7 +165,12 @@
 
             DJNesting.updateNestedFormIndex($form, this.prefix);
             DJNesting.updatePositions(this.prefix);
-            $(document).trigger('djnesting:mutate', [this.$formset]);
+
+            if ($.isNumeric(spliceIndex)) {
+                this.spliceInto($form, spliceIndex, true);
+            } else {
+                $(document).trigger('djnesting:mutate', [this.$formset]);
+            }
 
             grappelli.reinitDateTimeFields($form);
             grappelli.updateSelectFilter($form);
@@ -247,7 +252,7 @@
         /**
          * Splice a form into the current formset at new position `index`.
          */
-        spliceInto: function($form, index) {
+        spliceInto: function($form, index, isNewAddition) {
             var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
                 totalFormCount = this.mgmtVal('TOTAL_FORMS'),
                 oldFormsetPrefix = $form.djangoFormsetPrefix(),
@@ -314,7 +319,9 @@
             }
 
             DJNesting.updatePositions(newFormsetPrefix);
-            $(document).trigger('djnesting:mutate', [this.$formset]);
+            if (!isNewAddition) {
+                $(document).trigger('djnesting:mutate', [this.$formset]);
+            }
         },
         mgmtVal: function(name, newValue) {
             var $field = this.$inline.find('#id_' + this.prefix + '-' + name);
