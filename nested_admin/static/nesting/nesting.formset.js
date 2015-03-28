@@ -175,13 +175,13 @@
                 toggle_handler_slctr: ".collapse-handler:first",
                 closed_css: "closed grp-closed",
                 open_css: "open grp-open",
-                on_toggle: function(elem, options) {
+                on_toggle: function() {
                     $(document).trigger('djnesting:toggle', [self.$inline]);
                 }
             });
             if (typeof $.fn.curated_content_type == 'function') {
-                $form.find('.curated-content-type-select').each(function(index, element) {
-                    $(element).curated_content_type();
+                $form.find('.curated-content-type-select').each(function() {
+                    $(this).curated_content_type();
                 });
             }
 
@@ -218,7 +218,7 @@
                 return;
             }
             var oldIndex = $form.djangoFormIndex();
-            oldFormPrefixRegex = new RegExp("^(id_)?"
+            var oldFormPrefixRegex = new RegExp("^(id_)?"
                 + DJNesting.regexQuote(this.prefix + "-" + oldIndex));
             $form.attr('id', this.prefix + index);
             DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + this.prefix + "-" + index);
@@ -297,7 +297,7 @@
                 }
 
                 // Replace the ids for the splice form
-                oldFormPrefixRegex = new RegExp("^(id_)?"
+                var oldFormPrefixRegex = new RegExp("^(id_)?"
                     + DJNesting.regexQuote($form.attr('id').replace(/_set(\d+)$/, '_set-$1')));
                 newIndex = (isInitial) ? initialFormCount : totalFormCount;
                 $form.attr('id', newFormsetPrefix + newIndex);
