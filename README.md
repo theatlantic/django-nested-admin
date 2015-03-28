@@ -1,6 +1,11 @@
+django-nested-admin
+===================
+
+[![Build Status](https://travis-ci.org/theatlantic/django-nested-admin.svg?branch=dev%2Frefactor)](https://travis-ci.org/theatlantic/django-nested-admin)
+
 **django-nested-admin** is a project that makes it possible to nest admin
 inlines (that is, to define inlines on InlineModelAdmin classes). It is
-compatible with Django 1.4-1.6.
+compatible with Django 1.4-1.7 and Python versions 2.7 and 3.4.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
