@@ -7,10 +7,10 @@ python:
 env:
     - TOXENV=py27-django14
     - TOXENV=py27-django15
-    - TOXENV=py34-django15
     - TOXENV=py27-django16 DJANGO_SELENIUM_TESTS=1
-    - TOXENV=py34-django16 DJANGO_SELENIUM_TESTS=1
     - TOXENV=py27-django17 DJANGO_SELENIUM_TESTS=1
+    - TOXENV=py34-django15
+    - TOXENV=py34-django16 DJANGO_SELENIUM_TESTS=1
     - TOXENV=py34-django17 DJANGO_SELENIUM_TESTS=1
 
 install:
