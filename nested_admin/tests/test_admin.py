@@ -286,6 +286,34 @@ class TestAdmin(BaseNestedAdminTestCase):
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 2[1]'])
 
+    def test_delete_section(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item A 1', section=section_a, position=1)
+        Item.objects.create(name='Item A 2', section=section_a, position=2)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+        Item.objects.create(name='Item B 2', section=section_b, position=2)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        self.selenium.find_element_by_css_selector('#section_set0 a.grp-delete-handler.section').click()
+
+        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+
+        self.wait_page_loaded()
+
+        self.assertEqual(len(Section.objects.filter(slug='a')), 0, "Section was not deleted")
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[0]/Item B 0[0]',
+            'group/b[0]/Item B 1[1]',
+            'group/b[0]/Item B 2[2]'])
+
     def test_remove_item(self):
         group = Group.objects.create(slug='group')
         section_a = Section.objects.create(slug='a', group=group, position=0)

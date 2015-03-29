@@ -106,11 +106,12 @@
             $(document).trigger('djnesting:mutate', [this.$formset]);
         },
         "delete": function(form) {
-            var $form = $(form),
+            var self = this,
+                $form = $(form),
                 formPrefix = $form.djangoFormPrefix(),
                 $deleteInput = $('#id_' + formPrefix + 'DELETE');
 
-            if ($form.parent().closest('.' + this.opts.predeleteClass).length) {
+            if ($form.hasClass(this.opts.predeleteClass)) {
                 return;
             }
 
