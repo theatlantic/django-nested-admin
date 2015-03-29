@@ -17,7 +17,7 @@
         });
         $('form').submit(function() {
             $('.djnesting-stacked').each(function() {
-                DJNesting.updatePositions($(this).djangoFormsetPrefix());
+                DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);
                 $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
             });
         });
