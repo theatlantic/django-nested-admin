@@ -119,7 +119,17 @@
                 $deleteInput.attr('checked', 'checked');
                 $form.addClass(this.opts.predeleteClass);
             }
-
+            $form.find('.djnesting-stacked').each(function() {
+                var $childInline = $(this);
+                var childFormset = $childInline.djangoFormset();
+                $childInline.djangoFormsetForms().each(function() {
+                    if ($(this).hasClass(self.opts.predeleteClass)) {
+                        $(this).data('alreadyDeleted', true);
+                    } else {
+                        childFormset.delete(this);
+                    }
+                });
+            });
             DJNesting.updatePositions(this.prefix);
             $(document).trigger('djnesting:mutate', [this.$formset]);
         },
@@ -135,7 +145,18 @@
                 $deleteInput.removeAttr('checked');
                 $form.removeClass(this.opts.predeleteClass);
             }
-
+            $form.data('alreadyDeleted', false);
+            $form.find('.djnesting-stacked').each(function() {
+                var $childInline = $(this);
+                var childFormset = $childInline.djangoFormset();
+                $childInline.djangoFormsetForms().each(function() {
+                    if ($(this).data('alreadyDeleted')) {
+                        $(this).data('alreadyDeleted', false);
+                    } else {
+                        childFormset.undelete(this);
+                    }
+                });
+            });
             DJNesting.updatePositions(this.prefix);
             $(document).trigger('djnesting:mutate', [this.$formset]);
         },
@@ -268,7 +289,7 @@
                     return;
                 }
                 $item = $form.parent().remove();
-                $before = this.$inline.find('> .nested-sortable-container').find('.nested-sortable-item').eq(index);
+                $before = this.$inline.find('> .nested-sortable-container > .nested-sortable-item').eq(index);
                 $before.after($item);
             } else {
                 var $oldInline = $('#' + oldFormsetPrefix + '-group');
