@@ -115,10 +115,12 @@
                 return;
             }
 
-            if ($form.hasClass('has_original')) {
-                $deleteInput.attr('checked', 'checked');
-                $form.addClass(this.opts.predeleteClass);
+            if (!$form.data('isInitial')) {
+                return;
             }
+            $deleteInput.attr('checked', 'checked');
+            $form.addClass(this.opts.predeleteClass);
+
             $form.find('.djnesting-stacked').each(function() {
                 var $childInline = $(this);
                 var childFormset = $childInline.djangoFormset();

@@ -302,12 +302,15 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.make_footer_position_static()
 
         self.selenium.find_element_by_css_selector('#section_set0 a.grp-delete-handler.section').click()
+        self.wait_until_clickable_selector('#section_set0.grp-predelete a.grp-delete-handler.section')
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
 
         self.wait_page_loaded()
 
         self.assertEqual(len(Section.objects.filter(slug='a')), 0, "Section was not deleted")
+
+        section_b = Section.objects.get(slug='b')
 
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[0]/Item B 0[0]',
