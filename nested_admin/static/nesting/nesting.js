@@ -15,11 +15,13 @@
         $('.djnesting-stacked-root').each(function(i, rootGroup) {
             $(rootGroup).djangoFormset();
         });
-        $('form').submit(function() {
+        $('form').on('submit', function(e) {
+            e.preventDefault();
             $('.djnesting-stacked').each(function() {
                 DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);
                 $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
             });
+            this.submit();
         });
     });
 
