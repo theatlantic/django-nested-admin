@@ -30,7 +30,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         });
     };
 
-    DJNesting.updatePositions = function(prefix) {
+    DJNesting.updatePositions = function(prefix, skipDeleted) {
         var position = 0,
             $group = $('#' + prefix + '-group'),
             fieldNames = $group.data('fieldNames'),
@@ -71,7 +71,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             }
 
             // Skip the element if it's marked to be deleted
-            if ($this.hasClass('predelete') || $this.hasClass('grp-predelete')) {
+            if (skipDeleted && ($this.hasClass('predelete') || $this.hasClass('grp-predelete'))) {
                 $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0');
             } else {
                 $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position);
