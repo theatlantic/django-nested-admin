@@ -219,8 +219,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
                 return filterDjangoFormsetForms(this, $group, formsetPrefix);
             });
             var sortedForms = $forms.toArray().sort(function(a, b) {
-                var aIndex = $(a).djangoFormIndex(), bIndex = $(b).djangoFormIndex;
-                return (aIndex == bIndex) ? 0 : (aIndex < bIndex) ? -1 : 1;
+                return $(a).djangoFormIndex() - $(b).djangoFormIndex;
             });
             Array.prototype.push.apply(forms, sortedForms);
         });
