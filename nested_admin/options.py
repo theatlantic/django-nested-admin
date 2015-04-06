@@ -49,8 +49,9 @@ except ImportError:
 from .formsets import NestedInlineFormSet  # Used for the export
 
 
-transaction_wrap = getattr(transaction, 'atomic', transaction.commit_on_success)
-
+transaction_wrap = getattr(transaction, 'atomic', None)
+if not transaction_wrap:
+    transaction_wrap = transaction.commit_on_success
 
 class BaseModelAdminMixin(object):
 
