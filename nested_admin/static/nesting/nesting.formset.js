@@ -92,7 +92,7 @@
             var index = $form.djangoFormIndex();
             var isInitial = $form.data('isInitial');
 
-            $form.remove();
+            $form.parent().remove();
 
             this.mgmtVal('TOTAL_FORMS', totalForms - 1);
 
