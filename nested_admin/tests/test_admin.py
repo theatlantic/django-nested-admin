@@ -609,3 +609,35 @@ class TestAdmin(BaseNestedAdminTestCase):
             'group/a[0]/Item B 0[3]'])
 
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [])
+
+    def test_drag_existing_item_to_new_section_and_back(self):
+        group = Group.objects.create(slug='test')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+
+        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+            el.click()
+        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+            el.send_keys("b")
+
+        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set-group > .nested-sortable-container')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+
+        self.assertEqual(len(Section.objects.all()), 2, "Save failed")
+
+        item_a_0 = Item.objects.get(name='Item A 0')
+
+        self.assertEqual(item_a_0.section, section_a, "Item is in the wrong section")
+        self.assertEqual(item_a_0.position, 0, "Item has the wrong position")
