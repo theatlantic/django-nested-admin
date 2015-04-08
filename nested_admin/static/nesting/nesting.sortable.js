@@ -48,6 +48,7 @@
                 var $form = ui.item.find('> .module').first(),
                     $inline = $(this).closest('.djnesting-stacked');
                 $inline.djangoFormset().spliceInto($form);
+                DJNesting.updatePositions($form.djangoFormsetPrefix());
             },
             update: function(event, ui) {
                 // Ensure that <div class="nested-sortable-item nested-do-not-drag"/>
@@ -66,11 +67,8 @@
                     $parentGroup = $form.closest('#' + groupId);
                 if ($form.data('updateOperation') == 'removed') {
                     $form.removeAttr('data-update-operation');
-                    return;
-                }
-                if (!$parentGroup.length) {
+                } else if (!$parentGroup.length) {
                     $form.attr('data-update-operation', 'removed');
-                    return;
                 }
                 DJNesting.updatePositions($form.djangoFormsetPrefix());
                 $(document).trigger('djnesting:mutate', [$('#' + $form.djangoFormsetPrefix() + '-group')]);

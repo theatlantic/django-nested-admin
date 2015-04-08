@@ -538,3 +538,74 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')],
             ['group/b[1]/Item A 2[0]'])
+
+    def test_position_update_bug(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        with self.clickable_selector('#section_set-0-item_set-group .grp-add-item > a.grp-add-handler.item') as button:
+            button.click()
+            with self.clickable_selector('#id_section_set-0-item_set-0-name') as el:
+                el.send_keys("Item A 0")
+            button.click()
+            with self.clickable_selector('#id_section_set-0-item_set-1-name') as el:
+                el.send_keys("Item A 1")
+            button.click()
+            with self.clickable_selector('#id_section_set-0-item_set-2-name') as el:
+                el.send_keys("Item A 2")
+
+        # Move to second position of the first section
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+
+        (ActionChains(self.selenium)
+            .click_and_hold(source)
+            .move_to_element(target)
+            .move_by_offset(0, -48)
+            .move_by_offset(0, 48)
+            .release()
+            .perform())
+
+        # Move to the last position of the first section
+        source = self.selenium.find_element_by_xpath('//h3[text()="group/b[1]/Item B 0[0]"]')
+        target = self.selenium.find_element_by_css_selector(
+            '#section_set-0-item_set-group .empty-form-container')
+        (ActionChains(self.selenium)
+            .click_and_hold(source)
+            .move_to_element(target)
+            .move_by_offset(0, -48)
+            .move_by_offset(0, 48)
+            .release()
+            .perform())
+
+        def check_position_is_correct(d):
+            val = d.execute_script(
+                'return document.getElementById('
+                '   "id_section_set-0-item_set-0-position").value')
+            return val == '3'
+
+        self.wait_until(
+            check_position_is_correct,
+            message="Timeout waiting for position to update to correct value")
+
+        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+        self.wait_page_loaded()
+
+        item_b_0 = Item.objects.get(name='Item B 0')
+        self.assertEqual(item_b_0.section, section_a, "item was not moved to the correct section")
+        self.assertEqual(item_b_0.position, 3, "item was not moved to the correct position")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item A 0[0]',
+            'group/a[0]/Item A 1[1]',
+            'group/a[0]/Item A 2[2]',
+            'group/a[0]/Item B 0[3]'])
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [])

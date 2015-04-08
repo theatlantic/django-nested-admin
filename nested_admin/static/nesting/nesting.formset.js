@@ -288,6 +288,7 @@
             if ($form.djangoFormsetPrefix() == this.prefix) {
                 var currentPosition = $form.parent().prevAll('.nested-sortable-item:not(.nested-do-not-drag)').length;
                 if (currentPosition === index) {
+                    DJNesting.updatePositions(newFormsetPrefix);
                     return;
                 }
                 $item = $form.parent().remove();
