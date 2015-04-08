@@ -308,6 +308,8 @@
                 oldDjangoFormset.mgmtVal('TOTAL_FORMS', oldDjangoFormset.mgmtVal('TOTAL_FORMS') - 1);
 
                 if (isInitial) {
+                    oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
+
                     var $parentInline = this.$inline.parent().closest('.djnesting-stacked');
                     if ($parentInline.length) {
                         var $parentForm = this.$inline.closest('.nested-inline-form');
@@ -322,7 +324,6 @@
                 oldDjangoFormset._fillGap($form.djangoFormIndex(), isInitial);
 
                 if (isInitial) {
-                    oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
                     this._makeRoomForInsert();
                 }
 
