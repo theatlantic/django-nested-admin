@@ -164,7 +164,7 @@
         },
         add: function(spliceIndex) {
             var self = this;
-            var $form = this._$template.clone();
+            var $form = this._$template.clone(true);
             var index = this.mgmtVal('TOTAL_FORMS');
             var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
             var isNested = this.$inline.hasClass('djnesting-stacked');
