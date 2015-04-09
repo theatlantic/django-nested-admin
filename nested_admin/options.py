@@ -46,7 +46,12 @@ except ImportError:
 from .formsets import NestedInlineFormSet  # Used for the export
 
 
-transaction_wrap = getattr(transaction, 'atomic', transaction.commit_on_success)
+transaction_wrap = getattr(transaction, 'atomic', None)
+if not transaction_wrap:
+    transaction_wrap = transaction.commit_on_success
+
+
+IS_POPUP_VAR = '_popup'
 
 
 class BaseModelAdminMixin(object):
@@ -243,7 +248,8 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         context = {
             'title': _('Add %s') % force_unicode(opts.verbose_name),
             'adminform': adminForm,
-            'is_popup': '_popup' in request.REQUEST,
+            'is_popup': (IS_POPUP_VAR in request.POST or
+                         IS_POPUP_VAR in request.GET),
             'show_delete': False,
             'media': mark_safe(media),
             'inline_admin_formsets': inline_admin_formsets,
@@ -318,7 +324,8 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             'adminform': adminForm,
             'object_id': object_id,
             'original': obj,
-            'is_popup': '_popup' in request.REQUEST,
+            'is_popup': (IS_POPUP_VAR in request.POST or
+                         IS_POPUP_VAR in request.GET),
             'media': mark_safe(media),
             'inline_admin_formsets': inline_admin_formsets,
             'errors': helpers.AdminErrorList(form, formsets),
