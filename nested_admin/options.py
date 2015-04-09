@@ -6,7 +6,6 @@ that module should be considered a bug.
 """
 from six.moves import zip
 
-from django import template
 from django.forms.formsets import all_valid
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin import helpers
@@ -22,10 +21,8 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
 
 try:
@@ -334,64 +331,6 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             context['preserved_filters'] = self.get_preserved_filters(request)
         context.update(extra_context or {})
         return self.render_change_form(request, context, change=True, obj=obj, form_url=form_url)
-
-    @csrf_protect_m
-    def changelist_view(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        extra_context.update({
-            'root_path': reverse('admin:index'),
-        })
-        return super(ModelAdmin, self).changelist_view(request, extra_context)
-
-    @csrf_protect_m
-    @transaction_wrap
-    def delete_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context or {}
-        extra_context.update({
-            'root_path': reverse('admin:index'),
-        })
-        return super(ModelAdmin, self).delete_view(request, object_id, extra_context)
-
-    def history_view(self, request, object_id, extra_context=None):
-        "The 'history' admin view for this model."
-        from django.contrib.admin.models import LogEntry
-        model = self.model
-        obj = get_object_or_404(model, pk=unquote(object_id))
-
-        opts = model._meta
-        app_label = opts.app_label
-        action_list = LogEntry.objects.filter(
-            object_id=unquote(object_id),
-            content_type__id__exact=ContentType.objects.get_for_model(model).id
-        ).select_related().order_by('-action_time')
-
-        context = {
-            'title': _('Change history: %s') % force_unicode(obj),
-            'action_list': action_list,
-            'module_name': capfirst(force_unicode(opts.verbose_name_plural)),
-            'object': obj,
-            'root_path': reverse('admin:index'),
-            'app_label': app_label,
-            'opts': opts,
-        }
-        if hasattr(self, 'get_preserved_filters'):
-            # Django 1.6
-            context['preserved_filters'] = self.get_preserved_filters(request)
-        context.update(extra_context or {})
-        context_instance = template.RequestContext(request, current_app=self.admin_site.name)
-
-        delete_templates = self.object_history_template or [
-            "admin/%s/%s/object_history.html" % (app_label, opts.object_name.lower()),
-            "admin/%s/object_history.html" % app_label,
-            "admin/object_history.html"
-        ]
-
-        if TemplateResponse:
-            return TemplateResponse(request, delete_templates, context,
-                current_app=self.admin_site.name)
-        else:
-            return render_to_response(delete_templates, context,
-                context_instance=context_instance)
 
 
 class InlineModelAdmin(BaseModelAdminMixin, _InlineModelAdmin):
