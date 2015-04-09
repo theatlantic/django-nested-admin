@@ -641,3 +641,66 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         self.assertEqual(item_a_0.section, section_a, "Item is in the wrong section")
         self.assertEqual(item_a_0.position, 0, "Item has the wrong position")
+
+    def test_drag_item_create_invalid_new_item_then_drag_back_after_validation_error_removing_invalid_item(self):
+        """
+        Tests regression of a scenario after encountering a validation error.
+
+        Steps to reproduce:
+            1. Begin with at least two items in each section
+            2. Drag one of the items from the first section into the second
+            3. Create an invalid item in the first section
+            4. Save, encounter a validation error
+            5. Drag the invalid item back to the first group
+            6. Remove the invalid item
+            7. Save, get a 500 Internal Server Error
+        """
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item A 1', section=section_a, position=1)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        # Drag the first item of section 'b' into section 'a'
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        # Create invalid item (missing required field 'name')
+        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+            el.click()
+
+        # Save
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+
+        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+
+        # Remove invalid item
+        self.selenium.find_element_by_css_selector(
+            '.nested-inline-form:not(.grp-empty-form) > .grp-tools .grp-remove-handler').click()
+
+        # Make a change to test whether save succeeds
+        with self.clickable_selector('#id_section_set-0-item_set-0-name') as el:
+            el.clear()
+            el.send_keys("Item A 0_changed")
+
+        # Save
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+
+        item_a_0 = Item.objects.get(section=section_a, position=0)
+        self.assertEqual(item_a_0.name, 'Item A 0_changed', 'Save failed')
