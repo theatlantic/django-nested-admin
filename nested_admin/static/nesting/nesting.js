@@ -16,12 +16,10 @@
             $(rootGroup).djangoFormset();
         });
         $('form').on('submit', function(e) {
-            e.preventDefault();
             $('.djnesting-stacked').each(function() {
                 DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);
                 $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
             });
-            this.submit();
         });
     });
 
