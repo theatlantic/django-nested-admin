@@ -718,8 +718,6 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        import ipdb; ipdb.set_trace()
-
         source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
         target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
