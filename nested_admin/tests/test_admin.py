@@ -704,3 +704,42 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         item_a_0 = Item.objects.get(section=section_a, position=0)
         self.assertEqual(item_a_0.name, 'Item A 0_changed', 'Save failed')
+
+    def test_swap_first_two_items_between_sections(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item A 1', section=section_a, position=1)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        import ipdb; ipdb.set_trace()
+
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+
+        self.wait_page_loaded()
+
+        item_b_0 = Item.objects.get(name='Item B 0')
+        self.assertEqual(item_b_0.section, section_a, "item was not moved to the correct section")
+        self.assertEqual(item_b_0.position, 0, "item was not moved to the correct position")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item B 0[0]',
+            'group/a[0]/Item A 1[1]'])
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item A 0[0]',
+            'group/b[1]/Item B 1[1]'])

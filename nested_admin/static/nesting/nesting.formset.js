@@ -230,8 +230,11 @@
         },
         _fillGap: function(index, isInitial) {
             var $initialForm, $newForm;
-            this.$inline.djangoFormsetForms().each(function() {
-                var $form = $(this);
+            var formsets = this.$inline.djangoFormsetForms().toArray();
+            // Sort formsets in index order, so that we get the last indexed form for the swap.
+            formsets.sort(function(a, b) { return $(a).djangoFormIndex() - $(b).djangoFormIndex(); });
+            formsets.forEach(function(form) {
+                var $form = $(form);
                 var i = $form.djangoFormIndex();
                 if (i <= index) {
                     return;
