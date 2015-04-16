@@ -309,6 +309,7 @@
 
                 var oldDjangoFormset = $oldInline.djangoFormset();
                 oldDjangoFormset.mgmtVal('TOTAL_FORMS', oldDjangoFormset.mgmtVal('TOTAL_FORMS') - 1);
+                oldDjangoFormset._fillGap($form.djangoFormIndex(), isInitial);
 
                 if (isInitial) {
                     oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
@@ -323,8 +324,6 @@
                         }
                     }
                 }
-
-                oldDjangoFormset._fillGap($form.djangoFormIndex(), isInitial);
 
                 if (isInitial) {
                     this._makeRoomForInsert();

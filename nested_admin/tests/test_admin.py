@@ -743,3 +743,45 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]',
             'group/b[1]/Item B 1[1]'])
+
+    def test_drag_first_item_to_new_section(self):
+        """
+        Test dragging the first of several items in a pre-existing section into
+        a newly created section.
+        """
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item A 1', section=section_a, position=1)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+            el.click()
+        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+            el.send_keys("b")
+
+        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+
+        self.assertEqual(len(Section.objects.all()), 2, "Save failed")
+
+        section_b = Section.objects.get(slug='b')
+        item_a_0 = Item.objects.get(name='Item A 0')
+
+        self.assertEqual(item_a_0.section, section_b, "Item is in the wrong section")
+        self.assertEqual(item_a_0.position, 0, "Item has the wrong position")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item A 1[0]'])
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item A 0[0]'])
