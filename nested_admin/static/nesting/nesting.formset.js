@@ -320,6 +320,7 @@
                         var parentPkField = $parentInline.data('fieldNames').pk;
                         var $parentPk = $parentForm.djangoFormField(parentPkField);
                         if (!$parentPk.val()) {
+                            $form.data('isInitial', false);
                             isInitial = false;
                         }
                     }
