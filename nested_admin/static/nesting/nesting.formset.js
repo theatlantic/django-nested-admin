@@ -62,18 +62,18 @@
             if (typeof $el == 'undefined') {
                 $el = this.$inline;
             }
-            $el.find(this.opts.addButtonSelector).click(function(e) {
+            $el.find(this.opts.addButtonSelector).off('click.djnesting').on('click.djnesting', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.add();
             });
-            $el.find(this.opts.removeButtonSelector).click(function(e) {
+            $el.find(this.opts.removeButtonSelector).off('click.djnesting').on('click.djnesting', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var $form = $(this).closest('.' + self.opts.formClass);
                 self.remove($form);
             });
-            $el.find(this.opts.deleteButtonSelector).click(function(e) {
+            $el.find(this.opts.deleteButtonSelector).off('click.djnesting').on('click.djnesting', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var $form = $(this).closest('.' + self.opts.formClass);
