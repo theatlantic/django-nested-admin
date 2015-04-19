@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from six.moves import xrange
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
@@ -216,7 +217,16 @@ class NestedInlineFormSetMixin(object):
             if self._should_delete_form(form):
                 pk_value = raw_pk_value
             else:
-                pk_value = form.fields[pk_name].clean(raw_pk_value)
+                try:
+                    pk_value = form.fields[pk_name].clean(raw_pk_value)
+                except ValidationError:
+                    # The current form's instance was initially nested under
+                    # a form that was deleted, which causes the pk clean to
+                    # fail (because the instance has been deleted). To get
+                    # around this we clear the pk and save it as if it were new.
+                    form.data[form.add_prefix(pk_name)] = ''
+                    saved_instances.extend(self.save_new_objects([form], commit))
+                    continue
                 pk_value = getattr(pk_value, 'pk', pk_value)
 
             obj = None

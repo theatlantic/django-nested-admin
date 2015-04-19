@@ -913,3 +913,65 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]', 'group/b[1]/Item B 2[1]'])
 
+    def test_delete_section_after_dragging_item_away(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        # Drag the first item of section 'b' into section 'a'
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        # Delete section 'b'
+        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
+
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+        self.assertNotEqual(len(Section.objects.all()), 2, "Save failed")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item B 0[0]', 'group/a[0]/Item A 0[1]'])
+
+    def test_delete_undelete_section_after_dragging_item_away(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        section_b = Section.objects.create(slug='b', group=group, position=1)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+        Item.objects.create(name='Item B 0', section=section_b, position=0)
+        Item.objects.create(name='Item B 1', section=section_b, position=1)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        # Drag the first item of section 'b' into section 'a'
+        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        # Delete section 'b'
+        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
+        self.wait_until_clickable_selector('#section_set1.grp-predelete a.grp-delete-handler.section')
+        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
+        self.wait_until_clickable_selector('#section_set1:not(.grp-predelete) a.grp-delete-handler.section')
+
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+        self.assertEqual(len(Section.objects.all()), 2)
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[0]/Item B 0[0]', 'group/a[0]/Item A 0[1]'])
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[1]/Item B 1[0]'])
