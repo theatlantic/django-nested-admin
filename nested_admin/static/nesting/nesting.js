@@ -15,7 +15,7 @@
         $('.djnesting-stacked-root').each(function(i, rootGroup) {
             $(rootGroup).djangoFormset();
         });
-        $('form').on('submit', function(e) {
+        $('form').on('submit.djnesting', function(e) {
             $('.djnesting-stacked').each(function() {
                 DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);
                 $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
