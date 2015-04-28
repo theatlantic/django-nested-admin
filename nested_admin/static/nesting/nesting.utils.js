@@ -49,7 +49,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         }
 
         if (groupFkName && typeof(parentPkVal) != 'undefined') {
-            $group.filterDjangoField(prefix, groupFkName).val(parentPkVal);
+            $group.filterDjangoField(prefix, groupFkName).val(parentPkVal).trigger('change');
         }
 
         $group.find('.module.nested-inline-form').each(function() {
@@ -72,9 +72,9 @@ var DJNesting = (typeof window.DJNesting != "undefined")
 
             // Skip the element if it's marked to be deleted
             if (skipDeleted && ($this.hasClass('predelete') || $this.hasClass('grp-predelete'))) {
-                $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0');
+                $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0').trigger('change');
             } else {
-                $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position);
+                $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position).trigger('change');
                 position++;
             }
         });
