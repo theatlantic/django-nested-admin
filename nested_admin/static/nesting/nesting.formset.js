@@ -254,6 +254,14 @@
                 + DJNesting.regexQuote(this.prefix + "-" + oldIndex));
             $form.attr('id', this.prefix + index);
             DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + this.prefix + "-" + index);
+
+            // Update prefixes on nested DjangoFormset objects
+            $form.find('.djnesting-stacked').each(function() {
+                var $childInline = $(this);
+                var childFormset = $childInline.djangoFormset();
+                childFormset.prefix = $childInline.djangoFormsetPrefix();
+            });
+
             $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
             if (isInitial && $initialForm && $newForm) {
@@ -274,6 +282,14 @@
                 + DJNesting.regexQuote(this.prefix) + "-" + gapIndex);
             $existingForm.attr('id', this.prefix + totalFormCount);
             DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, "$1" + this.prefix + "-" + totalFormCount);
+
+            // Update prefixes on nested DjangoFormset objects
+            $existingForm.find('.djnesting-stacked').each(function() {
+                var $childInline = $(this);
+                var childFormset = $childInline.djangoFormset();
+                childFormset.prefix = $childInline.djangoFormsetPrefix();
+            });
+
             $(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
         },
         /**
@@ -336,6 +352,14 @@
                 newIndex = (isInitial) ? initialFormCount : totalFormCount;
                 $form.attr('id', newFormsetPrefix + newIndex);
                 DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
+
+                // Update prefixes on nested DjangoFormset objects
+                $form.find('.djnesting-stacked').each(function() {
+                    var $childInline = $(this);
+                    var childFormset = $childInline.djangoFormset();
+                    childFormset.prefix = $childInline.djangoFormsetPrefix();
+                });
+
                 $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
                 if (isInitial) {

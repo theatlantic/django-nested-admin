@@ -975,3 +975,40 @@ class TestAdmin(BaseNestedAdminTestCase):
             'group/a[0]/Item B 0[0]', 'group/a[0]/Item A 0[1]'])
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/Item B 1[0]'])
+
+    def test_drag_into_new_section_after_adding_and_removing_preceding_section(self):
+        group = Group.objects.create(slug='group')
+        section_a = Section.objects.create(slug='a', group=group, position=0)
+        Item.objects.create(name='Item A 0', section=section_a, position=0)
+
+        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.selenium.set_window_size(1120, 2000)
+        self.make_footer_position_static()
+
+        with self.clickable_xpath('//a[text()="Add Section"]') as add_section_button:
+            add_section_button.click()
+            with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+                el.send_keys("b")
+            add_section_button.click()
+            with self.clickable_xpath('//input[@name="section_set-2-slug"]') as el:
+                el.send_keys("c")
+
+        with self.clickable_selector('#section_set1 .grp-remove-handler.section') as remove_button:
+            remove_button.click()
+
+        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+
+        ActionChains(self.selenium).drag_and_drop(source, target).perform()
+
+        with self.clickable_xpath('//input[@name="_continue"]') as el:
+            el.click()
+
+        self.wait_page_loaded()
+
+        self.assertEqual(len(Section.objects.all()), 2, "Save failed (new section wasn't added)")
+
+        item_a0 = Item.objects.get(name='Item A 0')
+        section_c = Section.objects.get(slug='c')
+
+        self.assertEqual(item_a0.section, section_c, "Item was not moved to new section")
