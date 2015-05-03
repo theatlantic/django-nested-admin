@@ -337,6 +337,7 @@
                         var $parentPk = $parentForm.djangoFormField(parentPkField);
                         if (!$parentPk.val()) {
                             $form.data('isInitial', false);
+                            $form.attr('data-is-initial', 'false');
                             isInitial = false;
                         }
                     }
