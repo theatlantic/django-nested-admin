@@ -339,6 +339,11 @@
                             $form.data('isInitial', false);
                             $form.attr('data-is-initial', 'false');
                             isInitial = false;
+                            // Set initial form counts to 0 on nested DjangoFormsets
+                            setTimeout(function() {
+                                $form.find('[name^="' + $form.djangoFormPrefix() + '"][name$="-INITIAL_FORMS"]')
+                                     .val("0").trigger("change");
+                            }, 0);
                         }
                     }
                 }
@@ -382,7 +387,7 @@
             if (typeof newValue == 'undefined') {
                 return parseInt($field.val(), 10);
             } else {
-                return parseInt($field.val(newValue).val(), 10);
+                return parseInt($field.val(newValue).trigger('change').val(), 10);
             }
         }
     });
