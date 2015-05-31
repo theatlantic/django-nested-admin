@@ -67,15 +67,18 @@
                 e.stopPropagation();
                 self.add();
             });
-            $el.find(this.opts.removeButtonSelector).off('click.djnesting').on('click.djnesting', function(e) {
+            $el.find(this.opts.removeButtonSelector).filter(function() {
+                return !$(this).closest('.empty-form').length;
+            }).off('click.djnesting').on('click.djnesting', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var $form = $(this).closest('.' + self.opts.formClass);
                 self.remove($form);
             });
-            $el.find(this.opts.deleteButtonSelector).off('click.djnesting').on('click.djnesting', function(e) {
+
+            var deleteClickHandler = function(e) {
                 e.preventDefault();
-                e.stopPropagation();
+                e.stopImmediatePropagation();
                 var $form = $(this).closest('.' + self.opts.formClass);
                 var $deleteInput = $('#id_' + $form.djangoFormPrefix() + 'DELETE');
                 if (!$deleteInput.is(':checked')) {
@@ -83,7 +86,13 @@
                 } else {
                     self.undelete($form);
                 }
-            });
+            };
+
+            var $deleteButton = $el.find(this.opts.deleteButtonSelector)
+               .filter(function() { return !$(this).closest('.empty-form').length; });
+
+            $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
+            $deleteButton.find('[id$="-DELETE"]').on('mousedown.djnesting', deleteClickHandler);
         },
         remove: function(form) {
             var $form = $(form);
@@ -119,6 +128,9 @@
                 return;
             }
             $deleteInput.attr('checked', 'checked');
+            if ($deleteInput.length) {
+                $deleteInput[0].checked = true;
+            }
             $form.addClass(this.opts.predeleteClass);
 
             $form.find('.djnesting-stacked').each(function() {
@@ -131,6 +143,14 @@
                         childFormset.delete(this);
                     }
                 });
+            });
+            $form.find('.cropduster-form').each(function() {
+                var formPrefix = $(this).djangoFormsetPrefix() + '-0-';
+                var $deleteInput = $('#id_' + formPrefix + 'DELETE');
+                $deleteInput.attr('checked', 'checked');
+                if ($deleteInput.length) {
+                    $deleteInput[0].checked = true;
+                }
             });
             DJNesting.updatePositions(this.prefix);
             $(document).trigger('djnesting:mutate', [this.$formset]);
@@ -145,6 +165,9 @@
             }
             if ($form.hasClass('has_original')) {
                 $deleteInput.removeAttr('checked');
+                if ($deleteInput.length) {
+                    $deleteInput[0].checked = false;
+                }
                 $form.removeClass(this.opts.predeleteClass);
             }
             $form.data('alreadyDeleted', false);
@@ -158,6 +181,14 @@
                         childFormset.undelete(this);
                     }
                 });
+            });
+            $form.find('.cropduster-form').each(function() {
+                var formPrefix = $(this).djangoFormsetPrefix() + '-0-';
+                var $deleteInput = $('#id_' + formPrefix + 'DELETE');
+                $deleteInput.removeAttr('checked');
+                if ($deleteInput.length) {
+                    $deleteInput[0].checked = false;
+                }
             });
             DJNesting.updatePositions(this.prefix);
             $(document).trigger('djnesting:mutate', [this.$formset]);
@@ -196,18 +227,22 @@
                 $(document).trigger('djnesting:mutate', [this.$formset]);
             }
 
-            grappelli.reinitDateTimeFields($form);
-            grappelli.updateSelectFilter($form);
+            if (window.grappelli) {
+                grappelli.reinitDateTimeFields($form);
+                grappelli.updateSelectFilter($form);
+            }
             DJNesting.initRelatedFields(this.prefix);
             DJNesting.initAutocompleteFields(this.prefix);
-            $form.find(".collapse").andSelf().grp_collapsible({
-                toggle_handler_slctr: ".collapse-handler:first",
-                closed_css: "closed grp-closed",
-                open_css: "open grp-open",
-                on_toggle: function() {
-                    $(document).trigger('djnesting:toggle', [self.$inline]);
-                }
-            });
+            if ($.fn.grp_collapsible) {
+                $form.find(".collapse").andSelf().grp_collapsible({
+                    toggle_handler_slctr: ".collapse-handler:first",
+                    closed_css: "closed grp-closed",
+                    open_css: "open grp-open",
+                    on_toggle: function() {
+                        $(document).trigger('djnesting:toggle', [self.$inline]);
+                    }
+                });
+            }
             if (typeof $.fn.curated_content_type == 'function') {
                 $form.find('.curated-content-type-select').each(function() {
                     $(this).curated_content_type();

@@ -7,15 +7,20 @@ from django.conf.urls.static import static
 import nested_admin.tests.admin
 
 urlpatterns = patterns('',
-    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^_nesting/', include('nested_admin.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+try:
+    import grappelli
+except ImportError:
+    pass
+else:
+    urlpatterns += patterns('',
+        url(r"^grappelli/", include("grappelli.urls")))
 
 if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': settings.MEDIA_ROOT,
         }),)
-

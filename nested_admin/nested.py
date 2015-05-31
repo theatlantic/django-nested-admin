@@ -167,9 +167,9 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
 
         js_files = (
             'jquery.class.js',
+            'nesting.utils.js',
             'jquery.ui.sortable.js',
             'jquery.ui.nestedSortable.js',
-            'nesting.utils.js',
             'nesting.sortable.js',
             'nesting.formset.js',
             'nesting.js',)

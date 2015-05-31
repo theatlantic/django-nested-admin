@@ -156,3 +156,22 @@
     margin: 0;
     overflow: hidden;
 }
+
+.inline-group ul.tools a.grp-delete-handler span.delete {
+    display: none;
+}
+
+#content.colM .inline-group ul.tools a.grp-delete-handler span.delete {
+    display: inline;
+}
+#content.colM .inline-group ul.tools {
+    height: 0;
+}
+#content.colM .inline-group ul.tools a.inline-deletelink,
+#content.colM .inline-group ul.tools a.grp-delete-handler {
+    float: right;
+    margin-top: -18px;
+}
+#content.colM .nested-sortable-item > .module {
+    margin-bottom: 0;
+}

@@ -9,13 +9,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import (
     visibility_of_element_located, element_to_be_clickable)
 
+try:
+    import grappelli
+except ImportError:
+    grappelli = None
+
 
 class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
 
     urls = 'nested_admin.tests.urls'
 
     available_apps = [
-        'grappelli',
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.messages',
@@ -25,6 +29,9 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
         'django.contrib.admin',
         'nested_admin',
     ]
+
+    if grappelli:
+        available_apps.insert(0, 'grappelli')
 
     webdriver_class = 'selenium.webdriver.phantomjs.webdriver.WebDriver'
 

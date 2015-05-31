@@ -30,9 +30,16 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
 )
-INSTALLED_APPS = (
+
+try:
+    import grappelli
+except ImportError:
+    INSTALLED_APPS = tuple([])
+else:
+    INSTALLED_APPS = tuple(['grappelli'])
+
+INSTALLED_APPS += (
     'nested_admin',
-    'grappelli',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',

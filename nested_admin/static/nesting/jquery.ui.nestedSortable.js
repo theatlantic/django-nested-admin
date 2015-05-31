@@ -125,6 +125,9 @@
             if (this.element.data('uiNestedSortable')) {
                 this.element.data('nestedSortable', this.element.data('uiNestedSortable'));
             }
+            if (this.element.data('ui-nestedSortable')) {
+                this.element.data('nestedSortable', this.element.data('ui-nestedSortable'));
+            }
             this.element.data('sortable', this.element.data('nestedSortable'));
             if (this.element.data('uiNestedSortable')) {
                 this.element.data('uiSortable', this.element.data('nestedSortable'));

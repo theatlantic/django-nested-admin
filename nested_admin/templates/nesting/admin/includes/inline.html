@@ -1,12 +1,12 @@
 {% spaceless %}
-    <fieldset class="module grp-module {{ fieldset.classes }}">
+    <fieldset class="module aligned grp-module {{ fieldset.classes }}">
         {% if fieldset.name %}<h4 class="collapse-handler grp-collapse-handler">{{ fieldset.name }}</h4>{% endif %}
         {% if fieldset.description %}<div class="grp-row"><p class="description grp-description">{{ fieldset.description|safe }}</p></div>{% endif %}
         {% for line in fieldset %}
-            <div class="row grp-row grp-cells-{{ line.fields|length }}{% if not line.fields|length_is:"1" %} grp-cells{% else %}{% if line.errors %} grp-errors{% endif %}{% endif %}{% for field in line %} {{ field.field.name }}{% if field.field.is_hidden %} is-hidden{% endif %}{% endfor %} ">
+            <div class="form-row row grp-row grp-cells-{{ line.fields|length }}{% if not line.fields|length_is:"1" %} grp-cells{% else %}{% if line.errors %} grp-errors{% endif %}{% endif %}{% for field in line %} {{ field.field.name }}{% if field.field.is_hidden %} is-hidden{% endif %}{% endfor %} ">
                 {% for field in line %}
                     {# <div{% if not line.fields|length_is:"1" %} class="cell {{ field.field.name }}{% if field.errors %} error{% endif %}"{% endif %}> #}
-                    <div class="l-2c-fluid l-d-4{% if line.fields|length_is:"1" %} cell grp-cell {{ field.field.name }}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">                    
+                    <div class="field-box l-2c-fluid l-d-4{% if line.fields|length_is:"1" %} cell grp-cell {{ field.field.name }}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">                    
                         {% if field.is_checkbox %}
                             <div class="c-1 column span-4">&nbsp;</div>
                             <div class="c-2 column span-flexible">

@@ -22,7 +22,7 @@ class TestAdmin(BaseNestedAdminTestCase):
 
     def make_footer_position_static(self):
         """Make <footer> element styles 'position: static'"""
-        self.selenium.execute_script("document.getElementsByTagName('footer')[0].className = 'grp-module grp-submit-row';")
+        self.selenium.execute_script("var footer = document.getElementsByTagName('footer')[0]; if (footer) footer.className = 'grp-module grp-submit-row';")
         self.selenium.execute_script("if(document.getElementById('content-inner')) {"
             "document.getElementById('content-inner').style.bottom = '0';}")
 

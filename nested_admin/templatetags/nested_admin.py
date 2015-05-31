@@ -86,3 +86,25 @@ def get_safe_autocomplete_lookup_fields_m2m(model_admin):
 @json_else_list_tag
 def get_safe_autocomplete_lookup_fields_generic(model_admin):
     return model_admin.autocomplete_lookup_fields.get("generic", [])
+
+
+@register.filter
+def formsetsort(formset, arg):
+    """
+    Takes a list of formset dicts, returns that list sorted by the sortable field.
+    """
+    if arg:
+        sorted_list = []
+        for item in formset:
+            position = item.form[arg].data
+            if position and position != "-1":
+                sorted_list.append((int(position), item))
+        sorted_list.sort()
+        sorted_list = [item[1] for item in sorted_list]
+        for item in formset:
+            position = item.form[arg].data
+            if not position or position == "-1":
+                sorted_list.append(item)
+    else:
+        sorted_list = formset
+    return sorted_list
