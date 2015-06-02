@@ -1,7 +1,7 @@
 from selenium.webdriver.common.action_chains import ActionChains
 
 from .base import BaseNestedAdminTestCase
-from .models import Group, Section, Item
+from .models import Group, TestSection as Section, TestItem as Item
 
 
 class TestAdmin(BaseNestedAdminTestCase):
@@ -16,16 +16,16 @@ class TestAdmin(BaseNestedAdminTestCase):
         group = Group.objects.create(slug='test')
         self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-0-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-0-slug"]') as el:
             el.send_keys("test")
         with self.clickable_xpath('//input[@name="_continue"]') as el:
             el.click()
 
         self.wait_page_loaded()
 
-        sections = group.section_set.all()
+        sections = group.testsection_set.all()
 
         self.assertEqual(len(sections), 1)
         self.assertEqual(sections[0].slug, 'test')
@@ -37,16 +37,16 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
 
-        with self.clickable_xpath('//a[text()="Add Item"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Item"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-0-testitem_set-0-name"]') as el:
             el.send_keys("Test")
         with self.clickable_xpath('//input[@name="_continue"]') as el:
             el.click()
 
         self.wait_page_loaded()
 
-        items = section.item_set.all()
+        items = section.testitem_set.all()
 
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Test")
@@ -67,8 +67,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -79,13 +79,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item B 2[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -104,8 +104,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set1 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -116,13 +116,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_1.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_1.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item B 1[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 2[1]'])
 
@@ -141,13 +141,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-        with self.clickable_selector('#id_section_set-1-item_set-3-name') as el:
+        with self.clickable_selector('#id_testsection_set-1-testitem_set-3-name') as el:
             el.send_keys("Item B 3")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set1 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -158,13 +158,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_1.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_1.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item B 1[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 2[1]',
             'group/b[1]/Item B 3[2]'])
@@ -184,13 +184,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_selector('#section_set-0-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-0-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-        with self.clickable_selector('#id_section_set-0-item_set-3-name') as el:
+        with self.clickable_selector('#id_testsection_set-0-testitem_set-3-name') as el:
             el.send_keys("Item A 3")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set1 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -201,14 +201,14 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_1.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_1.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item B 1[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]',
             'group/a[0]/Item A 3[4]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 2[1]'])
 
@@ -227,13 +227,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-        with self.clickable_selector('#id_section_set-1-item_set-2-name') as el:
+        with self.clickable_selector('#id_testsection_set-1-testitem_set-2-name') as el:
             el.send_keys("Item B 2")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1')
 
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
@@ -246,13 +246,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 1, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item B 2[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -271,18 +271,18 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        self.selenium.find_element_by_css_selector('#section_set-1-item_set1 a.grp-delete-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set1 a.grp-delete-handler').click()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
 
         self.wait_page_loaded()
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item A 1[1]',
             'group/a[0]/Item A 2[2]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 2[1]'])
 
@@ -301,8 +301,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        self.selenium.find_element_by_css_selector('#section_set0 a.grp-delete-handler.section').click()
-        self.wait_until_clickable_selector('#section_set0.grp-predelete a.grp-delete-handler.section')
+        self.selenium.find_element_by_css_selector('#testsection_set0 a.grp-delete-handler.testsection').click()
+        self.wait_until_clickable_selector('#testsection_set0.grp-predelete a.grp-delete-handler.testsection')
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
 
@@ -312,7 +312,7 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         section_b = Section.objects.get(slug='b')
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[0]/Item B 0[0]',
             'group/b[0]/Item B 1[1]',
             'group/b[0]/Item B 2[2]'])
@@ -336,11 +336,11 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        self.selenium.find_element_by_css_selector('#section_set-0-item_set1 a.grp-delete-handler').click()
-        self.selenium.find_element_by_css_selector('#section_set0 a.grp-delete-handler.section').click()
-        self.wait_until_clickable_selector('#section_set0.grp-predelete a.grp-delete-handler.section')
-        self.selenium.find_element_by_css_selector('#section_set0 a.grp-delete-handler.section').click()
-        self.wait_until_clickable_selector('#section_set0:not(.grp-predelete) a.grp-delete-handler.section')
+        self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 a.grp-delete-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set0 a.grp-delete-handler.testsection').click()
+        self.wait_until_clickable_selector('#testsection_set0.grp-predelete a.grp-delete-handler.testsection')
+        self.selenium.find_element_by_css_selector('#testsection_set0 a.grp-delete-handler.testsection').click()
+        self.wait_until_clickable_selector('#testsection_set0:not(.grp-predelete) a.grp-delete-handler.testsection')
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
 
@@ -348,11 +348,11 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         self.assertEqual(len(Section.objects.filter(slug='a')), 1, "Section should not be deleted")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item A 2[1]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]',
             'group/b[1]/Item B 2[2]'])
@@ -371,23 +371,23 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-        with self.clickable_selector('#id_section_set-1-item_set-2-name') as el:
+        with self.clickable_selector('#id_testsection_set-1-testitem_set-2-name') as el:
             el.send_keys("Item B 2")
 
-        self.selenium.find_element_by_css_selector('#section_set-1-item_set2 a.grp-remove-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 a.grp-remove-handler').click()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
 
         self.wait_page_loaded()
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item A 1[1]',
             'group/a[0]/Item A 2[2]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -403,8 +403,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set-group > .nested-sortable-container')
 
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
@@ -416,10 +416,10 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 0, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')],
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')],
             ['group/a[0]/Item B 2[0]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -438,8 +438,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -450,13 +450,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 0, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item B 2[0]',
             'group/a[0]/Item A 0[1]',
             'group/a[0]/Item A 1[2]',
             'group/a[0]/Item A 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -475,8 +475,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set2')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set2')
 
         (ActionChains(self.selenium)
             .click_and_hold(source)
@@ -493,13 +493,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_2.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_2.position, 3, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item A 1[1]',
             'group/a[0]/Item A 2[2]',
             'group/a[0]/Item B 2[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -514,13 +514,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
             el.send_keys("b")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set2 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set2 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > .nested-sortable-container')
 
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
@@ -533,10 +533,10 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_a_2.section, section_b, "item was not moved to the correct section")
         self.assertEqual(item_a_2.position, 0, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')],
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')],
             ['group/a[0]/Item A 0[0]', 'group/a[0]/Item A 1[1]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')],
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')],
             ['group/b[1]/Item A 2[0]'])
 
     def test_position_update_bug(self):
@@ -550,20 +550,20 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_selector('#section_set-0-item_set-group .grp-add-item > a.grp-add-handler.item') as button:
+        with self.clickable_selector('#testsection_set-0-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as button:
             button.click()
-            with self.clickable_selector('#id_section_set-0-item_set-0-name') as el:
+            with self.clickable_selector('#id_testsection_set-0-testitem_set-0-name') as el:
                 el.send_keys("Item A 0")
             button.click()
-            with self.clickable_selector('#id_section_set-0-item_set-1-name') as el:
+            with self.clickable_selector('#id_testsection_set-0-testitem_set-1-name') as el:
                 el.send_keys("Item A 1")
             button.click()
-            with self.clickable_selector('#id_section_set-0-item_set-2-name') as el:
+            with self.clickable_selector('#id_testsection_set-0-testitem_set-2-name') as el:
                 el.send_keys("Item A 2")
 
         # Move to second position of the first section
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
 
         (ActionChains(self.selenium)
             .click_and_hold(source)
@@ -576,7 +576,7 @@ class TestAdmin(BaseNestedAdminTestCase):
         # Move to the last position of the first section
         source = self.selenium.find_element_by_xpath('//h3[text()="group/b[1]/Item B 0[0]"]')
         target = self.selenium.find_element_by_css_selector(
-            '#section_set-0-item_set-group .empty-form-container')
+            '#testsection_set-0-testitem_set-group .empty-form-container')
         (ActionChains(self.selenium)
             .click_and_hold(source)
             .move_to_element(target)
@@ -588,7 +588,7 @@ class TestAdmin(BaseNestedAdminTestCase):
         def check_position_is_correct(d):
             val = d.execute_script(
                 'return document.getElementById('
-                '   "id_section_set-0-item_set-0-position").value')
+                '   "id_testsection_set-0-testitem_set-0-position").value')
             return val == '3'
 
         self.wait_until(
@@ -602,13 +602,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_0.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_0.position, 3, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 0[0]',
             'group/a[0]/Item A 1[1]',
             'group/a[0]/Item A 2[2]',
             'group/a[0]/Item B 0[3]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [])
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [])
 
     def test_drag_existing_item_to_new_section_and_back(self):
         group = Group.objects.create(slug='test')
@@ -617,17 +617,17 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
             el.send_keys("b")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > .nested-sortable-container')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set-group > .nested-sortable-container')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
@@ -670,12 +670,12 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.make_footer_position_static()
 
         # Drag the first item of section 'b' into section 'a'
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         # Create invalid item (missing required field 'name')
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
 
         # Save
@@ -685,8 +685,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.wait_page_loaded()
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set1 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set1 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         # Remove invalid item
@@ -694,7 +694,7 @@ class TestAdmin(BaseNestedAdminTestCase):
             '.nested-inline-form:not(.grp-empty-form) > .grp-tools .grp-remove-handler').click()
 
         # Make a change to test whether save succeeds
-        with self.clickable_selector('#id_section_set-0-item_set-0-name') as el:
+        with self.clickable_selector('#id_testsection_set-0-testitem_set-0-name') as el:
             el.clear()
             el.send_keys("Item A 0_changed")
 
@@ -720,12 +720,12 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
@@ -736,11 +736,11 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_b_0.section, section_a, "item was not moved to the correct section")
         self.assertEqual(item_b_0.position, 0, "item was not moved to the correct position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item B 0[0]',
             'group/a[0]/Item A 1[1]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]',
             'group/b[1]/Item B 1[1]'])
 
@@ -758,13 +758,13 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
             el.send_keys("b")
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > .nested-sortable-container')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
@@ -780,10 +780,10 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_a_0.section, section_b, "Item is in the wrong section")
         self.assertEqual(item_a_0.position, 0, "Item has the wrong position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 1[0]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]'])
 
     def test_drag_first_item_to_new_section_after_removing_item(self):
@@ -801,24 +801,24 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
             el.send_keys("b")
 
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-            with self.clickable_selector('#id_section_set-1-item_set-0-name') as el:
+            with self.clickable_selector('#id_testsection_set-1-testitem_set-0-name') as el:
                 el.send_keys("Item B 0")
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as el:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as el:
             el.click()
-            with self.clickable_selector('#id_section_set-1-item_set-1-name') as el:
+            with self.clickable_selector('#id_testsection_set-1-testitem_set-1-name') as el:
                 el.send_keys("Item B 1")
 
-        self.selenium.find_element_by_css_selector('#section_set-1-item_set0 a.grp-remove-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 a.grp-remove-handler').click()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > .nested-sortable-container')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
@@ -838,10 +838,10 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_a_1.position, 0, "Item A1 has the wrong position")
         self.assertEqual(item_b_1.position, 1, "Item B1 has the wrong position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item A 1[0]'])
 
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]', 'group/b[1]/Item B 1[1]'])
 
     def test_add_remove_items_in_new_section_dragging_existing_items(self):
@@ -872,29 +872,29 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as el:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as el:
             el.click()
-        with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+        with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
             el.send_keys("b")
 
-        with self.clickable_selector('#section_set-1-item_set-group .grp-add-item > a.grp-add-handler.item') as add_button:
+        with self.clickable_selector('#testsection_set-1-testitem_set-group .grp-add-item > a.grp-add-handler.testitem') as add_button:
             add_button.click()
-            with self.clickable_selector('#id_section_set-1-item_set-0-name') as el:
+            with self.clickable_selector('#id_testsection_set-1-testitem_set-0-name') as el:
                 el.send_keys("Item B 0")
             add_button.click()
-            with self.clickable_selector('#id_section_set-1-item_set-1-name') as el:
+            with self.clickable_selector('#id_testsection_set-1-testitem_set-1-name') as el:
                 el.send_keys("Item B 1")
             add_button.click()
-            with self.clickable_selector('#id_section_set-1-item_set-2-name') as el:
+            with self.clickable_selector('#id_testsection_set-1-testitem_set-2-name') as el:
                 el.send_keys("Item B 2")
 
-        self.selenium.find_element_by_css_selector('#section_set-1-item_set0 a.grp-remove-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 a.grp-remove-handler').click()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > * > .nested-sortable-item:first-child')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > * > .nested-sortable-item:first-child')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
-        self.selenium.find_element_by_css_selector('#section_set-1-item_set1 a.grp-remove-handler').click()
+        self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set1 a.grp-remove-handler').click()
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
             el.click()
@@ -909,8 +909,8 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.assertEqual(item_a_0.position, 0, "Item A0 has the wrong position")
         self.assertEqual(item_b_2.position, 1, "Item B2 has the wrong position")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [])
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [])
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item A 0[0]', 'group/b[1]/Item B 2[1]'])
 
     def test_delete_section_after_dragging_item_away(self):
@@ -926,12 +926,12 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.make_footer_position_static()
 
         # Drag the first item of section 'b' into section 'a'
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         # Delete section 'b'
-        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
+        self.selenium.find_element_by_css_selector('#testsection_set1 a.grp-delete-handler.testsection').click()
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
             el.click()
@@ -939,7 +939,7 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.wait_page_loaded()
         self.assertNotEqual(len(Section.objects.all()), 2, "Save failed")
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item B 0[0]', 'group/a[0]/Item A 0[1]'])
 
     def test_delete_undelete_section_after_dragging_item_away(self):
@@ -955,15 +955,15 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.make_footer_position_static()
 
         # Drag the first item of section 'b' into section 'a'
-        source = self.selenium.find_element_by_css_selector('#section_set-1-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 
         # Delete section 'b'
-        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
-        self.wait_until_clickable_selector('#section_set1.grp-predelete a.grp-delete-handler.section')
-        self.selenium.find_element_by_css_selector('#section_set1 a.grp-delete-handler.section').click()
-        self.wait_until_clickable_selector('#section_set1:not(.grp-predelete) a.grp-delete-handler.section')
+        self.selenium.find_element_by_css_selector('#testsection_set1 a.grp-delete-handler.testsection').click()
+        self.wait_until_clickable_selector('#testsection_set1.grp-predelete a.grp-delete-handler.testsection')
+        self.selenium.find_element_by_css_selector('#testsection_set1 a.grp-delete-handler.testsection').click()
+        self.wait_until_clickable_selector('#testsection_set1:not(.grp-predelete) a.grp-delete-handler.testsection')
 
         with self.clickable_xpath('//input[@name="_continue"]') as el:
             el.click()
@@ -971,9 +971,9 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.wait_page_loaded()
         self.assertEqual(len(Section.objects.all()), 2)
 
-        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_a.testitem_set.all().order_by('position')], [
             'group/a[0]/Item B 0[0]', 'group/a[0]/Item A 0[1]'])
-        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+        self.assertEqual(["%s" % i for i in section_b.testitem_set.all().order_by('position')], [
             'group/b[1]/Item B 1[0]'])
 
     def test_drag_into_new_section_after_adding_and_removing_preceding_section(self):
@@ -985,19 +985,19 @@ class TestAdmin(BaseNestedAdminTestCase):
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()
 
-        with self.clickable_xpath('//a[text()="Add Section"]') as add_section_button:
+        with self.clickable_xpath('//a[text()="Add Test Section"]') as add_section_button:
             add_section_button.click()
-            with self.clickable_xpath('//input[@name="section_set-1-slug"]') as el:
+            with self.clickable_xpath('//input[@name="testsection_set-1-slug"]') as el:
                 el.send_keys("b")
             add_section_button.click()
-            with self.clickable_xpath('//input[@name="section_set-2-slug"]') as el:
+            with self.clickable_xpath('//input[@name="testsection_set-2-slug"]') as el:
                 el.send_keys("c")
 
-        with self.clickable_selector('#section_set1 .grp-remove-handler.section') as remove_button:
+        with self.clickable_selector('#testsection_set1 .grp-remove-handler.testsection') as remove_button:
             remove_button.click()
 
-        source = self.selenium.find_element_by_css_selector('#section_set-0-item_set0 > h3')
-        target = self.selenium.find_element_by_css_selector('#section_set-1-item_set-group > .nested-sortable-container')
+        source = self.selenium.find_element_by_css_selector('#testsection_set-0-testitem_set0 > h3')
+        target = self.selenium.find_element_by_css_selector('#testsection_set-1-testitem_set-group > .nested-sortable-container')
 
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
 

@@ -27,7 +27,7 @@ class Group(models.Model):
             return reverse('admin:%s_%s_add' % info)
 
 
-class Section(models.Model):
+class TestSection(models.Model):
 
     slug = models.CharField(max_length=128)
     position = models.PositiveIntegerField()
@@ -51,10 +51,10 @@ class Section(models.Model):
             return self.__unicode__()
 
 
-class Item(models.Model):
+class TestItem(models.Model):
 
     name = models.CharField(max_length=128)
-    section = models.ForeignKey(Section)
+    section = models.ForeignKey(TestSection)
     position = models.PositiveIntegerField()
 
     class Meta:

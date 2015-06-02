@@ -1,7 +1,7 @@
 from django.contrib import admin
 from nested_admin import NestedStackedInline, NestedAdmin
 
-from .models import Group, Section, Item
+from .models import Group, TestSection as Section, TestItem as Item
 
 
 class ItemInline(NestedStackedInline):
