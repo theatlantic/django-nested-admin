@@ -28,4 +28,4 @@ setup(
     ],
     include_package_data=True,
     zip_safe=False,
-    long_description=open('README.rst').read())
+    long_description=''.join(list(open('README.rst'))[3:]))

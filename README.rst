@@ -1,3 +1,6 @@
+django-nested-admin
+###################
+
 .. image:: https://travis-ci.org/theatlantic/django-nested-admin.svg?branch=master
     :target: https://travis-ci.org/theatlantic/django-nested-admin
     :alt: Build Status
