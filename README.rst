@@ -7,8 +7,9 @@ django-nested-admin
 
 **django-nested-admin** is a project that makes it possible to nest
 admin inlines (that is, to define inlines on InlineModelAdmin classes).
-compatible with Django 1.4-1.7 and Python versions 2.7 and 3.4.
-Django 1.8 support is in beta.
+compatible with Django 1.4-1.8 and Python versions 2.7 and 3.4. It works with
+and without Grappelli. When Grappelli is not installed it adds Grappelli-like
+drag-and-drop sorting functionality to Django inlines.
 
 Installation
 ============
@@ -30,13 +31,13 @@ If the source is already checked out, use setuptools to install::
 Configuration
 =============
 
-To use django-nested-admin in your project, ``"nested_admin"`` must be
-added to the ``INSTALLED_APPS`` in your settings and you must include
-``nested_admin.urls`` in your django urlpatterns.
-`django-grappelli <https://github.com/sehmaschine/django-grappelli>`_
-is a requirements of django-nested-admin. Make sure the
-`appropriate version <http://django-grappelli.readthedocs.org/en/latest/#versions>`_
-of Grappelli is installed for your version of Django.
+To use django-nested-admin in your project, ``"nested_admin"`` must be added
+to the ``INSTALLED_APPS`` in your settings and you must include
+``nested_admin.urls`` in your django urlpatterns. `django-grappelli
+<https://github.com/sehmaschine/django-grappelli>`_ is an optional dependency
+of django-nested-admin. If using Grappelli, make sure the `appropriate version
+<http://django-grappelli.readthedocs.org/en/latest/#versions>`_ of Grappelli
+is installed for your version of Django.
 
 .. code-block:: python
 
