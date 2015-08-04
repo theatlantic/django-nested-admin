@@ -185,6 +185,9 @@
                 return;
             }
             uniqueId = element[0][$.expando];
+            if (typeof uniqueId == 'undefined') {
+                uniqueId = element[0][$.expando + '1'];
+            }
             if (typeof this.options.connectWith == 'string') {
                 return;
             }
@@ -195,7 +198,7 @@
             this._connectWithMap[uniqueId] = 1;
         },
 
-        destroy: function() {
+        _destroy: function() {
             this.element
                 .removeData("nestedSortable")
                 .unbind(".nestedSortable");
