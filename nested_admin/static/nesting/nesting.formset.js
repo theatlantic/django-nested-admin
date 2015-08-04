@@ -341,7 +341,7 @@
             // Make sure the form being spliced is from a different inline
             if ($form.djangoFormsetPrefix() == this.prefix) {
                 var currentPosition = $form.parent().prevAll('.nested-sortable-item:not(.nested-do-not-drag)').length;
-                if (currentPosition === index) {
+                if (currentPosition === index || typeof index == 'undefined') {
                     DJNesting.updatePositions(newFormsetPrefix);
                     return;
                 }
