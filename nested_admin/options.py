@@ -9,7 +9,10 @@ from six.moves import zip
 from django.forms.formsets import all_valid
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin import helpers
-from django.contrib.admin.util import unquote
+try:
+    from django.contrib.admin.utils import unquote
+except ImportError:
+    from django.contrib.admin.util import unquote
 
 try:
     # Django 1.6

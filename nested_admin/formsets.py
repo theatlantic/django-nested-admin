@@ -4,7 +4,10 @@ from six.moves import xrange
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
+try:
+    from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
+except ImportError:
+    from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
 
