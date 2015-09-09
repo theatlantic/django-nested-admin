@@ -175,12 +175,12 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
             'nesting.js',)
 
         for js_file in js_files:
-            js_file_url = '%s/nesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
+            js_file_url = '%snesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
             media.add_js((js_file_url,))
 
         media.add_css({
             'all': (
-                '%s/nesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
+                '%snesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
             )})
         return media
 
