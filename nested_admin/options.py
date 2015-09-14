@@ -57,6 +57,40 @@ if not transaction_wrap:
 IS_POPUP_VAR = '_popup'
 
 
+def all_valid_with_nesting(formsets):
+    """
+    Checks validation on formsets, then handles a case where an inline
+    has new data but one of its parent forms is blank.
+
+    This causes a bug when one of the parent forms has empty_permitted == True,
+    which happens if it is an "extra" form in the formset and its index
+    is >= the formset's min_num.
+    """
+    if not all_valid(formsets):
+        return False
+
+    for formset in formsets:
+        if formset.has_changed() and getattr(formset, 'parent_form', None):
+            parent_form = formset.parent_form
+
+            while True:
+                if parent_form.empty_permitted:
+                    parent_form.empty_permitted = False
+                    # Reset the validation errors
+                    parent_form._errors = None
+                if not hasattr(parent_form, 'parent_formset'):
+                    break
+                parent_form.parent_formset._errors = None
+                if not hasattr(parent_form.parent_formset, 'parent_form'):
+                    break
+                parent_form = parent_form.parent_formset.parent_form
+
+    if not all_valid(formsets):
+        return False
+
+    return True
+
+
 class BaseModelAdminMixin(object):
 
     def inline_has_permissions(self, request, inline):
@@ -226,7 +260,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         for formset in self.get_formset_instances(request, new_object, is_new=True):
             formsets.append(formset)
 
-        if request.method == 'POST' and all_valid(formsets) and form_validated:
+        if request.method == 'POST' and all_valid_with_nesting(formsets) and form_validated:
             self.save_view_formsets(request, new_object, form, formsets, is_new=True)
             return self.response_add(request, new_object)
 
@@ -300,7 +334,7 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         for formset in self.get_formset_instances(request, instance, is_new=False):
             formsets.append(formset)
 
-        if request.method == 'POST' and all_valid(formsets) and form_validated:
+        if request.method == 'POST' and all_valid_with_nesting(formsets) and form_validated:
             self.save_view_formsets(request, instance, form, formsets, is_new=False)
             return self.response_change(request, instance)
 

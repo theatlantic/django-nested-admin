@@ -104,6 +104,7 @@ class NestedAdminMixin(object):
                         nested, formset = inlines_and_formsets[i]
                         i += 1
                         for form in formset.forms:
+                            form.parent_formset = formset
                             formset_kwargs = formset_kwargs or {}
                             InlineFormSet = nested.get_formset(request, form.instance, **kwargs)
                             prefix = '%s-%s' % (form.prefix, InlineFormSet.get_default_prefix())
@@ -115,6 +116,7 @@ class NestedAdminMixin(object):
                             # inline admin formsets.
                             nested_formset.is_nested = True
                             nested_formset.nesting_depth = formset.nesting_depth + 1
+                            nested_formset.parent_form = form
                             yield nested_formset
 
                             if hasattr(nested, 'get_inline_instances'):
