@@ -72,3 +72,45 @@ class TestItem(models.Model):
             return self.__unicode__().encode('utf-8')
         else:
             return self.__unicode__()
+
+
+class TopLevel(models.Model):
+
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        app_label = "nested_admin"
+
+    def get_absolute_url(self):
+        info = (self._meta.app_label, self._meta.object_name.lower())
+        if self.pk:
+            return reverse('admin:%s_%s_change' % info, args=[self.pk])
+        else:
+            return reverse('admin:%s_%s_add' % info)
+
+
+class LevelOne(models.Model):
+
+    name = models.CharField(max_length=200)
+    parent_level = models.ForeignKey(TopLevel)
+
+    class Meta:
+        app_label = "nested_admin"
+
+
+class LevelTwo(models.Model):
+
+    name = models.CharField(max_length=200)
+    parent_level = models.ForeignKey(LevelOne)
+
+    class Meta:
+        app_label = "nested_admin"
+
+
+class LevelThree(models.Model):
+
+    name = models.CharField(max_length=200)
+    parent_level = models.ForeignKey(LevelTwo)
+
+    class Meta:
+        app_label = "nested_admin"
