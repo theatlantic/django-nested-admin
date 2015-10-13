@@ -4,7 +4,7 @@
 
     DJNesting.createSortable = function($group) {
         return $group.children('div.items').nestedSortable({
-            handle: '> div > h3.djnesting-drag-handler',
+            handle: '> div > h3.djnesting-drag-handler, > div > .tools .drag-handler',
             /**
              * items: The selector for ONLY the items underneath a given
              *        container at that level. Not to be confused with
