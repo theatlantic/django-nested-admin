@@ -3,7 +3,8 @@ from functools import wraps
 import json
 
 from django import template
-from django.utils.safestring import mark_for_escaping
+from django.utils.safestring import mark_for_escaping, mark_safe
+from django.utils.html import escape
 
 register = template.Library()
 
@@ -50,7 +51,7 @@ def json_else_list_tag(f):
     @wraps(f)
     def inner(model_admin):
         try:
-            return mark_for_escaping(json.dumps(f(model_admin)))
+            return mark_safe(escape(json.dumps(f(model_admin))))
         except:
             return []
     return register.simple_tag(inner)
