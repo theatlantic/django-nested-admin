@@ -213,7 +213,13 @@ class NestedInlineFormSetMixin(object):
 
         for form in initial_forms:
             pk_name = self._pk_field.name
-            raw_pk_value = form._raw_value(pk_name)
+
+            if not hasattr(form, '_raw_value'):
+                # Django 1.9+
+                raw_pk_value = form.fields[pk_name].widget.value_from_datadict(
+                    form.data, form.files, form.add_prefix(pk_name))
+            else:
+                raw_pk_value = form._raw_value(pk_name)
 
             # clean() for different types of PK fields can sometimes return
             # the model instance, and sometimes the PK. Handle either.

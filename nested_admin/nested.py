@@ -5,7 +5,6 @@ from django.contrib.admin import helpers
 from django.core.urlresolvers import reverse
 from django import forms
 
-from .formsets import NestedInlineFormSet
 from .options import ModelAdmin, InlineModelAdmin
 
 
@@ -201,7 +200,9 @@ class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
         self.sortable_options = sortable_options
         super(NestedInlineModelAdmin, self).__init__(*args, **kwargs)
 
-    formset = NestedInlineFormSet
+        from .formsets import NestedInlineFormSet
+
+        self.formset = NestedInlineFormSet
 
 
 class NestedStackedInline(NestedInlineModelAdmin):

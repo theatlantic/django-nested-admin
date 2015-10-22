@@ -1,3 +1,6 @@
+import time
+import django
+
 from selenium.webdriver.common.action_chains import ActionChains
 
 from .base import BaseNestedAdminTestCase
@@ -60,20 +63,27 @@ class TestAdmin(BaseNestedAdminTestCase):
                 (ActionChains(self.selenium)
                     .click_and_hold(source)
                     .move_to_element(target)
-                    .move_by_offset(0, -48)
-                    .move_by_offset(0, 48)
-                    .release()
-                    .perform())
+                    .move_by_offset(0, -48).perform())
+                time.sleep(0.2)
+                ActionChains(self.selenium).move_by_offset(0, 48).perform()
+                time.sleep(0.2)
+                ActionChains(self.selenium).release().perform()
             else:
                 target = self.selenium.find_element_by_css_selector((
                     "#testsection_set-group > "
                     ".items > .nested-sortable-item:nth-of-type(%d) "
                     ".items > .nested-sortable-item:nth-of-type(%d) "
                     "> .nested-inline-form") % (to_section + 2, to_item + 1))
+                if django.VERSION > (1, 9):
+                    offset = 350
+                else:
+                    offset = 220
                 (ActionChains(self.selenium)
                     .click_and_hold(source)
                     .move_to_element_with_offset(target, 0, 0)
-                    .move_by_offset(0, 220)
+                    .move_by_offset(0, offset).perform())
+                time.sleep(0.5)
+                (ActionChains(self.selenium)
                     .release()
                     .perform())
             return

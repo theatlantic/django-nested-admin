@@ -8,7 +8,6 @@ temp_dir = tempfile.mkdtemp()
 
 
 DEBUG = True,
-TEMPLATE_DEBUG = True,
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -17,20 +16,49 @@ DATABASES = {
     }
 }
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-)
+
+if django.VERSION > (1, 9):
+    context_processor_path = 'django.template.context_processors'
+else:
+    context_processor_path = 'django.core.context_processors'
+
+if django.VERSION > (1, 9):
+    TEMPLATES = [{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(current_dir, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                '%s.debug' % context_processor_path,
+                '%s.i18n' % context_processor_path,
+                '%s.media' % context_processor_path,
+                '%s.static' % context_processor_path,
+                '%s.tz' % context_processor_path,
+                '%s.request' % context_processor_path,
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    }]
+else:
+    TEMPLATE_LOADERS = (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        'django.contrib.auth.context_processors.auth',
+        '%s.debug' % context_processor_path,
+        '%s.i18n' % context_processor_path,
+        '%s.media' % context_processor_path,
+        '%s.static' % context_processor_path,
+        '%s.tz' % context_processor_path,
+        '%s.request' % context_processor_path,
+        'django.contrib.messages.context_processors.messages',
+    )
+    TEMPLATE_DIRS = (
+        os.path.join(current_dir, 'templates'),
+    )
+
 
 try:
     import grappelli
@@ -61,6 +89,3 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
 TEST_RUNNER = 'django.test.runner.DiscoverRunner' if django.VERSION >= (1, 6) else 'discover_runner.runner.DiscoverRunner'
-TEMPLATE_DIRS = (
-    os.path.join(current_dir, 'templates'),
-)

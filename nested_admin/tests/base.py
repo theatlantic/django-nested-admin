@@ -1,9 +1,9 @@
 import contextlib
 
+from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-
-from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
+from django.test.utils import override_settings
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import (
@@ -15,9 +15,8 @@ except ImportError:
     grappelli = None
 
 
+@override_settings(ROOT_URLCONF='nested_admin.tests.urls')
 class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
-
-    urls = 'nested_admin.tests.urls'
 
     available_apps = [
         'django.contrib.auth',

@@ -7,7 +7,6 @@ that module should be considered a bug.
 from six.moves import zip
 
 from django.forms.formsets import all_valid
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin import helpers
 try:
     from django.contrib.admin.utils import unquote
@@ -45,8 +44,6 @@ try:
     from django.template.response import TemplateResponse
 except ImportError:
     TemplateResponse = None
-
-from .formsets import NestedInlineFormSet  # Used for the export
 
 
 transaction_wrap = getattr(transaction, 'atomic', None)
@@ -134,6 +131,8 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         """Use the content type from the proxy model."""
+        from django.contrib.contenttypes.models import ContentType
+
         templateresp = super(ModelAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
         try:
             content_type_id = ContentType.objects.get_for_model(self.model, False).id
