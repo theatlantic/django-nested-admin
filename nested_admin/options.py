@@ -220,11 +220,8 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             form.save_m2m()
             for formset in formsets:
                 self.save_formset(request, form, formset, change=change)
-        if is_new:
-            self.log_addition(request, instance)
-        else:
-            change_message = self.construct_change_message(request, form, formsets)
-            self.log_change(request, instance, change_message)
+        change_message = self.construct_change_message(request, form, formsets)
+        self.log_change(request, instance, change_message)
 
     def get_inline_admin_formsets(self, request, formsets, obj=None):
         for inline, formset in zip(self.get_inline_instances(request, obj), formsets):
