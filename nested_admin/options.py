@@ -6,6 +6,7 @@ that module should be considered a bug.
 """
 from six.moves import zip
 
+import django
 from django.forms.formsets import all_valid
 from django.contrib.admin import helpers
 try:
@@ -221,7 +222,11 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             for formset in formsets:
                 self.save_formset(request, form, formset, change=change)
         if is_new:
-            self.log_addition(request, instance)
+            if django.VERSION > (1, 9):
+                change_message = self.construct_change_message(request, form, formsets, is_new)
+                self.log_addition(request, instance, change_message)
+            else:
+                self.log_addition(request, instance)
         else:
             change_message = self.construct_change_message(request, form, formsets)
             self.log_change(request, instance, change_message)
