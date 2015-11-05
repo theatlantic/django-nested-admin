@@ -5,7 +5,7 @@ from .models import TopLevel
 class TestDeepNesting(BaseNestedAdminTestCase):
 
     def load_toplevel_change_admin(self, toplevel):
-        self.selenium.get("%s%s" % (self.live_server_url, toplevel.get_absolute_url()))
+        self.admin_login("mtwain", "p@ssw0rd", login_url=toplevel.get_absolute_url())
         self.wait_page_loaded()
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()

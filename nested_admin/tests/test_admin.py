@@ -10,7 +10,7 @@ from .models import Group, TestSection as Section, TestItem as Item
 class TestAdmin(BaseNestedAdminTestCase):
 
     def load_group_change_admin(self, group):
-        self.selenium.get("%s%s" % (self.live_server_url, group.get_absolute_url()))
+        self.admin_login("mtwain", "p@ssw0rd", login_url=group.get_absolute_url())
         self.wait_page_loaded()
         self.selenium.set_window_size(1120, 2000)
         self.make_footer_position_static()

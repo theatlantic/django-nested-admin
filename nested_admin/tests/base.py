@@ -37,8 +37,8 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
     def setUp(self):
         super(BaseNestedAdminTestCase, self).setUp()
         self.selenium.set_window_size(1120, 1000)
+        self.selenium.set_page_load_timeout(10)
         User.objects.create_superuser('mtwain', 'me@example.com', 'p@ssw0rd')
-        self.admin_login("mtwain", "p@ssw0rd", login_url=reverse('admin:index'))
 
     def wait_until(self, callback, timeout=10, message=None):
         """
