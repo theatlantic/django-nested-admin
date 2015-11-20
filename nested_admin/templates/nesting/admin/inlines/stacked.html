@@ -2,7 +2,7 @@
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
-<div class="inline-group group grp-group grp-stacked{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %} djnesting-stacked{% if is_nested %} djnesting-stacked-nested{% else %} djnesting-stacked-root{% endif %}"
+<div class="inline-group group grp-group grp-stacked{% if not is_nested and inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %} djnesting-stacked{% if is_nested %} djnesting-stacked-nested{% else %} djnesting-stacked-root{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
     {% block group_data_attributes %}
     data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
