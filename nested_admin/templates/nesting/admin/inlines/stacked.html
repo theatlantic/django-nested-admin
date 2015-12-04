@@ -97,7 +97,7 @@
         {% endif %}
         {{ inline_admin_formset.extra_forms }}
     </div>
-    <div class="module grp-module add-item grp-add-item add-row" {% if inline_admin_formset.formset|length|add:inline_opts.extra > inline_opts.max_num %}style="display:none"{% endif %}>
+    <div class="module grp-module add-item grp-add-item add-row" {% if inline_admin_formset.formset|length|add:inline_opts.extra >= inline_opts.max_num %}style="display:none"{% endif %}>
         <a href="javascript://" class="add-handler grp-add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add {{ verbose_name }}{% endblocktrans %}</a>
         <ul class="tools grp-tools">
             <li class="add-handler-container"><a href="javascript://" class="icon add-handler djnesting-icon" title="{% trans 'Add Item' %}"> </a></li>
