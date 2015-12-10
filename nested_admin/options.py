@@ -342,9 +342,9 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
             self.save_view_formsets(request, instance, form, formsets, is_new=False)
             return self.response_change(request, instance)
 
-        if hasattr(self, 'get_prepopulated_field'):
+        if hasattr(self, 'get_prepopulated_fields'):
             # Django 1.4
-            prepopulated_fields = self.get_prepopulated_field(request)
+            prepopulated_fields = self.get_prepopulated_fields(request, obj=obj)
         else:
             prepopulated_fields = self.prepopulated_fields
 
