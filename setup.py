@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='django-nested-admin',
-    version="2.1.9",
+    version="2.1.10",
     install_requires=[
         'six>=1.7.0',
     ],
