@@ -1,4 +1,4 @@
-{% load i18n nested_admin %}
+{% load i18n admin_urls nested_admin %}
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
@@ -43,7 +43,7 @@
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
                  id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{%if is_nested %}{% endif %}{{ inline_admin_form.form|form_index }}{% endif %}">
-                <h3 class="collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djnesting-drag-handler{% endif %}">{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% else %}{{ inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title }}{% endif %}</h3>
+                <h3 class="collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djnesting-drag-handler{% endif %}">{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %} <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}{% else %}{{ inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title }}{% endif %}</h3>
                 <ul class="tools grp-tools">
                     {% if inline_admin_form.show_url %}<li class="viewsite-link-container"><a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>{% endif %}
                     {% if inline_admin_formset.opts.sortable_field_name %}
