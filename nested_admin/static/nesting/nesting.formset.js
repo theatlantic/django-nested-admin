@@ -30,14 +30,14 @@
 
             this._initializeForms();
 
-            this.$inline.find('.nested-sortable-container:not([id*="-empty"])').trigger('djnesting:init');
+            this.$inline.find('.djn-items:not([id*="-empty"])').trigger('djnesting:init');
 
             // initialize nested formsets
-            this.$inline.find('.group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
+            this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
                 $(this)[pluginName]();
             });
 
-            if (this.$inline.is('.djnesting-stacked-root')) {
+            if (this.$inline.is('.djn-group-root')) {
                 DJNesting.createSortable(this.$inline);
             }
 
@@ -133,7 +133,7 @@
             }
             $form.addClass(this.opts.predeleteClass);
 
-            $form.find('.djnesting-stacked').each(function() {
+            $form.find('.djn-group').each(function() {
                 var $childInline = $(this);
                 var childFormset = $childInline.djangoFormset();
                 $childInline.djangoFormsetForms().each(function() {
@@ -171,7 +171,7 @@
                 $form.removeClass(this.opts.predeleteClass);
             }
             $form.data('alreadyDeleted', false);
-            $form.find('.djnesting-stacked').each(function() {
+            $form.find('.djn-group').each(function() {
                 var $childInline = $(this);
                 var childFormset = $childInline.djangoFormset();
                 $childInline.djangoFormsetForms().each(function() {
@@ -198,17 +198,17 @@
             var $form = this._$template.clone(true);
             var index = this.mgmtVal('TOTAL_FORMS');
             var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
-            var isNested = this.$inline.hasClass('djnesting-stacked');
+            var isNested = this.$inline.hasClass('djn-group');
 
             $form.removeClass(this.opts.emptyClass);
             $form.attr('id', $form.attr('id').replace("-empty", index));
 
             if (isNested) {
-                $form.wrap('<div class="nested-sortable-item"></div>').parent().insertBefore(this._$template.parent());
+                $form.wrap('<div class="djn-item"></div>').parent().insertBefore(this._$template.parent());
                 $form.parent().append(DJNesting.createContainerElement());
             } else {
                 $form.insertBefore(this._$template);
-                $form.parent.addClass('nested-sortable-item');
+                $form.parent.addClass('djn-item');
             }
 
             this.mgmtVal('TOTAL_FORMS', index + 1);
@@ -253,7 +253,7 @@
             this._bindEvents($form);
 
             // find any nested formsets
-            $form.find('.group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
+            $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
                 $(this)[pluginName]();
             });
 
@@ -291,7 +291,7 @@
             DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + this.prefix + "-" + index);
 
             // Update prefixes on nested DjangoFormset objects
-            $form.find('.djnesting-stacked').each(function() {
+            $form.find('.djn-group').each(function() {
                 var $childInline = $(this);
                 var childFormset = $childInline.djangoFormset();
                 childFormset.prefix = $childInline.djangoFormsetPrefix();
@@ -319,7 +319,7 @@
             DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, "$1" + this.prefix + "-" + totalFormCount);
 
             // Update prefixes on nested DjangoFormset objects
-            $existingForm.find('.djnesting-stacked').each(function() {
+            $existingForm.find('.djn-group').each(function() {
                 var $childInline = $(this);
                 var childFormset = $childInline.djangoFormset();
                 childFormset.prefix = $childInline.djangoFormsetPrefix();
@@ -340,21 +340,21 @@
 
             // Make sure the form being spliced is from a different inline
             if ($form.djangoFormsetPrefix() == this.prefix) {
-                var currentPosition = $form.parent().prevAll('.nested-sortable-item:not(.nested-do-not-drag)').length;
+                var currentPosition = $form.parent().prevAll('.djn-item:not(.djn-no-drag)').length;
                 if (currentPosition === index || typeof index == 'undefined') {
                     DJNesting.updatePositions(newFormsetPrefix);
                     return;
                 }
                 $item = $form.parent().remove();
-                $before = this.$inline.find('> .nested-sortable-container > .nested-sortable-item').eq(index);
+                $before = this.$inline.find('> .djn-items > .djn-item').eq(index);
                 $before.after($item);
             } else {
                 var $oldInline = $('#' + oldFormsetPrefix + '-group');
-                var $currentFormInline = $form.closest('.djnesting-stacked');
+                var $currentFormInline = $form.closest('.djn-group');
 
                 if ($currentFormInline.djangoFormsetPrefix() != newFormsetPrefix) {
                     $item = $form.parent().remove();
-                    $before = this.$inline.find('> .nested-sortable-container').find('.nested-sortable-item').eq(index);
+                    $before = this.$inline.find('> .djn-items').find('.djn-item').eq(index);
                     $before.after($item);
                 }
 
@@ -365,9 +365,9 @@
                 if (isInitial) {
                     oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
 
-                    var $parentInline = this.$inline.parent().closest('.djnesting-stacked');
+                    var $parentInline = this.$inline.parent().closest('.djn-group');
                     if ($parentInline.length) {
-                        var $parentForm = this.$inline.closest('.nested-inline-form');
+                        var $parentForm = this.$inline.closest('.djn-inline-form');
                         var parentPkField = $parentInline.data('fieldNames').pk;
                         var $parentPk = $parentForm.djangoFormField(parentPkField);
                         if (!$parentPk.val()) {
@@ -395,7 +395,7 @@
                 DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
 
                 // Update prefixes on nested DjangoFormset objects
-                $form.find('.djnesting-stacked').each(function() {
+                $form.find('.djn-group').each(function() {
                     var $childInline = $(this);
                     var childFormset = $childInline.djangoFormset();
                     childFormset.prefix = $childInline.djangoFormsetPrefix();

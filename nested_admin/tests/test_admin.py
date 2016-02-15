@@ -46,9 +46,9 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         source = self.selenium.find_element_by_css_selector((
             "#testsection_set-group > "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
-            "> .nested-inline-form > h3") % (from_section + 2, from_item + 2))
+            ".djn-items > .djn-item:nth-of-type(%d) "
+            ".djn-items > .djn-item:nth-of-type(%d) "
+            "> .djn-inline-form > h3") % (from_section + 2, from_item + 2))
 
         self.assertLessEqual(to_item, target_num_items,
             "Attempt to drag to position %d in a section with %d items" % (to_item, target_num_items))
@@ -58,8 +58,8 @@ class TestAdmin(BaseNestedAdminTestCase):
             if from_section <= to_section:
                 target = self.selenium.find_element_by_css_selector((
                     "#testsection_set-group > "
-                    ".items > .nested-sortable-item:nth-of-type(%d) "
-                    ".items > .empty-form-container") % (to_section + 2))
+                    ".djn-items > .djn-item:nth-of-type(%d) "
+                    ".djn-items > .empty-form-container") % (to_section + 2))
                 (ActionChains(self.selenium)
                     .click_and_hold(source)
                     .move_to_element(target)
@@ -71,9 +71,9 @@ class TestAdmin(BaseNestedAdminTestCase):
             else:
                 target = self.selenium.find_element_by_css_selector((
                     "#testsection_set-group > "
-                    ".items > .nested-sortable-item:nth-of-type(%d) "
-                    ".items > .nested-sortable-item:nth-of-type(%d) "
-                    "> .nested-inline-form") % (to_section + 2, to_item + 1))
+                    ".djn-items > .djn-item:nth-of-type(%d) "
+                    ".djn-items > .djn-item:nth-of-type(%d) "
+                    "> .djn-inline-form") % (to_section + 2, to_item + 1))
                 if django.VERSION > (1, 9):
                     offset = 350
                 else:
@@ -90,14 +90,14 @@ class TestAdmin(BaseNestedAdminTestCase):
 
         if target_num_items == 0:
             target_selector = (
-                "#testsection_set-group > .items "
-                "> .nested-sortable-item:nth-of-type(%d) .items") % (to_section + 2)
+                "#testsection_set-group > .djn-items "
+                "> .djn-item:nth-of-type(%d) .djn-items") % (to_section + 2)
         else:
             target_selector = (
                 "#testsection_set-group > "
-                ".items > .nested-sortable-item:nth-of-type(%d) "
-                ".items > .nested-sortable-item:nth-of-type(%d) "
-                "> .nested-inline-form > h3") % (to_section + 2, to_item + 2)
+                ".djn-items > .djn-item:nth-of-type(%d) "
+                ".djn-items > .djn-item:nth-of-type(%d) "
+                "> .djn-inline-form > h3") % (to_section + 2, to_item + 2)
 
         target = self.selenium.find_element_by_css_selector(target_selector)
         ActionChains(self.selenium).drag_and_drop(source, target).perform()
@@ -136,16 +136,16 @@ class TestAdmin(BaseNestedAdminTestCase):
     def remove_item(self, section, item):
         selector = (
             "#testsection_set-group > "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
+            ".djn-items > .djn-item:nth-of-type(%d) "
+            ".djn-items > .djn-item:nth-of-type(%d) "
             "a.grp-remove-handler") % (section + 2, item + 2)
         self.selenium.find_element_by_css_selector(selector).click()
 
     def delete_item(self, section, item):
         selector = (
             "#testsection_set-group > "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
-            ".items > .nested-sortable-item:nth-of-type(%d) "
+            ".djn-items > .djn-item:nth-of-type(%d) "
+            ".djn-items > .djn-item:nth-of-type(%d) "
             "a.grp-delete-handler") % (section + 2, item + 2)
         self.selenium.find_element_by_css_selector(selector).click()
 

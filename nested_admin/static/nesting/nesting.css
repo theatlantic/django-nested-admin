@@ -1,17 +1,17 @@
-.djnesting-stacked .row.is-hidden {
+.djn-group .row.is-hidden {
     display: none;
 }
 
-.djnesting-stacked .inline-related > h3 > span.delete {
+.djn-group .inline-related > h3 > span.delete {
     float: right;
 }
 
-.djnesting-stacked .open-handler-container,
-.djnesting-stacked .close-handler-container {
+.djn-group .open-handler-container,
+.djn-group .close-handler-container {
     display: none;
 }
 
-.djnesting-stacked.group .module .djnesting-stacked-nested.group {
+.djn-group .djn-group-nested {
     margin: 0 10px;
     width: auto;
     float: none;
@@ -26,44 +26,44 @@
     overflow: hidden;
 }
 
-.form-container .group.djnesting-stacked, .form-container .djnesting-stacked .module {
+.form-container .group.djn-group, .form-container .djn-group .module {
     min-width: 0;
 }
 
-.djnesting-stacked .span-4 {
+.djn-group .span-4 {
     width: 100px;
     margin-right: 10px;
 }
 
-.djnesting-stacked .span-4 + .span-flexible {
+.djn-group .span-4 + .span-flexible {
     margin-left: 110px;
 }
 
-.djnesting-stacked .inline-related .span-4 {
+.djn-group .inline-related .span-4 {
     width: 80px;
     margin-right: 5px;
 }
 
-.djnesting-stacked .inline-related .span-4 + .span-flexible {
+.djn-group .inline-related .span-4 + .span-flexible {
     margin-left: 85px;
 }
 
-.djnesting-stacked ul.tools li.open-handler-container,
-.djnesting-stacked ul.tools li.close-handler-container,
-.djnesting-stacked ul.tools li.add-handler-container {
+.djn-group ul.tools li.open-handler-container,
+.djn-group ul.tools li.close-handler-container,
+.djn-group ul.tools li.add-handler-container {
     display: none;
 }
 
 /* Hide nested headers (e.g. "Articles") */
-.djnesting-stacked-nested h2.collapse-handler {
+.djn-group-nested h2.collapse-handler {
     display: none;
 }
 /* More styling for nested inlines */
-.djnesting-stacked-nested.group {
+.djn-group-nested.group {
     border-color: transparent;
 }
 
-.djnesting-stacked-nested.group div.items .inline-related {
+.djn-group-nested.group div.items .inline-related {
     border: 1px solid #a7a7a7;
     border-radius: 4px;
     -moz-border-radius: 4px;
@@ -71,60 +71,60 @@
     margin-bottom: 5px;
 }
 
-.djnesting-stacked-nested.group div.items .inline-related:first-child {
+.djn-group-nested.group div.items .inline-related:first-child {
     margin-top: 0;
 }
-.djnesting-stacked-nested.group div.items .inline-related.last-related {
+.djn-group-nested.group div.items .inline-related.last-related {
     margin-bottom: 0;
 }
 
-.djnesting-stacked-nested.group div.items .module:first-child {
+.djn-group-nested.group div.items .module:first-child {
     margin-top: 0 !important;
 }
-.djnesting-stacked-nested.group .module.add-item {
+.djn-group-nested.group .module.add-item {
     background: transparent;
     border: 0;
     text-align: right;
 }
-.djnesting-stacked.group .module .module.add-item > :first-child,
-.djnesting-stacked .module .module .module.add-item > :first-child {
+.djn-group.group .module .module.add-item > :first-child,
+.djn-group .module .module .module.add-item > :first-child {
     border-top: 0;
 }
 
-.djnesting-stacked .collapse.closed .subarticle-wrapper,
-.djnesting-stacked .collapse.closed .nested-sortable-item {
+.djn-group .collapse.closed .subarticle-wrapper,
+.djn-group .collapse.closed .djn-item {
     display: block !important;
 }
 
-.nested-placeholder, .djnesting-stacked .ui-sortable-placeholder {
+.nested-placeholder, .djn-group .ui-sortable-placeholder {
     background: #9f9f9f !important;
     margin-bottom: 5px;
 }
-.djnesting-stacked .ui-nestedSortable-error {
+.djn-group .ui-nestedSortable-error {
     background: #9f6464 !important;
 }
 
-.nested-sortable-item .collapse .tools  .drag-handler-container {
+.djn-item .collapse .tools  .drag-handler-container {
     display: none !important;
 }
 
-.change-list .djnesting-stacked .module.footer ul.submit-row {
+.change-list .djn-group .module.footer ul.submit-row {
     min-width: 450px;
 }
 
-.djnesting-stacked div.module .items fieldset.module .row div.tools {
+.djn-group div.module .items fieldset.module .row div.tools {
     top: -18px;
 }
 
-.nested-sortable-container {
+.djn-items {
     overflow: hidden;
     position: relative;
     min-height: 10px;
 }
-.nested-sortable-item {
+.djn-item {
     overflow: hidden;
 }
-.nested-sortable-item.nested-do-not-drag:first-child {
+.djn-item.djn-no-drag:first-child {
     position: absolute;
     height: 19px;
     top: 0;
@@ -133,23 +133,23 @@
     z-index: -1;
 }
 
-.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item.ui-sortable-helper,
-.nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item-dragging {
+.djn-item.djn-no-drag:first-child + .djn-item.ui-sortable-helper,
+.djn-item.djn-no-drag:first-child + .djn-item-dragging {
     margin-top: 0;
 }
 
-.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child {
+.subarticle-wrapper > .djn-item.djn-no-drag:first-child {
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child + .nested-sortable-item,
-.subarticle-wrapper > .nested-sortable-item.nested-do-not-drag:first-child + .ui-sortable-placeholder {
+.subarticle-wrapper > .djn-item.djn-no-drag:first-child + .djn-item,
+.subarticle-wrapper > .djn-item.djn-no-drag:first-child + .ui-sortable-placeholder {
     margin-top: 0;
     padding-top: 0;
 }
 
-.nested-sortable-item-dragging {
+.djn-item-dragging {
     height: 0px;
     border: 0;
     padding: 0;
@@ -172,6 +172,6 @@
     float: right;
     margin-top: -18px;
 }
-#content.colM .nested-sortable-item > .module {
+#content.colM .djn-item > .module {
     margin-bottom: 0;
 }

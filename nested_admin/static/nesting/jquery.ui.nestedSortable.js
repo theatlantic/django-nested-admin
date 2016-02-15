@@ -234,11 +234,11 @@
             if (o.fixedNestingDepth && this._getLevel(this.currentItem) === 1+this._getLevel($itemElement)) {
                 $itemElement = (function() {
                     var containerSel = o.containerElementSelector;
-                    var $childItems = $itemElement.find('.nested-sortable-item');
+                    var $childItems = $itemElement.find('.djn-item');
                     if ($childItems.length != 1) {
                         return $itemElement;
                     }
-                    if (!$childItems.hasClass('nested-do-not-drag')) {
+                    if (!$childItems.hasClass('djn-no-drag')) {
                         return $itemElement;
                     }
                     var itemElementClosestContainer = $itemElement.closest(containerSel);
@@ -349,7 +349,7 @@
                 this._trigger("change", event, this._uiHash());
             }
             // If the item is below a sibling and is moved to the right, make it a child of that sibling.
-            else if (!o.fixedNestingDepth && previousItem != null && !previousItem.hasClass('nested-do-not-drag') &&
+            else if (!o.fixedNestingDepth && previousItem != null && !previousItem.hasClass('djn-no-drag') &&
                         (o.rtl && (this.positionAbs.left + this.helper.outerWidth() < previousItem.offset().left + previousItem.outerWidth() - o.tabSize) ||
                         !o.rtl && (this.positionAbs.left > previousItem.offset().left + o.tabSize))) {
                 this._isAllowed(previousItem, level, level+childLevels);
@@ -540,7 +540,7 @@
 
             if (o.containerElementSelector) {
                 list = item.closest(o.containerElementSelector);
-                while (list && list.length > 0 && !list.parent().is('.djnesting-stacked-root')) {
+                while (list && list.length > 0 && !list.parent().is('.djn-group-root')) {
                     // if (!list.is(o.nestedContainerSelector)) {
                     level++;
                     // }
@@ -558,7 +558,7 @@
             depth = depth || 0;
 
             $(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
-                if ($(child).hasClass('nested-do-not-drag')) {
+                if ($(child).hasClass('djn-no-drag')) {
                     return;
                 }
                 result = Math.max(self._getChildLevels(child, depth + 1), result);
