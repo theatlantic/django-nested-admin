@@ -1,32 +1,53 @@
 from django.contrib import admin
-from nested_admin import NestedStackedInline, NestedAdmin
+from nested_admin import NestedStackedInline, NestedTabularInline, NestedAdmin
 
 from .models import (
-    Group, TestSection as Section, TestItem as Item,
+    StackedGroup, StackedSection, StackedItem,
+    TabularGroup, TabularSection, TabularItem,
     TopLevel, LevelOne, LevelTwo, LevelThree)
 
 
-class ItemInline(NestedStackedInline):
+class StackedItemInline(NestedStackedInline):
 
-    model = Item
+    model = StackedItem
     extra = 0
     sortable_field_name = "position"
     inline_classes = ("collapse open",)
 
 
-class SectionInline(NestedStackedInline):
+class StackedSectionInline(NestedStackedInline):
 
-    model = Section
+    model = StackedSection
     extra = 0
     sortable_field_name = "position"
 
-    inlines = [ItemInline]
+    inlines = [StackedItemInline]
     inline_classes = ("collapse open",)
 
 
-class GroupAdmin(NestedAdmin):
+class StackedGroupAdmin(NestedAdmin):
 
-    inlines = [SectionInline]
+    inlines = [StackedSectionInline]
+
+
+class TabularItemInline(NestedTabularInline):
+
+    model = TabularItem
+    extra = 0
+    sortable_field_name = "position"
+
+
+class TabularSectionInline(NestedTabularInline):
+
+    model = TabularSection
+    extra = 0
+    sortable_field_name = "position"
+    inlines = [TabularItemInline]
+
+
+class TabularGroupAdmin(NestedAdmin):
+
+    inlines = [TabularSectionInline]
 
 
 class LevelThreeInline(NestedStackedInline):
@@ -57,5 +78,6 @@ class TopLevelAdmin(NestedAdmin):
     inlines = [LevelOneInline]
 
 
-admin.site.register(Group, GroupAdmin)
+admin.site.register(StackedGroup, StackedGroupAdmin)
+admin.site.register(TabularGroup, TabularGroupAdmin)
 admin.site.register(TopLevel, TopLevelAdmin)

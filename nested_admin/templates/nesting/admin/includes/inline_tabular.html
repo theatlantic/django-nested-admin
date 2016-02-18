@@ -1,0 +1,70 @@
+{% load i18n nested_admin nested_admin_compat %}
+<td style="" class="original{% if inline_admin_formset.opts.sortable_field_name %} is-sortable{% endif %}">
+{% ifnogrp %}
+{% if inline_admin_form.original or inline_admin_form.show_url %}<p>
+{% if inline_admin_form.original %}
+{{ inline_admin_form.original }}
+{% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}<a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}
+{% endif %}
+{% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
+  </p>{% endif %}
+{% if inline_admin_formset.opts.sortable_field_name %}
+<span class="djn-drag-handler"></span>
+{% endif %}
+{% endifnogrp %}
+{% spaceless %}
+{% for fieldset in inline_admin_form %}
+    {% for line in fieldset %}
+        {% for field in line %}
+            {% if field.field.is_hidden %} {{ field.field }} {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+{% endspaceless %}
+</td>
+
+{% for fieldset in inline_admin_form %}
+    {% for line in fieldset %}
+        {% for field in line %}
+            {% if not field.field.is_hidden %}
+                <td class="grp-td djn-td {{ field.field.name }} {% if field.field.errors %} grp-errors{% endif %}">
+                    {% if field.is_readonly %}
+                        <div class="grp-readonly">{{ field.contents }}</div>
+                    {% else %}
+                        {{ field.field }}
+                        {{ field.field.errors.as_ul }}
+                    {% endif %}
+                    {% if field.field.help_text %}<p class="grp-help">{{ field.field.help_text }}</p>{% endif %}
+                </td>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+<td class="grp-td djn-td grp-tools-container">
+    {% spaceless %}
+    <ul class="tools grp-tools">
+        {# {% if inline_admin_form.show_url %}<li><a href="{% url 'admin:view_on_site' inline_admin_form.original_content_type_id inline_admin_form.original.pk %}" class="grp-icon grp-viewsite-link" title="{% trans 'View on Site' %}" target="_blank"></a></li>{% endif %} #}
+        {% if inline_admin_formset.opts.sortable_field_name %}
+            <li class="drag-handler-container">
+                <a href="javascript://" class="icon drag-handler grp-icon grp-drag-handler djn-drag-handler" title="{% trans 'Move Item' %}"></a>
+            </li>
+        {% endif %}
+        {% if inline_admin_formset.formset.can_delete %}
+            {% if inline_admin_form.original %}
+                <li class="delete-handler-container grp-delete-handler-container">
+                    <a href="javascript://"
+                       class="icon delete-handler grp-icon grp-delete-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}" title="{% trans 'Delete Item' %}"><span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span></a></li>
+            {% else %}
+                <li class="remove-handler-container grp-remove-handler-container">
+                    <a href="javascript://"
+                       class="icon inline-deletelink remove-handler grp-icon grp-remove-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}" title="{% trans 'Delete Item' %}"></a>
+                </li>
+            {% endif %}
+        {% endif %}
+    </ul>
+    {% endspaceless %}
+{% if inline_admin_form.has_auto_field or inline_admin_form.needs_explicit_pk_field %}
+    {{ inline_admin_form.pk_field.field }}
+{% endif %}
+{{ inline_admin_form.fk_field.field }}
+</td>

@@ -7,14 +7,16 @@ class TestDeepNesting(BaseNestedAdminTestCase):
     def load_toplevel_change_admin(self, toplevel):
         self.admin_login("mtwain", "p@ssw0rd", login_url=toplevel.get_absolute_url())
         self.wait_page_loaded()
-        self.selenium.set_window_size(1120, 2000)
+        self.selenium.set_window_size(1120, 940)
+        self.selenium.set_page_load_timeout(10)
         self.make_footer_position_static()
         self.selenium.execute_script("window.$ = django.jQuery")
 
     def save_form(self):
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
         self.wait_page_loaded()
-        self.selenium.set_window_size(1120, 2000)
+        self.selenium.set_window_size(1120, 940)
+        self.selenium.set_page_load_timeout(10)
         self.make_footer_position_static()
         self.selenium.execute_script("window.$ = django.jQuery")
 

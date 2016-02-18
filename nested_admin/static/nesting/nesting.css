@@ -81,7 +81,7 @@
 .djn-group-nested.group div.items .module:first-child {
     margin-top: 0 !important;
 }
-.djn-group-nested.group .module.add-item {
+.djn-group-nested.djn-stacked .module.add-item {
     background: transparent;
     border: 0;
     text-align: right;
@@ -104,7 +104,7 @@
     background: #9f6464 !important;
 }
 
-.djn-item .collapse .tools  .drag-handler-container {
+.djn-item.collapse .tools  .drag-handler-container {
     display: none !important;
 }
 
@@ -117,12 +117,15 @@
 }
 
 .djn-items {
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     min-height: 10px;
 }
+.djn-items.djn-table {
+    overflow: visible;
+}
 .djn-item {
-    overflow: hidden;
+    overflow: visible;
 }
 .djn-item.djn-no-drag:first-child {
     position: absolute;
@@ -157,21 +160,123 @@
     overflow: hidden;
 }
 
+tbody.djn-item-dragging {
+     display: none !important;
+}
+tbody.ui-sortable-placeholder td {
+    background: #fbfad0;
+}
+#content.colM tr.grp-predelete {
+    background: #f7dddd !important;
+}
+
 .inline-group ul.tools a.grp-delete-handler span.delete {
     display: none;
 }
 
+#content.colM .inline-group .tabular .ui-sortable-placeholder tr.has_original td {
+    padding: 1px;
+}
+
+#grp-content .grp-tabular .grp-table .grp-tbody .grp-th,
+#grp-content .grp-tabular .grp-table .grp-tbody .grp-td {
+    vertical-align: middle;
+    overflow: visible;
+}
+
+#grp-content .grp-tabular .grp-table .grp-tbody .grp-tr > td.original:first-child {
+    width: 0;
+    padding: 0;
+    border: 0;
+    background: #eee;
+}
+
+#grp-content .grp-tabular .grp-table .grp-tbody .grp-tr.djn-has-inlines .grp-td {
+    border-bottom: 0 !important;
+}
+
 #content.colM .inline-group ul.tools a.grp-delete-handler span.delete {
     display: inline;
-}
-#content.colM .inline-group ul.tools {
-    height: 0;
 }
 #content.colM .inline-group ul.tools a.inline-deletelink,
 #content.colM .inline-group ul.tools a.grp-delete-handler {
     float: right;
     margin-top: -18px;
 }
-#content.colM .djn-item > .module {
+#content.colM .inline-group .tabular ul.tools a.grp-delete-handler span.delete {
+    display: block;
+}
+#content.colM .inline-group .tabular ul.tools a.grp-delete-handler span.delete label {
+    display: none;
+}
+#content.colM .inline-group .tabular ul.tools a.inline-deletelink,
+#content.colM .inline-group .tabular ul.tools a.grp-delete-handler {
+    display: block;
+    float: none;
+    margin: 0;
+}
+#content.colM .inline-group ul.tools {
+    height: 0;
+}
+#content.colM .djn-item.module {
     margin-bottom: 0;
+}
+#content.colM .inline-group.djn-group .tabular ul.tools li {
+    display: block;
+    padding: 0;
+    list-style-type: none;
+}
+
+.grp-empty-form {
+    display: none !important;
+}
+.grp-empty-form * {
+    display: none !important;
+}
+
+.empty-form-container tr {
+    display: none !important;
+}
+
+#content.colM tr.djn-has-inlines td {
+    border-bottom: 1px solid #fff;
+}
+
+#content.colM td.original {
+    padding: 2px 0 0 0;
+    width: 0;
+}
+
+#content.colM td.original.is-sortable {
+    position: relative;
+    width: 15px;
+}
+#content.colM td.original.is-sortable .djn-drag-handler {
+    display: block;
+    height: 20px;
+    width: 10px;
+    background: url('drag-handle.png') no-repeat top left;
+    background-size: 10px 25px;
+    margin: 5px;
+    position: absolute;
+    top: 4px;
+    left: 0;
+    cursor: move;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+ /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+#content.colM td.original.is-sortable .djn-drag-handler:active { 
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+#content.colM td.original.is-sortable p + .djn-drag-handler {
+    top: 20px;
+}
+
+#content.colM td.original.is-sortable p {
+    left: 19px;
+    top: 0;
 }

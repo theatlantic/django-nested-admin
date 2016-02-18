@@ -24,7 +24,7 @@ all_by_module = {
     'nested_admin.options': (
         'ModelAdmin', 'InlineModelAdmin', 'StackedInline', 'TabularInline'),
     'nested_admin.nested': (
-        'NestedAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline'),
+        'NestedAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline'),
 }
 
 # modules that should be imported when accessed as attributes of nested_admin

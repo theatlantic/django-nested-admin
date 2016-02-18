@@ -3,6 +3,7 @@ from functools import wraps
 import json
 
 from django import template
+from django.conf import settings
 from django.utils.safestring import mark_for_escaping, mark_safe
 from django.utils.html import escape
 
@@ -109,3 +110,45 @@ def formsetsort(formset, arg):
     else:
         sorted_list = formset
     return sorted_list
+
+
+@register.filter
+def cell_count(inline_admin_form):
+    """Returns the number of cells used in a tabular inline"""
+    count = 1  # Hidden cell with hidden 'id' field
+    for fieldset in inline_admin_form:
+        # Loop through all the fields (one per cell)
+        for line in fieldset:
+            for field in line:
+                count += 1
+    if inline_admin_form.formset.can_delete:
+        # Delete checkbox
+        count += 1
+    return count
+
+
+class IfGrappelliNode(template.Node):
+
+    def __init__(self, nodelist, cond):
+        self.nodelist = nodelist
+        self.cond = cond
+
+    def render(self, context):
+        if self.cond != bool('grappelli' in settings.INSTALLED_APPS):
+            return ''
+        return self.nodelist.render(context)
+
+
+@register.tag
+def ifnogrp(parser, token):
+    nodelist = parser.parse(('endifnogrp',))
+    parser.delete_first_token()
+    return IfGrappelliNode(nodelist, False)
+
+
+@register.tag
+def ifgrp(parser, token):
+    nodelist = parser.parse(('endifgrp',))
+    parser.delete_first_token()
+    return IfGrappelliNode(nodelist, True)
+

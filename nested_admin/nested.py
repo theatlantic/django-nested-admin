@@ -207,3 +207,8 @@ class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
 class NestedStackedInline(NestedInlineModelAdmin):
 
     template = 'nesting/admin/inlines/stacked.html'
+
+
+class NestedTabularInline(NestedInlineModelAdmin):
+
+    template = 'nesting/admin/inlines/tabular.html'

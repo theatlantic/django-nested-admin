@@ -51,8 +51,7 @@
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
             {{ inline_admin_form.management_form }}
-            <div class="{% if not forloop.last %}djn-item{% else %}empty-form-container{% endif %}">
-            <div class="module grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form grp-empty-form{% endif %} inline-related"
+            <div class="{% if not forloop.last %}djn-item{% endif %} module grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"collapse grp-collapse closed grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form grp-empty-form{% endif %} inline-related"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
@@ -63,7 +62,7 @@
                 <ul class="tools grp-tools">
                     {% if inline_admin_form.show_url %}
                         <li class="viewsite-link-container">
-                            <a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a>
+                            <a href="{% if inline_admin_form.absolute_url %}{{ inline_admin_form.absolute_url }}{% else %}../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/{% endif %}" class="icon viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a>
                         </li>
                     {% endif %}
                     {% if inline_admin_formset.opts.sortable_field_name %}
@@ -110,8 +109,6 @@
                         {% endfor %}
                     {% endif %}
                 {% endif %}
-
-                </div>
 
             </div>
         {% endfor %}

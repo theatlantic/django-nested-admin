@@ -161,7 +161,7 @@
                     createChildNestedSortable(self, this);
                 });
                 this.element.find(o.containerElementSelector+':not(.subarticle-wrapper)').each(function(i, el) {
-                    if (el.parentNode.getAttribute('id').indexOf('-empty') > -1) {
+                    if ($(el).closest('[data-sortable-field-name]').attr('id').indexOf('-empty') > -1) {
                         return;
                     }
                     createChildNestedSortable(self, el);
@@ -238,7 +238,7 @@
                     if ($childItems.length != 1) {
                         return $itemElement;
                     }
-                    if (!$childItems.hasClass('djn-no-drag')) {
+                    if (!$childItems.is('.djn-no-drag,.djn-thead')) {
                         return $itemElement;
                     }
                     var itemElementClosestContainer = $itemElement.closest(containerSel);
@@ -349,7 +349,7 @@
                 this._trigger("change", event, this._uiHash());
             }
             // If the item is below a sibling and is moved to the right, make it a child of that sibling.
-            else if (!o.fixedNestingDepth && previousItem != null && !previousItem.hasClass('djn-no-drag') &&
+            else if (!o.fixedNestingDepth && previousItem != null && !previousItem.is('.djn-no-drag,.djn-thead') &&
                         (o.rtl && (this.positionAbs.left + this.helper.outerWidth() < previousItem.offset().left + previousItem.outerWidth() - o.tabSize) ||
                         !o.rtl && (this.positionAbs.left > previousItem.offset().left + o.tabSize))) {
                 this._isAllowed(previousItem, level, level+childLevels);
@@ -558,7 +558,7 @@
             depth = depth || 0;
 
             $(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
-                if ($(child).hasClass('djn-no-drag')) {
+                if ($(child).is('.djn-no-drag,.djn-thead')) {
                     return;
                 }
                 result = Math.max(self._getChildLevels(child, depth + 1), result);

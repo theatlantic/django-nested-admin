@@ -1,5 +1,6 @@
 import contextlib
 
+from django.conf import settings
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -8,11 +9,6 @@ from django.test.utils import override_settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import (
     visibility_of_element_located, element_to_be_clickable)
-
-try:
-    import grappelli
-except ImportError:
-    grappelli = None
 
 
 @override_settings(ROOT_URLCONF='nested_admin.tests.urls')
@@ -29,14 +25,14 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
         'nested_admin',
     ]
 
-    if grappelli:
+    if 'grappelli' in settings.INSTALLED_APPS:
         available_apps.insert(0, 'grappelli')
 
     webdriver_class = 'selenium.webdriver.phantomjs.webdriver.WebDriver'
 
     def setUp(self):
         super(BaseNestedAdminTestCase, self).setUp()
-        self.selenium.set_window_size(1120, 1000)
+        self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
         User.objects.create_superuser('mtwain', 'me@example.com', 'p@ssw0rd')
 

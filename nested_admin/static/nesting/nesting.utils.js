@@ -438,19 +438,19 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         };
 
         $.each(lookup_fields.related_fk, function() {
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find('input[name^="' + prefix + '"][name$="' + this + '"]')
             .grp_related_fk({lookup_url: lookup_urls.related});
         });
         $.each(lookup_fields.related_m2m, function() {
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find('input[name^="' + prefix + '"][name$="' + this + '"]')
             .grp_related_m2m({lookup_url: lookup_urls.m2m});
         });
         $.each(lookup_fields.related_generic, function() {
             var content_type = this[0],
                 object_id = this[1];
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find('input[name^="' + prefix + '"][name$="' + this[1] + '"]')
             .each(function() {
                 var $this = $(this);
@@ -490,7 +490,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         };
 
         $.each(lookup_fields.autocomplete_fk, function() {
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_fk({
@@ -500,7 +500,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             });
         });
         $.each(lookup_fields.autocomplete_m2m, function() {
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find("input[name^='" + prefix + "'][name$='" + this + "']")
             .each(function() {
                 $(this).grp_autocomplete_m2m({
@@ -512,7 +512,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         $.each(lookup_fields.autocomplete_generic, function() {
             var content_type = this[0],
                 object_id = this[1];
-            $('#' + prefix + '-group > .djn-items > div:not(.empty-form)')
+            $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
             .find("input[name^='" + prefix + "'][name$='" + this[1] + "']")
             .each(function() {
                 var i = $(this).attr("id").match(/-\d+-/);

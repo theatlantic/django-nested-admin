@@ -1,0 +1,128 @@
+{% load i18n nested_admin %}
+{% with inline_admin_formset.formset.is_nested as is_nested %}
+
+{% with inline_admin_formset.opts as inline_opts %}
+<div class="inline-group group grp-group djn-group grp-tabular djn-tabular{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}"
+    id="{{ inline_admin_formset.formset.prefix }}-group"
+    {% block group_data_attributes %}
+    data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
+    data-lookup-related-fk="{% get_safe_related_lookup_fields_fk inline_opts %}"
+    data-lookup-related-m2m="{% get_safe_related_lookup_fields_m2m inline_opts %}"
+    data-lookup-related-generic='{% get_safe_related_lookup_fields_generic inline_opts %}'
+    data-lookup-autocomplete-fk="{% get_safe_autocomplete_lookup_fields_fk inline_opts %}"
+    data-lookup-autocomplete-m2m="{% get_safe_autocomplete_lookup_fields_m2m inline_opts %}"
+    data-lookup-autocomplete-generic="{% get_safe_autocomplete_lookup_fields_generic inline_opts %}"
+    data-formset-fk-name="{{ inline_admin_formset.formset.fk.name }}"
+    {% if inline_admin_formset.formset.nesting_depth %}data-nesting-level="{{ inline_admin_formset.formset.nesting_depth }}"{% endif %}
+    data-field-names='{"pk": "{{ inline_opts.opts.pk.name }}"{% if inline_opts.sortable_field_name %}, "position": "{{ inline_opts.sortable_field_name }}"{% endif %}}'
+    data-inline-model="{{ inline_opts.opts.object_name|lower }}"{% endblock %}>
+
+    {% ifnogrp %}
+    <div class="tabular inline-related">
+    <fieldset class="module">
+    {% endifnogrp %}
+
+    <h2 class="collapse-handler grp-collapse-handler">
+        {% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}
+    </h2>
+    {% ifgrp %}
+    <ul class="tools grp-tools">
+        <li class="add-handler-container">
+            <a href="javascript://"
+               class="icon add-handler grp-icon grp-add-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}"
+               title="{% trans 'Add Item' %}"> </a>
+        </li>
+    </ul>
+    {% endifgrp %}
+
+    {{ inline_admin_formset.formset.management_form }}
+    {{ inline_admin_formset.formset.non_form_errors }}
+
+    <table class="djn-items tabular inline-related grp-module grp-table djn-table"
+      {% if inline_admin_formset.opts.sortable_options %}
+      data-sortable-options="{{ inline_admin_formset.opts.sortable_options|json_encode }}"
+      {% endif %}>
+
+      <thead class="module grp-module grp-thead djn-module djn-thead djn-item">
+          <tr class="grp-tr">
+              {% for field in inline_admin_formset.fields %}
+                  {% if not field.widget.is_hidden %}
+                      <th{% if forloop.first %} colspan="2"{% endif %} class="grp-th djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">{{ field.label|capfirst }}</th>
+                  {% endif %}
+              {% endfor %}
+              {% if inline_admin_formset.formset.can_delete %}<th class="grp-th djn-th">{% ifnogrp %}Delete?{% endifnogrp %}&nbsp;</th>{% endif %}
+          </tr>
+      </thead>
+
+        {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
+        {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
+            {{ inline_admin_form.management_form }}
+            <tbody class="grp-tbody djn-tbody{% if not forloop.last %} djn-item{% endif %} form-row module grp-module djn-inline-form{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} empty-form grp-empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
+                {% if inline_admin_form.pk_field.field %}
+                data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
+                {% endif %}
+                id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{%if is_nested %}{% endif %}{{ inline_admin_form.form|form_index }}{% endif %}">
+
+            {% if inline_admin_form.form.non_field_errors %}
+            <tr class="grp-tr djn-tr"><td class="grp-td djn-td" colspan="{{ inline_admin_form|cell_count }}">
+                <ul class="errorlist">
+                    <li>{{ inline_admin_form.form.non_field_errors }}</li>
+                </ul>
+            </td></tr>
+            {% endif %}
+            <tr class="grp-tr djn-tr form-row{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}">
+
+            {% ifgrp %}
+            <h3 style="display: none;"><b>{{ inline_admin_formset.opts.verbose_name }} #{{ forloop.counter }}</b>&nbsp;&nbsp;{% if inline_admin_form.original %} {{ inline_admin_form.original }}{% endif %}</h3>
+            {% endifgrp %}
+
+            {% include "nesting/admin/includes/inline_tabular.html" %}
+
+            </tr>
+
+            {% if inline_admin_form.form.inlines %}
+                <tr class="grp-tr djn-tr"><td class="grp-td djn-td" colspan="{{ inline_admin_form|cell_count }}">
+                {% for nested in inline_admin_form.form.inlines %}
+                    {% include nested.opts.template with inline_admin_formset=nested %}
+                {% endfor %}
+                </td></tr>
+            {% endif %}
+
+            {% if forloop.last %}
+                {% if inline_admin_formset.inlines %}
+                    <tr class="grp-tr djn-tr"><td class="grp-td djn-td" colspan="{{ inline_admin_form|cell_count }}">
+                    {% for nested in inline_admin_formset.inlines %}
+                        {% include nested.opts.template with inline_admin_formset=nested %}
+                    {% endfor %}
+                    </td></tr>
+                {% endif %}
+            {% endif %}
+
+            </tbody>
+        {% endfor %}
+        {% endwith %}
+
+        {% if inline_admin_form.inlines %}
+            {% for nested in inline_admin_form.inlines %}
+                {% include nested.opts.template %}
+            {% endfor %}
+        {% endif %}
+    </table>
+    <div class="grp-module grp-transparent add-item grp-add-item add-row">
+        <a href="javascript://" class="add-handler grp-add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add {{ verbose_name }}{% endblocktrans %}</a>
+        {% ifgrp %}
+        <ul class="tools grp-tools">
+            <li class="add-handler-container"><a href="javascript://" class="icon add-handler djnesting-icon" title="{% trans 'Add Item' %}"> </a></li>
+        </ul><br clear="all" />
+        {% endifgrp %}
+    </div>
+
+    {% ifnogrp %}
+    </div>
+    </fieldset>
+    {% endifnogrp %}
+
+</div>
+{% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
+
+{% endwith %}{# ends {% with inline_admin_formset.formset.is_nested as is_nested %} #}
