@@ -67,7 +67,11 @@ place of their django admin equivalents:
 ModelAdmin                NestedAdmin           
 InlineModelAdmin          NestedInlineModelAdmin
 StackedInline             NestedStackedInline   
+TabularInline             NestedTabularInline
 ========================  ======================
+
+Note: for consistency with the other class names, ``NestedAdmin`` will be
+deprecated in favor of ``NestedModelAdmin`` in 2.2.1, and removed in version 2.3.
 
 .. code-block:: python
 
