@@ -221,30 +221,6 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         cls.inline_type = cls.section_model_name.replace('section', '')
         cls.is_grappelli = 'grappelli' in settings.INSTALLED_APPS
 
-    def load_group_change_admin(self, group):
-        self.admin_login("mtwain", "p@ssw0rd", login_url=group.get_absolute_url())
-        self.wait_page_loaded()
-        self.selenium.set_window_size(1120, 1300)
-        self.selenium.set_page_load_timeout(10)
-        self.make_footer_position_static()
-        self.selenium.execute_script("window.$ = django.jQuery")
-
-    def save_form(self):
-        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
-        self.wait_page_loaded()
-        self.selenium.set_window_size(1120, 1300)
-        self.selenium.set_page_load_timeout(10)
-        self.make_footer_position_static()
-        self.selenium.execute_script("window.$ = django.jQuery")
-
-    def make_footer_position_static(self):
-        """Make <footer> element styles 'position: static'"""
-        self.selenium.execute_script(
-            "var footer = document.getElementsByTagName('footer')[0];"
-            "if (footer) footer.className = 'grp-module grp-submit-row';")
-        self.selenium.execute_script("if(document.getElementById('content-inner')) {"
-            "document.getElementById('content-inner').style.bottom = '0';}")
-
     def get_num_sections(self):
         return self.selenium.execute_script(
             "return $('.dynamic-form-%s').length" % self.section_model_name)
@@ -335,7 +311,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
     def test_add_section_to_empty(self):
         group = self.group_cls.objects.create(slug='test')
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="test")
         self.save_form()
@@ -350,7 +326,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         group = self.group_cls.objects.create(slug='test')
         section = self.section_cls.objects.create(slug='test', group=group, position=0)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         item_verbose_name = self.item_cls._meta.verbose_name.title()
         with self.clickable_xpath('//a[text()="Add %s"]' % item_verbose_name) as el:
@@ -376,7 +352,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
         self.drag_and_drop_item(from_section=1, from_item=2, to_section=0, to_item=1,
             screenshot_hack=True)
         self.save_form()
@@ -406,7 +382,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.drag_and_drop_item(from_section=1, from_item=1, to_section=0, to_item=1)
 
@@ -437,7 +413,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_item(section=1, name='B 3')
         self.drag_and_drop_item(from_section=1, from_item=1, to_section=0, to_item=1,
@@ -471,7 +447,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_item(section=0, name='A 3')
         self.drag_and_drop_item(from_section=1, from_item=1, to_section=0, to_item=1,
@@ -505,7 +481,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_item(section=1, name='B 2')
         time.sleep(0.01)
@@ -540,7 +516,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.delete_item(section=1, item=1)
 
@@ -566,7 +542,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.delete_section(section=0)
 
@@ -596,7 +572,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.delete_item(section=0, item=1)
         self.delete_section(section=0)
@@ -625,7 +601,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_item(section=1, name='B 2')
         self.remove_item(section=1, item=2)
@@ -649,7 +625,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.drag_and_drop_item(from_section=1, from_item=2, to_section=0)
 
@@ -677,7 +653,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.drag_and_drop_item(from_section=1, from_item=2, to_section=0, to_item=0,
             screenshot_hack=True)
@@ -709,7 +685,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
         self.item_cls.objects.create(name='B 2', section=section_b, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.drag_and_drop_item(from_section=1, from_item=2, to_section=0, to_item=3)
 
@@ -739,7 +715,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='A 1', section=section_a, position=1)
         self.item_cls.objects.create(name='A 2', section=section_a, position=2)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.drag_and_drop_item(from_section=0, from_item=2, to_section=1)
@@ -764,7 +740,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
 
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_item(section=0, name='A 0')
         self.add_item(section=0, name='A 1')
@@ -805,7 +781,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
         self.item_cls.objects.create(name='A 0', section=section_a, position=0)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.drag_and_drop_item(from_section=0, from_item=0, to_section=1)
@@ -841,7 +817,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         # Drag the first item of section 'b' into section 'a'
         self.drag_and_drop_item(from_section=1, from_item=0, to_section=0, to_item=1)
@@ -872,7 +848,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.drag_and_drop_item(from_section=1, from_item=0, to_section=0, to_item=0,
             screenshot_hack=True)
@@ -903,7 +879,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='A 0', section=section_a, position=0)
         self.item_cls.objects.create(name='A 1', section=section_a, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.drag_and_drop_item(from_section=0, from_item=0, to_section=1)
@@ -935,7 +911,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='A 0', section=section_a, position=0)
         self.item_cls.objects.create(name='A 1', section=section_a, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.add_item(section=1, name='B 0')
@@ -987,7 +963,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
         self.item_cls.objects.create(name='A 0', section=section_a, position=0)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.add_item(section=1, name='B 0')
@@ -1019,7 +995,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         # Drag the first item of section 'b' into section 'a'
         self.drag_and_drop_item(from_section=1, from_item=0, to_section=0, to_item=0)
@@ -1042,7 +1018,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.item_cls.objects.create(name='B 0', section=section_b, position=0)
         self.item_cls.objects.create(name='B 1', section=section_b, position=1)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         # Drag the first item of section 'b' into section 'a'
         self.drag_and_drop_item(from_section=1, from_item=0, to_section=0, to_item=0)
@@ -1065,7 +1041,7 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
         self.item_cls.objects.create(name='A 0', section=section_a, position=0)
 
-        self.load_group_change_admin(group)
+        self.load_change_admin(group)
 
         self.add_section(slug="b")
         self.add_section(slug="c")

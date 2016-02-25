@@ -3,7 +3,6 @@ import contextlib
 from django.conf import settings
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
 from selenium.webdriver.common.by import By
@@ -107,3 +106,27 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
         yield
         self.wait_until(lambda d: len(d.window_handles) == 1)
         self.selenium.switch_to.window(self.selenium.window_handles[0])
+
+    def load_change_admin(self, obj):
+        self.admin_login("mtwain", "p@ssw0rd", login_url=obj.get_absolute_url())
+        self.wait_page_loaded()
+        self.selenium.set_window_size(1120, 1300)
+        self.selenium.set_page_load_timeout(10)
+        self.make_footer_position_static()
+        self.selenium.execute_script("window.$ = django.jQuery")
+
+    def save_form(self):
+        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+        self.wait_page_loaded()
+        self.selenium.set_window_size(1120, 1300)
+        self.selenium.set_page_load_timeout(10)
+        self.make_footer_position_static()
+        self.selenium.execute_script("window.$ = django.jQuery")
+
+    def make_footer_position_static(self):
+        """Make <footer> element styles 'position: static'"""
+        self.selenium.execute_script(
+            "var footer = document.getElementsByTagName('footer')[0];"
+            "if (footer) footer.className = 'grp-module grp-submit-row';")
+        self.selenium.execute_script("if(document.getElementById('content-inner')) {"
+            "document.getElementById('content-inner').style.bottom = '0';}")
