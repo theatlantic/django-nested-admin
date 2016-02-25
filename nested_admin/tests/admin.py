@@ -1,5 +1,5 @@
 from django.contrib import admin
-from nested_admin import NestedStackedInline, NestedTabularInline, NestedAdmin
+from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
 from .models import (
     StackedGroup, StackedSection, StackedItem,
@@ -26,7 +26,7 @@ class StackedSectionInline(NestedStackedInline):
     inline_classes = ("collapse open",)
 
 
-class StackedGroupAdmin(NestedAdmin):
+class StackedGroupAdmin(NestedModelAdmin):
 
     inlines = [StackedSectionInline]
 
@@ -46,7 +46,7 @@ class TabularSectionInline(NestedTabularInline):
     inlines = [TabularItemInline]
 
 
-class TabularGroupAdmin(NestedAdmin):
+class TabularGroupAdmin(NestedModelAdmin):
 
     inlines = [TabularSectionInline]
 
@@ -74,7 +74,7 @@ class LevelOneInline(NestedStackedInline):
     inline_classes = ("collapse open grp-collapse grp-open",)
 
 
-class TopLevelAdmin(NestedAdmin):
+class TopLevelAdmin(NestedModelAdmin):
 
     inlines = [LevelOneInline]
 
@@ -88,7 +88,7 @@ class SortableWithExtraChildInline(NestedStackedInline):
     sortable_excludes = ['foo']
 
 
-class SortableWithExtraRootAdmin(NestedAdmin):
+class SortableWithExtraRootAdmin(NestedModelAdmin):
 
     inlines = [SortableWithExtraChildInline]
 

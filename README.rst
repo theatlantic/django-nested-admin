@@ -64,14 +64,15 @@ place of their django admin equivalents:
 ========================  ======================
 **django.contrib.admin**  **nested_admin**      
 ------------------------  ----------------------
-ModelAdmin                NestedAdmin           
+ModelAdmin                NestedModelAdmin           
 InlineModelAdmin          NestedInlineModelAdmin
 StackedInline             NestedStackedInline   
 TabularInline             NestedTabularInline
 ========================  ======================
 
-Note: for consistency with the other class names, ``NestedAdmin`` will be
-deprecated in favor of ``NestedModelAdmin`` in 2.2.1, and removed in version 2.3.
+Note: for consistency with the other class names, ``NestedAdmin`` was
+deprecated in favor of ``NestedModelAdmin`` in 2.2.1, and will be removed in
+version 2.3.
 
 .. code-block:: python
 
@@ -91,7 +92,7 @@ deprecated in favor of ``NestedModelAdmin`` in 2.2.1, and removed in version 2.3
         sortable_field_name = "position"
         inlines = [TocArticleInline]
 
-    class TableOfContentsAdmin(nested_admin.NestedAdmin):
+    class TableOfContentsAdmin(nested_admin.NestedModelAdmin):
         inlines = [TocSectionInline]
 
     admin.site.register(TableOfContents, TableOfContentsAdmin)

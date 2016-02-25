@@ -1,12 +1,22 @@
 import six
+import sys
+import types
+import warnings
 
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.core.urlresolvers import reverse
 from django import forms
 
+from .exceptions import NestedAdminPendingDeprecationWarning
 from .formsets import NestedInlineFormSet
 from .options import ModelAdmin, InlineModelAdmin
+
+
+__all__ = (
+    'NestedModelAdmin', 'NestedModelAdminMixin',
+    'NestedInlineAdminFormset', 'NestedInlineFormSet',
+    'NestedInlineModelAdmin', 'NestedStackedInline')
 
 
 class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
@@ -67,7 +77,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
         return nested_inline_formsets
 
 
-class NestedAdminMixin(object):
+class NestedModelAdminMixin(object):
 
     def get_formset_instances(self, request, instance, is_new=False, **kwargs):
         obj = None
@@ -84,7 +94,7 @@ class NestedAdminMixin(object):
                 formset_kwargs.update({
                     'save_as_new': '_saveasnew' in request.POST})
 
-        formset_iterator = super(NestedAdminMixin, self).get_formset_instances(
+        formset_iterator = super(NestedModelAdminMixin, self).get_formset_instances(
             request, instance, is_new, **kwargs)
         inline_iterator = self.get_inline_instances(request, obj)
 
@@ -144,7 +154,7 @@ class NestedAdminMixin(object):
             else:
                 non_nested_formsets.append(formset)
 
-        inline_admin_formsets = super(NestedAdminMixin, self).get_inline_admin_formsets(
+        inline_admin_formsets = super(NestedModelAdminMixin, self).get_inline_admin_formsets(
             request, non_nested_formsets, obj)
 
         for f in inline_admin_formsets:
@@ -156,11 +166,11 @@ class NestedAdminMixin(object):
                 submitted_formsets=orig_nested_formsets)
 
 
-class NestedAdmin(NestedAdminMixin, ModelAdmin):
+class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):
 
     @property
     def media(self):
-        media = getattr(super(NestedAdmin, self), 'media', forms.Media())
+        media = getattr(super(NestedModelAdmin, self), 'media', forms.Media())
 
         server_data_js = reverse('nesting_server_data')
         media.add_js((server_data_js,))
@@ -187,7 +197,7 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
         return media
 
 
-class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
+class NestedInlineModelAdmin(NestedModelAdminMixin, InlineModelAdmin):
 
     is_sortable = True
 
@@ -213,3 +223,30 @@ class NestedStackedInline(NestedInlineModelAdmin):
 class NestedTabularInline(NestedInlineModelAdmin):
 
     template = 'nesting/admin/inlines/tabular.html'
+
+
+# keep a reference to this module so that it's not garbage collected
+old_module = sys.modules[__name__]
+
+
+class module(types.ModuleType):
+
+    def __dir__(self):
+        """Just show what we want to show."""
+        return list(new_module.__all__ + [
+            '__file__', '__doc__', '__all__', '__name__', '__path__',
+            '__package__'])
+
+    def __getattr__(self, name):
+        if name == 'NestedAdmin':
+            warnings.warn(
+                "NestedAdmin has been changed to NestedModelAdmin",
+                NestedAdminPendingDeprecationWarning, stacklevel=2)
+            return self.__dict__['NestedModelAdmin']
+        return types.ModuleType.__getattribute__(self, name)
+
+
+# setup the new module and patch it into the dict of loaded modules
+new_module = sys.modules[__name__] = module(__name__)
+new_module.__dict__.update(old_module.__dict__.copy())
+new_module.__dict__['__all__'] += ('NestedAdmin', )

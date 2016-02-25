@@ -10,7 +10,9 @@ This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
 import pkg_resources
 import sys
 from types import ModuleType
+import warnings
 
+from .exceptions import NestedAdminPendingDeprecationWarning
 
 try:
     __version__ = pkg_resources.get_distribution('django-nested-admin').version
@@ -24,7 +26,7 @@ all_by_module = {
     'nested_admin.options': (
         'ModelAdmin', 'InlineModelAdmin', 'StackedInline', 'TabularInline'),
     'nested_admin.nested': (
-        'NestedAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline'),
+        'NestedModelAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline'),
 }
 
 # modules that should be imported when accessed as attributes of nested_admin
@@ -47,6 +49,11 @@ class module(ModuleType):
         return result
 
     def __getattr__(self, name):
+        if name == 'NestedAdmin':
+            warnings.warn(
+                "NestedAdmin has been changed to NestedModelAdmin",
+                NestedAdminPendingDeprecationWarning, stacklevel=2)
+            name = 'NestedModelAdmin'
         if name in object_origins:
             module = __import__(object_origins[name], None, None, [name])
             for extra_name in all_by_module[module.__name__]:
@@ -69,5 +76,6 @@ new_module.__dict__.update({
     '__doc__':          __doc__,
     '__version__':      __version__,
     '__all__':          tuple(object_origins) + tuple(attribute_modules),
-    '__docformat__':    'restructuredtext en'
+    '__docformat__':    'restructuredtext en',
+    'NestedAdminPendingDeprecationWarning': NestedAdminPendingDeprecationWarning,
 })
