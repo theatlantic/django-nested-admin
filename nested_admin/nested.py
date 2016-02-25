@@ -189,15 +189,14 @@ class NestedAdmin(NestedAdminMixin, ModelAdmin):
 
 class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
 
-    default_sortable_options = {
-        'disabled': False,
-    }
+    is_sortable = True
 
     formset = NestedInlineFormSet
 
     def __init__(self, *args, **kwargs):
-        sortable_options = {}
-        sortable_options.update(self.default_sortable_options)
+        sortable_options = {
+            'disabled': not(self.is_sortable),
+        }
         if hasattr(self, 'sortable_options'):
             sortable_options.update(self.sortable_options)
         self.sortable_options = sortable_options
