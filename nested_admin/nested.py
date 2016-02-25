@@ -197,6 +197,8 @@ class NestedInlineModelAdmin(NestedAdminMixin, InlineModelAdmin):
         sortable_options = {
             'disabled': not(self.is_sortable),
         }
+        if hasattr(self, 'sortable_excludes'):
+            sortable_options['sortableExcludes'] = self.sortable_excludes
         if hasattr(self, 'sortable_options'):
             sortable_options.update(self.sortable_options)
         self.sortable_options = sortable_options

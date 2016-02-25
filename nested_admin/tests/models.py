@@ -160,3 +160,29 @@ class LevelThree(models.Model):
 
     class Meta:
         app_label = "nested_admin"
+
+
+class SortableWithExtraRoot(models.Model):
+
+    slug = models.CharField(max_length=128)
+
+    class Meta:
+        app_label = "nested_admin"
+
+    def get_absolute_url(self):
+        info = (self._meta.app_label, self._meta.object_name.lower())
+        if self.pk:
+            return reverse('admin:%s_%s_change' % info, args=[self.pk])
+        else:
+            return reverse('admin:%s_%s_add' % info)
+
+
+class SortableWithExtraChild(models.Model):
+
+    slug = models.CharField(max_length=128)
+    root = models.ForeignKey(SortableWithExtraRoot)
+    position = models.PositiveIntegerField()
+    foo = models.CharField(max_length=128, default='bar')
+
+    class Meta:
+        app_label = "nested_admin"

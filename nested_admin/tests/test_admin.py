@@ -9,7 +9,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from .base import BaseNestedAdminTestCase
 from .models import (
     StackedGroup, StackedSection, StackedItem,
-    TabularGroup, TabularSection, TabularItem)
+    TabularGroup, TabularSection, TabularItem,
+    SortableWithExtraRoot, SortableWithExtraChild)
 
 
 if not hasattr(__builtins__, 'cmp'):
@@ -823,6 +824,10 @@ class BaseInlineAdminTestCase(BaseNestedAdminTestCase):
         self.drag_and_drop_item(from_section=1, from_item=0, to_section=0, to_item=1)
         # Create invalid item (missing required field 'name')
         self.add_item(section=1)
+        # We need to manually set the position to trigger the validation error,
+        # otherwise it will be skipped as an empty inline on save
+        with self.clickable_selector('#id_section_set-1-item_set-1-position') as el:
+            el.send_keys('1')
 
         # Save
         self.save_form()
@@ -1070,3 +1075,48 @@ class TestTabularInlineAdmin(BaseInlineAdminTestCase):
     group_cls = TabularGroup
     section_cls = TabularSection
     item_cls = TabularItem
+
+
+class TestSortablesWithExtra(BaseNestedAdminTestCase):
+
+    def test_blank_extra_inlines_validation(self):
+        root = SortableWithExtraRoot.objects.create(slug='a')
+        self.load_change_admin(root)
+        with self.clickable_selector('#id_slug') as el:
+            el.clear()
+            el.send_keys('b')
+
+        self.save_form()
+
+        validation_errors = self.selenium.execute_script(
+            "return $('ul.errorlist li').length")
+
+        self.assertEqual(validation_errors, 0, "Unexpected validation errors encountered")
+
+    def test_blank_extra_inlines_validation_with_change(self):
+        root = SortableWithExtraRoot.objects.create(slug='a')
+        self.load_change_admin(root)
+        with self.clickable_selector('#id_slug') as el:
+            el.clear()
+            el.send_keys('b')
+        with self.clickable_selector('#id_sortablewithextrachild_set-0-slug') as el:
+            el.clear()
+            el.send_keys('a')
+
+        self.save_form()
+
+        validation_errors = self.selenium.execute_script(
+            "return $('ul.errorlist li').length")
+
+        self.assertEqual(validation_errors, 0, "Unexpected validation errors encountered")
+
+        # refetch from the database
+        root = SortableWithExtraRoot.objects.get(pk=root.pk)
+
+        self.assertEqual(root.slug, 'b', "Root slug did not change")
+
+        children = SortableWithExtraChild.objects.all()
+
+        self.assertNotEqual(len(children), 0, "Child object did not save")
+        self.assertEqual(len(children), 1, "Incorrect number of children saved")
+        self.assertEqual(children[0].slug, "a", "Child slug incorrect")

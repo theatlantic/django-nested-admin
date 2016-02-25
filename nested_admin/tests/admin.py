@@ -4,7 +4,8 @@ from nested_admin import NestedStackedInline, NestedTabularInline, NestedAdmin
 from .models import (
     StackedGroup, StackedSection, StackedItem,
     TabularGroup, TabularSection, TabularItem,
-    TopLevel, LevelOne, LevelTwo, LevelThree)
+    TopLevel, LevelOne, LevelTwo, LevelThree,
+    SortableWithExtraRoot, SortableWithExtraChild)
 
 
 class StackedItemInline(NestedStackedInline):
@@ -78,6 +79,22 @@ class TopLevelAdmin(NestedAdmin):
     inlines = [LevelOneInline]
 
 
+class SortableWithExtraChildInline(NestedStackedInline):
+
+    model = SortableWithExtraChild
+    extra = 2
+    sortable_field_name = "position"
+    inline_classes = ("collapse open",)
+    sortable_excludes = ['foo']
+
+
+class SortableWithExtraRootAdmin(NestedAdmin):
+
+    inlines = [SortableWithExtraChildInline]
+
+
+
 admin.site.register(StackedGroup, StackedGroupAdmin)
 admin.site.register(TabularGroup, TabularGroupAdmin)
 admin.site.register(TopLevel, TopLevelAdmin)
+admin.site.register(SortableWithExtraRoot, SortableWithExtraRootAdmin)

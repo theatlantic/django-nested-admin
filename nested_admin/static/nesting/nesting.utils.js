@@ -138,7 +138,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             fieldNames = $group.data('fieldNames'),
             // The field name on the fieldset which is a ForeignKey to the parent model
             groupFkName = $group.data('formsetFkName'),
-            parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/);
+            parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/),
+            $items = $group.find('> .djn-items, > .tabular > .module > .djn-items'),
+            sortableOptions = $items.data('sortableOptions'),
+            sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
+
+        sortableExcludes.push(groupFkName);
 
         if (parentIdMatches) {
             var parentPrefix = parentIdMatches[1];
@@ -167,16 +172,43 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             var $this = $(this),
                 prefixAndIndex = $this.djangoPrefixIndex() || [null, null],
                 formPrefix = prefixAndIndex[0],
-                index = prefixAndIndex[1];
+                index = prefixAndIndex[1],
+                namePrefix = formPrefix + '-' + index + '-';
             if (!formPrefix) {
+                return;
+            }
+
+            var $fields = $this.djangoFormField('*'),
+                $positionField,
+                setPosition = false;
+
+            // position is being updated if
+            // a) the field has a value
+            // b) if the field is not exluded with sortable_excludes (e.g. with default values)
+            $fields.each(function() {
+                var $field = $(this);
+                if (!$field.is(':input[type!=radio][type!=checkbox],input:checked')) {
+                    return;
+                }
+                var hasValue = $field.val() || ($field.attr('type') == 'file' && $field.siblings('a').length),
+                    fieldName = $field.attr('name').substring(namePrefix.length);
+                if (fieldName == fieldNames.position) {
+                    $positionField = $field;
+                }
+                if (hasValue && $.inArray(fieldName, sortableExcludes) === -1) {
+                    setPosition = true;
+                }
+            });
+
+            if (!setPosition || !$positionField) {
                 return;
             }
 
             // Skip the element if it's marked to be deleted
             if (skipDeleted && ($this.hasClass('predelete') || $this.hasClass('grp-predelete'))) {
-                $this.filterDjangoField(formPrefix, fieldNames.position, index).val('0').trigger('change');
+                $positionField.val('0').trigger('change');
             } else {
-                $this.filterDjangoField(formPrefix, fieldNames.position, index).val(position).trigger('change');
+                $positionField.val(position).trigger('change');
                 position++;
             }
         });
@@ -339,13 +371,22 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             if (isNaN(index)) {
                 return $empty;
             }
-            if (fieldName == 'pk' || fieldName == 'position') {
+            var namePrefix = prefix + '-' + index + '-';
+            if (fieldName == '*') {
+                return $('*[name^="' + namePrefix + '"]').filter(function() {
+                    var fieldPart = $(this).attr('name').substring(namePrefix.length);
+                    return (fieldPart.indexOf('-') === -1);
+                });
+            }
+            var $field = $('#id_' + namePrefix + fieldName);
+            if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
                 var $group = $('#' + prefix + '-group'),
                     fieldNameData = $group.data('fieldNames') || {};
                 fieldName = fieldNameData[fieldName];
                 if (!fieldName) { return $empty; }
+                $field = $('#id_' + namePrefix + fieldName);
             }
-            return $('#id_' + prefix + '-' + index + '-' + fieldName);
+            return $field;
         };
     }
 
@@ -396,13 +437,13 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             if (typeof(djRegexCache[prefix][fieldName]) == 'undefined') {
                 djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
             }
-            return this.find('input[name$="'+fieldName+'"]').filter(function(index) {
+            return this.find('input[name$="'+fieldName+'"]').filter(function() {
                 return this.getAttribute("name").match(djRegexCache[prefix][fieldName]);
             });
         };
     }
 
-    DJNesting.createContainerElement = function(parent) {
+    DJNesting.createContainerElement = function() {
         return;
     };
 
