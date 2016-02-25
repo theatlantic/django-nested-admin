@@ -81,6 +81,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
+
+if django.VERSION >= (1, 7):
+    MIDDLEWARE_CLASSES += (
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware', )
+
 SITE_ID = 1
 ROOT_URLCONF = 'nested_admin.tests.urls'
 MEDIA_ROOT = os.path.join(temp_dir, 'media')
