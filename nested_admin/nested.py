@@ -70,6 +70,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                     inline=nested_inline,
                     formset=nested_formset,
                     fieldsets=nested_inline.get_fieldsets(self.request, obj),
+                    readonly_fields=nested_inline.readonly_fields,
                     model_admin=self.model_admin,
                     request=self.request,
                     submitted_formsets=self.submitted_formsets))
