@@ -24,6 +24,6 @@ install:
     - pip install tox 
 
 script:
-    - travis_retry tox
+    - travis_retry travis_retry tox
 
 sudo: false
