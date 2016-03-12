@@ -215,7 +215,9 @@
                 this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').hide();
             }
 
-            DJNesting.updateFormAttributes($form, /__prefix__/, index);
+            DJNesting.updateFormAttributes($form,
+                new RegExp("^(id_)?" + DJNesting.regexQuote(this.prefix + "-__prefix__")),
+                '$1' + this.prefix + '-' + index);
 
             DJNesting.updateNestedFormIndex($form, this.prefix);
             DJNesting.updatePositions(this.prefix);

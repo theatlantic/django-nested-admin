@@ -588,7 +588,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
                 if (emptyPos > 0) {
                     var beforeEmpty = val.substr(0, emptyPos+1),
                         afterEmpty = val.substr(emptyPos+emptyLen),
-                        newVal = beforeEmpty + index + afterEmpty.replace(index, '__prefix__');
+                        newVal = beforeEmpty + index + afterEmpty;
                     elem.setAttribute(attr, newVal);
                 }
             });

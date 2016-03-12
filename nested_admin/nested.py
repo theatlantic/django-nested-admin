@@ -176,7 +176,7 @@ class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):
         server_data_js = reverse('nesting_server_data')
         media.add_js((server_data_js,))
 
-        version = 28
+        version = 29
 
         js_files = (
             'jquery.class.js',
