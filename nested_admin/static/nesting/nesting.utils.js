@@ -127,7 +127,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             if (node_for) { node.attr('for', node_for.replace(replace_regex, replace_with)); }
             if (node_href) { node.attr('href', node_href.replace(replace_regex, replace_with)); }
             if (node_id && node.is('.module,.grp-module')) {
-                node.attr('id', node.attr('id').replace(/_set-(\d+)$/, '_set$1'));
+                node.attr('id', node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
             }
         });
     };
@@ -138,7 +138,7 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             fieldNames = $group.data('fieldNames'),
             // The field name on the fieldset which is a ForeignKey to the parent model
             groupFkName = $group.data('formsetFkName'),
-            parentPkVal, parentIdMatches = prefix.match(/^(.*_set)\-(\d+)-[^\-]+_set$/),
+            parentPkVal, parentIdMatches = prefix.match(/^(.*)\-(\d+)-[^\-]+$/),
             $items = $group.find('> .djn-items, > .tabular > .module > .djn-items'),
             sortableOptions = $items.data('sortableOptions'),
             sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
@@ -238,7 +238,6 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         var id = $this.attr('id'),
             name = $this.attr('name'),
             forattr = $this.attr('for'),
-            inlineRegex = /^((?:.+_set|.+content_type.*))(?:(\-?\d+)|\-(\d+)\-(?!.*_set\d+)[^\-]+|\-group)$/,
             matches = [null, undefined, undefined],
             prefix, $form, $group, groupId, cacheKey, match, index;
 
@@ -246,21 +245,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
             return match;
         }
 
-        if ((id && (matches = id.match(inlineRegex)))
-          || (name && (matches = name.match(inlineRegex)))
-          || (forattr && (matches = forattr.match(inlineRegex)))) {
-            cacheKey = matches[0];
-            prefix = matches[1];
-            index = (typeof(matches[2]) == 'string') ? matches[2] : matches[3];
-        }
-
         if (id && !prefix) {
             prefix = (id.match(/^(.*)\-group$/) || [null, null])[1];
         }
 
-        // Handle cases where the related_name does not end with '_set'
         if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
-            matches = id.match(/(.*?\D)(\d+)$/) || [null, null, null];
+            matches = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
             cacheKey = matches[0];
             prefix = matches[1];
             index = matches[2];
@@ -269,15 +259,12 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         if (!prefix) {
             $form = $this.closest('.djn-inline-form');
             if ($form.length) {
-                matches = $form.attr('id').match(inlineRegex) || [null, null, null, null];
-                if (!matches[0]) {
-                    matches = $form.attr('id').match(/(.*?\D)(\d+)$/) || [null, null, null, null];
-                }
+                matches = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
                 cacheKey = matches[0];
                 prefix = matches[1];
-                index = (typeof(matches[2]) == 'string') ? matches[2] : matches[3];
+                index = matches[2];
             } else {
-                $group = $this.closest('.group,.grp-group');
+                $group = $this.closest('.djn-group');
                 if (!$group.length) {
                     return null;
                 }

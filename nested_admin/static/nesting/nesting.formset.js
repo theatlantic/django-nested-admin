@@ -390,7 +390,7 @@
 
                 // Replace the ids for the splice form
                 var oldFormPrefixRegex = new RegExp("^(id_)?"
-                    + DJNesting.regexQuote($form.attr('id').replace(/_set(\d+)$/, '_set-$1')));
+                    + DJNesting.regexQuote($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
                 newIndex = (isInitial) ? initialFormCount : totalFormCount;
                 $form.attr('id', newFormsetPrefix + newIndex);
                 DJNesting.updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex);
