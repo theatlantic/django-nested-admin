@@ -4,6 +4,7 @@ import sys
 
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nested_admin.tests.settings'
+os.environ['DJANGO_SELENIUM_TESTS'] = '1'
 
 
 import django
