@@ -56,6 +56,7 @@ class LevelThreeInline(NestedStackedInline):
     model = LevelThree
     extra = 1
     inline_classes = ("collapse open grp-collapse grp-open",)
+    sortable_field_name = "position"
 
 
 class LevelTwoInline(NestedStackedInline):
@@ -64,6 +65,7 @@ class LevelTwoInline(NestedStackedInline):
     extra = 1
     inlines = [LevelThreeInline]
     inline_classes = ("collapse open grp-collapse grp-open",)
+    sortable_field_name = "position"
 
 
 class LevelOneInline(NestedStackedInline):
@@ -72,6 +74,7 @@ class LevelOneInline(NestedStackedInline):
     extra = 1
     inlines = [LevelTwoInline]
     inline_classes = ("collapse open grp-collapse grp-open",)
+    sortable_field_name = "position"
 
 
 class TopLevelAdmin(NestedModelAdmin):

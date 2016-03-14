@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import ForeignKey, CASCADE
 
 try:
     from django.utils.encoding import python_2_unicode_compatible
@@ -63,8 +64,7 @@ class StackedGroup(GroupAbstract):
 
 class StackedSection(SectionAbstract):
 
-    group = models.ForeignKey(StackedGroup, related_name='section_set',
-        on_delete=models.CASCADE)
+    group = ForeignKey(StackedGroup, related_name='section_set', on_delete=CASCADE)
 
     class Meta:
         app_label = "nested_admin"
@@ -73,8 +73,7 @@ class StackedSection(SectionAbstract):
 
 class StackedItem(ItemAbstract):
 
-    section = models.ForeignKey(StackedSection, related_name='item_set',
-        on_delete=models.CASCADE)
+    section = ForeignKey(StackedSection, related_name='item_set', on_delete=CASCADE)
 
     class Meta:
         app_label = "nested_admin"
@@ -89,8 +88,7 @@ class TabularGroup(GroupAbstract):
 
 class TabularSection(SectionAbstract):
 
-    group = models.ForeignKey(TabularGroup, related_name='section_set',
-        on_delete=models.CASCADE)
+    group = ForeignKey(TabularGroup, related_name='section_set', on_delete=CASCADE)
 
     class Meta:
         app_label = "nested_admin"
@@ -99,8 +97,7 @@ class TabularSection(SectionAbstract):
 
 class TabularItem(ItemAbstract):
 
-    section = models.ForeignKey(TabularSection, related_name='item_set',
-        on_delete=models.CASCADE)
+    section = ForeignKey(TabularSection, related_name='item_set', on_delete=CASCADE)
 
     class Meta:
         app_label = "nested_admin"
@@ -118,28 +115,34 @@ class TopLevel(models.Model):
 class LevelOne(models.Model):
 
     name = models.CharField(max_length=200)
-    parent_level = models.ForeignKey(TopLevel, on_delete=models.CASCADE)
+    parent_level = ForeignKey(TopLevel, related_name='children', on_delete=CASCADE)
+    position = models.PositiveIntegerField()
 
     class Meta:
         app_label = "nested_admin"
+        ordering = ('position', )
 
 
 class LevelTwo(models.Model):
 
     name = models.CharField(max_length=200)
-    parent_level = models.ForeignKey(LevelOne, on_delete=models.CASCADE)
+    parent_level = ForeignKey(LevelOne, related_name='children', on_delete=CASCADE)
+    position = models.PositiveIntegerField()
 
     class Meta:
         app_label = "nested_admin"
+        ordering = ('position', )
 
 
 class LevelThree(models.Model):
 
     name = models.CharField(max_length=200)
-    parent_level = models.ForeignKey(LevelTwo, on_delete=models.CASCADE)
+    parent_level = ForeignKey(LevelTwo, related_name='children', on_delete=CASCADE)
+    position = models.PositiveIntegerField()
 
     class Meta:
         app_label = "nested_admin"
+        ordering = ('position', )
 
 
 class SortableWithExtraRoot(models.Model):
@@ -153,9 +156,10 @@ class SortableWithExtraRoot(models.Model):
 class SortableWithExtraChild(models.Model):
 
     slug = models.CharField(max_length=128)
-    root = models.ForeignKey(SortableWithExtraRoot, on_delete=models.CASCADE)
+    root = ForeignKey(SortableWithExtraRoot, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     foo = models.CharField(max_length=128, default='bar')
 
     class Meta:
         app_label = "nested_admin"
+        ordering = ('position', )
