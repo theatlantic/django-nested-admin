@@ -337,7 +337,7 @@
                 oldFormsetPrefix = $form.djangoFormsetPrefix(),
                 newFormsetPrefix = this.prefix,
                 isInitial = $form.data('isInitial'),
-                newIndex, $item, $before;
+                newIndex, $before;
 
             // Make sure the form being spliced is from a different inline
             if ($form.djangoFormsetPrefix() == this.prefix) {
@@ -346,17 +346,15 @@
                     DJNesting.updatePositions(newFormsetPrefix);
                     return;
                 }
-                $item = $form.remove();
-                $before = this.$inline.find('> .djn-items > .djn-item, > .tabular > .module > .djn-items > .djn-item').eq(index);
-                $before.after($item);
+                $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item:not(#' + $form.attr('id') + ')').eq(index);
+                $before.after($form);
             } else {
                 var $oldInline = $('#' + oldFormsetPrefix + '-group');
                 var $currentFormInline = $form.closest('.djn-group');
 
                 if ($currentFormInline.djangoFormsetPrefix() != newFormsetPrefix) {
-                    $item = $form.remove();
-                    $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('.djn-item').eq(index);
-                    $before.after($item);
+                    $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item').eq(index);
+                    $before.after($form);
                 }
 
                 var oldDjangoFormset = $oldInline.djangoFormset();
