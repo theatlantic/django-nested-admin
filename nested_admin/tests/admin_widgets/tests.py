@@ -1,11 +1,8 @@
-import six
 import time
 from unittest import skipIf
 
-try:
-    from django.utils.text import slugify
-except ImportError:
-    from django.template.defaultfilters import slugify
+from django.utils import six
+from django.utils.text import slugify
 
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import (

@@ -44,10 +44,10 @@ class TestAdminWidgetsAInline(NestedStackedInline):
     inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
 
 
+@admin.register(TestAdminWidgetsRoot)
 class TestAdminWidgetsRootAdmin(NestedModelAdmin):
     inlines = [TestAdminWidgetsAInline]
 
 
-admin.site.register(TestAdminWidgetsRoot, TestAdminWidgetsRootAdmin)
 admin.site.register(TestAdminWidgetsRelated, NestedModelAdmin)
 admin.site.register(TestAdminWidgetsM2M, NestedModelAdmin)

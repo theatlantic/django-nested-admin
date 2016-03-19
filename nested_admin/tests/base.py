@@ -2,7 +2,6 @@ import collections
 import contextlib
 import copy
 import re
-import six
 import time
 
 import django
@@ -11,6 +10,7 @@ from django.contrib.admin.sites import site as admin_site
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from django.utils import six
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By

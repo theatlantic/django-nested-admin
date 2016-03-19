@@ -2,11 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-
-try:
-    from django.utils.encoding import python_2_unicode_compatible
-except ImportError:
-    python_2_unicode_compatible = lambda cls: cls
+from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible

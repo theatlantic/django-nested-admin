@@ -27,8 +27,6 @@ class LevelOneInline(NestedStackedInline):
     sortable_field_name = "position"
 
 
+@admin.register(TopLevel)
 class TopLevelAdmin(NestedModelAdmin):
     inlines = [LevelOneInline]
-
-
-admin.site.register(TopLevel, TopLevelAdmin)

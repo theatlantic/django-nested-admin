@@ -23,6 +23,7 @@ class StackedSectionInline(NestedStackedInline):
     inline_classes = ("collapse", "open", )
 
 
+@admin.register(StackedGroup)
 class StackedGroupAdmin(NestedModelAdmin):
     inlines = [StackedSectionInline]
 
@@ -40,6 +41,7 @@ class TabularSectionInline(NestedTabularInline):
     inlines = [TabularItemInline]
 
 
+@admin.register(TabularGroup)
 class TabularGroupAdmin(NestedModelAdmin):
     inlines = [TabularSectionInline]
 
@@ -52,10 +54,6 @@ class SortableWithExtraChildInline(NestedStackedInline):
     sortable_excludes = ['foo']
 
 
+@admin.register(SortableWithExtraRoot)
 class SortableWithExtraRootAdmin(NestedModelAdmin):
     inlines = [SortableWithExtraChildInline]
-
-
-admin.site.register(StackedGroup, StackedGroupAdmin)
-admin.site.register(TabularGroup, TabularGroupAdmin)
-admin.site.register(SortableWithExtraRoot, SortableWithExtraRootAdmin)

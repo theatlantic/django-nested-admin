@@ -1,22 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
-from six.moves import xrange
-
 from django.db import models
 from django.core.exceptions import ValidationError
-try:
-    from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
-except ImportError:
-    from django.contrib.contenttypes.generic import BaseGenericInlineFormSet
+from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
 
-try:
-    # Django 1.6
-    from django.utils.encoding import force_text as force_unicode
-except ImportError:
-    # Django <= 1.5
-    from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
+from django.utils.six.moves import xrange
 
 
 class NestedInlineFormSetMixin(object):
@@ -86,14 +77,9 @@ class NestedInlineFormSetMixin(object):
 
         Returns list of forms.
         """
-        sortable_field_name = getattr(self, 'sortable_field_name', None)
-        if sortable_field_name is not None:
-            default_data = {}
-            default_data[sortable_field_name] = 0
-            def sort_form(f):
-                data = getattr(f, 'cleaned_data', default_data)
-                return data.get(sortable_field_name, 0)
-            forms.sort(key=sort_form)
+        sort_field = getattr(self, 'sortable_field_name', None)
+        if sort_field is not None:
+            forms.sort(key=lambda f: getattr(f, 'cleaned_data', {sort_field: 0})).get(sort_field, 0)
         return forms
 
     def get_saved_instance_for_form(self, form, commit, form_instances=None):
@@ -137,14 +123,7 @@ class NestedInlineFormSetMixin(object):
                        for i in xrange(0, self.initial_form_count())]
             pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
 
-            mgr = self.model._default_manager
-            if hasattr(mgr, 'get_queryset'):
-                # Django 1.6
-                qs = mgr.get_queryset()
-            else:
-                # Django <= 1.5
-                qs = mgr.get_query_set()
-
+            qs = self.model._default_manager.get_queryset()
             qs = qs.filter(pk__in=pk_vals)
 
             # If the queryset isn't already ordered we need to add an
@@ -183,7 +162,7 @@ class NestedInlineFormSetMixin(object):
         pk_value = form.data.get(form.add_prefix(self._pk_field.name))
         if pk_value == '':
             pk_value = None
-        if pk_value and force_unicode(form.instance.pk) != force_unicode(pk_value):
+        if pk_value and force_text(form.instance.pk) != force_text(pk_value):
             model_cls = form.instance.__class__
             try:
                 form.instance = model_cls.objects.get(pk=pk_value)
@@ -203,13 +182,7 @@ class NestedInlineFormSetMixin(object):
 
         saved_instances = []
 
-        if hasattr(self, 'deleted_forms'):
-            # Django 1.6
-            forms_to_delete = self.deleted_forms
-        else:
-            # Django <= 1.5
-            forms_to_delete = [f for f in initial_forms
-                               if self.can_delete and self._should_delete_form(f)]
+        forms_to_delete = self.deleted_forms
 
         for form in initial_forms:
             pk_name = self._pk_field.name
@@ -244,7 +217,7 @@ class NestedInlineFormSetMixin(object):
                 try:
                     obj = model_cls.objects.get(pk=pk_value)
                 except model_cls.DoesNotExist:
-                    if pk_value and force_unicode(form.instance.pk) == force_unicode(pk_value):
+                    if pk_value and force_text(form.instance.pk) == force_text(pk_value):
                         obj = form.instance
             if obj is None:
                 obj = self._existing_object(pk_value)

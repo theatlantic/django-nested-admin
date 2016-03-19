@@ -4,20 +4,10 @@ python:
     - 2.7
 
 env:
-    - TOXENV=py27-django14-grp
-    - TOXENV=py27-django15
-    - TOXENV=py27-django15-grp
-    - TOXENV=py27-django16
-    - TOXENV=py27-django16-grp
-    - TOXENV=py27-django17
-    - TOXENV=py27-django17-grp
     - TOXENV=py27-django18
     - TOXENV=py27-django18-grp
     - TOXENV=py27-django19
     - TOXENV=py27-django19-grp
-    - TOXENV=py34-django15
-    - TOXENV=py34-django16
-    - TOXENV=py34-django17
     - TOXENV=py34-django18
     - TOXENV=py34-django19
 

@@ -102,24 +102,10 @@
                     {% endfor %}
                 {% endif %}
 
-                {% if forloop.last %}
-                    {% if inline_admin_formset.inlines %}
-                        {% for nested in inline_admin_formset.inlines %}
-                            {% include nested.opts.template with inline_admin_formset=nested %}
-                        {% endfor %}
-                    {% endif %}
-                {% endif %}
-
             </div>
         {% endfor %}
         {% endwith %}
 
-        {% if inline_admin_form.inlines %}
-            {% for nested in inline_admin_form.inlines %}
-
-              {% include nested.opts.template %}
-            {% endfor %}
-        {% endif %}
         {{ inline_admin_formset.extra_forms }}
     </div>
     <div class="module grp-module djn-module add-item grp-add-item add-row">

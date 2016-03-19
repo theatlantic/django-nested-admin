@@ -10,9 +10,9 @@ except ImportError:
 
 setup(
     name='django-nested-admin',
-    version="2.2.6",
+    version="3.0.0a1",
     install_requires=[
-        'six>=1.7.0',
+        'python-monkey-business>=1.0.0',
     ],
     description="Django admin classes that allow for nested inlines",
     author='The Atlantic',

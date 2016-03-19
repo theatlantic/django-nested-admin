@@ -6,13 +6,15 @@ to be importable directly from this module, e.g.:
 
 without running afoul of the strict import order required by Django 1.9+.
 This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
+
+Also included is a monkey-patch for django.forms.formsets.all_valid().
 """
 import pkg_resources
 import sys
 from types import ModuleType
-import warnings
 
-from .exceptions import NestedAdminPendingDeprecationWarning
+import django.forms.formsets
+import monkeybiz
 
 try:
     __version__ = pkg_resources.get_distribution('django-nested-admin').version
@@ -23,14 +25,13 @@ except pkg_resources.DistributionNotFound:
 all_by_module = {
     'nested_admin.formsets': (
         'NestedInlineFormSet', 'GenericNestedInlineFormSet'),
-    'nested_admin.options': (
-        'ModelAdmin', 'InlineModelAdmin', 'StackedInline', 'TabularInline'),
     'nested_admin.nested': (
-        'NestedModelAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline'),
+        'NestedModelAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline',
+        'NestedTabularInline'),
 }
 
 # modules that should be imported when accessed as attributes of nested_admin
-attribute_modules = frozenset(['formsets', 'options', 'nested'])
+attribute_modules = frozenset(['formsets', 'nested'])
 
 object_origins = {}
 for module, items in all_by_module.items():
@@ -49,11 +50,6 @@ class module(ModuleType):
         return result
 
     def __getattr__(self, name):
-        if name == 'NestedAdmin':
-            warnings.warn(
-                "NestedAdmin has been changed to NestedModelAdmin",
-                NestedAdminPendingDeprecationWarning, stacklevel=2)
-            name = 'NestedModelAdmin'
         if name in object_origins:
             module = __import__(object_origins[name], None, None, [name])
             for extra_name in all_by_module[module.__name__]:
@@ -77,5 +73,39 @@ new_module.__dict__.update({
     '__version__':      __version__,
     '__all__':          tuple(object_origins) + tuple(attribute_modules),
     '__docformat__':    'restructuredtext en',
-    'NestedAdminPendingDeprecationWarning': NestedAdminPendingDeprecationWarning,
 })
+
+
+@monkeybiz.patch(django.forms.formsets)
+def all_valid(original_all_valid, formsets):
+    """
+    Checks validation on formsets, then handles a case where an inline
+    has new data but one of its parent forms is blank.
+
+    This causes a bug when one of the parent forms has empty_permitted == True,
+    which happens if it is an "extra" form in the formset and its index
+    is >= the formset's min_num.
+    """
+    if not original_all_valid(formsets):
+        return False
+
+    for formset in formsets:
+        if formset.has_changed() and getattr(formset, 'parent_form', None):
+            parent_form = formset.parent_form
+
+            while True:
+                if parent_form.empty_permitted:
+                    parent_form.empty_permitted = False
+                    # Reset the validation errors
+                    parent_form._errors = None
+                if not hasattr(parent_form, 'parent_formset'):
+                    break
+                parent_form.parent_formset._errors = None
+                if not hasattr(parent_form.parent_formset, 'parent_form'):
+                    break
+                parent_form = parent_form.parent_formset.parent_form
+
+    if not original_all_valid(formsets):
+        return False
+
+    return True

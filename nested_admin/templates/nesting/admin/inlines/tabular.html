@@ -88,25 +88,10 @@
                 </td></tr>
             {% endif %}
 
-            {% if forloop.last %}
-                {% if inline_admin_formset.inlines %}
-                    <tr class="grp-tr djn-tr"><td class="grp-td djn-td" colspan="{{ inline_admin_form|cell_count }}">
-                    {% for nested in inline_admin_formset.inlines %}
-                        {% include nested.opts.template with inline_admin_formset=nested %}
-                    {% endfor %}
-                    </td></tr>
-                {% endif %}
-            {% endif %}
-
             </tbody>
         {% endfor %}
         {% endwith %}
 
-        {% if inline_admin_form.inlines %}
-            {% for nested in inline_admin_form.inlines %}
-                {% include nested.opts.template %}
-            {% endfor %}
-        {% endif %}
     </table>
     <div class="grp-module grp-transparent add-item grp-add-item add-row">
         <a href="javascript://" class="add-handler grp-add-handler djnesting-icon {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add {{ verbose_name }}{% endblocktrans %}</a>
