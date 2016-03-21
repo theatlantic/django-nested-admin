@@ -582,4 +582,48 @@ var DJNesting = (typeof window.DJNesting != "undefined")
         });
     };
 
+    // I very much regret that these are basically copy-pasted from django's
+    // inlines.js, but they're hidden in closure scope so I don't have much choice.
+    DJNesting.DjangoInlines = {
+        initPrepopulatedFields: function(row) {
+            row.find('.prepopulated_field').each(function() {
+                var field = $(this),
+                    input = field.find('input, select, textarea'),
+                    dependency_list = input.data('dependency_list') || [],
+                    formPrefix = input.djangoFormPrefix(),
+                    dependencies = [];
+                if (!formPrefix || formPrefix.match(/__prefix__/)) {
+                    return;
+                }
+                $.each(dependency_list, function(i, field_name) {
+                    dependencies.push('#id_' + formPrefix + field_name);
+                });
+                if (dependencies.length) {
+                    input.prepopulate(dependencies, input.attr('maxlength'));
+                }
+            });
+        },
+        reinitDateTimeShortCuts: function() {
+            // Reinitialize the calendar and clock widgets by force
+            if (typeof DateTimeShortcuts !== "undefined") {
+                $(".datetimeshortcuts").remove();
+                DateTimeShortcuts.init();
+            }
+        },
+        updateSelectFilter: function($form) {
+            // If any SelectFilter widgets are a part of the new form,
+            // instantiate a new SelectFilter instance for it.
+            if (typeof SelectFilter !== 'undefined') {
+                $form.find('.selectfilter').each(function(index, value) {
+                    var namearr = value.name.split('-');
+                    SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
+                });
+                $form.find('.selectfilterstacked').each(function(index, value) {
+                    var namearr = value.name.split('-');
+                    SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
+                });
+            }
+        }
+    }
+
 })((typeof grp == 'object' && grp.jQuery) ? grp.jQuery : django.jQuery);

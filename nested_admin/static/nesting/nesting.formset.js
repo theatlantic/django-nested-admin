@@ -230,8 +230,10 @@
 
             if (window.grappelli) {
                 grappelli.reinitDateTimeFields($form);
-                grappelli.updateSelectFilter($form);
             }
+            DJNesting.DjangoInlines.initPrepopulatedFields($form);
+            DJNesting.DjangoInlines.reinitDateTimeShortCuts();
+            DJNesting.DjangoInlines.updateSelectFilter($form);
             DJNesting.initRelatedFields(this.prefix);
             DJNesting.initAutocompleteFields(this.prefix);
             if ($.fn.grp_collapsible) {

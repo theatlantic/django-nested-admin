@@ -235,8 +235,9 @@ class ModelAdmin(BaseModelAdminMixin, _ModelAdmin):
         for inline, formset in zip(self.get_inline_instances(request, obj), formsets):
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
+            prepopulated = dict(inline.get_prepopulated_fields(request, obj))
             inline_admin_formset = helpers.InlineAdminFormSet(inline, formset,
-                fieldsets, readonly_fields=readonly, model_admin=self)
+                fieldsets, prepopulated, readonly_fields=readonly, model_admin=self)
             yield inline_admin_formset
 
     @csrf_protect_m

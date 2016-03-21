@@ -26,14 +26,19 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
         self.request = kwargs.pop('request', None)
         super(NestedInlineAdminFormset, self).__init__(*args, **kwargs)
 
-        for form in self.formset.forms:
-            obj = form.instance if form.instance.pk else None
-            form.inlines = self._get_nested_inlines(form.prefix, obj=obj)
-
-        # The empty prefix is used by django javascript when it tries
-        # to determine the ids to give to the fields of newly created
-        # instances in the form.
-        self.inlines = self._get_nested_inlines(self.formset.add_prefix('empty'))
+    def __iter__(self):
+        for inline_admin_form in super(NestedInlineAdminFormset, self).__iter__():
+            if not getattr(inline_admin_form.form, 'inlines', None):
+                form = inline_admin_form.form
+                obj = form.instance if form.instance.pk else None
+                if form.prefix.endswith('__prefix__'):
+                    form.inlines = self._get_nested_inlines(self.formset.add_prefix('empty'))
+                else:
+                    form.inlines = self._get_nested_inlines(form.prefix, obj=obj)
+            for nested_inline in inline_admin_form.form.inlines:
+                for nested_form in nested_inline:
+                    inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
+            yield inline_admin_form
 
     def _get_nested_inlines(self, prefix, obj=None):
         nested_inline_formsets = []
@@ -69,8 +74,9 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                 NestedInlineAdminFormset(
                     inline=nested_inline,
                     formset=nested_formset,
+                    prepopulated_fields=nested_inline.get_prepopulated_fields(self.request, obj),
                     fieldsets=nested_inline.get_fieldsets(self.request, obj),
-                    readonly_fields=nested_inline.readonly_fields,
+                    readonly_fields=nested_inline.get_readonly_fields(self.request, obj),
                     model_admin=self.model_admin,
                     request=self.request,
                     submitted_formsets=self.submitted_formsets))
@@ -176,7 +182,7 @@ class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):
         server_data_js = reverse('nesting_server_data')
         media.add_js((server_data_js,))
 
-        version = 30
+        version = 31
 
         js_files = (
             'jquery.class.js',
