@@ -27,7 +27,7 @@
     {% for line in fieldset %}
         {% for field in line %}
             {% if not field.field.is_hidden %}
-                <td class="grp-td djn-td {{ field.field.name }} {% if field.field.errors %} grp-errors{% endif %}">
+                <td class="grp-td djn-td {% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.errors %} grp-errors{% endif %}">
                     {% if field.is_readonly %}
                         <div class="grp-readonly">{{ field.contents }}</div>
                     {% else %}
