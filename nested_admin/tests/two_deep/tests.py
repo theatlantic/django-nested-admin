@@ -3,7 +3,7 @@ from unittest import skipIf
 
 import django
 
-from .base import BaseNestedAdminTestCase
+from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import (
     StackedGroup, StackedSection, StackedItem,
     TabularGroup, TabularSection, TabularItem,
@@ -785,6 +785,7 @@ class TestTabularInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
 
 class TestSortablesWithExtra(BaseNestedAdminTestCase):
 
+    fixtures = ['users.xml']
     root_model = SortableWithExtraRoot
     nested_models = (SortableWithExtraChild, )
 

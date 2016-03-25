@@ -9,7 +9,6 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
@@ -57,27 +56,32 @@ def xpath_item(model_name=None):
 @override_settings(ROOT_URLCONF='nested_admin.tests.urls')
 class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
 
-    available_apps = [
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.messages',
-        'django.contrib.sessions',
-        'django.contrib.sites',
-        'django.contrib.staticfiles',
-        'django.contrib.admin',
-        'nested_admin',
-    ]
-
-    if 'grappelli' in settings.INSTALLED_APPS:
-        available_apps.insert(0, 'grappelli')
-        is_grappelli = True
-    else:
-        is_grappelli = False
+    has_grappelli = bool('grappelli' in settings.INSTALLED_APPS)
 
     webdriver_class = 'selenium.webdriver.phantomjs.webdriver.WebDriver'
 
+    fixtures = ['users.xml']
+
     root_model = None
     nested_models = None
+
+    @property
+    def available_apps(self):
+        apps = [
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.messages',
+            'django.contrib.sessions',
+            'django.contrib.sites',
+            'django.contrib.staticfiles',
+            'django.contrib.admin',
+            'nested_admin',
+        ]
+        if self.has_grappelli:
+            apps.insert(0, 'grappelli')
+
+        current_app = type(self).__module__.rpartition('.')[0]
+        apps.append(current_app)
 
     @classmethod
     def setUpClass(cls):
@@ -104,10 +108,8 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
 
     def setUp(self):
         super(BaseNestedAdminTestCase, self).setUp()
-        if 'phantomjs' in self.webdriver_class:
-            self.selenium.set_window_size(1120, 1300)
+        self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
-        User.objects.create_superuser('mtwain', 'me@example.com', 'p@ssw0rd')
 
     def wait_until(self, callback, timeout=10, message=None):
         """
@@ -187,10 +189,9 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
             login_url = reverse('admin:%s_%s_change' % info, args=[obj.pk])
         else:
             login_url = reverse('admin:%s_%s_add' % info)
-        self.admin_login("mtwain", "p@ssw0rd", login_url=login_url)
+        self.admin_login("super", "secret", login_url=login_url)
         self.wait_page_loaded()
-        if 'phantomjs' in self.webdriver_class:
-            self.selenium.set_window_size(1120, 1300)
+        self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
         self.selenium.execute_script("window.$ = django.jQuery")
         self.make_header_footer_position_static()
@@ -198,8 +199,7 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
     def save_form(self):
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
         self.wait_page_loaded()
-        if 'phantomjs' in self.webdriver_class:
-            self.selenium.set_window_size(1120, 1300)
+        self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
         self.selenium.execute_script("window.$ = django.jQuery")
         self.make_header_footer_position_static()
@@ -454,7 +454,7 @@ class DragAndDropAction(object):
             source_item = self.test_case.get_item(indexes=self.from_indexes)
             if source_item.tag_name == 'div':
                 drag_handler_xpath = "h3"
-            elif self.test_case.is_grappelli:
+            elif self.test_case.has_grappelli:
                 drag_handler_xpath = "/".join([
                     "*[%s]" % xpath_cls("djn-tr"),
                     "*[%s]" % xpath_cls("djn-td"),

@@ -1,3 +1,4 @@
+import glob
 import os
 import django
 import tempfile
@@ -76,6 +77,12 @@ INSTALLED_APPS += (
     'django.contrib.staticfiles',
     'django.contrib.admin',
 )
+
+# Add apps within the tests folder
+for p in glob.glob(os.path.join(current_dir, '*', 'models.py')):
+    INSTALLED_APPS += tuple(["nested_admin.tests.%s" %
+        os.path.basename(os.path.dirname(p))])
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

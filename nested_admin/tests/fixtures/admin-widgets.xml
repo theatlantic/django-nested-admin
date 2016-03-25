@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <django-objects version="1.0">
-    <object pk="1" model="nested_admin.testadminwidgetsrelated">
+    <object pk="1" model="admin_widgets.testadminwidgetsrelated">
         <field type="CharField" name="name">I</field>
     </object>
-    <object pk="2" model="nested_admin.testadminwidgetsrelated">
+    <object pk="2" model="admin_widgets.testadminwidgetsrelated">
         <field type="CharField" name="name">J</field>
     </object>
-    <object pk="1" model="nested_admin.testadminwidgetsm2m">
+    <object pk="1" model="admin_widgets.testadminwidgetsm2m">
         <field type="CharField" name="name">X</field>
     </object>
-    <object pk="2" model="nested_admin.testadminwidgetsm2m">
+    <object pk="2" model="admin_widgets.testadminwidgetsm2m">
         <field type="CharField" name="name">Y</field>
     </object>
-    <object pk="3" model="nested_admin.testadminwidgetsm2m">
+    <object pk="3" model="admin_widgets.testadminwidgetsm2m">
         <field type="CharField" name="name">Z</field>
     </object>
 </django-objects>

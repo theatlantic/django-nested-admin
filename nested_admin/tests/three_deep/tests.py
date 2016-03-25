@@ -1,4 +1,4 @@
-from .base import BaseNestedAdminTestCase
+from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import TopLevel, LevelOne, LevelTwo, LevelThree
 
 

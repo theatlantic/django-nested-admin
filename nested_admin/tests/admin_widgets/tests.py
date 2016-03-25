@@ -7,7 +7,7 @@ try:
 except ImportError:
     from django.template.defaultfilters import slugify
 
-from .base import BaseNestedAdminTestCase
+from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1)
@@ -15,10 +15,11 @@ from .models import (
 
 class TestAdminWidgets(BaseNestedAdminTestCase):
 
-    fixtures = ['admin-widgets.xml']
+    fixtures = ['admin-widgets.xml', 'users.xml']
 
     root_model = TestAdminWidgetsRoot
-    nested_models = (TestAdminWidgetsA, TestAdminWidgetsB, (TestAdminWidgetsC0, TestAdminWidgetsC1))
+    nested_models = (TestAdminWidgetsA, TestAdminWidgetsB,
+        (TestAdminWidgetsC0, TestAdminWidgetsC1))
 
     @classmethod
     def setUpClass(cls):
@@ -48,19 +49,19 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         date_el = self.get_field('date_0', indexes)
         time_el = self.get_field('date_1', indexes)
 
-        if self.is_grappelli:
+        if self.has_grappelli:
             now_link_xpath = "following-sibling::*[1]"
         else:
             now_link_xpath = "following-sibling::*[1]/a[1]"
         date_el.clear()
         time_el.clear()
         date_el.find_element_by_xpath(now_link_xpath).click()
-        if self.is_grappelli:
+        if self.has_grappelli:
             with self.clickable_selector('#ui-datepicker-div .ui-state-highlight') as el:
                 el.click()
         time.sleep(0.1)
         time_el.find_element_by_xpath(now_link_xpath).click()
-        if self.is_grappelli:
+        if self.has_grappelli:
             with self.clickable_selector('#ui-timepicker .ui-state-active') as el:
                 el.click()
         time.sleep(0.10)
@@ -100,14 +101,14 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.check_datetime([0])
         self.check_datetime([0, 0])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
     def test_add_prepopulated(self):
         self.load_admin()
         self.add_inline()
         self.check_prepopulated([1])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
     def test_add_initial_extra_prepopulated(self):
         self.load_admin()
@@ -130,7 +131,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline()
         self.check_datetime([1])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with datetime fields and grappelli")
     def test_add_initial_extra_datetime(self):
         self.load_admin()
@@ -143,7 +144,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1])
         self.check_m2m([1, 1])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
     def test_add_two_deep_prepopulated(self):
         self.load_admin()
@@ -151,7 +152,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1])
         self.check_prepopulated([1, 1])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with datetime fields and grappelli")
     def test_add_two_deep_datetime(self):
         self.load_admin()
@@ -166,7 +167,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1, 0, [1]])
         self.check_m2m([1, 0, [1, 0]])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
     def test_add_three_deep_prepopulated(self):
         self.load_admin()
@@ -175,7 +176,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1, 0, [1]])
         self.check_prepopulated([1, 0, [1, 0]])
 
-    @skipIf(BaseNestedAdminTestCase.is_grappelli,
+    @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with datetime fields and grappelli")
     def test_add_three_deep_datetime(self):
         self.load_admin()
