@@ -70,6 +70,11 @@ StackedInline             NestedStackedInline
 TabularInline             NestedTabularInline
 ========================  ======================
 
+There is also ``nested_admin.NestedGenericStackedInline`` and
+``nested_admin.NestedGenericTabularInline`` which are the nesting-capable
+versions of ``GenericStackedInline`` and ``GenericTabularInline`` in
+``django.contrib.contenttypes.admin``.
+
 .. code-block:: python
 
     # An example admin.py for a Table of Contents app

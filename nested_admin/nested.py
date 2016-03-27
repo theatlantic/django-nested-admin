@@ -1,17 +1,20 @@
 from django.conf import settings
 from django.contrib.admin import helpers
+from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from django.core.urlresolvers import reverse
 from django import forms
 from django.utils import six
 from django.utils.six.moves import zip
 
-from .formsets import NestedInlineFormSet
+from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
 
 __all__ = (
-    'NestedModelAdmin', 'NestedInlineAdminFormset',
-    'NestedInlineModelAdmin', 'NestedStackedInline')
+    'NestedModelAdmin', 'NestedInlineAdminFormset', 'NestedInlineModelAdmin',
+    'NestedStackedInline', 'NestedTabularInline',
+    'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
+    'NestedGenericStackedInline', 'NestedGenericTabularInline')
 
 
 def get_method_function(fn):
@@ -179,7 +182,7 @@ class NestedModelAdmin(ModelAdmin):
         return formsets, inline_instances
 
 
-class NestedInlineModelAdmin(InlineModelAdmin):
+class NestedInlineModelAdminMixin(object):
 
     is_sortable = True
 
@@ -196,7 +199,7 @@ class NestedInlineModelAdmin(InlineModelAdmin):
         if hasattr(self, 'sortable_options'):
             sortable_options.update(self.sortable_options)
         self.sortable_options = sortable_options
-        super(NestedInlineModelAdmin, self).__init__(*args, **kwargs)
+        super(NestedInlineModelAdminMixin, self).__init__(*args, **kwargs)
 
     # Copy methods from ModelAdmin
     get_inline_instances = get_method_function(ModelAdmin.get_inline_instances)
@@ -210,11 +213,30 @@ class NestedInlineModelAdmin(InlineModelAdmin):
         _get_formsets = get_method_function(ModelAdmin._get_formsets)
 
 
+class NestedInlineModelAdmin(NestedInlineModelAdminMixin, InlineModelAdmin):
+    pass
+
+
 class NestedStackedInline(NestedInlineModelAdmin):
 
     template = 'nesting/admin/inlines/stacked.html'
 
 
 class NestedTabularInline(NestedInlineModelAdmin):
+
+    template = 'nesting/admin/inlines/tabular.html'
+
+
+class NestedGenericInlineModelAdmin(NestedInlineModelAdminMixin, GenericInlineModelAdmin):
+
+    formset = NestedBaseGenericInlineFormSet
+
+
+class NestedGenericStackedInline(NestedGenericInlineModelAdmin):
+
+    template = 'nesting/admin/inlines/stacked.html'
+
+
+class NestedGenericTabularInline(NestedGenericInlineModelAdmin):
 
     template = 'nesting/admin/inlines/tabular.html'

@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
-
 from django.utils.encoding import force_text
 from django.utils.six.moves import xrange
 
@@ -168,8 +167,6 @@ class NestedInlineFormSetMixin(object):
                 form.instance = model_cls.objects.get(pk=pk_value)
             except model_cls.DoesNotExist:
                 pass
-            else:
-                setattr(form.instance, self.fk.get_attname(), self.instance.pk)
         return form
 
     def save_existing_objects(self, initial_forms=None, commit=True):
@@ -228,18 +225,18 @@ class NestedInlineFormSetMixin(object):
                 continue
 
             # fk_val: The value one should find in the form's foreign key field
-            new_ct_val = ct_val = ContentType.objects.get_for_model(self.instance.__class__)
-            new_fk_val = fk_val = self.instance.pk
+            old_ct_val = ct_val = ContentType.objects.get_for_model(self.instance.__class__).pk
+            old_fk_val = fk_val = self.instance.pk
             if form.instance.pk:
                 original_instance = self.model.objects.get(pk=form.instance.pk)
                 fk_field = getattr(self, 'fk', getattr(self, 'ct_fk_field', None))
                 if fk_field:
-                    new_fk_val = getattr(original_instance, fk_field.get_attname())
+                    old_fk_val = getattr(original_instance, fk_field.get_attname())
                 ct_field = getattr(self, 'ct_field', None)
                 if ct_field:
-                    new_ct_val = getattr(original_instance, ct_field.get_attname())
+                    old_ct_val = getattr(original_instance, ct_field.get_attname())
 
-            if form.has_changed() or fk_val != new_fk_val or ct_val != new_ct_val:
+            if form.has_changed() or fk_val != old_fk_val or ct_val != old_ct_val:
                self.changed_objects.append((obj, form.changed_data))
                saved_instances.append(self.save_existing(form, obj, commit=commit))
                if not commit:
@@ -279,14 +276,15 @@ class NestedInlineFormSet(NestedInlineFormSetMixin, BaseInlineFormSet):
     pass
 
 
-class GenericNestedInlineFormSet(NestedInlineFormSetMixin, BaseGenericInlineFormSet):
+class NestedBaseGenericInlineFormSet(NestedInlineFormSetMixin, BaseGenericInlineFormSet):
     """
     The nested InlineFormSet for inlines of generic content-type relations
     """
 
-    @classmethod
-    def get_default_prefix(cls):
-        opts = cls.model._meta
-        return '-'.join((opts.app_label, opts.object_name.lower(),
-                        cls.ct_field.name, cls.ct_fk_field.name))
-
+    def save_existing(self, form, instance, commit=True):
+        """Saves and returns an existing model instance for the given form."""
+        setattr(form.instance, self.ct_field.get_attname(),
+            ContentType.objects.get_for_model(self.instance).pk)
+        setattr(form.instance, self.ct_fk_field.get_attname(),
+            self.instance.pk)
+        return form.save(commit=commit)
