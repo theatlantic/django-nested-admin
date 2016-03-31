@@ -11,3 +11,4 @@ pip-log.txt
 .DS_Store
 *swp
 .tox
+node_modules

@@ -7,7 +7,7 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()
 
 
-DEBUG = True,
+NESTED_ADMIN_DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.urlresolvers import reverse
 from django import forms
 from django.utils import six
@@ -68,29 +69,19 @@ class NestedModelAdmin(ModelAdmin):
     def media(self):
         media = getattr(super(NestedModelAdmin, self), 'media', forms.Media())
 
+        static_url = staticfiles_storage.url
+
         server_data_js = reverse('nesting_server_data')
-        media.add_js((server_data_js,))
 
-        version = 31
-
-        js_files = (
-            'jquery.class.js',
-            'nesting.utils.js',
-            'jquery.ui.sortable.js',
-            'jquery.ui.nestedSortable.js',
-            'nesting.sortable.js',
-            'nesting.formset.js',
-            'nesting.js',)
-
-        for js_file in js_files:
-            js_file_url = '%snesting/%s?v=%d' % (settings.STATIC_URL, js_file, version)
-            media.add_js((js_file_url,))
-
-        media.add_css({
-            'all': (
-                '%snesting/nesting.css?v=%d' % (settings.STATIC_URL, version),
+        min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
+        return media + forms.Media(
+            js=(
+                server_data_js,
+                static_url('nested_admin/dist/nested_admin%s.js' % min_ext),
+            ),
+            css={'all': (
+                static_url('nested_admin/dist/nested_admin%s.css' % min_ext),
             )})
-        return media
 
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):

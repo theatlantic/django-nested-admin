@@ -1,0 +1,295 @@
+@import "compass";
+
+@mixin cursor($val) {
+    cursor: $val;
+    cursor: -moz-$val;
+    cursor: -webkit-$val;
+}
+
+.djn-group .row.is-hidden {
+    display: none;
+}
+
+.djn-group .inline-related > h3 > span.delete {
+    float: right;
+}
+
+.djn-group .open-handler-container,
+.djn-group .close-handler-container,
+.djn-group .add-handler-container {
+    display: none;
+}
+
+.djn-group .djn-group-nested {
+    float: none;
+    width: auto;
+    margin: 0 10px;
+    background: transparent;
+}
+
+#content-inner > .container-flexible {
+    height: auto;
+}
+
+.container-flexible > .form-container > form > div {
+    overflow: hidden;
+}
+
+.form-container .group.djn-group, .form-container .djn-group .module {
+    min-width: 0;
+}
+
+.djn-group .span-4 {
+    width: 100px;
+    margin-right: 10px;
+
+    & + .span-flexible { margin-left: 110px; }
+}
+
+.djn-group .inline-related .span-4 {
+    width: 80px;
+    margin-right: 5px;
+
+    & + .span-flexible { margin-left: 85px; }
+}
+
+// Hide nested headers (e.g. "Articles")
+.djn-group-nested h2.collapse-handler {
+    display: none;
+}
+// More styling for nested inlines
+.djn-group-nested.group {
+    border-color: transparent;
+}
+
+.djn-group-nested.group div.items .inline-related {
+    border: 1px solid transparent;
+    @include border-radius(4px);
+
+    #grp-content & {
+        margin-bottom: 5px;
+        border: 1px solid #a7a7a7;
+    }
+
+    &:first-child { margin-top: 0; }
+    &.last-related { margin-bottom: 0; }
+}
+
+.djn-group-nested.group div.items .module:first-child {
+    margin-top: 0 !important;
+}
+#grp-content .djn-group-nested.djn-stacked .module.add-item {
+    text-align: right;
+    background: transparent;
+    border: 0;
+}
+.djn-group .module .module .module.add-item > :first-child {
+    border-top: 0;
+}
+
+.djn-group .collapse.closed .djn-item {
+    display: block !important;
+}
+
+.nested-placeholder, .djn-group .ui-sortable-placeholder {
+    margin-bottom: 5px;
+    background: #9f9f9f !important;
+}
+.djn-group .ui-nestedsortable-error {
+    background: #9f6464 !important;
+}
+
+.djn-item.collapse .tools  .drag-handler-container {
+    display: none !important;
+}
+
+.change-list .djn-group .module.footer ul.submit-row {
+    min-width: 450px;
+}
+
+.djn-group div.module .items fieldset.module .row div.tools {
+    top: -18px;
+}
+
+.djn-items {
+    position: relative;
+    min-height: 10px;
+    overflow: visible;
+}
+.djn-items.djn-table {
+    overflow: visible;
+}
+.djn-item {
+    overflow: visible;
+}
+.djn-item.djn-no-drag:first-child {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: -1;
+    height: 19px;
+
+    & + .djn-item.ui-sortable-helper,
+    & + .djn-item-dragging {
+        margin-top: 0;
+    }
+}
+
+.djn-item-dragging {
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+}
+
+tbody.djn-item-dragging {
+    display: none !important;
+}
+tbody.ui-sortable-placeholder td {
+    background: #fbfad0;
+}
+
+.inline-group ul.tools a.grp-delete-handler span.delete {
+    display: none;
+}
+
+#grp-content .grp-tabular .grp-table .grp-tbody {
+    .grp-th,
+    .grp-td {
+        vertical-align: middle;
+        overflow: visible;
+    }
+    .grp-tr > td.original:first-child {
+        width: 0;
+        padding: 0;
+        border: 0;
+        background: #eee;
+    }
+    .grp-tr.djn-has-inlines .grp-td {
+        border-bottom: 0 !important;
+    }
+}
+
+.grp-empty-form {
+    &, & * { display: none !important; }
+}
+
+.empty-form-container tr {
+    display: none !important;
+}
+
+// Django (sans grappelli) specific styles
+#content.colM {
+    tr.grp-predelete {
+        background: #f7dddd !important;
+    }
+    .inline-group .tabular .ui-sortable-placeholder tr.has_original td {
+        padding: 1px;
+    }
+    .inline-group.djn-group ul.tools {
+        height: 0;
+
+        a.grp-delete-handler span.delete {
+            display: inline;
+        }
+        a.inline-deletelink,
+        a.grp-delete-handler {
+            float: right;
+            margin-top: -18px;
+        }
+    }
+    .inline-group.djn-group .tabular ul.tools {
+        li {
+            display: block;
+            padding: 0;
+            list-style-type: none;
+        }
+        a.grp-delete-handler span.delete {
+            display: block;
+            label { display: none; }
+        }
+        a.inline-deletelink,
+        a.grp-delete-handler {
+            display: block;
+            float: none;
+            margin: 0;
+        }
+    }
+
+    .djn-item.module {
+        margin-bottom: 0;
+    }
+    .inline-group.djn-group .tabular ul.tools li {
+        display: block;
+        padding: 0;
+        list-style-type: none;
+    }
+
+
+    tr.djn-has-inlines td {
+        border-bottom: 1px solid #fff;
+    }
+
+    td.original {
+        width: 0;
+        padding: 2px 0 0 0;
+    }
+
+    td.original.is-sortable {
+        position: relative;
+        width: 15px;
+    }
+    td.original.is-sortable .djn-drag-handler {
+        position: absolute;
+        top: 4px;
+        left: 0;
+        display: block;
+        width: 10px;
+        height: 20px;
+        margin: 5px;
+        cursor: move;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAyCAYAAABcfPsmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAE5JREFUeNrs0zEKACAMBEEDST6X9+Z92lpYHNgI7naBK9KMdfcch6rK9lvdeWYOJXXnESEN1d2HH9J9hhSkEFKQQkhBClKQghSkPNYSYADFZiuygfao+AAAAABJRU5ErkJggg==") no-repeat top left;
+        @include background-size(10px 25px);
+        @include cursor(grab);
+    }
+
+    // (Optional) Apply a "closed-hand" cursor during drag operation.
+    td.original.is-sortable .djn-drag-handler:active {
+        @include cursor(grabbing);
+    }
+    td.original.is-sortable p + .djn-drag-handler {
+        top: 20px;
+    }
+
+    td.original.is-sortable p {
+        top: 0;
+        left: 19px;
+    }
+
+    .djn-group .inline-related .span-4 {
+        float: left;
+    }
+    form .aligned p.datetime,
+    form .aligned p.help {
+        padding: 0;
+        margin: 0;
+    }
+    .add-row br {
+        display: none;
+    }
+    .inline-group.djn-group-root > div.add-row,
+    .inline-group.djn-group-root > .tabular > tr.add-row > td {
+        margin-bottom: 0;
+        border: 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .djn-group-root > .djn-items > .djn-item.module {
+        border: 0;
+    }
+    .djn-form-row-last {
+        border-bottom: 0;
+    }
+}
