@@ -350,8 +350,6 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
 
     def get_item(self, indexes):
         indexes = self._normalize_indexes(indexes)
-        if not indexes:
-            import ipdb; ipdb.set_trace()
         model_name, item_index = indexes.pop()
         indexes.append(model_name)
         group = self.get_group(indexes=indexes)
