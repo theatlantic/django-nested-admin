@@ -36,8 +36,6 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     });
 };
 
-
-
 DJNesting.createContainerElement = function() {
     return;
 };
@@ -59,12 +57,12 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
         return;
     }
-    var lookup_urls = DJNesting.LOOKUP_URLS;
+    var lookupUrls = DJNesting.LOOKUP_URLS;
 
     if (!groupData) {
         groupData = $('#' + prefix + '-group').data();
     }
-    var lookup_fields = {
+    var lookupFields = {
         related_fk:       groupData.lookupRelatedFk,
         related_m2m:      groupData.lookupRelatedM2m,
         related_generic:  groupData.lookupRelatedGeneric,
@@ -73,33 +71,30 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
         autocomplete_generic: groupData.lookupAutocompleteGeneric
     };
 
-    $.each(lookup_fields.related_fk, function() {
+    $.each(lookupFields.related_fk, function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
-        .grp_related_fk({lookup_url: lookup_urls.related});
+        .grp_related_fk({lookup_url: lookupUrls.related});
     });
-    $.each(lookup_fields.related_m2m, function() {
+    $.each(lookupFields.related_m2m, function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
-        .grp_related_m2m({lookup_url: lookup_urls.m2m});
+        .grp_related_m2m({lookup_url: lookupUrls.m2m});
     });
-    $.each(lookup_fields.related_generic, function() {
-        var content_type = this[0],
-            object_id = this[1];
+    $.each(lookupFields.related_generic, function() {
+        var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this[1] + '"]')
+        .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
             var $this = $(this);
             var id = $this.attr('id');
-            var idRegex = new RegExp('(\\-\\d+\\-)' + object_id + '$');
-            var i = id.match(idRegex);
-            if (i) {
-                var ct_id = '#id_' + prefix + i[1] + content_type,
-                    obj_id = '#id_' + prefix + i[1] + object_id;
+            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
+            var [, index] = id.match(idRegex) || [];
+            if (index) {
                 $this.grp_related_generic({
-                    content_type:ct_id,
-                    object_id:obj_id,
-                    lookup_url:lookup_urls.related
+                    content_type: '#id_' + prefix + index + contentType,
+                    object_id: '#id_' + prefix + index + objectId,
+                    lookup_url: lookupUrls.related
                 });
             }
         });
@@ -110,14 +105,14 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
         return;
     }
-    var lookup_urls = DJNesting.LOOKUP_URLS;
+    var lookupUrls = DJNesting.LOOKUP_URLS;
 
     var $inline = $('#' + prefix + '-group');
 
     if (!groupData) {
         groupData = $inline.data();
     }
-    var lookup_fields = {
+    var lookupFields = {
         related_fk:       groupData.lookupRelatedFk,
         related_m2m:      groupData.lookupRelatedM2m,
         related_generic:  groupData.lookupRelatedGeneric,
@@ -126,41 +121,39 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
         autocomplete_generic: groupData.lookupAutocompleteGeneric
     };
 
-    $.each(lookup_fields.autocomplete_fk, function() {
+    $.each(lookupFields.autocomplete_fk, function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_fk({
-                lookup_url: lookup_urls.related,
-                autocomplete_lookup_url: lookup_urls.autocomplete
+                lookup_url: lookupUrls.related,
+                autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    $.each(lookup_fields.autocomplete_m2m, function() {
+    $.each(lookupFields.autocomplete_m2m, function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_m2m({
-                lookup_url: lookup_urls.m2m,
-                autocomplete_lookup_url: lookup_urls.autocomplete
+                lookup_url: lookupUrls.m2m,
+                autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    $.each(lookup_fields.autocomplete_generic, function() {
-        var content_type = this[0],
-            object_id = this[1];
+    $.each(lookupFields.autocomplete_generic, function() {
+        var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this[1] + '"]')
+        .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
-            var i = $(this).attr('id').match(/-\d+-/);
-            if (i) {
-                var ct_id = '#id_' + prefix + i[0] + content_type,
-                    obj_id = '#id_' + prefix + i[0] + object_id;
+            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
+            var [, index] = $(this).attr('id').match(idRegex) || [];
+            if (index) {
                 $(this).grp_autocomplete_generic({
-                    content_type:ct_id,
-                    object_id:obj_id,
-                    lookup_url:lookup_urls.related,
-                    autocomplete_lookup_url:lookup_urls.m2m
+                    content_type: '#id_' + prefix + index + contentType,
+                    object_id: '#id_' + prefix + index + objectId,
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.m2m
                 });
             }
         });
@@ -198,14 +191,14 @@ DJNesting.DjangoInlines = {
         row.find('.prepopulated_field').each(function() {
             var field = $(this),
                 input = field.find('input, select, textarea'),
-                dependency_list = input.data('dependency_list') || [],
+                dependencyList = input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
                 dependencies = [];
             if (!formPrefix || formPrefix.match(/__prefix__/)) {
                 return;
             }
-            $.each(dependency_list, function(i, field_name) {
-                dependencies.push('#id_' + formPrefix + field_name);
+            $.each(dependencyList, function(i, fieldName) {
+                dependencies.push('#id_' + formPrefix + fieldName);
             });
             if (dependencies.length) {
                 input.prepopulate(dependencies, input.attr('maxlength'));

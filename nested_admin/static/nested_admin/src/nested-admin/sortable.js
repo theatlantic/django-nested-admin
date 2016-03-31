@@ -10,16 +10,15 @@ export function updatePositions(prefix, skipDeleted) {
         fieldNames = $group.data('fieldNames'),
         // The field name on the fieldset which is a ForeignKey to the parent model
         groupFkName = $group.data('formsetFkName'),
-        parentPkVal, parentIdMatches = prefix.match(/^(.*)\-(\d+)-[^\-]+$/),
+        parentPkVal,
+        [, parentPrefix, index] = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [],
         $items = $group.find('> .djn-items, > .tabular > .module > .djn-items'),
         sortableOptions = $items.data('sortableOptions'),
         sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
     sortableExcludes.push(groupFkName);
 
-    if (parentIdMatches) {
-        var parentPrefix = parentIdMatches[1];
-        var index = parentIdMatches[2];
+    if (parentPrefix) {
         var $parentGroup = $('#' + parentPrefix + '-group');
         var parentFieldNames = $parentGroup.data('fieldNames');
         var parentPkFieldName = parentFieldNames.pk;
@@ -42,10 +41,9 @@ export function updatePositions(prefix, skipDeleted) {
         }
         // Cache jQuery object
         var $this = $(this),
-            prefixAndIndex = $this.djangoPrefixIndex() || [null, null],
-            formPrefix = prefixAndIndex[0],
-            index = prefixAndIndex[1],
+            [formPrefix, index] = $this.djangoPrefixIndex() || [null, null],
             namePrefix = formPrefix + '-' + index + '-';
+
         if (!formPrefix) {
             return;
         }

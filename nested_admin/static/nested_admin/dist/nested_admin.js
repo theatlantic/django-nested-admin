@@ -534,6 +534,8 @@ module.exports = exports['default'];
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _djangoJquery = require('./django-jquery');
 
 var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
@@ -547,7 +549,6 @@ _djangoJquery2.default.fn.djangoPrefixIndex = function () {
     var id = $this.attr('id'),
         name = $this.attr('name'),
         forattr = $this.attr('for'),
-        matches = [null, undefined, undefined],
         prefix,
         $form,
         $group,
@@ -565,19 +566,25 @@ _djangoJquery2.default.fn.djangoPrefixIndex = function () {
     }
 
     if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
-        matches = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
-        cacheKey = matches[0];
-        prefix = matches[1];
-        index = matches[2];
+        var _ref = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
+
+        var _ref2 = _slicedToArray(_ref, 3);
+
+        cacheKey = _ref2[0];
+        prefix = _ref2[1];
+        index = _ref2[2];
     }
 
     if (!prefix) {
         $form = $this.closest('.djn-inline-form');
         if ($form.length) {
-            matches = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
-            cacheKey = matches[0];
-            prefix = matches[1];
-            index = matches[2];
+            var _ref3 = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
+
+            var _ref4 = _slicedToArray(_ref3, 3);
+
+            cacheKey = _ref4[0];
+            prefix = _ref4[1];
+            index = _ref4[2];
         } else {
             $group = $this.closest('.djn-group');
             if (!$group.length) {
@@ -2852,6 +2859,9 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 exports.updatePositions = updatePositions;
 exports.createSortable = createSortable;
 
@@ -2868,23 +2878,26 @@ require('./jquery.ui.nestedsortable');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function updatePositions(prefix, skipDeleted) {
-    var position = 0,
-        $group = (0, _djangoJquery2.default)('#' + prefix + '-group'),
-        fieldNames = $group.data('fieldNames'),
-
+    var position = 0;
+    var $group = (0, _djangoJquery2.default)('#' + prefix + '-group');
+    var fieldNames = $group.data('fieldNames');
     // The field name on the fieldset which is a ForeignKey to the parent model
-    groupFkName = $group.data('formsetFkName'),
-        parentPkVal,
-        parentIdMatches = prefix.match(/^(.*)\-(\d+)-[^\-]+$/),
-        $items = $group.find('> .djn-items, > .tabular > .module > .djn-items'),
-        sortableOptions = $items.data('sortableOptions'),
-        sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
+    var groupFkName = $group.data('formsetFkName');
+    var parentPkVal;
+
+    var _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [];
+
+    var _ref2 = _slicedToArray(_ref, 3);
+
+    var parentPrefix = _ref2[1];
+    var index = _ref2[2];
+    var $items = $group.find('> .djn-items, > .tabular > .module > .djn-items');
+    var sortableOptions = $items.data('sortableOptions');
+    var sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
     sortableExcludes.push(groupFkName);
 
-    if (parentIdMatches) {
-        var parentPrefix = parentIdMatches[1];
-        var index = parentIdMatches[2];
+    if (parentPrefix) {
         var $parentGroup = (0, _djangoJquery2.default)('#' + parentPrefix + '-group');
         var parentFieldNames = $parentGroup.data('fieldNames');
         var parentPkFieldName = parentFieldNames.pk;
@@ -2906,11 +2919,16 @@ function updatePositions(prefix, skipDeleted) {
             return true;
         }
         // Cache jQuery object
-        var $this = (0, _djangoJquery2.default)(this),
-            prefixAndIndex = $this.djangoPrefixIndex() || [null, null],
-            formPrefix = prefixAndIndex[0],
-            index = prefixAndIndex[1],
-            namePrefix = formPrefix + '-' + index + '-';
+        var $this = (0, _djangoJquery2.default)(this);
+
+        var _ref3 = $this.djangoPrefixIndex() || [null, null];
+
+        var _ref4 = _slicedToArray(_ref3, 2);
+
+        var formPrefix = _ref4[0];
+        var index = _ref4[1];
+        var namePrefix = formPrefix + '-' + index + '-';
+
         if (!formPrefix) {
             return;
         }
@@ -3075,6 +3093,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _djangoJquery = require('./django-jquery');
@@ -3142,12 +3162,12 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
     if (_typeof(DJNesting.LOOKUP_URLS) != 'object' || !DJNesting.LOOKUP_URLS.related) {
         return;
     }
-    var lookup_urls = DJNesting.LOOKUP_URLS;
+    var lookupUrls = DJNesting.LOOKUP_URLS;
 
     if (!groupData) {
         groupData = (0, _djangoJquery2.default)('#' + prefix + '-group').data();
     }
-    var lookup_fields = {
+    var lookupFields = {
         related_fk: groupData.lookupRelatedFk,
         related_m2m: groupData.lookupRelatedM2m,
         related_generic: groupData.lookupRelatedGeneric,
@@ -3156,27 +3176,34 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         autocomplete_generic: groupData.lookupAutocompleteGeneric
     };
 
-    _djangoJquery2.default.each(lookup_fields.related_fk, function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookup_urls.related });
+    _djangoJquery2.default.each(lookupFields.related_fk, function () {
+        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
-    _djangoJquery2.default.each(lookup_fields.related_m2m, function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookup_urls.m2m });
+    _djangoJquery2.default.each(lookupFields.related_m2m, function () {
+        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
-    _djangoJquery2.default.each(lookup_fields.related_generic, function () {
-        var content_type = this[0],
-            object_id = this[1];
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this[1] + '"]').each(function () {
+    _djangoJquery2.default.each(lookupFields.related_generic, function () {
+        var _ref = _slicedToArray(this, 2);
+
+        var contentType = _ref[0];
+        var objectId = _ref[1];
+
+        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var $this = (0, _djangoJquery2.default)(this);
             var id = $this.attr('id');
-            var idRegex = new RegExp('(\\-\\d+\\-)' + object_id + '$');
-            var i = id.match(idRegex);
-            if (i) {
-                var ct_id = '#id_' + prefix + i[1] + content_type,
-                    obj_id = '#id_' + prefix + i[1] + object_id;
+            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
+
+            var _ref2 = id.match(idRegex) || [];
+
+            var _ref3 = _slicedToArray(_ref2, 2);
+
+            var index = _ref3[1];
+
+            if (index) {
                 $this.grp_related_generic({
-                    content_type: ct_id,
-                    object_id: obj_id,
-                    lookup_url: lookup_urls.related
+                    content_type: '#id_' + prefix + index + contentType,
+                    object_id: '#id_' + prefix + index + objectId,
+                    lookup_url: lookupUrls.related
                 });
             }
         });
@@ -3187,14 +3214,14 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     if (_typeof(DJNesting.LOOKUP_URLS) != 'object' || !DJNesting.LOOKUP_URLS.related) {
         return;
     }
-    var lookup_urls = DJNesting.LOOKUP_URLS;
+    var lookupUrls = DJNesting.LOOKUP_URLS;
 
     var $inline = (0, _djangoJquery2.default)('#' + prefix + '-group');
 
     if (!groupData) {
         groupData = $inline.data();
     }
-    var lookup_fields = {
+    var lookupFields = {
         related_fk: groupData.lookupRelatedFk,
         related_m2m: groupData.lookupRelatedM2m,
         related_generic: groupData.lookupRelatedGeneric,
@@ -3203,35 +3230,43 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         autocomplete_generic: groupData.lookupAutocompleteGeneric
     };
 
-    _djangoJquery2.default.each(lookup_fields.autocomplete_fk, function () {
+    _djangoJquery2.default.each(lookupFields.autocomplete_fk, function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _djangoJquery2.default)(this).grp_autocomplete_fk({
-                lookup_url: lookup_urls.related,
-                autocomplete_lookup_url: lookup_urls.autocomplete
+                lookup_url: lookupUrls.related,
+                autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    _djangoJquery2.default.each(lookup_fields.autocomplete_m2m, function () {
+    _djangoJquery2.default.each(lookupFields.autocomplete_m2m, function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _djangoJquery2.default)(this).grp_autocomplete_m2m({
-                lookup_url: lookup_urls.m2m,
-                autocomplete_lookup_url: lookup_urls.autocomplete
+                lookup_url: lookupUrls.m2m,
+                autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    _djangoJquery2.default.each(lookup_fields.autocomplete_generic, function () {
-        var content_type = this[0],
-            object_id = this[1];
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this[1] + '"]').each(function () {
-            var i = (0, _djangoJquery2.default)(this).attr('id').match(/-\d+-/);
-            if (i) {
-                var ct_id = '#id_' + prefix + i[0] + content_type,
-                    obj_id = '#id_' + prefix + i[0] + object_id;
+    _djangoJquery2.default.each(lookupFields.autocomplete_generic, function () {
+        var _ref4 = _slicedToArray(this, 2);
+
+        var contentType = _ref4[0];
+        var objectId = _ref4[1];
+
+        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
+
+            var _ref5 = (0, _djangoJquery2.default)(this).attr('id').match(idRegex) || [];
+
+            var _ref6 = _slicedToArray(_ref5, 2);
+
+            var index = _ref6[1];
+
+            if (index) {
                 (0, _djangoJquery2.default)(this).grp_autocomplete_generic({
-                    content_type: ct_id,
-                    object_id: obj_id,
-                    lookup_url: lookup_urls.related,
-                    autocomplete_lookup_url: lookup_urls.m2m
+                    content_type: '#id_' + prefix + index + contentType,
+                    object_id: '#id_' + prefix + index + objectId,
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.m2m
                 });
             }
         });
@@ -3266,14 +3301,14 @@ DJNesting.DjangoInlines = {
         row.find('.prepopulated_field').each(function () {
             var field = (0, _djangoJquery2.default)(this),
                 input = field.find('input, select, textarea'),
-                dependency_list = input.data('dependency_list') || [],
+                dependencyList = input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
                 dependencies = [];
             if (!formPrefix || formPrefix.match(/__prefix__/)) {
                 return;
             }
-            _djangoJquery2.default.each(dependency_list, function (i, field_name) {
-                dependencies.push('#id_' + formPrefix + field_name);
+            _djangoJquery2.default.each(dependencyList, function (i, fieldName) {
+                dependencies.push('#id_' + formPrefix + fieldName);
             });
             if (dependencies.length) {
                 input.prepopulate(dependencies, input.attr('maxlength'));

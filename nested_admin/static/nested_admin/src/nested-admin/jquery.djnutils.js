@@ -7,7 +7,6 @@ $.fn.djangoPrefixIndex = function() {
     var id = $this.attr('id'),
         name = $this.attr('name'),
         forattr = $this.attr('for'),
-        matches = [null, undefined, undefined],
         prefix, $form, $group, groupId, cacheKey, match, index;
 
     if ((match = prefixCache[id]) || (match = prefixCache[name]) || (match = prefixCache[forattr])) {
@@ -19,19 +18,14 @@ $.fn.djangoPrefixIndex = function() {
     }
 
     if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
-        matches = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
-        cacheKey = matches[0];
-        prefix = matches[1];
-        index = matches[2];
+        [cacheKey, prefix, index] = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
     }
 
     if (!prefix) {
         $form = $this.closest('.djn-inline-form');
         if ($form.length) {
-            matches = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
-            cacheKey = matches[0];
-            prefix = matches[1];
-            index = matches[2];
+            [cacheKey, prefix, index] = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/)
+                || [null, null, null];
         } else {
             $group = $this.closest('.djn-group');
             if (!$group.length) {
