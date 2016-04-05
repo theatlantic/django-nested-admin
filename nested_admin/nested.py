@@ -12,8 +12,8 @@ from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
 
 __all__ = (
-    'NestedModelAdmin', 'NestedInlineAdminFormset', 'NestedInlineModelAdmin',
-    'NestedStackedInline', 'NestedTabularInline',
+    'NestedModelAdmin', 'NestedModelAdminMixin', 'NestedInlineAdminFormset',
+    'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline',
     'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
     'NestedGenericStackedInline', 'NestedGenericTabularInline')
 
@@ -63,11 +63,11 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
     media = property(_media)
 
 
-class NestedModelAdmin(ModelAdmin):
+class NestedModelAdminMixin(object):
 
     @property
     def media(self):
-        media = getattr(super(NestedModelAdmin, self), 'media', forms.Media())
+        media = getattr(super(NestedModelAdminMixin, self), 'media', forms.Media())
 
         static_url = staticfiles_storage.url
 
@@ -100,7 +100,7 @@ class NestedModelAdmin(ModelAdmin):
 
     def _create_formsets(self, request, obj, change):
         orig_formsets, orig_inline_instances = (
-            super(NestedModelAdmin, self)._create_formsets(
+            super(NestedModelAdminMixin, self)._create_formsets(
                 request, obj, change))
 
         formsets = []
@@ -202,6 +202,10 @@ class NestedInlineModelAdminMixin(object):
 
     if hasattr(ModelAdmin, '_get_formsets'):
         _get_formsets = get_method_function(ModelAdmin._get_formsets)
+
+
+class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):
+    pass
 
 
 class NestedInlineModelAdmin(NestedInlineModelAdminMixin, InlineModelAdmin):

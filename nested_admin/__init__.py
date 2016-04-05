@@ -26,10 +26,10 @@ all_by_module = {
     'nested_admin.formsets': (
         'NestedInlineFormSet', 'NestedBaseGenericInlineFormSet'),
     'nested_admin.nested': (
-        'NestedModelAdmin', 'NestedInlineModelAdmin', 'NestedStackedInline',
-        'NestedTabularInline',  'NestedInlineModelAdminMixin',
-        'NestedGenericInlineModelAdmin', 'NestedGenericStackedInline',
-        'NestedGenericTabularInline'),
+        'NestedModelAdmin', 'NestedModelAdminMixin', 'NestedInlineAdminFormset',
+        'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline',
+        'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
+        'NestedGenericStackedInline', 'NestedGenericTabularInline')
 }
 
 # modules that should be imported when accessed as attributes of nested_admin
