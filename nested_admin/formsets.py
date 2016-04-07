@@ -221,7 +221,11 @@ class NestedInlineFormSetMixin(object):
 
             if form in forms_to_delete:
                 self.deleted_objects.append(obj)
-                obj.delete()
+                if hasattr(self, 'delete_existing'):
+                    self.delete_existing(obj, commit=commit)
+                else:
+                    if commit:
+                        obj.delete()
                 continue
 
             # fk_val: The value one should find in the form's foreign key field
