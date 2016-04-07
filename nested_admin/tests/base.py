@@ -443,6 +443,10 @@ class DragAndDropAction(object):
         if is_str(self.to_indexes[-1]):
             self.to_indexes[-1] = [self.to_indexes[-1], 0]
 
+        if self.from_indexes[:-1] == self.to_indexes[:-1]:
+            if self.from_indexes[-1][1] < self.to_indexes[-1][1]:
+                self.to_indexes[-1][1] += 1
+
         self.test_case.assertEqual(len(to_indexes), len(from_indexes),
             "Depth of source and target must be the same")
 
@@ -489,9 +493,11 @@ class DragAndDropAction(object):
         (ActionChains(self.selenium)
             .move_to_element_with_offset(source, 0, 0)
             .click_and_hold()
-            .move_by_offset(0, -15)
-            .move_by_offset(0, 15)
             .perform())
+        time.sleep(0.05)
+        ActionChains(self.selenium).move_by_offset(0, -15).perform()
+        time.sleep(0.05)
+        ActionChains(self.selenium).move_by_offset(0, 15).perform()
         with self.test_case.visible_selector('.ui-sortable-helper') as el:
             return el
 
@@ -505,14 +511,20 @@ class DragAndDropAction(object):
         limit = 8
         count = 0
         # True if aiming for the bottom of the target
-        target_bottom = bool(0 < self.to_indexes[-1][1] == self.target_num_items)
         helper_height = helper.size['height']
         self.move_by_offset(0, -1)
+        desired_pos = tuple([i[1] for i in self.to_indexes])
+        target_bottom = bool(0 < self.to_indexes[-1][1] == (self.target_num_items - 1)
+            and cmp(desired_pos[:-1], self.current_position[:-1]) > -1)
+
         while True:
             helper_y = helper.location['y']
             y_offset = target.location['y'] - helper_y
             if target_bottom:
-                y_offset += target.size['height'] - helper_height
+                if y_offset > 0:
+                    y_offset += target.size['height']
+                else:
+                    y_offset += target.size['height'] - helper_height
             if abs(y_offset) < 1:
                 break
             if count >= limit:
@@ -527,8 +539,34 @@ class DragAndDropAction(object):
                 helper = self.initialize_drag()
                 time.sleep(0.1)
                 self.move_by_offset(0, scaled_offset)
+            curr_pos = self.current_position
+            pos_diff = cmp(desired_pos, curr_pos)
+            if pos_diff == 0:
+                break
             count += 1
         return helper
+
+    def _num_preceding_djn_items(self, ctx):
+        """
+        For an unknown reason, evaluating XPath expressions of the form
+
+            preceding-sibling::*[not(contains(@attr, 'value'))]
+
+        Where 'value' is contained in at least one of the preceding siblings,
+        is extraordinarily slow. So we just grab all siblings and iterate
+        through the elements in python.
+        """
+        siblings = ctx.find_element_by_xpath('parent::*').find_elements_by_xpath('*')
+        count = 0
+        for el in siblings:
+            if el.id == ctx.id:
+                break
+            if el.tag_name == 'thead':
+                continue
+            classes = set(re.split(r'\s+', el.get_attribute('class')))
+            if classes & {'djn-item'} and not(classes & {'djn-no-drag'}):
+                count += 1
+        return count
 
     @property
     def current_position(self):
@@ -536,14 +574,13 @@ class DragAndDropAction(object):
             '.ui-sortable-placeholder')
         pos = []
         ctx = None
-        preceding_xpath = 'preceding-sibling::*[%s]' % xpath_item()
         ancestor_xpath = 'ancestor::*[%s][1]' % xpath_cls("djn-item")
         for i in range(0, len(self.to_indexes)):
             if ctx is None:
                 ctx = placeholder
             else:
                 ctx = ctx.find_element_by_xpath(ancestor_xpath)
-            pos.insert(0, len(ctx.find_elements_by_xpath(preceding_xpath)))
+            pos.insert(0, self._num_preceding_djn_items(ctx))
         return tuple(pos)
 
     def _finesse_position(self, helper, target):
