@@ -1,11 +1,15 @@
+import json
+
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.urlresolvers import reverse
 from django import forms
+from django.template.defaultfilters import capfirst
 from django.utils import six
 from django.utils.six.moves import zip
+from django.utils.translation import ugettext
 
 from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
@@ -61,6 +65,32 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                 media = media + inline.media
         return media
     media = property(_media)
+
+    def inline_formset_data(self):
+        verbose_name = self.opts.verbose_name
+        return json.dumps({
+            'name': '#%s' % self.formset.prefix,
+            'options': {
+                'prefix': self.formset.prefix,
+                'addText': ugettext('Add another %(verbose_name)s') % {
+                    'verbose_name': capfirst(verbose_name),
+                },
+                'deleteText': ugettext('Remove'),
+            },
+            'nestedOptions': {
+                'sortableFieldName': getattr(self.opts, 'sortable_field_name', None),
+                'lookupRelated': getattr(self.opts, 'related_lookup_fields', {}),
+                'lookupAutocomplete': getattr(self.opts, 'autocomplete_lookup_fields', {}),
+                'formsetFkName': self.formset.fk.name if getattr(self.formset, 'fk', None) else '',
+                'nestingLevel': getattr(self.formset, 'nesting_depth', 0),
+                'fieldNames': {
+                    'position': getattr(self.opts, 'sortable_field_name', None),
+                    'pk': self.opts.opts.pk.name,
+                },
+                'inlineModel': self.opts.opts.object_name.lower(),
+                'sortableOptions': self.opts.sortable_options,
+            },
+        })
 
 
 class NestedModelAdminMixin(object):

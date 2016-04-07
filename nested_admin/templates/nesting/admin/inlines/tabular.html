@@ -4,19 +4,9 @@
 {% with inline_admin_formset.opts as inline_opts %}
 <div class="inline-group group grp-group djn-group grp-tabular djn-tabular{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
-    {% block group_data_attributes %}
-    data-sortable-field-name="{% if inline_admin_formset.opts.sortable_field_name %}{{ inline_admin_formset.opts.sortable_field_name }}{% endif %}"
-    data-lookup-related-fk="{% get_safe_related_lookup_fields_fk inline_opts %}"
-    data-lookup-related-m2m="{% get_safe_related_lookup_fields_m2m inline_opts %}"
-    data-lookup-related-generic='{% get_safe_related_lookup_fields_generic inline_opts %}'
-    data-lookup-autocomplete-fk="{% get_safe_autocomplete_lookup_fields_fk inline_opts %}"
-    data-lookup-autocomplete-m2m="{% get_safe_autocomplete_lookup_fields_m2m inline_opts %}"
-    data-lookup-autocomplete-generic="{% get_safe_autocomplete_lookup_fields_generic inline_opts %}"
-    data-formset-fk-name="{{ inline_admin_formset.formset.fk.name }}"
-    {% if inline_admin_formset.formset.nesting_depth %}data-nesting-level="{{ inline_admin_formset.formset.nesting_depth }}"{% endif %}
-    data-field-names='{"pk": "{{ inline_opts.opts.pk.name }}"{% if inline_opts.sortable_field_name %}, "position": "{{ inline_opts.sortable_field_name }}"{% endif %}}'
-    data-inline-model="{{ inline_opts.opts.object_name|lower }}"{% endblock %}>
-
+    data-inline-type="stacked"
+    data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
+    data-inline-model="{{ inline_opts.opts.object_name|lower }}">
     {% ifnogrp %}
     <div class="tabular inline-related">
     <fieldset class="module">
@@ -38,11 +28,7 @@
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
 
-    <table class="djn-items tabular inline-related grp-module grp-table djn-table"
-      {% if inline_admin_formset.opts.sortable_options %}
-      data-sortable-options="{{ inline_admin_formset.opts.sortable_options|json_encode }}"
-      {% endif %}>
-
+    <table class="djn-items tabular inline-related grp-module grp-table djn-table">
       <thead class="module grp-module grp-thead djn-module djn-thead djn-item">
           <tr class="grp-tr">
               {% for field in inline_admin_formset.fields %}

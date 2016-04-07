@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import collections
 import contextlib
 import copy
@@ -7,15 +9,19 @@ import time
 import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
-from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
+from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.utils import six
+from django.utils.translation import ugettext as _
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import (
     visibility_of_element_located, element_to_be_clickable)
+
+from .selenium import SeleniumTestCase
 
 
 if not hasattr(__builtins__, 'cmp'):
@@ -54,13 +60,9 @@ def xpath_item(model_name=None):
 
 
 @override_settings(ROOT_URLCONF='nested_admin.tests.urls')
-class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
+class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
 
     has_grappelli = bool('grappelli' in settings.INSTALLED_APPS)
-
-    webdriver_class = 'selenium.webdriver.phantomjs.webdriver.WebDriver'
-
-    fixtures = ['users.xml']
 
     root_model = None
     nested_models = None
@@ -110,6 +112,46 @@ class BaseNestedAdminTestCase(AdminSeleniumWebDriverTestCase):
         super(BaseNestedAdminTestCase, self).setUp()
         self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
+        User.objects.create_superuser(username='super', password='secret', email='super@example.com')
+
+    def wait_for(self, css_selector, timeout=10):
+        """
+        Helper function that blocks until a CSS selector is found on the page.
+        """
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support import expected_conditions as ec
+        self.wait_until(
+            ec.presence_of_element_located((By.CSS_SELECTOR, css_selector)),
+            timeout
+        )
+
+    def wait_page_loaded(self):
+        """
+        Block until page has started to load.
+        """
+        from selenium.common.exceptions import TimeoutException
+        try:
+            # Wait for the next page to be loaded
+            self.wait_for('body')
+        except TimeoutException:
+            # IE7 occasionally returns an error "Internet Explorer cannot
+            # display the webpage" and doesn't load the next page. We just
+            # ignore it.
+            pass
+
+    def admin_login(self, username, password, login_url='/admin/'):
+        """
+        Helper function to log into the admin.
+        """
+        self.selenium.get('%s%s' % (self.live_server_url, login_url))
+        username_input = self.selenium.find_element_by_name('username')
+        username_input.send_keys(username)
+        password_input = self.selenium.find_element_by_name('password')
+        password_input.send_keys(password)
+        login_text = _('Log in')
+        self.selenium.find_element_by_xpath(
+            '//input[@value="%s"]' % login_text).click()
+        self.wait_page_loaded()
 
     def wait_until(self, callback, timeout=10, message=None):
         """
@@ -609,7 +651,7 @@ class DragAndDropAction(object):
     def move_to_target(self, screenshot_hack=False):
         target = self.target
         helper = self.initialize_drag()
-        if screenshot_hack and 'phantomjs' in self.test_case.webdriver_class:
+        if screenshot_hack and 'phantomjs' in self.test_case.browser:
             # I don't know why, but saving a screenshot fixes a weird bug
             # in phantomjs
             self.selenium.save_screenshot('/dev/null')

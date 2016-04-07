@@ -63,7 +63,7 @@ var DjangoFormset = function () {
         this._$totalForms.attr('autocomplete', 'off');
         this._$template = (0, _djangoJquery2.default)('#' + this.prefix + '-empty');
 
-        var inlineModelClassName = this.$inline.data('inlineModel');
+        var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = _djangoJquery2.default.extend({}, this.opts, {
             addButtonSelector: '.add-handler.' + inlineModelClassName,
@@ -72,8 +72,8 @@ var DjangoFormset = function () {
             formClass: 'dynamic-form-' + inlineModelClassName
         });
 
-        _utils2.default.initRelatedFields(this.prefix, this.$inline.data());
-        _utils2.default.initAutocompleteFields(this.prefix, this.$inline.data());
+        _utils2.default.initRelatedFields(this.prefix, this.$inline.djnData());
+        _utils2.default.initAutocompleteFields(this.prefix, this.$inline.djnData());
 
         this._bindEvents();
 
@@ -82,7 +82,7 @@ var DjangoFormset = function () {
         this.$inline.find('.djn-items:not([id*="-empty"])').trigger('djnesting:init');
 
         // initialize nested formsets
-        this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function () {
+        this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
             (0, _djangoJquery2.default)(this)[pluginName]();
         });
 
@@ -319,7 +319,7 @@ var DjangoFormset = function () {
             this._bindEvents($form);
 
             // find any nested formsets
-            $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function () {
+            $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
                 (0, _djangoJquery2.default)(this)[pluginName]();
             });
 
@@ -440,7 +440,7 @@ var DjangoFormset = function () {
                     var $parentInline = this.$inline.parent().closest('.djn-group');
                     if ($parentInline.length) {
                         var $parentForm = this.$inline.closest('.djn-inline-form');
-                        var parentPkField = $parentInline.data('fieldNames').pk;
+                        var parentPkField = ($parentInline.djnData('fieldNames') || {}).pk;
                         var $parentPk = $parentForm.djangoFormField(parentPkField);
                         if (!$parentPk.val()) {
                             $form.data('isInitial', false);
@@ -543,6 +543,16 @@ var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var prefixCache = {};
+
+_djangoJquery2.default.fn.djnData = function (name) {
+    var inlineFormsetData = (0, _djangoJquery2.default)(this).data('inlineFormset') || {},
+        nestedOptions = inlineFormsetData.nestedOptions || {};
+    if (!name) {
+        return nestedOptions;
+    } else {
+        return nestedOptions[name];
+    }
+};
 
 _djangoJquery2.default.fn.djangoPrefixIndex = function () {
     var $this = this.length > 1 ? this.first() : this;
@@ -683,7 +693,7 @@ if (typeof _djangoJquery2.default.djangoFormField != 'function') {
         var $field = (0, _djangoJquery2.default)('#id_' + namePrefix + fieldName);
         if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
             var $group = (0, _djangoJquery2.default)('#' + prefix + '-group'),
-                fieldNameData = $group.data('fieldNames') || {};
+                fieldNameData = $group.djnData('fieldNames') || {};
             fieldName = fieldNameData[fieldName];
             if (!fieldName) {
                 return $empty;
@@ -726,24 +736,33 @@ if (typeof _djangoJquery2.default.fn.djangoFormField != 'function') {
 if (typeof _djangoJquery2.default.fn.filterDjangoField != 'function') {
     var djRegexCache = {};
     _djangoJquery2.default.fn.filterDjangoField = function (prefix, fieldName, index) {
+        var $field, fieldNameData;
         if (typeof index != 'undefined') {
             if (typeof index == 'string') {
                 index = parseInt(index, 10);
             }
             if (typeof index == 'number' && !isNaN(index)) {
                 var fieldId = 'id_' + prefix + '-' + index + '-' + fieldName;
-                return (0, _djangoJquery2.default)('#' + fieldId);
+                $field = (0, _djangoJquery2.default)('#' + fieldId);
+            }
+        } else {
+            if (_typeof(djRegexCache[prefix]) != 'object') {
+                djRegexCache[prefix] = {};
+            }
+            if (typeof djRegexCache[prefix][fieldName] == 'undefined') {
+                djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
+            }
+            $field = this.find('input[name$="' + fieldName + '"]').filter(function () {
+                return this.getAttribute('name').match(djRegexCache[prefix][fieldName]);
+            });
+        }
+        if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
+            fieldNameData = (0, _djangoJquery2.default)('#' + prefix + '-group').djnData('fieldNames') || {};
+            if (_typeof(fieldNameData[fieldName]) && fieldNameData[fieldName] != fieldName) {
+                $field = (0, _djangoJquery2.default)(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
             }
         }
-        if (_typeof(djRegexCache[prefix]) != 'object') {
-            djRegexCache[prefix] = {};
-        }
-        if (typeof djRegexCache[prefix][fieldName] == 'undefined') {
-            djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
-        }
-        return this.find('input[name$="' + fieldName + '"]').filter(function () {
-            return this.getAttribute('name').match(djRegexCache[prefix][fieldName]);
-        });
+        return $field;
     };
 }
 
@@ -2374,7 +2393,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 createChildNestedSortable(self, this);
             });
             this.element.find(o.containerElementSelector + ':not(.subarticle-wrapper)').each(function (i, el) {
-                if ((0, _djangoJquery2.default)(el).closest('[data-sortable-field-name]').attr('id').indexOf('-empty') > -1) {
+                if ((0, _djangoJquery2.default)(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
                     return;
                 }
                 createChildNestedSortable(self, el);
@@ -2880,9 +2899,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function updatePositions(prefix, skipDeleted) {
     var position = 0;
     var $group = (0, _djangoJquery2.default)('#' + prefix + '-group');
-    var fieldNames = $group.data('fieldNames');
+    var groupData = $group.djnData();
+    var fieldNames = groupData.fieldNames;
     // The field name on the fieldset which is a ForeignKey to the parent model
-    var groupFkName = $group.data('formsetFkName');
+    var groupFkName = groupData.formsetFkName;
     var parentPkVal;
 
     var _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [];
@@ -2891,15 +2911,14 @@ function updatePositions(prefix, skipDeleted) {
 
     var parentPrefix = _ref2[1];
     var index = _ref2[2];
-    var $items = $group.find('> .djn-items, > .tabular > .module > .djn-items');
-    var sortableOptions = $items.data('sortableOptions');
+    var sortableOptions = groupData.sortableOptions;
     var sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
     sortableExcludes.push(groupFkName);
 
     if (parentPrefix) {
         var $parentGroup = (0, _djangoJquery2.default)('#' + parentPrefix + '-group');
-        var parentFieldNames = $parentGroup.data('fieldNames');
+        var parentFieldNames = $parentGroup.djnData('fieldNames');
         var parentPkFieldName = parentFieldNames.pk;
         var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
         parentPkVal = parentPkField.val();
@@ -3165,24 +3184,17 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
     var lookupUrls = DJNesting.LOOKUP_URLS;
 
     if (!groupData) {
-        groupData = (0, _djangoJquery2.default)('#' + prefix + '-group').data();
+        groupData = (0, _djangoJquery2.default)('#' + prefix + '-group').djnData();
     }
-    var lookupFields = {
-        related_fk: groupData.lookupRelatedFk,
-        related_m2m: groupData.lookupRelatedM2m,
-        related_generic: groupData.lookupRelatedGeneric,
-        autocomplete_fk: groupData.lookupAutocompleteFk,
-        autocomplete_m2m: groupData.lookupAutocompleteM2m,
-        autocomplete_generic: groupData.lookupAutocompleteGeneric
-    };
+    var lookupFields = groupData.lookupRelated;
 
-    _djangoJquery2.default.each(lookupFields.related_fk, function () {
+    _djangoJquery2.default.each(lookupFields.fk || [], function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
-    _djangoJquery2.default.each(lookupFields.related_m2m, function () {
+    _djangoJquery2.default.each(lookupFields.m2m || [], function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
-    _djangoJquery2.default.each(lookupFields.related_generic, function () {
+    _djangoJquery2.default.each(lookupFields.generic || [], function () {
         var _ref = _slicedToArray(this, 2);
 
         var contentType = _ref[0];
@@ -3219,18 +3231,11 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     var $inline = (0, _djangoJquery2.default)('#' + prefix + '-group');
 
     if (!groupData) {
-        groupData = $inline.data();
+        groupData = $inline.djnData();
     }
-    var lookupFields = {
-        related_fk: groupData.lookupRelatedFk,
-        related_m2m: groupData.lookupRelatedM2m,
-        related_generic: groupData.lookupRelatedGeneric,
-        autocomplete_fk: groupData.lookupAutocompleteFk,
-        autocomplete_m2m: groupData.lookupAutocompleteM2m,
-        autocomplete_generic: groupData.lookupAutocompleteGeneric
-    };
+    var lookupFields = groupData.lookupAutocomplete;
 
-    _djangoJquery2.default.each(lookupFields.autocomplete_fk, function () {
+    _djangoJquery2.default.each(lookupFields.fk || [], function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _djangoJquery2.default)(this).grp_autocomplete_fk({
                 lookup_url: lookupUrls.related,
@@ -3238,7 +3243,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
             });
         });
     });
-    _djangoJquery2.default.each(lookupFields.autocomplete_m2m, function () {
+    _djangoJquery2.default.each(lookupFields.m2m || [], function () {
         (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _djangoJquery2.default)(this).grp_autocomplete_m2m({
                 lookup_url: lookupUrls.m2m,
@@ -3246,7 +3251,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
             });
         });
     });
-    _djangoJquery2.default.each(lookupFields.autocomplete_generic, function () {
+    _djangoJquery2.default.each(lookupFields.generic || [], function () {
         var _ref4 = _slicedToArray(this, 2);
 
         var contentType = _ref4[0];

@@ -785,7 +785,6 @@ class TestTabularInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
 
 class TestSortablesWithExtra(BaseNestedAdminTestCase):
 
-    fixtures = ['users.xml']
     root_model = SortableWithExtraRoot
     nested_models = (SortableWithExtraChild, )
 

@@ -4,12 +4,14 @@ python:
     - 2.7
 
 env:
-    - TOXENV=py27-django18
-    - TOXENV=py27-django18-grp
-    - TOXENV=py27-django19
-    - TOXENV=py27-django19-grp
-    - TOXENV=py34-django18
-    - TOXENV=py34-django19
+    - TOXENV=py27-dj18
+    - TOXENV=py27-dj18-grp
+    - TOXENV=py27-dj19
+    - TOXENV=py27-dj19-grp
+    - TOXENV=py27-djmaster
+    - TOXENV=py34-dj18
+    - TOXENV=py34-dj19
+    - TOXENV=py34-djmaster
 
 install:
     - pip install tox 

@@ -7,20 +7,20 @@ import './jquery.ui.nestedsortable';
 export function updatePositions(prefix, skipDeleted) {
     var position = 0,
         $group = $('#' + prefix + '-group'),
-        fieldNames = $group.data('fieldNames'),
+        groupData = $group.djnData(),
+        fieldNames = groupData.fieldNames,
         // The field name on the fieldset which is a ForeignKey to the parent model
-        groupFkName = $group.data('formsetFkName'),
+        groupFkName = groupData.formsetFkName,
         parentPkVal,
         [, parentPrefix, index] = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [],
-        $items = $group.find('> .djn-items, > .tabular > .module > .djn-items'),
-        sortableOptions = $items.data('sortableOptions'),
+        sortableOptions = groupData.sortableOptions,
         sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
     sortableExcludes.push(groupFkName);
 
     if (parentPrefix) {
         var $parentGroup = $('#' + parentPrefix + '-group');
-        var parentFieldNames = $parentGroup.data('fieldNames');
+        var parentFieldNames = $parentGroup.djnData('fieldNames');
         var parentPkFieldName = parentFieldNames.pk;
         var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
         parentPkVal = parentPkField.val();

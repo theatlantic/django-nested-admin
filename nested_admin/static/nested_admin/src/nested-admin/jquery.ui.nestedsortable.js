@@ -165,7 +165,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
                 createChildNestedSortable(self, this);
             });
             this.element.find(o.containerElementSelector+':not(.subarticle-wrapper)').each(function(i, el) {
-                if ($(el).closest('[data-sortable-field-name]').attr('id').indexOf('-empty') > -1) {
+                if ($(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
                     return;
                 }
                 createChildNestedSortable(self, el);

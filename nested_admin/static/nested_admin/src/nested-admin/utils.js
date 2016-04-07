@@ -60,28 +60,21 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     var lookupUrls = DJNesting.LOOKUP_URLS;
 
     if (!groupData) {
-        groupData = $('#' + prefix + '-group').data();
+        groupData = $('#' + prefix + '-group').djnData();
     }
-    var lookupFields = {
-        related_fk:       groupData.lookupRelatedFk,
-        related_m2m:      groupData.lookupRelatedM2m,
-        related_generic:  groupData.lookupRelatedGeneric,
-        autocomplete_fk:  groupData.lookupAutocompleteFk,
-        autocomplete_m2m: groupData.lookupAutocompleteM2m,
-        autocomplete_generic: groupData.lookupAutocompleteGeneric
-    };
+    var lookupFields = groupData.lookupRelated;
 
-    $.each(lookupFields.related_fk, function() {
+    $.each(lookupFields.fk || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_fk({lookup_url: lookupUrls.related});
     });
-    $.each(lookupFields.related_m2m, function() {
+    $.each(lookupFields.m2m || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_m2m({lookup_url: lookupUrls.m2m});
     });
-    $.each(lookupFields.related_generic, function() {
+    $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
@@ -110,18 +103,11 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     var $inline = $('#' + prefix + '-group');
 
     if (!groupData) {
-        groupData = $inline.data();
+        groupData = $inline.djnData();
     }
-    var lookupFields = {
-        related_fk:       groupData.lookupRelatedFk,
-        related_m2m:      groupData.lookupRelatedM2m,
-        related_generic:  groupData.lookupRelatedGeneric,
-        autocomplete_fk:  groupData.lookupAutocompleteFk,
-        autocomplete_m2m: groupData.lookupAutocompleteM2m,
-        autocomplete_generic: groupData.lookupAutocompleteGeneric
-    };
+    var lookupFields = groupData.lookupAutocomplete;
 
-    $.each(lookupFields.autocomplete_fk, function() {
+    $.each(lookupFields.fk || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
@@ -131,7 +117,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
             });
         });
     });
-    $.each(lookupFields.autocomplete_m2m, function() {
+    $.each(lookupFields.m2m || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
@@ -141,7 +127,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
             });
         });
     });
-    $.each(lookupFields.autocomplete_generic, function() {
+    $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')

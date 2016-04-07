@@ -2,6 +2,16 @@ import $ from './django-jquery';
 
 var prefixCache = {};
 
+$.fn.djnData = function(name) {
+    var inlineFormsetData = $(this).data('inlineFormset') || {},
+        nestedOptions = inlineFormsetData.nestedOptions || {};
+    if (!name) {
+        return nestedOptions;
+    } else {
+        return nestedOptions[name];
+    }
+};
+
 $.fn.djangoPrefixIndex = function() {
     var $this = (this.length > 1) ? this.first() : this;
     var id = $this.attr('id'),
@@ -121,7 +131,7 @@ if (typeof($.djangoFormField) != 'function') {
         var $field = $('#id_' + namePrefix + fieldName);
         if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
             var $group = $('#' + prefix + '-group'),
-                fieldNameData = $group.data('fieldNames') || {};
+                fieldNameData = $group.djnData('fieldNames') || {};
             fieldName = fieldNameData[fieldName];
             if (!fieldName) { return $empty; }
             $field = $('#id_' + namePrefix + fieldName);
@@ -162,23 +172,32 @@ if (typeof($.fn.djangoFormField) != 'function') {
 if (typeof($.fn.filterDjangoField) != 'function') {
     var djRegexCache = {};
     $.fn.filterDjangoField = function(prefix, fieldName, index) {
+        var $field, fieldNameData;
         if (typeof index != 'undefined') {
             if (typeof index == 'string') {
                 index = parseInt(index, 10);
             }
             if (typeof index == 'number' && !isNaN(index)) {
                 var fieldId = 'id_' + prefix + '-' + index + '-' + fieldName;
-                return $('#' + fieldId);
+                $field = $('#' + fieldId);
+            }
+        } else {
+            if (typeof(djRegexCache[prefix]) != 'object') {
+                djRegexCache[prefix] = {};
+            }
+            if (typeof(djRegexCache[prefix][fieldName]) == 'undefined') {
+                djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
+            }            
+            $field = this.find('input[name$="' + fieldName + '"]').filter(function() {
+                return this.getAttribute('name').match(djRegexCache[prefix][fieldName]);
+            });          
+        }
+        if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
+            fieldNameData = $('#' + prefix + '-group').djnData('fieldNames') || {};
+            if (typeof(fieldNameData[fieldName]) && fieldNameData[fieldName] != fieldName) {
+                $field = $(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
             }
         }
-        if (typeof(djRegexCache[prefix]) != 'object') {
-            djRegexCache[prefix] = {};
-        }
-        if (typeof(djRegexCache[prefix][fieldName]) == 'undefined') {
-            djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
-        }
-        return this.find('input[name$="' + fieldName + '"]').filter(function() {
-            return this.getAttribute('name').match(djRegexCache[prefix][fieldName]);
-        });
+        return $field;
     };
 }

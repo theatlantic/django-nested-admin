@@ -12,7 +12,7 @@ from .models import (
 
 class TestAdminWidgets(BaseNestedAdminTestCase):
 
-    fixtures = ['admin-widgets.xml', 'users.xml']
+    fixtures = ['admin-widgets.xml']
 
     root_model = TestAdminWidgetsRoot
     nested_models = (TestAdminWidgetsA, TestAdminWidgetsB,

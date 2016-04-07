@@ -18,7 +18,7 @@ class DjangoFormset {
         this._$totalForms.attr('autocomplete', 'off');
         this._$template = $('#' + this.prefix + '-empty');
 
-        var inlineModelClassName = this.$inline.data('inlineModel');
+        var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = $.extend({}, this.opts, {
             addButtonSelector: '.add-handler.' + inlineModelClassName,
@@ -27,8 +27,8 @@ class DjangoFormset {
             formClass: 'dynamic-form-' + inlineModelClassName
         });
 
-        DJNesting.initRelatedFields(this.prefix, this.$inline.data());
-        DJNesting.initAutocompleteFields(this.prefix, this.$inline.data());
+        DJNesting.initRelatedFields(this.prefix, this.$inline.djnData());
+        DJNesting.initAutocompleteFields(this.prefix, this.$inline.djnData());
 
         this._bindEvents();
 
@@ -37,7 +37,7 @@ class DjangoFormset {
         this.$inline.find('.djn-items:not([id*="-empty"])').trigger('djnesting:init');
 
         // initialize nested formsets
-        this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
+        this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function() {
             $(this)[pluginName]();
         });
 
@@ -260,7 +260,7 @@ class DjangoFormset {
         this._bindEvents($form);
 
         // find any nested formsets
-        $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-field-names]:not([id*="-empty"])').each(function() {
+        $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function() {
             $(this)[pluginName]();
         });
 
@@ -373,7 +373,7 @@ class DjangoFormset {
                 var $parentInline = this.$inline.parent().closest('.djn-group');
                 if ($parentInline.length) {
                     var $parentForm = this.$inline.closest('.djn-inline-form');
-                    var parentPkField = $parentInline.data('fieldNames').pk;
+                    var parentPkField = ($parentInline.djnData('fieldNames') || {}).pk;
                     var $parentPk = $parentForm.djangoFormField(parentPkField);
                     if (!$parentPk.val()) {
                         $form.data('isInitial', false);
