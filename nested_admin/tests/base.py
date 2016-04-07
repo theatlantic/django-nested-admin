@@ -244,6 +244,9 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         self.make_header_footer_position_static()
 
     def save_form(self):
+        browser_errors = [e for e in self.selenium.get_log('browser')
+                          if 'favicon' not in e['message']]
+        self.assertEqual(browser_errors, [])
         self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
         self.wait_page_loaded()
         self.selenium.set_window_size(1120, 1300)
