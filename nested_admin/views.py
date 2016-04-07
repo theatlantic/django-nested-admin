@@ -2,7 +2,12 @@ import textwrap
 import json
 
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.urlresolvers import reverse, NoReverseMatch
+try:
+    # Django 1.10
+    from django.urls import reverse, NoReverseMatch
+except ImportError:
+    # Django <= 1.9
+    from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import HttpResponse, HttpResponseForbidden
 
 

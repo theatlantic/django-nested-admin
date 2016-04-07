@@ -11,7 +11,12 @@ from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.core.urlresolvers import reverse
+try:
+    # Django 1.10
+    from django.urls import reverse
+except ImportError:
+    # Django <= 1.9
+    from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.utils import six
 from django.utils.translation import ugettext as _

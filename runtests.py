@@ -2,12 +2,18 @@
 import argparse
 import os
 import sys
+import warnings
 
 import django
 from django.conf import settings
 from django.test.utils import get_runner
 
 from nested_admin.tests.selenium import SeleniumTestCaseBase
+
+
+warnings.simplefilter("error", DeprecationWarning)
+warnings.simplefilter("error", PendingDeprecationWarning)
+warnings.simplefilter("error", RuntimeWarning)
 
 
 def django_tests(verbosity, failfast, test_labels):
@@ -19,6 +25,12 @@ def django_tests(verbosity, failfast, test_labels):
     settings.INSTALLED_APPS
     if settings.configured:
         django.setup()
+
+    if 'grappelli' in settings.INSTALLED_APPS:
+        # Grappelli uses the deprecated django.conf.urls.patterns, but we
+        # don't want this to fail our tests.
+        warnings.filterwarnings("ignore", "django.conf.urls.patterns", PendingDeprecationWarning)
+        warnings.filterwarnings("ignore", "django.conf.urls.patterns", DeprecationWarning)
 
     if not hasattr(settings, 'TEST_RUNNER'):
         settings.TEST_RUNNER = 'django.test.runner.DiscoverRunner'
