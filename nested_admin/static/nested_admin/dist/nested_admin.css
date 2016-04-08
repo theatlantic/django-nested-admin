@@ -6,9 +6,9 @@
   float: right;
 }
 
-.djn-group .open-handler-container,
-.djn-group .close-handler-container,
-.djn-group .add-handler-container {
+.djn-group.inline-group ul.tools li.open-handler-container,
+.djn-group.inline-group ul.tools li.close-handler-container,
+.djn-group.inline-group ul.tools li.add-handler-container {
   display: none;
 }
 
