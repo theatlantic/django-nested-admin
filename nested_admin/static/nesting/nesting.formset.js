@@ -216,7 +216,7 @@
             }
 
             DJNesting.updateFormAttributes($form,
-                new RegExp("^(id_)?" + DJNesting.regexQuote(this.prefix + "-__prefix__")),
+                new RegExp("^((lookup_)?id_)?" + DJNesting.regexQuote(this.prefix + "-__prefix__")),
                 '$1' + this.prefix + '-' + index);
 
             DJNesting.updateNestedFormIndex($form, this.prefix);
