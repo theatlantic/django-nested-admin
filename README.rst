@@ -7,9 +7,9 @@ django-nested-admin
 
 **django-nested-admin** is a project that makes it possible to nest
 admin inlines (that is, to define inlines on InlineModelAdmin classes).
-compatible with Django 1.8+ and Python versions 2.7 and 3.4+. It works with
-and without Grappelli. When Grappelli is not installed it adds Grappelli-like
-drag-and-drop sorting functionality to Django inlines.
+It is compatible with Django 1.8+ and Python versions 2.7 and 3.4+ and works
+with or without Grappelli. When Grappelli is not installed it allows
+Grappelli-like drag-and-drop functionality.
 
 Installation
 ============
@@ -97,6 +97,29 @@ versions of ``GenericStackedInline`` and ``GenericTabularInline`` in
         inlines = [TocSectionInline]
 
     admin.site.register(TableOfContents, TableOfContentsAdmin)
+
+Testing
+=======
+
+django-nested-admin has fairly extensive test coverage.
+The best way to run the tests is with `tox <https://testrun.org/tox/latest/>`_,
+which runs the tests against all supported Django installs. To run the tests
+within a virtualenv run ``python runtests.py`` from the repository directory.
+The tests require a selenium webdriver to be installed. By default the tests
+run with phantomjs, but it is also possible to run the tests with the chrome
+webdriver by passing `--selenium=chrome` to runtests.py or, if running with tox,
+running ``tox -- --selenium=chrome``. See ``runtests.py --help`` for a complete
+list of the options available.
+
+Contributing
+============
+
+This project uses `gulp <http://gulpjs.com/>`_, `babel <https://babeljs.io/>`_,
+`browserify <http://browserify.org/>`_, and `scss <http://sass-lang.com/>`_ for
+building its javascript and css. To install the dependencies for the build
+process, run ``npm install`` from the root of the repository. You can then run
+``gulp`` to rebuild the static files, or ``gulp watch`` when actively editing
+these files to detect changes and rebuild automatically.
 
 License
 =======
