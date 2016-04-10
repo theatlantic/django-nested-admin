@@ -1,8 +1,9 @@
 'use strict';
 
-import $ from './django-jquery';
+import $ from 'jquery';
 import regexQuote from './regexquote';
 import DJNesting from './utils';
+import grappelli from 'grappelli';
 
 var pluginName = 'djangoFormset';
 
@@ -232,8 +233,8 @@ class DjangoFormset {
             $(document).trigger('djnesting:mutate', [this.$formset]);
         }
 
-        if (window.grappelli) {
-            window.grappelli.reinitDateTimeFields($form);
+        if (grappelli) {
+            grappelli.reinitDateTimeFields($form);
         }
         DJNesting.DjangoInlines.initPrepopulatedFields($form);
         DJNesting.DjangoInlines.reinitDateTimeShortCuts();

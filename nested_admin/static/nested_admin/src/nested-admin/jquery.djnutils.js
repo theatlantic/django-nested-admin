@@ -1,4 +1,4 @@
-import $ from './django-jquery';
+import $ from 'jquery';
 
 var prefixCache = {};
 

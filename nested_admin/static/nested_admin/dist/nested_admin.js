@@ -1,28 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var $;
-
-if (_typeof(window.grp) == 'object' && window.grp.jQuery) {
-    $ = window.grp.jQuery;
-} else if (_typeof(window.django) == 'object' && window.django.jQuery) {
-    $ = window.django.jQuery;
-} else if (window.jQuery) {
-    $ = window.jQuery;
-} else {
-    throw new Exception('jQuery is required');
-}
-
-exports.default = $;
-module.exports = exports['default'];
-
-},{}],2:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -31,9 +8,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 var _regexquote = require('./regexquote');
 
@@ -42,6 +19,10 @@ var _regexquote2 = _interopRequireDefault(_regexquote);
 var _utils = require('./utils');
 
 var _utils2 = _interopRequireDefault(_utils);
+
+var _grappelli = (typeof window !== "undefined" ? window['grappelli'] : typeof global !== "undefined" ? global['grappelli'] : null);
+
+var _grappelli2 = _interopRequireDefault(_grappelli);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57,15 +38,15 @@ var DjangoFormset = function () {
             emptyClass: 'empty-form grp-empty-form',
             predeleteClass: 'grp-predelete'
         };
-        this.$inline = (0, _djangoJquery2.default)(inline);
+        this.$inline = (0, _jquery2.default)(inline);
         this.prefix = this.$inline.djangoFormsetPrefix();
         this._$totalForms = this.$inline.find('#id_' + this.prefix + '-TOTAL_FORMS');
         this._$totalForms.attr('autocomplete', 'off');
-        this._$template = (0, _djangoJquery2.default)('#' + this.prefix + '-empty');
+        this._$template = (0, _jquery2.default)('#' + this.prefix + '-empty');
 
         var inlineModelClassName = this.$inline.djnData('inlineModel');
 
-        this.opts = _djangoJquery2.default.extend({}, this.opts, {
+        this.opts = _jquery2.default.extend({}, this.opts, {
             addButtonSelector: '.add-handler.' + inlineModelClassName,
             removeButtonSelector: '.remove-handler.' + inlineModelClassName,
             deleteButtonSelector: '.delete-handler.' + inlineModelClassName,
@@ -83,14 +64,14 @@ var DjangoFormset = function () {
 
         // initialize nested formsets
         this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
-            (0, _djangoJquery2.default)(this)[pluginName]();
+            (0, _jquery2.default)(this)[pluginName]();
         });
 
         if (this.$inline.is('.djn-group-root')) {
             _utils2.default.createSortable(this.$inline);
         }
 
-        (0, _djangoJquery2.default)(document).trigger('djnesting:initialized', [this.$inline, this]);
+        (0, _jquery2.default)(document).trigger('djnesting:initialized', [this.$inline, this]);
     }
 
     _createClass(DjangoFormset, [{
@@ -104,11 +85,11 @@ var DjangoFormset = function () {
     }, {
         key: '_initializeForm',
         value: function _initializeForm(form) {
-            var $form = (0, _djangoJquery2.default)(form);
+            var $form = (0, _jquery2.default)(form);
             var formPrefix = $form.djangoFormPrefix();
             $form.addClass(this.opts.formClass);
             if ($form.hasClass('has_original')) {
-                (0, _djangoJquery2.default)('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
+                (0, _jquery2.default)('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
             }
         }
     }, {
@@ -124,19 +105,19 @@ var DjangoFormset = function () {
                 self.add();
             });
             $el.find(this.opts.removeButtonSelector).filter(function () {
-                return !(0, _djangoJquery2.default)(this).closest('.empty-form').length;
+                return !(0, _jquery2.default)(this).closest('.empty-form').length;
             }).off('click.djnesting').on('click.djnesting', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var $form = (0, _djangoJquery2.default)(this).closest('.' + self.opts.formClass);
+                var $form = (0, _jquery2.default)(this).closest('.' + self.opts.formClass);
                 self.remove($form);
             });
 
             var deleteClickHandler = function deleteClickHandler(e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                var $form = (0, _djangoJquery2.default)(this).closest('.' + self.opts.formClass);
-                var $deleteInput = (0, _djangoJquery2.default)('#id_' + $form.djangoFormPrefix() + 'DELETE');
+                var $form = (0, _jquery2.default)(this).closest('.' + self.opts.formClass);
+                var $deleteInput = (0, _jquery2.default)('#id_' + $form.djangoFormPrefix() + 'DELETE');
                 if (!$deleteInput.is(':checked')) {
                     self['delete']($form);
                 } else {
@@ -145,7 +126,7 @@ var DjangoFormset = function () {
             };
 
             var $deleteButton = $el.find(this.opts.deleteButtonSelector).filter(function () {
-                return !(0, _djangoJquery2.default)(this).closest('.empty-form').length;
+                return !(0, _jquery2.default)(this).closest('.empty-form').length;
             });
 
             $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
@@ -154,7 +135,7 @@ var DjangoFormset = function () {
     }, {
         key: 'remove',
         value: function remove(form) {
-            var $form = (0, _djangoJquery2.default)(form);
+            var $form = (0, _jquery2.default)(form);
             var totalForms = this.mgmtVal('TOTAL_FORMS');
             var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
             var index = $form.djangoFormIndex();
@@ -171,15 +152,15 @@ var DjangoFormset = function () {
             this._fillGap(index, isInitial);
 
             _utils2.default.updatePositions(this.prefix);
-            (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
         }
     }, {
         key: 'delete',
         value: function _delete(form) {
             var self = this,
-                $form = (0, _djangoJquery2.default)(form),
+                $form = (0, _jquery2.default)(form),
                 formPrefix = $form.djangoFormPrefix(),
-                $deleteInput = (0, _djangoJquery2.default)('#id_' + formPrefix + 'DELETE');
+                $deleteInput = (0, _jquery2.default)('#id_' + formPrefix + 'DELETE');
 
             if ($form.hasClass(this.opts.predeleteClass)) {
                 return;
@@ -195,33 +176,33 @@ var DjangoFormset = function () {
             $form.addClass(this.opts.predeleteClass);
 
             $form.find('.djn-group').each(function () {
-                var $childInline = (0, _djangoJquery2.default)(this);
+                var $childInline = (0, _jquery2.default)(this);
                 var childFormset = $childInline.djangoFormset();
                 $childInline.djangoFormsetForms().each(function () {
-                    if ((0, _djangoJquery2.default)(this).hasClass(self.opts.predeleteClass)) {
-                        (0, _djangoJquery2.default)(this).data('alreadyDeleted', true);
+                    if ((0, _jquery2.default)(this).hasClass(self.opts.predeleteClass)) {
+                        (0, _jquery2.default)(this).data('alreadyDeleted', true);
                     } else {
                         childFormset.delete(this);
                     }
                 });
             });
             $form.find('.cropduster-form').each(function () {
-                var formPrefix = (0, _djangoJquery2.default)(this).djangoFormsetPrefix() + '-0-';
-                var $deleteInput = (0, _djangoJquery2.default)('#id_' + formPrefix + 'DELETE');
+                var formPrefix = (0, _jquery2.default)(this).djangoFormsetPrefix() + '-0-';
+                var $deleteInput = (0, _jquery2.default)('#id_' + formPrefix + 'DELETE');
                 $deleteInput.attr('checked', 'checked');
                 if ($deleteInput.length) {
                     $deleteInput[0].checked = true;
                 }
             });
             _utils2.default.updatePositions(this.prefix);
-            (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
         }
     }, {
         key: 'undelete',
         value: function undelete(form) {
-            var $form = (0, _djangoJquery2.default)(form),
+            var $form = (0, _jquery2.default)(form),
                 formPrefix = $form.djangoFormPrefix(),
-                $deleteInput = (0, _djangoJquery2.default)('#id_' + formPrefix + 'DELETE');
+                $deleteInput = (0, _jquery2.default)('#id_' + formPrefix + 'DELETE');
 
             if ($form.parent().closest('.' + this.opts.predeleteClass).length) {
                 return;
@@ -235,26 +216,26 @@ var DjangoFormset = function () {
             }
             $form.data('alreadyDeleted', false);
             $form.find('.djn-group').each(function () {
-                var $childInline = (0, _djangoJquery2.default)(this);
+                var $childInline = (0, _jquery2.default)(this);
                 var childFormset = $childInline.djangoFormset();
                 $childInline.djangoFormsetForms().each(function () {
-                    if ((0, _djangoJquery2.default)(this).data('alreadyDeleted')) {
-                        (0, _djangoJquery2.default)(this).data('alreadyDeleted', false);
+                    if ((0, _jquery2.default)(this).data('alreadyDeleted')) {
+                        (0, _jquery2.default)(this).data('alreadyDeleted', false);
                     } else {
                         childFormset.undelete(this);
                     }
                 });
             });
             $form.find('.cropduster-form').each(function () {
-                var formPrefix = (0, _djangoJquery2.default)(this).djangoFormsetPrefix() + '-0-';
-                var $deleteInput = (0, _djangoJquery2.default)('#id_' + formPrefix + 'DELETE');
+                var formPrefix = (0, _jquery2.default)(this).djangoFormsetPrefix() + '-0-';
+                var $deleteInput = (0, _jquery2.default)('#id_' + formPrefix + 'DELETE');
                 $deleteInput.removeAttr('checked');
                 if ($deleteInput.length) {
                     $deleteInput[0].checked = false;
                 }
             });
             _utils2.default.updatePositions(this.prefix);
-            (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
         }
     }, {
         key: 'add',
@@ -285,33 +266,33 @@ var DjangoFormset = function () {
             _utils2.default.updateNestedFormIndex($form, this.prefix);
             _utils2.default.updatePositions(this.prefix);
 
-            if (_djangoJquery2.default.isNumeric(spliceIndex)) {
+            if (_jquery2.default.isNumeric(spliceIndex)) {
                 this.spliceInto($form, spliceIndex, true);
             } else {
-                (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
             }
 
-            if (window.grappelli) {
-                window.grappelli.reinitDateTimeFields($form);
+            if (_grappelli2.default) {
+                _grappelli2.default.reinitDateTimeFields($form);
             }
             _utils2.default.DjangoInlines.initPrepopulatedFields($form);
             _utils2.default.DjangoInlines.reinitDateTimeShortCuts();
             _utils2.default.DjangoInlines.updateSelectFilter($form);
             _utils2.default.initRelatedFields(this.prefix);
             _utils2.default.initAutocompleteFields(this.prefix);
-            if (_djangoJquery2.default.fn.grp_collapsible) {
+            if (_jquery2.default.fn.grp_collapsible) {
                 $form.find('.collapse').andSelf().grp_collapsible({
                     toggle_handler_slctr: '.collapse-handler:first',
                     closed_css: 'closed grp-closed',
                     open_css: 'open grp-open',
                     on_toggle: function on_toggle() {
-                        (0, _djangoJquery2.default)(document).trigger('djnesting:toggle', [self.$inline]);
+                        (0, _jquery2.default)(document).trigger('djnesting:toggle', [self.$inline]);
                     }
                 });
             }
-            if (typeof _djangoJquery2.default.fn.curated_content_type == 'function') {
+            if (typeof _jquery2.default.fn.curated_content_type == 'function') {
                 $form.find('.curated-content-type-select').each(function () {
-                    (0, _djangoJquery2.default)(this).curated_content_type();
+                    (0, _jquery2.default)(this).curated_content_type();
                 });
             }
 
@@ -320,12 +301,12 @@ var DjangoFormset = function () {
 
             // find any nested formsets
             $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
-                (0, _djangoJquery2.default)(this)[pluginName]();
+                (0, _jquery2.default)(this)[pluginName]();
             });
 
             // Fire an event on the document so other javascript applications
             // can be alerted to the newly inserted inline
-            (0, _djangoJquery2.default)(document).trigger('djnesting:added', [this.$inline, $form]);
+            (0, _jquery2.default)(document).trigger('djnesting:added', [this.$inline, $form]);
 
             return $form;
         }
@@ -336,10 +317,10 @@ var DjangoFormset = function () {
             var formsets = this.$inline.djangoFormsetForms().toArray();
             // Sort formsets in index order, so that we get the last indexed form for the swap.
             formsets.sort(function (a, b) {
-                return (0, _djangoJquery2.default)(a).djangoFormIndex() - (0, _djangoJquery2.default)(b).djangoFormIndex();
+                return (0, _jquery2.default)(a).djangoFormIndex() - (0, _jquery2.default)(b).djangoFormIndex();
             });
             formsets.forEach(function (form) {
-                var $form = (0, _djangoJquery2.default)(form);
+                var $form = (0, _jquery2.default)(form);
                 var i = $form.djangoFormIndex();
                 if (i <= index) {
                     return;
@@ -361,12 +342,12 @@ var DjangoFormset = function () {
 
             // Update prefixes on nested DjangoFormset objects
             $form.find('.djn-group').each(function () {
-                var $childInline = (0, _djangoJquery2.default)(this);
+                var $childInline = (0, _jquery2.default)(this);
                 var childFormset = $childInline.djangoFormset();
                 childFormset.prefix = $childInline.djangoFormsetPrefix();
             });
 
-            (0, _djangoJquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+            (0, _jquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
             if (isInitial && $initialForm && $newForm) {
                 this._fillGap(oldIndex, false);
@@ -378,7 +359,7 @@ var DjangoFormset = function () {
             var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
                 totalFormCount = this.mgmtVal('TOTAL_FORMS'),
                 gapIndex = initialFormCount,
-                $existingForm = (0, _djangoJquery2.default)('#' + this.prefix + gapIndex);
+                $existingForm = (0, _jquery2.default)('#' + this.prefix + gapIndex);
 
             if (!$existingForm.length) {
                 return;
@@ -390,12 +371,12 @@ var DjangoFormset = function () {
 
             // Update prefixes on nested DjangoFormset objects
             $existingForm.find('.djn-group').each(function () {
-                var $childInline = (0, _djangoJquery2.default)(this);
+                var $childInline = (0, _jquery2.default)(this);
                 var childFormset = $childInline.djangoFormset();
                 childFormset.prefix = $childInline.djangoFormsetPrefix();
             });
 
-            (0, _djangoJquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
+            (0, _jquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
         }
         /**
          * Splice a form into the current formset at new position `index`.
@@ -422,7 +403,7 @@ var DjangoFormset = function () {
                 $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item:not(#' + $form.attr('id') + ')').eq(index);
                 $before.after($form);
             } else {
-                var $oldInline = (0, _djangoJquery2.default)('#' + oldFormsetPrefix + '-group');
+                var $oldInline = (0, _jquery2.default)('#' + oldFormsetPrefix + '-group');
                 var $currentFormInline = $form.closest('.djn-group');
 
                 if ($currentFormInline.djangoFormsetPrefix() != newFormsetPrefix) {
@@ -466,12 +447,12 @@ var DjangoFormset = function () {
 
                 // Update prefixes on nested DjangoFormset objects
                 $form.find('.djn-group').each(function () {
-                    var $childInline = (0, _djangoJquery2.default)(this);
+                    var $childInline = (0, _jquery2.default)(this);
                     var childFormset = $childInline.djangoFormset();
                     childFormset.prefix = $childInline.djangoFormsetPrefix();
                 });
 
-                (0, _djangoJquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+                (0, _jquery2.default)(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
                 if (isInitial) {
                     this.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
@@ -479,12 +460,12 @@ var DjangoFormset = function () {
                 this.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
 
                 _utils2.default.updatePositions(oldFormsetPrefix);
-                (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [$oldInline]);
+                (0, _jquery2.default)(document).trigger('djnesting:mutate', [$oldInline]);
             }
 
             _utils2.default.updatePositions(newFormsetPrefix);
             if (!isNewAddition) {
-                (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
             }
         }
     }, {
@@ -502,11 +483,11 @@ var DjangoFormset = function () {
     return DjangoFormset;
 }();
 
-_djangoJquery2.default.fn[pluginName] = function () {
+_jquery2.default.fn[pluginName] = function () {
     var options, fn, args;
     var $el = this.eq(0);
 
-    if (arguments.length === 0 || arguments.length === 1 && _djangoJquery2.default.type(arguments[0]) != 'string') {
+    if (arguments.length === 0 || arguments.length === 1 && _jquery2.default.type(arguments[0]) != 'string') {
         options = arguments[0];
         var djangoFormset = $el.data(pluginName);
         if (!djangoFormset) {
@@ -517,7 +498,7 @@ _djangoJquery2.default.fn[pluginName] = function () {
     }
 
     fn = arguments[0];
-    args = _djangoJquery2.default.makeArray(arguments).slice(1);
+    args = _jquery2.default.makeArray(arguments).slice(1);
 
     if (fn in DjangoFormset.prototype) {
         return $el.data(pluginName)[fn](args);
@@ -529,23 +510,26 @@ _djangoJquery2.default.fn[pluginName] = function () {
 exports.default = DjangoFormset;
 module.exports = exports['default'];
 
-},{"./django-jquery":1,"./regexquote":6,"./utils":8}],3:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./regexquote":5,"./utils":7}],2:[function(require,module,exports){
+(function (global){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var prefixCache = {};
 
-_djangoJquery2.default.fn.djnData = function (name) {
-    var inlineFormsetData = (0, _djangoJquery2.default)(this).data('inlineFormset') || {},
+_jquery2.default.fn.djnData = function (name) {
+    var inlineFormsetData = (0, _jquery2.default)(this).data('inlineFormset') || {},
         nestedOptions = inlineFormsetData.nestedOptions || {};
     if (!name) {
         return nestedOptions;
@@ -554,7 +538,7 @@ _djangoJquery2.default.fn.djnData = function (name) {
     }
 };
 
-_djangoJquery2.default.fn.djangoPrefixIndex = function () {
+_jquery2.default.fn.djangoPrefixIndex = function () {
     var $this = this.length > 1 ? this.first() : this;
     var id = $this.attr('id'),
         name = $this.attr('name'),
@@ -619,7 +603,7 @@ _djangoJquery2.default.fn.djangoPrefixIndex = function () {
     return [prefix, index];
 };
 
-_djangoJquery2.default.fn.djangoFormPrefix = function () {
+_jquery2.default.fn.djangoFormPrefix = function () {
     var prefixIndex = this.djangoPrefixIndex();
     if (!prefixIndex || !prefixIndex[1]) {
         return null;
@@ -627,12 +611,12 @@ _djangoJquery2.default.fn.djangoFormPrefix = function () {
     return prefixIndex[0] + '-' + prefixIndex[1] + '-';
 };
 
-_djangoJquery2.default.fn.djangoFormIndex = function () {
+_jquery2.default.fn.djangoFormIndex = function () {
     var prefixIndex = this.djangoPrefixIndex();
     return !prefixIndex || !prefixIndex[1] ? null : parseInt(prefixIndex[1], 10);
 };
 
-_djangoJquery2.default.fn.djangoFormsetPrefix = function () {
+_jquery2.default.fn.djangoFormsetPrefix = function () {
     var prefixIndex = this.djangoPrefixIndex();
     return !prefixIndex ? null : prefixIndex[0];
 };
@@ -650,12 +634,12 @@ var filterDjangoFormsetForms = function filterDjangoFormsetForms(form, $group, f
 
 // Selects all initial forms within the same formset as the
 // element the method is being called on.
-_djangoJquery2.default.fn.djangoFormsetForms = function () {
+_jquery2.default.fn.djangoFormsetForms = function () {
     var forms = [];
     this.each(function () {
-        var $this = (0, _djangoJquery2.default)(this),
+        var $this = (0, _jquery2.default)(this),
             formsetPrefix = $this.djangoFormsetPrefix(),
-            $group = formsetPrefix ? (0, _djangoJquery2.default)('#' + formsetPrefix + '-group') : null,
+            $group = formsetPrefix ? (0, _jquery2.default)('#' + formsetPrefix + '-group') : null,
             $forms;
 
         if (!formsetPrefix || !$group.length) return;
@@ -664,16 +648,16 @@ _djangoJquery2.default.fn.djangoFormsetForms = function () {
             return filterDjangoFormsetForms(this, $group, formsetPrefix);
         });
         var sortedForms = $forms.toArray().sort(function (a, b) {
-            return (0, _djangoJquery2.default)(a).djangoFormIndex() - (0, _djangoJquery2.default)(b).djangoFormIndex;
+            return (0, _jquery2.default)(a).djangoFormIndex() - (0, _jquery2.default)(b).djangoFormIndex;
         });
         Array.prototype.push.apply(forms, sortedForms);
     });
     return this.pushStack(forms);
 };
 
-if (typeof _djangoJquery2.default.djangoFormField != 'function') {
-    _djangoJquery2.default.djangoFormField = function (fieldName, prefix, index) {
-        var $empty = (0, _djangoJquery2.default)([]),
+if (typeof _jquery2.default.djangoFormField != 'function') {
+    _jquery2.default.djangoFormField = function (fieldName, prefix, index) {
+        var $empty = (0, _jquery2.default)([]),
             matches;
         if (matches = prefix.match(/^(.+)\-(\d+)\-$/)) {
             prefix = matches[1];
@@ -685,26 +669,26 @@ if (typeof _djangoJquery2.default.djangoFormField != 'function') {
         }
         var namePrefix = prefix + '-' + index + '-';
         if (fieldName == '*') {
-            return (0, _djangoJquery2.default)('*[name^="' + namePrefix + '"]').filter(function () {
-                var fieldPart = (0, _djangoJquery2.default)(this).attr('name').substring(namePrefix.length);
+            return (0, _jquery2.default)('*[name^="' + namePrefix + '"]').filter(function () {
+                var fieldPart = (0, _jquery2.default)(this).attr('name').substring(namePrefix.length);
                 return fieldPart.indexOf('-') === -1;
             });
         }
-        var $field = (0, _djangoJquery2.default)('#id_' + namePrefix + fieldName);
+        var $field = (0, _jquery2.default)('#id_' + namePrefix + fieldName);
         if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-            var $group = (0, _djangoJquery2.default)('#' + prefix + '-group'),
+            var $group = (0, _jquery2.default)('#' + prefix + '-group'),
                 fieldNameData = $group.djnData('fieldNames') || {};
             fieldName = fieldNameData[fieldName];
             if (!fieldName) {
                 return $empty;
             }
-            $field = (0, _djangoJquery2.default)('#id_' + namePrefix + fieldName);
+            $field = (0, _jquery2.default)('#id_' + namePrefix + fieldName);
         }
         return $field;
     };
 }
 
-if (typeof _djangoJquery2.default.fn.djangoFormField != 'function') {
+if (typeof _jquery2.default.fn.djangoFormField != 'function') {
     /**
      * Given a django model's field name, and the forms index in the
      * formset, returns the field's input element, or an empty jQuery
@@ -716,9 +700,9 @@ if (typeof _djangoJquery2.default.fn.djangoFormField != 'function') {
      * @return jQuery object containing the field's input element, or
      *         an empty jQuery object on failure
      */
-    _djangoJquery2.default.fn.djangoFormField = function (fieldName, index) {
+    _jquery2.default.fn.djangoFormField = function (fieldName, index) {
         var prefixAndIndex = this.djangoPrefixIndex();
-        var $empty = (0, _djangoJquery2.default)([]);
+        var $empty = (0, _jquery2.default)([]);
         if (!prefixAndIndex) {
             return $empty;
         }
@@ -729,13 +713,13 @@ if (typeof _djangoJquery2.default.fn.djangoFormField != 'function') {
                 return $empty;
             }
         }
-        return _djangoJquery2.default.djangoFormField(fieldName, prefix, index);
+        return _jquery2.default.djangoFormField(fieldName, prefix, index);
     };
 }
 
-if (typeof _djangoJquery2.default.fn.filterDjangoField != 'function') {
+if (typeof _jquery2.default.fn.filterDjangoField != 'function') {
     var djRegexCache = {};
-    _djangoJquery2.default.fn.filterDjangoField = function (prefix, fieldName, index) {
+    _jquery2.default.fn.filterDjangoField = function (prefix, fieldName, index) {
         var $field, fieldNameData;
         if (typeof index != 'undefined') {
             if (typeof index == 'string') {
@@ -743,7 +727,7 @@ if (typeof _djangoJquery2.default.fn.filterDjangoField != 'function') {
             }
             if (typeof index == 'number' && !isNaN(index)) {
                 var fieldId = 'id_' + prefix + '-' + index + '-' + fieldName;
-                $field = (0, _djangoJquery2.default)('#' + fieldId);
+                $field = (0, _jquery2.default)('#' + fieldId);
             }
         } else {
             if (_typeof(djRegexCache[prefix]) != 'object') {
@@ -757,21 +741,24 @@ if (typeof _djangoJquery2.default.fn.filterDjangoField != 'function') {
             });
         }
         if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-            fieldNameData = (0, _djangoJquery2.default)('#' + prefix + '-group').djnData('fieldNames') || {};
+            fieldNameData = (0, _jquery2.default)('#' + prefix + '-group').djnData('fieldNames') || {};
             if (_typeof(fieldNameData[fieldName]) && fieldNameData[fieldName] != fieldName) {
-                $field = (0, _djangoJquery2.default)(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
+                $field = (0, _jquery2.default)(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
             }
         }
         return $field;
     };
 }
 
-},{"./django-jquery":1}],4:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],3:[function(require,module,exports){
+(function (global){
 'use strict';
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -790,8 +777,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-if (_djangoJquery2.default.ui === undefined) {
-	var jQuery = _djangoJquery2.default;
+if (_jquery2.default.ui === undefined) {
+	var jQuery = _jquery2.default;
 	(function (e, t) {
 		function i(t, i) {
 			var s,
@@ -1166,7 +1153,7 @@ if (_djangoJquery2.default.ui === undefined) {
 	})(jQuery);
 }
 
-_djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse, {
+_jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 	version: "@VERSION",
 	widgetEventPrefix: "sort",
 	ready: false,
@@ -1237,7 +1224,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			this.widget().toggleClass("ui-sortable-disabled", !!value);
 		} else {
 			// Don't call widget base _setOption for disable as it adds ui-state-disabled class
-			_djangoJquery2.default.Widget.prototype._setOption.apply(this, arguments);
+			_jquery2.default.Widget.prototype._setOption.apply(this, arguments);
 		}
 	},
 
@@ -1255,19 +1242,19 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 		//Find out if the clicked node (or one of its parents) is a actual item in this.items
 		var currentItem = null,
-		    nodes = (0, _djangoJquery2.default)(event.target).parents().each(function () {
-			if (_djangoJquery2.default.data(this, that.widgetName + '-item') == that) {
-				currentItem = (0, _djangoJquery2.default)(this);
+		    nodes = (0, _jquery2.default)(event.target).parents().each(function () {
+			if (_jquery2.default.data(this, that.widgetName + '-item') == that) {
+				currentItem = (0, _jquery2.default)(this);
 				return false;
 			}
 		});
-		if (_djangoJquery2.default.data(event.target, that.widgetName + '-item') == that) currentItem = (0, _djangoJquery2.default)(event.target);
+		if (_jquery2.default.data(event.target, that.widgetName + '-item') == that) currentItem = (0, _jquery2.default)(event.target);
 
 		if (!currentItem) return false;
 		if (this.options.handle && !overrideHandle) {
 			var validHandle = false;
 
-			(0, _djangoJquery2.default)(this.options.handle, currentItem).find("*").andSelf().each(function () {
+			(0, _jquery2.default)(this.options.handle, currentItem).find("*").andSelf().each(function () {
 				if (this == event.target) validHandle = true;
 			});
 			if (!validHandle) return false;
@@ -1310,7 +1297,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			left: this.offset.left - this.margins.left
 		};
 
-		_djangoJquery2.default.extend(this.offset, {
+		_jquery2.default.extend(this.offset, {
 			click: { //Where the click happened, relative to the element
 				left: event.pageX - this.offset.left,
 				top: event.pageY - this.offset.top
@@ -1348,8 +1335,8 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 		if (o.cursor) {
 			// cursor option
-			if ((0, _djangoJquery2.default)('body').css("cursor")) this._storedCursor = (0, _djangoJquery2.default)('body').css("cursor");
-			(0, _djangoJquery2.default)('body').css("cursor", o.cursor);
+			if ((0, _jquery2.default)('body').css("cursor")) this._storedCursor = (0, _jquery2.default)('body').css("cursor");
+			(0, _jquery2.default)('body').css("cursor", o.cursor);
 		}
 
 		if (o.opacity) {
@@ -1381,9 +1368,9 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		}
 
 		//Prepare possible droppables
-		if (_djangoJquery2.default.ui.ddmanager) _djangoJquery2.default.ui.ddmanager.current = this;
+		if (_jquery2.default.ui.ddmanager) _jquery2.default.ui.ddmanager.current = this;
 
-		if (_djangoJquery2.default.ui.ddmanager && !o.dropBehaviour) _djangoJquery2.default.ui.ddmanager.prepareOffsets(this, event);
+		if (_jquery2.default.ui.ddmanager && !o.dropBehaviour) _jquery2.default.ui.ddmanager.prepareOffsets(this, event);
 
 		this.dragging = true;
 
@@ -1413,12 +1400,12 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 				if (this.overflowOffset.left + this.scrollParent[0].offsetWidth - event.pageX < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft + o.scrollSpeed;else if (event.pageX - this.overflowOffset.left < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft - o.scrollSpeed;
 			} else {
 
-				if (event.pageY - (0, _djangoJquery2.default)(document).scrollTop() < o.scrollSensitivity) scrolled = (0, _djangoJquery2.default)(document).scrollTop((0, _djangoJquery2.default)(document).scrollTop() - o.scrollSpeed);else if ((0, _djangoJquery2.default)(window).height() - (event.pageY - (0, _djangoJquery2.default)(document).scrollTop()) < o.scrollSensitivity) scrolled = (0, _djangoJquery2.default)(document).scrollTop((0, _djangoJquery2.default)(document).scrollTop() + o.scrollSpeed);
+				if (event.pageY - (0, _jquery2.default)(document).scrollTop() < o.scrollSensitivity) scrolled = (0, _jquery2.default)(document).scrollTop((0, _jquery2.default)(document).scrollTop() - o.scrollSpeed);else if ((0, _jquery2.default)(window).height() - (event.pageY - (0, _jquery2.default)(document).scrollTop()) < o.scrollSensitivity) scrolled = (0, _jquery2.default)(document).scrollTop((0, _jquery2.default)(document).scrollTop() + o.scrollSpeed);
 
-				if (event.pageX - (0, _djangoJquery2.default)(document).scrollLeft() < o.scrollSensitivity) scrolled = (0, _djangoJquery2.default)(document).scrollLeft((0, _djangoJquery2.default)(document).scrollLeft() - o.scrollSpeed);else if ((0, _djangoJquery2.default)(window).width() - (event.pageX - (0, _djangoJquery2.default)(document).scrollLeft()) < o.scrollSensitivity) scrolled = (0, _djangoJquery2.default)(document).scrollLeft((0, _djangoJquery2.default)(document).scrollLeft() + o.scrollSpeed);
+				if (event.pageX - (0, _jquery2.default)(document).scrollLeft() < o.scrollSensitivity) scrolled = (0, _jquery2.default)(document).scrollLeft((0, _jquery2.default)(document).scrollLeft() - o.scrollSpeed);else if ((0, _jquery2.default)(window).width() - (event.pageX - (0, _jquery2.default)(document).scrollLeft()) < o.scrollSensitivity) scrolled = (0, _jquery2.default)(document).scrollLeft((0, _jquery2.default)(document).scrollLeft() + o.scrollSpeed);
 			}
 
-			if (scrolled !== false && _djangoJquery2.default.ui.ddmanager && !o.dropBehaviour) _djangoJquery2.default.ui.ddmanager.prepareOffsets(this, event);
+			if (scrolled !== false && _jquery2.default.ui.ddmanager && !o.dropBehaviour) _jquery2.default.ui.ddmanager.prepareOffsets(this, event);
 		}
 
 		//Regenerate the absolute position used for position checks
@@ -1448,8 +1435,8 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 			if (itemElement != this.currentItem[0] //cannot intersect with itself
 			 && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-			 && !_djangoJquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-			 && (this.options.type == 'semi-dynamic' ? !_djangoJquery2.default.contains(this.element[0], itemElement) : true)
+			 && !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+			 && (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true)
 			//&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
 			) {
 
@@ -1470,7 +1457,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		this._contactContainers(event);
 
 		//Interconnect with droppables
-		if (_djangoJquery2.default.ui.ddmanager) _djangoJquery2.default.ui.ddmanager.drag(this, event);
+		if (_jquery2.default.ui.ddmanager) _jquery2.default.ui.ddmanager.drag(this, event);
 
 		//Call callbacks
 		this._trigger('sort', event, this._uiHash());
@@ -1484,7 +1471,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		if (!event) return;
 
 		//If we are using droppables, inform the manager about the drop
-		if (_djangoJquery2.default.ui.ddmanager && !this.options.dropBehaviour) _djangoJquery2.default.ui.ddmanager.drop(this, event);
+		if (_jquery2.default.ui.ddmanager && !this.options.dropBehaviour) _jquery2.default.ui.ddmanager.drop(this, event);
 
 		if (this.options.revert) {
 			var that = this;
@@ -1492,7 +1479,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 			this.reverting = true;
 
-			(0, _djangoJquery2.default)(this.helper).animate({
+			(0, _jquery2.default)(this.helper).animate({
 				left: cur.left - this.offset.parent.left - this.margins.left + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollLeft),
 				top: cur.top - this.offset.parent.top - this.margins.top + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollTop)
 			}, parseInt(this.options.revert, 10) || 500, function () {
@@ -1528,7 +1515,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			if (this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
 			if (this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
 
-			_djangoJquery2.default.extend(this, {
+			_jquery2.default.extend(this, {
 				helper: null,
 				dragging: false,
 				reverting: false,
@@ -1536,9 +1523,9 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			});
 
 			if (this.domPosition.prev) {
-				(0, _djangoJquery2.default)(this.domPosition.prev).after(this.currentItem);
+				(0, _jquery2.default)(this.domPosition.prev).after(this.currentItem);
 			} else {
-				(0, _djangoJquery2.default)(this.domPosition.parent).prepend(this.currentItem);
+				(0, _jquery2.default)(this.domPosition.parent).prepend(this.currentItem);
 			}
 		}
 
@@ -1550,8 +1537,8 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		var items = this._getItemsAsjQuery(o && o.connected);
 		var str = [];o = o || {};
 
-		(0, _djangoJquery2.default)(items).each(function () {
-			var res = ((0, _djangoJquery2.default)(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || /(.+)[-=_](.+)/);
+		(0, _jquery2.default)(items).each(function () {
+			var res = ((0, _jquery2.default)(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || /(.+)[-=_](.+)/);
 			if (res) str.push((o.key || res[1] + '[]') + '=' + (o.key && o.expression ? res[1] : res[2]));
 		});
 
@@ -1568,7 +1555,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		var ret = [];o = o || {};
 
 		items.each(function () {
-			ret.push((0, _djangoJquery2.default)(o.item || this).attr(o.attribute || 'id') || '');
+			ret.push((0, _jquery2.default)(o.item || this).attr(o.attribute || 'id') || '');
 		});
 		return ret;
 	},
@@ -1658,17 +1645,17 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 		if (connectWith && connected) {
 			for (var i = connectWith.length - 1; i >= 0; i--) {
-				var cur = (0, _djangoJquery2.default)(connectWith[i]);
+				var cur = (0, _jquery2.default)(connectWith[i]);
 				for (var j = cur.length - 1; j >= 0; j--) {
-					var inst = _djangoJquery2.default.data(cur[j], this.widgetName);
+					var inst = _jquery2.default.data(cur[j], this.widgetName);
 					if (inst && inst != this && !inst.options.disabled) {
-						queries.push([_djangoJquery2.default.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : (0, _djangoJquery2.default)(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
+						queries.push([_jquery2.default.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : (0, _jquery2.default)(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
 					}
 				};
 			};
 		}
 
-		queries.push([_djangoJquery2.default.isFunction(this.options.items) ? this.options.items.call(this.element, null, { options: this.options, item: this.currentItem }) : (0, _djangoJquery2.default)(this.options.items, this.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), this]);
+		queries.push([_jquery2.default.isFunction(this.options.items) ? this.options.items.call(this.element, null, { options: this.options, item: this.currentItem }) : (0, _jquery2.default)(this.options.items, this.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), this]);
 
 		for (var i = queries.length - 1; i >= 0; i--) {
 			queries[i][0].each(function () {
@@ -1676,14 +1663,14 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			});
 		};
 
-		return (0, _djangoJquery2.default)(items);
+		return (0, _jquery2.default)(items);
 	},
 
 	_removeCurrentsFromItems: function _removeCurrentsFromItems() {
 
 		var list = this.currentItem.find(":data(" + this.widgetName + "-item)");
 
-		this.items = _djangoJquery2.default.grep(this.items, function (item) {
+		this.items = _jquery2.default.grep(this.items, function (item) {
 			for (var j = 0; j < list.length; j++) {
 				if (list[j] == item.item[0]) return false;
 			};
@@ -1696,17 +1683,17 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		this.items = [];
 		this.containers = [this];
 		var items = this.items;
-		var queries = [[_djangoJquery2.default.isFunction(this.options.items) ? this.options.items.call(this.element[0], event, { item: this.currentItem }) : (0, _djangoJquery2.default)(this.options.items, this.element), this]];
+		var queries = [[_jquery2.default.isFunction(this.options.items) ? this.options.items.call(this.element[0], event, { item: this.currentItem }) : (0, _jquery2.default)(this.options.items, this.element), this]];
 		var connectWith = this._connectWith();
 
 		if (connectWith && this.ready) {
 			//Shouldn't be run the first time through due to massive slow-down
 			for (var i = connectWith.length - 1; i >= 0; i--) {
-				var cur = (0, _djangoJquery2.default)(connectWith[i]);
+				var cur = (0, _jquery2.default)(connectWith[i]);
 				for (var j = cur.length - 1; j >= 0; j--) {
-					var inst = _djangoJquery2.default.data(cur[j], this.widgetName);
+					var inst = _jquery2.default.data(cur[j], this.widgetName);
 					if (inst && inst != this && !inst.options.disabled) {
-						queries.push([_djangoJquery2.default.isFunction(inst.options.items) ? inst.options.items.call(inst.element[0], event, { item: this.currentItem }) : (0, _djangoJquery2.default)(inst.options.items, inst.element), inst]);
+						queries.push([_jquery2.default.isFunction(inst.options.items) ? inst.options.items.call(inst.element[0], event, { item: this.currentItem }) : (0, _jquery2.default)(inst.options.items, inst.element), inst]);
 						this.containers.push(inst);
 					}
 				};
@@ -1718,7 +1705,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			var _queries = queries[i][0];
 
 			for (var j = 0, queriesLength = _queries.length; j < queriesLength; j++) {
-				var item = (0, _djangoJquery2.default)(_queries[j]);
+				var item = (0, _jquery2.default)(_queries[j]);
 
 				item.data(this.widgetName + '-item', targetData); // Data for target checking (mouse manager)
 
@@ -1745,7 +1732,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			//We ignore calculating positions of all connected containers when we're not over them
 			if (item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0]) continue;
 
-			var t = this.options.toleranceElement ? (0, _djangoJquery2.default)(this.options.toleranceElement, item.item) : item.item;
+			var t = this.options.toleranceElement ? (0, _jquery2.default)(this.options.toleranceElement, item.item) : item.item;
 
 			if (!fast) {
 				item.width = t.outerWidth();
@@ -1781,7 +1768,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			o.placeholder = {
 				element: function element() {
 
-					var el = (0, _djangoJquery2.default)(document.createElement(that.currentItem[0].nodeName)).addClass(className || that.currentItem[0].className + " ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];
+					var el = (0, _jquery2.default)(document.createElement(that.currentItem[0].nodeName)).addClass(className || that.currentItem[0].className + " ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];
 
 					if (!className) el.style.visibility = "hidden";
 
@@ -1805,7 +1792,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		}
 
 		//Create the placeholder
-		that.placeholder = (0, _djangoJquery2.default)(o.placeholder.element.call(that.element, that.currentItem));
+		that.placeholder = (0, _jquery2.default)(o.placeholder.element.call(that.element, that.currentItem));
 
 		//Append it after the actual current item
 		that.currentItem.after(that.placeholder);
@@ -1823,12 +1810,12 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		for (var i = this.containers.length - 1; i >= 0; i--) {
 
 			// never consider a container that's located within the item itself
-			if (_djangoJquery2.default.contains(this.currentItem[0], this.containers[i].element[0])) continue;
+			if (_jquery2.default.contains(this.currentItem[0], this.containers[i].element[0])) continue;
 
 			if (this._intersectsWith(this.containers[i].containerCache)) {
 
 				// if we've already found a container and it's more "inner" than this, then continue
-				if (innermostContainer && _djangoJquery2.default.contains(this.containers[i].element[0], innermostContainer.element[0])) continue;
+				if (innermostContainer && _jquery2.default.contains(this.containers[i].element[0], innermostContainer.element[0])) continue;
 
 				innermostContainer = this.containers[i];
 				innermostIndex = i;
@@ -1856,7 +1843,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 			var sizeProperty = this.containers[innermostIndex].floating ? 'width' : 'height';
 			var base = this.positionAbs[posProperty] + this.offset.click[posProperty];
 			for (var j = this.items.length - 1; j >= 0; j--) {
-				if (!_djangoJquery2.default.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+				if (!_jquery2.default.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
 				if (this.items[j].item[0] == this.currentItem[0]) continue;
 				var cur = this.items[j].item.offset()[posProperty];
 				var nearBottom = false;
@@ -1890,10 +1877,10 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 	_createHelper: function _createHelper(event) {
 
 		var o = this.options;
-		var helper = _djangoJquery2.default.isFunction(o.helper) ? (0, _djangoJquery2.default)(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == 'clone' ? this.currentItem.clone() : this.currentItem;
+		var helper = _jquery2.default.isFunction(o.helper) ? (0, _jquery2.default)(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == 'clone' ? this.currentItem.clone() : this.currentItem;
 
 		if (!helper.parents('body').length) //Add the helper to the DOM if that didn't happen already
-			(0, _djangoJquery2.default)(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
+			(0, _jquery2.default)(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
 
 		if (helper[0] == this.currentItem[0]) this._storedCSS = { width: this.currentItem[0].style.width, height: this.currentItem[0].style.height, position: this.currentItem.css("position"), top: this.currentItem.css("top"), left: this.currentItem.css("left") };
 
@@ -1907,7 +1894,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		if (typeof obj == 'string') {
 			obj = obj.split(' ');
 		}
-		if (_djangoJquery2.default.isArray(obj)) {
+		if (_jquery2.default.isArray(obj)) {
 			obj = { left: +obj[0], top: +obj[1] || 0 };
 		}
 		if ('left' in obj) {
@@ -1934,13 +1921,13 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		// 1. The position of the helper is absolute, so it's position is calculated based on the next positioned parent
 		// 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't the document, which means that
 		//    the scroll is included in the initial calculation of the offset of the parent, and never recalculated upon drag
-		if (this.cssPosition == 'absolute' && this.scrollParent[0] != document && _djangoJquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) {
+		if (this.cssPosition == 'absolute' && this.scrollParent[0] != document && _jquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) {
 			po.left += this.scrollParent.scrollLeft();
 			po.top += this.scrollParent.scrollTop();
 		}
 
 		if (this.offsetParent[0] == document.body || //This needs to be actually done for all browsers, since pageX/pageY includes this information
-		this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && _djangoJquery2.default.ui.ie) //Ugly IE fix
+		this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && _jquery2.default.ui.ie) //Ugly IE fix
 			po = { top: 0, left: 0 };
 
 		return {
@@ -1980,14 +1967,14 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 		var o = this.options;
 		if (o.containment == 'parent') o.containment = this.helper[0].parentNode;
-		if (o.containment == 'document' || o.containment == 'window') this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, (0, _djangoJquery2.default)(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left, ((0, _djangoJquery2.default)(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
+		if (o.containment == 'document' || o.containment == 'window') this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, (0, _jquery2.default)(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left, ((0, _jquery2.default)(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
 
 		if (!/^(document|window|parent)$/.test(o.containment)) {
-			var ce = (0, _djangoJquery2.default)(o.containment)[0];
-			var co = (0, _djangoJquery2.default)(o.containment).offset();
-			var over = (0, _djangoJquery2.default)(ce).css("overflow") != 'hidden';
+			var ce = (0, _jquery2.default)(o.containment)[0];
+			var co = (0, _jquery2.default)(o.containment).offset();
+			var over = (0, _jquery2.default)(ce).css("overflow") != 'hidden';
 
-			this.containment = [co.left + (parseInt((0, _djangoJquery2.default)(ce).css("borderLeftWidth"), 10) || 0) + (parseInt((0, _djangoJquery2.default)(ce).css("paddingLeft"), 10) || 0) - this.margins.left, co.top + (parseInt((0, _djangoJquery2.default)(ce).css("borderTopWidth"), 10) || 0) + (parseInt((0, _djangoJquery2.default)(ce).css("paddingTop"), 10) || 0) - this.margins.top, co.left + (over ? Math.max(ce.scrollWidth, ce.offsetWidth) : ce.offsetWidth) - (parseInt((0, _djangoJquery2.default)(ce).css("borderLeftWidth"), 10) || 0) - (parseInt((0, _djangoJquery2.default)(ce).css("paddingRight"), 10) || 0) - this.helperProportions.width - this.margins.left, co.top + (over ? Math.max(ce.scrollHeight, ce.offsetHeight) : ce.offsetHeight) - (parseInt((0, _djangoJquery2.default)(ce).css("borderTopWidth"), 10) || 0) - (parseInt((0, _djangoJquery2.default)(ce).css("paddingBottom"), 10) || 0) - this.helperProportions.height - this.margins.top];
+			this.containment = [co.left + (parseInt((0, _jquery2.default)(ce).css("borderLeftWidth"), 10) || 0) + (parseInt((0, _jquery2.default)(ce).css("paddingLeft"), 10) || 0) - this.margins.left, co.top + (parseInt((0, _jquery2.default)(ce).css("borderTopWidth"), 10) || 0) + (parseInt((0, _jquery2.default)(ce).css("paddingTop"), 10) || 0) - this.margins.top, co.left + (over ? Math.max(ce.scrollWidth, ce.offsetWidth) : ce.offsetWidth) - (parseInt((0, _jquery2.default)(ce).css("borderLeftWidth"), 10) || 0) - (parseInt((0, _jquery2.default)(ce).css("paddingRight"), 10) || 0) - this.helperProportions.width - this.margins.left, co.top + (over ? Math.max(ce.scrollHeight, ce.offsetHeight) : ce.offsetHeight) - (parseInt((0, _jquery2.default)(ce).css("borderTopWidth"), 10) || 0) - (parseInt((0, _jquery2.default)(ce).css("paddingBottom"), 10) || 0) - this.helperProportions.height - this.margins.top];
 		}
 	},
 
@@ -1996,7 +1983,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		if (!pos) pos = this.position;
 		var mod = d == "absolute" ? 1 : -1;
 		var o = this.options,
-		    scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _djangoJquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+		    scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
 		    scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName);
 
 		return {
@@ -2014,7 +2001,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 	_generatePosition: function _generatePosition(event) {
 
 		var o = this.options,
-		    scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _djangoJquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+		    scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery2.default.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
 		    scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName);
 
 		// This is another very weird special case that only happens for relative elements:
@@ -2149,7 +2136,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		}
 
 		//Do what was originally in plugins
-		if (this._storedCursor) (0, _djangoJquery2.default)('body').css("cursor", this._storedCursor); //Reset cursor
+		if (this._storedCursor) (0, _jquery2.default)('body').css("cursor", this._storedCursor); //Reset cursor
 		if (this._storedOpacity) this.helper.css("opacity", this._storedOpacity); //Reset opacity
 		if (this._storedZIndex) this.helper.css("zIndex", this._storedZIndex == 'auto' ? '' : this._storedZIndex); //Reset z-index
 
@@ -2186,7 +2173,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 	},
 
 	_trigger: function _trigger() {
-		if (_djangoJquery2.default.Widget.prototype._trigger.apply(this, arguments) === false) {
+		if (_jquery2.default.Widget.prototype._trigger.apply(this, arguments) === false) {
 			this.cancel();
 		}
 	},
@@ -2203,7 +2190,7 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 		var inst = _inst || this;
 		return {
 			helper: inst.helper,
-			placeholder: inst.placeholder || (0, _djangoJquery2.default)([]),
+			placeholder: inst.placeholder || (0, _jquery2.default)([]),
 			position: inst.position,
 			originalPosition: inst.originalPosition,
 			offset: inst.positionAbs,
@@ -2214,14 +2201,17 @@ _djangoJquery2.default.widget("ui.djnsortable", _djangoJquery2.default.ui.mouse,
 
 });
 
-},{"./django-jquery":1}],5:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],4:[function(require,module,exports){
+(function (global){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 require('./jquery.ui.djnsortable');
 
@@ -2238,18 +2228,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * License CC BY-SA 3.0
  * Copyright 2010-2011, Manuele J Sarfatti
  */
-if (typeof _djangoJquery2.default.fn.nearest != 'function') {
+if (typeof _jquery2.default.fn.nearest != 'function') {
     /**
      * Returns the descendant(s) matching a given selector which are the
      * shortest distance from the search context element (in otherwords,
      * $.fn.closest(), in reverse).
      */
-    _djangoJquery2.default.fn.nearest = function (selector) {
-        var nearest = (0, _djangoJquery2.default)([]),
+    _jquery2.default.fn.nearest = function (selector) {
+        var nearest = (0, _jquery2.default)([]),
             node = this,
             distance = 10000;
         node.find(selector).each(function () {
-            var n = (0, _djangoJquery2.default)(this),
+            var n = (0, _jquery2.default)(this),
                 d = n.parentsUntil(node).size();
             if (d < distance) {
                 distance = d;
@@ -2267,8 +2257,8 @@ var createChildNestedSortable = function createChildNestedSortable(parent, child
     if (parent && parent.element && parent.element[0] == childContainer) {
         return;
     }
-    var $childContainer = (0, _djangoJquery2.default)(childContainer),
-        options = _djangoJquery2.default.extend({}, parent.options);
+    var $childContainer = (0, _jquery2.default)(childContainer),
+        options = _jquery2.default.extend({}, parent.options);
     options.connectWith = [parent.element];
 
     if ($childContainer.data(parent.widgetName)) {
@@ -2290,7 +2280,7 @@ var createChildNestedSortable = function createChildNestedSortable(parent, child
     return newInstance;
 };
 
-_djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djnsortable, {
+_jquery2.default.widget("ui.nestedSortable", _jquery2.default.ui.djnsortable, {
 
     options: {
         tabSize: 20,
@@ -2308,7 +2298,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
          * @return DOMElement - The new element.
          */
         createContainerElement: function createContainerElement(parent) {
-            return (0, _djangoJquery2.default)(document.createElement('ol'));
+            return (0, _jquery2.default)(document.createElement('ol'));
         },
         // Selector which matches all container elements in the nestedSortable
         containerElementSelector: 'ol',
@@ -2344,13 +2334,13 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
     },
 
     _createWidget: function _createWidget(options, element) {
-        var $element = (0, _djangoJquery2.default)(element || this.defaultElement || this),
+        var $element = (0, _jquery2.default)(element || this.defaultElement || this),
             dataOptions = $element.data('djnsortableOptions');
         element = $element[0];
         if (dataOptions) {
-            options = _djangoJquery2.default.extend({}, options, dataOptions);
+            options = _jquery2.default.extend({}, options, dataOptions);
         }
-        return _djangoJquery2.default.ui.djnsortable.prototype._createWidget.call(this, options, element);
+        return _jquery2.default.ui.djnsortable.prototype._createWidget.call(this, options, element);
     },
 
     _create: function _create() {
@@ -2370,13 +2360,13 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         //                  'the element passed to the constructor.');
         //             }
 
-        _djangoJquery2.default.ui.djnsortable.prototype._create.apply(this, arguments);
+        _jquery2.default.ui.djnsortable.prototype._create.apply(this, arguments);
 
         this._connectWithMap = {};
 
         var self = this,
             o = this.options,
-            $document = (0, _djangoJquery2.default)(document);
+            $document = (0, _jquery2.default)(document);
 
         var originalConnectWith = o.connectWith;
         if (!originalConnectWith || typeof originalConnectWith == 'string') {
@@ -2384,7 +2374,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             if (typeof originalConnectWith == 'string') {
                 var connected = this._connectWith();
                 for (var i = 0; i < connected.length; i++) {
-                    this.addToConnectWith((0, _djangoJquery2.default)(connected[i]));
+                    this.addToConnectWith((0, _jquery2.default)(connected[i]));
                 }
             }
 
@@ -2393,7 +2383,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 createChildNestedSortable(self, this);
             });
             this.element.find(o.containerElementSelector + ':not(.subarticle-wrapper)').each(function (i, el) {
-                if ((0, _djangoJquery2.default)(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
+                if ((0, _jquery2.default)(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
                     return;
                 }
                 createChildNestedSortable(self, el);
@@ -2408,17 +2398,17 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
 
     addToConnectWith: function addToConnectWith(element) {
         var self = this,
-            $element = typeof element.selector != 'undefined' ? element : (0, _djangoJquery2.default)(element),
+            $element = typeof element.selector != 'undefined' ? element : (0, _jquery2.default)(element),
             uniqueId;
         if ($element.length > 1) {
             $element.each(function (i, el) {
-                self.addToConnectWith((0, _djangoJquery2.default)(el));
+                self.addToConnectWith((0, _jquery2.default)(el));
             });
             return;
         }
-        uniqueId = element[0][_djangoJquery2.default.expando];
+        uniqueId = element[0][_jquery2.default.expando];
         if (typeof uniqueId == 'undefined') {
-            uniqueId = element[0][_djangoJquery2.default.expando + '1'];
+            uniqueId = element[0][_jquery2.default.expando + '1'];
         }
         if (typeof this.options.connectWith == 'string') {
             return;
@@ -2432,8 +2422,8 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
 
     _destroy: function _destroy() {
         this.element.removeData("nestedSortable").unbind(".nestedSortable");
-        (0, _djangoJquery2.default)(document).unbind('.nestedSortable');
-        return _djangoJquery2.default.ui.djnsortable.prototype.destroy.apply(this, arguments);
+        (0, _jquery2.default)(document).unbind('.nestedSortable');
+        return _jquery2.default.ui.djnsortable.prototype.destroy.apply(this, arguments);
     },
 
     /**
@@ -2443,7 +2433,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
     _intersectsWithPointer: function _intersectsWithPointer(item) {
         var itemElement = item.item[0],
             o = this.options,
-            intersection = _djangoJquery2.default.ui.djnsortable.prototype._intersectsWithPointer.apply(this, arguments);
+            intersection = _jquery2.default.ui.djnsortable.prototype._intersectsWithPointer.apply(this, arguments);
 
         this.lastItemElement = null;
         if (!intersection) {
@@ -2460,7 +2450,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         if (item.instance !== this.currentContainer) {
             return false;
         }
-        var $itemElement = (0, _djangoJquery2.default)(itemElement);
+        var $itemElement = (0, _jquery2.default)(itemElement);
 
         if (o.fixedNestingDepth && this._getLevel(this.currentItem) === 1 + this._getLevel($itemElement)) {
             $itemElement = function () {
@@ -2480,15 +2470,15 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 if (itemElementClosestContainer[0] != $childItems.closest(containerSel).closest(containerSel)[0]) {
                     return $itemElement;
                 }
-                return (0, _djangoJquery2.default)($childItems[0]);
+                return (0, _jquery2.default)($childItems[0]);
             }();
             itemElement = $itemElement[0];
         }
 
         if (itemElement != this.currentItem[0] //cannot intersect with itself
          && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-         && !_djangoJquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-         && (this.options.type == 'semi-dynamic' ? !_djangoJquery2.default.contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
+         && !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+         && (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
          && (!o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) //maintain the nesting level of node
          && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
             this.lastItemElement = itemElement;
@@ -2507,7 +2497,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         }
 
         if (this.options.fixedNestingDepth) {
-            return _djangoJquery2.default.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
+            return _jquery2.default.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
         }
 
         var o = this.options,
@@ -2533,11 +2523,11 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         }
 
         // To find the previous sibling in the list, keep backtracking until we hit a valid list item.
-        var previousItem = this.placeholder[0].previousSibling ? (0, _djangoJquery2.default)(this.placeholder[0].previousSibling) : null;
+        var previousItem = this.placeholder[0].previousSibling ? (0, _jquery2.default)(this.placeholder[0].previousSibling) : null;
         if (previousItem != null) {
             while (!previousItem.is(this.options.listItemSelector) || previousItem[0] == this.currentItem[0] || previousItem[0] == this.helper[0]) {
                 if (previousItem[0].previousSibling) {
-                    previousItem = (0, _djangoJquery2.default)(previousItem[0].previousSibling);
+                    previousItem = (0, _jquery2.default)(previousItem[0].previousSibling);
                 } else {
                     previousItem = null;
                     break;
@@ -2545,11 +2535,11 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             }
         }
         // To find the next sibling in the list, keep stepping forward until we hit a valid list item.
-        var nextItem = this.placeholder[0].nextSibling ? (0, _djangoJquery2.default)(this.placeholder[0].nextSibling) : null;
+        var nextItem = this.placeholder[0].nextSibling ? (0, _jquery2.default)(this.placeholder[0].nextSibling) : null;
         if (nextItem != null) {
             while (!nextItem.is(this.options.listItemSelector) || nextItem[0] == this.currentItem[0] || nextItem[0] == this.helper[0]) {
                 if (nextItem[0].nextSibling) {
-                    nextItem = (0, _djangoJquery2.default)(nextItem[0].nextSibling);
+                    nextItem = (0, _jquery2.default)(nextItem[0].nextSibling);
                 } else {
                     nextItem = null;
                     break;
@@ -2578,7 +2568,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 this._isAllowed(previousItem, level, level + childLevels);
 
                 if (this.beyondMaxLevels > 0) {
-                    return _djangoJquery2.default.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
+                    return _jquery2.default.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
                 }
                 var $previousItemChildContainer;
                 $previousItemChildContainer = previousItem.nearest(o.containerElementSelector).first();
@@ -2600,7 +2590,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 this._isAllowed(parentItem, level, level + childLevels);
             }
 
-        _djangoJquery2.default.ui.djnsortable.prototype._contactContainers.call(this, event);
+        _jquery2.default.ui.djnsortable.prototype._contactContainers.call(this, event);
     },
 
     _rearrange: function _rearrange(event, item, a, hardRefresh) {
@@ -2631,17 +2621,17 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 return;
             }
         }
-        _djangoJquery2.default.ui.djnsortable.prototype._rearrange.apply(this, arguments);
+        _jquery2.default.ui.djnsortable.prototype._rearrange.apply(this, arguments);
     },
 
     _convertPositionTo: function _convertPositionTo(d, pos) {
         // Cache the top offset before rearrangement
         this.previousTopOffset = this.placeholder.offset().top;
-        return _djangoJquery2.default.ui.djnsortable.prototype._convertPositionTo.apply(this, arguments);
+        return _jquery2.default.ui.djnsortable.prototype._convertPositionTo.apply(this, arguments);
     },
 
     _clear: function _clear() {
-        _djangoJquery2.default.ui.djnsortable.prototype._clear.apply(this, arguments);
+        _jquery2.default.ui.djnsortable.prototype._clear.apply(this, arguments);
         // If lastRearrangedElement exists and is still attached to the document
         // (i.e., hasn't been removed)
         if (_typeof(this.lastRearrangedElement) == 'object' && this.lastRearrangedElement.ownerDocument) {
@@ -2655,9 +2645,9 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             this.placeholder.removeClass(this.options.errorClass);
 
             if (this.domPosition.prev) {
-                (0, _djangoJquery2.default)(this.domPosition.prev).after(this.placeholder);
+                (0, _jquery2.default)(this.domPosition.prev).after(this.placeholder);
             } else {
-                (0, _djangoJquery2.default)(this.domPosition.parent).prepend(this.placeholder);
+                (0, _jquery2.default)(this.domPosition.parent).prepend(this.placeholder);
             }
             this._trigger("revert", event, this._uiHash());
         }
@@ -2668,12 +2658,12 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             this._clearEmpty(item);
         }
 
-        _djangoJquery2.default.ui.djnsortable.prototype._mouseStop.apply(this, arguments);
+        _jquery2.default.ui.djnsortable.prototype._mouseStop.apply(this, arguments);
     },
 
     toArray: function toArray(o) {
 
-        o = _djangoJquery2.default.extend(true, {}, this.options, o || {});
+        o = _jquery2.default.extend(true, {}, this.options, o || {});
 
         var sDepth = o.startDepthCount || 0,
             ret = [],
@@ -2684,7 +2674,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             "parent_id": 'none',
             "depth": sDepth,
             "left": '1',
-            "right": ((0, _djangoJquery2.default)(o.listItemSelector, this.element).length + 1) * 2
+            "right": ((0, _jquery2.default)(o.listItemSelector, this.element).length + 1) * 2
         });
 
         var _recursiveArray = function _recursiveArray(item, depth, left) {
@@ -2692,22 +2682,22 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
                 id,
                 pid;
 
-            var $childItems = (0, _djangoJquery2.default)(item).children(o.containerElementSelector).find(o.items);
+            var $childItems = (0, _jquery2.default)(item).children(o.containerElementSelector).find(o.items);
 
             if ($childItems.length > 0) {
                 depth++;
                 $childItems.each(function () {
-                    right = _recursiveArray((0, _djangoJquery2.default)(this), depth, right);
+                    right = _recursiveArray((0, _jquery2.default)(this), depth, right);
                 });
                 depth--;
             }
 
-            id = (0, _djangoJquery2.default)(item).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+            id = (0, _jquery2.default)(item).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
 
             if (depth === sDepth + 1) {
                 pid = o.rootID;
             } else {
-                var parentItem = (0, _djangoJquery2.default)(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+                var parentItem = (0, _jquery2.default)(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
                 pid = parentItem[2];
             }
 
@@ -2719,7 +2709,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             return left;
         };
 
-        (0, _djangoJquery2.default)(this.element).children(o.listItemSelector).each(function () {
+        (0, _jquery2.default)(this.element).children(o.listItemSelector).each(function () {
             left = _recursiveArray(this, sDepth + 1, left);
         });
 
@@ -2734,10 +2724,10 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         if (this.options.doNotClear) {
             return;
         }
-        var $item = (0, _djangoJquery2.default)(item);
+        var $item = (0, _jquery2.default)(item);
         var childContainers = $item.nearest(this.options.containerElementSelector);
         childContainers.each(function (i, childContainer) {
-            var $childContainer = (0, _djangoJquery2.default)(childContainer);
+            var $childContainer = (0, _jquery2.default)(childContainer);
             if (!$childContainer.children().length) {
                 var instance = $childContainer.data(this.widgetName);
                 if ((typeof instance === 'undefined' ? 'undefined' : _typeof(instance)) == 'object' && instance.destroy) {
@@ -2776,8 +2766,8 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
             result = 0;
         depth = depth || 0;
 
-        (0, _djangoJquery2.default)(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
-            if ((0, _djangoJquery2.default)(child).is('.djn-no-drag,.djn-thead')) {
+        (0, _jquery2.default)(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
+            if ((0, _jquery2.default)(child).is('.djn-no-drag,.djn-thead')) {
                 return;
             }
             result = Math.max(self._getChildLevels(child, depth + 1), result);
@@ -2788,7 +2778,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
 
     _isAllowed: function _isAllowed(parentItem, level, levels) {
         var o = this.options,
-            isRoot = (0, _djangoJquery2.default)(this.domPosition.parent).hasClass('ui-sortable') ? true : false;
+            isRoot = (0, _jquery2.default)(this.domPosition.parent).hasClass('ui-sortable') ? true : false;
         // this takes into account the maxLevels set to the recipient list
         // var maxLevels = this.placeholder.closest('.ui-sortable').nestedSortable('option', 'maxLevels');
         var maxLevels = o.maxLevels;
@@ -2797,7 +2787,7 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         // Are we trying to nest under a no-nest?
         // Are we nesting too deep?
         if (parentItem && (typeof parentItem === 'undefined' ? 'undefined' : _typeof(parentItem)) == 'object' && typeof parentItem.selector == 'undefined') {
-            parentItem = (0, _djangoJquery2.default)(parentItem);
+            parentItem = (0, _jquery2.default)(parentItem);
         }
         if (!o.isAllowed.call(this, this.currentItem, parentItem, this.placeholder) || parentItem && parentItem.hasClass(o.disableNesting) || o.protectRoot && (parentItem == null && !isRoot || isRoot && level > 1)) {
             this.placeholder.addClass(o.errorClass);
@@ -2818,16 +2808,16 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
     },
 
     _connectWith: function _connectWith() {
-        var origConnectWith = _djangoJquery2.default.ui.djnsortable.prototype._connectWith.apply(this, arguments),
+        var origConnectWith = _jquery2.default.ui.djnsortable.prototype._connectWith.apply(this, arguments),
             connectWith = [];
         var self = this;
         for (var i = 0; i < origConnectWith.length; i++) {
-            var $elements = (0, _djangoJquery2.default)(origConnectWith[i]);
+            var $elements = (0, _jquery2.default)(origConnectWith[i]);
             $elements.each(function (j, el) {
                 if (el == self.element[0]) {
                     return;
                 }
-                if (!self.options.canConnectWith(self.element, (0, _djangoJquery2.default)(el), self)) {
+                if (!self.options.canConnectWith(self.element, (0, _jquery2.default)(el), self)) {
                     return;
                 }
                 connectWith.push(el);
@@ -2854,13 +2844,15 @@ _djangoJquery2.default.widget("ui.nestedSortable", _djangoJquery2.default.ui.djn
         }
         var newContainer = this.options.createContainerElement.apply(this, arguments);
         parent.appendChild(newContainer[0]);
-        return (0, _djangoJquery2.default)(newContainer);
+        return (0, _jquery2.default)(newContainer);
     }
 });
 
-_djangoJquery2.default.ui.nestedSortable.prototype.options = _djangoJquery2.default.extend({}, _djangoJquery2.default.ui.djnsortable.prototype.options, _djangoJquery2.default.ui.nestedSortable.prototype.options);
+_jquery2.default.ui.nestedSortable.prototype.options = _jquery2.default.extend({}, _jquery2.default.ui.djnsortable.prototype.options, _jquery2.default.ui.nestedSortable.prototype.options);
 
-},{"./django-jquery":1,"./jquery.ui.djnsortable":4}],6:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./jquery.ui.djnsortable":3}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2872,7 +2864,8 @@ function regexQuote(str) {
 };
 module.exports = exports['default'];
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2884,9 +2877,9 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 exports.updatePositions = updatePositions;
 exports.createSortable = createSortable;
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 var _regexquote = require('./regexquote');
 
@@ -2898,7 +2891,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function updatePositions(prefix, skipDeleted) {
     var position = 0;
-    var $group = (0, _djangoJquery2.default)('#' + prefix + '-group');
+    var $group = (0, _jquery2.default)('#' + prefix + '-group');
     var groupData = $group.djnData();
     var fieldNames = groupData.fieldNames;
     // The field name on the fieldset which is a ForeignKey to the parent model
@@ -2917,7 +2910,7 @@ function updatePositions(prefix, skipDeleted) {
     sortableExcludes.push(groupFkName);
 
     if (parentPrefix) {
-        var $parentGroup = (0, _djangoJquery2.default)('#' + parentPrefix + '-group');
+        var $parentGroup = (0, _jquery2.default)('#' + parentPrefix + '-group');
         var parentFieldNames = $parentGroup.djnData('fieldNames');
         var parentPkFieldName = parentFieldNames.pk;
         var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
@@ -2938,7 +2931,7 @@ function updatePositions(prefix, skipDeleted) {
             return true;
         }
         // Cache jQuery object
-        var $this = (0, _djangoJquery2.default)(this);
+        var $this = (0, _jquery2.default)(this);
 
         var _ref3 = $this.djangoPrefixIndex() || [null, null];
 
@@ -2960,7 +2953,7 @@ function updatePositions(prefix, skipDeleted) {
         // a) the field has a value
         // b) if the field is not exluded with sortable_excludes (e.g. with default values)
         $fields.each(function () {
-            var $field = (0, _djangoJquery2.default)(this);
+            var $field = (0, _jquery2.default)(this);
             if (!$field.is(':input[type!=radio][type!=checkbox],input:checked')) {
                 return;
             }
@@ -2969,7 +2962,7 @@ function updatePositions(prefix, skipDeleted) {
             if (fieldName == fieldNames.position) {
                 $positionField = $field;
             }
-            if (hasValue && _djangoJquery2.default.inArray(fieldName, sortableExcludes) === -1) {
+            if (hasValue && _jquery2.default.inArray(fieldName, sortableExcludes) === -1) {
                 setPosition = true;
             }
         });
@@ -3001,14 +2994,14 @@ function createSortable($group) {
         forcePlaceholderSize: true,
         placeholder: {
             element: function element($currentItem) {
-                var el = (0, _djangoJquery2.default)(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
+                var el = (0, _jquery2.default)(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
 
                 if ($currentItem.is('tbody')) {
-                    var $tr = (0, _djangoJquery2.default)('<tr></tr>');
+                    var $tr = (0, _jquery2.default)('<tr></tr>');
                     var $originalTr = $currentItem.children('tr').eq(0);
                     $tr.addClass($originalTr.attr('class'));
                     $originalTr.children('td').each(function (i, td) {
-                        $tr.append((0, _djangoJquery2.default)('<td></td>').addClass((0, _djangoJquery2.default)(td).attr('class')));
+                        $tr.append((0, _jquery2.default)('<td></td>').addClass((0, _jquery2.default)(td).attr('class')));
                     });
                     el.appendChild($tr[0]);
                 }
@@ -3075,7 +3068,7 @@ function createSortable($group) {
          * Triggered when a sortable is dropped into a container
          */
         receive: function receive(event, ui) {
-            var $inline = (0, _djangoJquery2.default)(this).closest('.djn-group'); // $form = ui.item.find('> .module').first(),
+            var $inline = (0, _jquery2.default)(this).closest('.djn-group'); // $form = ui.item.find('> .module').first(),
             $inline.djangoFormset().spliceInto(ui.item);
             updatePositions(ui.item.djangoFormsetPrefix());
         },
@@ -3091,7 +3084,7 @@ function createSortable($group) {
                 var parent = nextItem.parentNode;
                 parent.insertBefore(nextItem, parent.firstChild);
             }
-            var groupId = (0, _djangoJquery2.default)(event.target).closest('.djn-group').attr('id'),
+            var groupId = (0, _jquery2.default)(event.target).closest('.djn-group').attr('id'),
                 $form = ui.item,
                 $parentGroup = $form.closest('#' + groupId);
             if ($form.data('updateOperation') == 'removed') {
@@ -3100,12 +3093,15 @@ function createSortable($group) {
                 $form.attr('data-update-operation', 'removed');
             }
             updatePositions($form.djangoFormsetPrefix());
-            (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [(0, _djangoJquery2.default)('#' + $form.djangoFormsetPrefix() + '-group')]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [(0, _jquery2.default)('#' + $form.djangoFormsetPrefix() + '-group')]);
         }
     });
 }
 
-},{"./django-jquery":1,"./jquery.ui.nestedsortable":5,"./regexquote":6}],8:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./jquery.ui.nestedsortable":4,"./regexquote":5}],7:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3116,9 +3112,9 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _djangoJquery = require('./django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 require('./jquery.djnutils.js');
 
@@ -3127,6 +3123,14 @@ var _sortable = require('./sortable');
 var _regexquote = require('./regexquote');
 
 var _regexquote2 = _interopRequireDefault(_regexquote);
+
+var _dateTimeShortcuts = (typeof window !== "undefined" ? window['DateTimeShortcuts'] : typeof global !== "undefined" ? global['DateTimeShortcuts'] : null);
+
+var _dateTimeShortcuts2 = _interopRequireDefault(_dateTimeShortcuts);
+
+var _selectFilter = (typeof window !== "undefined" ? window['SelectFilter'] : typeof global !== "undefined" ? global['SelectFilter'] : null);
+
+var _selectFilter2 = _interopRequireDefault(_selectFilter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3144,10 +3148,10 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
         selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,div.group';
     }
     $elem.find(selector).andSelf().each(function () {
-        var $node = (0, _djangoJquery2.default)(this),
+        var $node = (0, _jquery2.default)(this),
             attrs = ['id', 'name', 'for'];
 
-        _djangoJquery2.default.each(attrs, function (i, attrName) {
+        _jquery2.default.each(attrs, function (i, attrName) {
             var attrVal = $node.attr(attrName);
             if (attrVal) {
                 $node.attr(attrName, attrVal.replace(search, replace));
@@ -3184,24 +3188,24 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
     var lookupUrls = DJNesting.LOOKUP_URLS;
 
     if (!groupData) {
-        groupData = (0, _djangoJquery2.default)('#' + prefix + '-group').djnData();
+        groupData = (0, _jquery2.default)('#' + prefix + '-group').djnData();
     }
     var lookupFields = groupData.lookupRelated;
 
-    _djangoJquery2.default.each(lookupFields.fk || [], function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
+    _jquery2.default.each(lookupFields.fk || [], function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
-    _djangoJquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
+    _jquery2.default.each(lookupFields.m2m || [], function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
-    _djangoJquery2.default.each(lookupFields.generic || [], function () {
+    _jquery2.default.each(lookupFields.generic || [], function () {
         var _ref = _slicedToArray(this, 2);
 
         var contentType = _ref[0];
         var objectId = _ref[1];
 
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
-            var $this = (0, _djangoJquery2.default)(this);
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+            var $this = (0, _jquery2.default)(this);
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
@@ -3228,46 +3232,46 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     }
     var lookupUrls = DJNesting.LOOKUP_URLS;
 
-    var $inline = (0, _djangoJquery2.default)('#' + prefix + '-group');
+    var $inline = (0, _jquery2.default)('#' + prefix + '-group');
 
     if (!groupData) {
         groupData = $inline.djnData();
     }
     var lookupFields = groupData.lookupAutocomplete;
 
-    _djangoJquery2.default.each(lookupFields.fk || [], function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
-            (0, _djangoJquery2.default)(this).grp_autocomplete_fk({
+    _jquery2.default.each(lookupFields.fk || [], function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+            (0, _jquery2.default)(this).grp_autocomplete_fk({
                 lookup_url: lookupUrls.related,
                 autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    _djangoJquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
-            (0, _djangoJquery2.default)(this).grp_autocomplete_m2m({
+    _jquery2.default.each(lookupFields.m2m || [], function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+            (0, _jquery2.default)(this).grp_autocomplete_m2m({
                 lookup_url: lookupUrls.m2m,
                 autocomplete_lookup_url: lookupUrls.autocomplete
             });
         });
     });
-    _djangoJquery2.default.each(lookupFields.generic || [], function () {
+    _jquery2.default.each(lookupFields.generic || [], function () {
         var _ref4 = _slicedToArray(this, 2);
 
         var contentType = _ref4[0];
         var objectId = _ref4[1];
 
-        (0, _djangoJquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
-            var _ref5 = (0, _djangoJquery2.default)(this).attr('id').match(idRegex) || [];
+            var _ref5 = (0, _jquery2.default)(this).attr('id').match(idRegex) || [];
 
             var _ref6 = _slicedToArray(_ref5, 2);
 
             var index = _ref6[1];
 
             if (index) {
-                (0, _djangoJquery2.default)(this).grp_autocomplete_generic({
+                (0, _jquery2.default)(this).grp_autocomplete_generic({
                     content_type: '#id_' + prefix + index + contentType,
                     object_id: '#id_' + prefix + index + objectId,
                     lookup_url: lookupUrls.related,
@@ -3286,7 +3290,7 @@ DJNesting.updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
     elems.each(function (i, elem) {
         var emptyLen = '-empty'.length;
         var attrs = ['id', 'name', 'for'];
-        _djangoJquery2.default.each(attrs, function (i, attr) {
+        _jquery2.default.each(attrs, function (i, attr) {
             var val = elem.getAttribute(attr) || '',
                 emptyPos = val.indexOf('-empty');
             if (emptyPos > 0) {
@@ -3304,7 +3308,7 @@ DJNesting.updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
 DJNesting.DjangoInlines = {
     initPrepopulatedFields: function initPrepopulatedFields(row) {
         row.find('.prepopulated_field').each(function () {
-            var field = (0, _djangoJquery2.default)(this),
+            var field = (0, _jquery2.default)(this),
                 input = field.find('input, select, textarea'),
                 dependencyList = input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
@@ -3312,7 +3316,7 @@ DJNesting.DjangoInlines = {
             if (!formPrefix || formPrefix.match(/__prefix__/)) {
                 return;
             }
-            _djangoJquery2.default.each(dependencyList, function (i, fieldName) {
+            _jquery2.default.each(dependencyList, function (i, fieldName) {
                 dependencies.push('#id_' + formPrefix + fieldName);
             });
             if (dependencies.length) {
@@ -3322,22 +3326,22 @@ DJNesting.DjangoInlines = {
     },
     reinitDateTimeShortCuts: function reinitDateTimeShortCuts() {
         // Reinitialize the calendar and clock widgets by force
-        if (typeof window.DateTimeShortcuts !== 'undefined') {
-            (0, _djangoJquery2.default)('.datetimeshortcuts').remove();
-            window.DateTimeShortcuts.init();
+        if (typeof _dateTimeShortcuts2.default !== 'undefined') {
+            (0, _jquery2.default)('.datetimeshortcuts').remove();
+            _dateTimeShortcuts2.default.init();
         }
     },
     updateSelectFilter: function updateSelectFilter($form) {
         // If any SelectFilter widgets are a part of the new form,
         // instantiate a new SelectFilter instance for it.
-        if (typeof window.SelectFilter !== 'undefined') {
+        if (typeof _selectFilter2.default !== 'undefined') {
             $form.find('.selectfilter').each(function (index, value) {
                 var namearr = value.name.split('-');
-                window.SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
+                _selectFilter2.default.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
             });
             $form.find('.selectfilterstacked').each(function (index, value) {
                 var namearr = value.name.split('-');
-                window.SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
+                _selectFilter2.default.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
             });
         }
     }
@@ -3348,12 +3352,15 @@ window.DJNesting = DJNesting;
 exports.default = DJNesting;
 module.exports = exports['default'];
 
-},{"./django-jquery":1,"./jquery.djnutils.js":3,"./regexquote":6,"./sortable":7}],9:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./jquery.djnutils.js":2,"./regexquote":5,"./sortable":6}],8:[function(require,module,exports){
+(function (global){
 'use strict';
 
-var _djangoJquery = require('./nested-admin/django-jquery');
+var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
-var _djangoJquery2 = _interopRequireDefault(_djangoJquery);
+var _jquery2 = _interopRequireDefault(_jquery);
 
 require('./nested-admin/jquery.djangoformset');
 
@@ -3363,30 +3370,32 @@ var _utils2 = _interopRequireDefault(_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _djangoJquery2.default)(document).ready(function () {
+(0, _jquery2.default)(document).ready(function () {
     // Remove the border on any empty fieldsets
-    (0, _djangoJquery2.default)('fieldset.grp-module, fieldset.module').filter(function (i, element) {
+    (0, _jquery2.default)('fieldset.grp-module, fieldset.module').filter(function (i, element) {
         return element.childNodes.length == 0;
     }).css('border-width', '0');
 
     // Set predelete class on any form elements with the DELETE input checked.
     // These can occur on forms rendered after a validation error.
-    (0, _djangoJquery2.default)('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('predelete');
+    (0, _jquery2.default)('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('predelete');
 
     // Register the nested formset on top level djnesting-stacked elements.
     // It will handle recursing down the nested inlines.
-    (0, _djangoJquery2.default)('.djn-group-root').each(function (i, rootGroup) {
-        (0, _djangoJquery2.default)(rootGroup).djangoFormset();
+    (0, _jquery2.default)('.djn-group-root').each(function (i, rootGroup) {
+        (0, _jquery2.default)(rootGroup).djangoFormset();
     });
-    (0, _djangoJquery2.default)('form').on('submit.djnesting', function (e) {
-        (0, _djangoJquery2.default)('.djn-group').each(function () {
-            _utils2.default.updatePositions((0, _djangoJquery2.default)(this).djangoFormsetPrefix(), true);
-            (0, _djangoJquery2.default)(document).trigger('djnesting:mutate', [(0, _djangoJquery2.default)(this).djangoFormset().$inline]);
+    (0, _jquery2.default)('form').on('submit.djnesting', function (e) {
+        (0, _jquery2.default)('.djn-group').each(function () {
+            _utils2.default.updatePositions((0, _jquery2.default)(this).djangoFormsetPrefix(), true);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [(0, _jquery2.default)(this).djangoFormset().$inline]);
         });
     });
 });
 
-},{"./nested-admin/django-jquery":1,"./nested-admin/jquery.djangoformset":2,"./nested-admin/utils":8}]},{},[9])
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./nested-admin/jquery.djangoformset":1,"./nested-admin/utils":7}]},{},[8])
 
 
 //# sourceMappingURL=nested_admin.js.map

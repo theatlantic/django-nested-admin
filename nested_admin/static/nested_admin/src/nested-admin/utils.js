@@ -1,9 +1,11 @@
 'use strict';
 
-import $ from './django-jquery';
+import $ from 'jquery';
 import './jquery.djnutils.js';
 import {createSortable, updatePositions} from './sortable';
 import regexQuote from './regexquote';
+import DateTimeShortcuts from 'django/date-time-shortcuts';
+import SelectFilter from 'django/select-filter';
 
 var DJNesting = (typeof window.DJNesting != 'undefined')
                ? window.DJNesting : {};
@@ -193,22 +195,22 @@ DJNesting.DjangoInlines = {
     },
     reinitDateTimeShortCuts: function() {
         // Reinitialize the calendar and clock widgets by force
-        if (typeof window.DateTimeShortcuts !== 'undefined') {
+        if (typeof DateTimeShortcuts !== 'undefined') {
             $('.datetimeshortcuts').remove();
-            window.DateTimeShortcuts.init();
+            DateTimeShortcuts.init();
         }
     },
     updateSelectFilter: function($form) {
         // If any SelectFilter widgets are a part of the new form,
         // instantiate a new SelectFilter instance for it.
-        if (typeof window.SelectFilter !== 'undefined') {
+        if (typeof SelectFilter !== 'undefined') {
             $form.find('.selectfilter').each(function(index, value) {
                 var namearr = value.name.split('-');
-                window.SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
+                SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
             });
             $form.find('.selectfilterstacked').each(function(index, value) {
                 var namearr = value.name.split('-');
-                window.SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
+                SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
             });
         }
     }

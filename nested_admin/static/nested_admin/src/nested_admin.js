@@ -1,4 +1,4 @@
-import $ from './nested-admin/django-jquery';
+import $ from 'jquery';
 import './nested-admin/jquery.djangoformset';
 import DJNesting from './nested-admin/utils';
 

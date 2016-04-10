@@ -37,7 +37,16 @@ export default function(gulp, plugins, taskName, config, taskTarget) {
                 let startTime = new Date().getTime();
                 let log = plugins.util.log;
                 let {red, cyan, magenta} = plugins.util.colors;
-                bundler.bundle()
+                bundler
+                    .transform('exposify', {
+                        expose: {
+                            jquery: 'django.jQuery',
+                            grappelli: 'grappelli',
+                            'django/date-time-shortcuts': 'DateTimeShortcuts',
+                            'django/select-filter': 'SelectFilter'
+                        }
+                    })
+                    .bundle()
                     .on('error', function(err) {
                         if (err && err.codeFrame) {
                             log(

@@ -1,6 +1,6 @@
 'use strict';
 
-import $ from './django-jquery';
+import $ from 'jquery';
 /*!
  * jQuery UI Sortable @VERSION
  * http://jqueryui.com
