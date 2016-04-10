@@ -7,7 +7,7 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()
 
 
-NESTED_ADMIN_DEBUG = True
+DEBUG = NESTED_ADMIN_DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -63,6 +63,22 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'nested_admin.tests': {
+            'handlers': ['console'],
+            'level': os.getenv('NESTED_ADMIN_LOG_LEVEL', 'WARNING'),
+        },
+    },
+}
 
 SITE_ID = 1
 FIXTURE_DIRS = [os.path.join(current_dir, 'fixtures')]

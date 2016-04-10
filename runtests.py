@@ -102,6 +102,9 @@ if __name__ == "__main__":
         SeleniumTestCaseBase.import_webdriver('phantomjs')
         SeleniumTestCaseBase.browsers = ['phantomjs']
 
+    os.environ.setdefault('NESTED_ADMIN_LOG_LEVEL',
+        ['ERROR', 'WARNING', 'INFO', 'DEBUG'][options.verbosity])
+
     failures = django_tests(options.verbosity, options.failfast, options.modules)
     if failures:
         sys.exit(bool(failures))

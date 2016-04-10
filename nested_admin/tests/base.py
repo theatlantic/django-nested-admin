@@ -118,6 +118,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
         User.objects.create_superuser(username='super', password='secret', email='super@example.com')
+        self.logged_in = False
 
     def wait_for(self, css_selector, timeout=10):
         """
@@ -157,6 +158,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         self.selenium.find_element_by_xpath(
             '//input[@value="%s"]' % login_text).click()
         self.wait_page_loaded()
+        self.logged_in = True
 
     def wait_until(self, callback, timeout=10, message=None):
         """
@@ -233,10 +235,13 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
     def load_admin(self, obj=None):
         info = (self.root_model._meta.app_label, self.root_model._meta.object_name.lower())
         if obj:
-            login_url = reverse('admin:%s_%s_change' % info, args=[obj.pk])
+            url = reverse('admin:%s_%s_change' % info, args=[obj.pk])
         else:
-            login_url = reverse('admin:%s_%s_add' % info)
-        self.admin_login("super", "secret", login_url=login_url)
+            url = reverse('admin:%s_%s_add' % info)
+        if not self.logged_in:
+            self.admin_login("super", "secret", login_url=url)
+        else:
+            self.selenium.get('%s%s' % (self.live_server_url, url))
         self.wait_page_loaded()
         self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
