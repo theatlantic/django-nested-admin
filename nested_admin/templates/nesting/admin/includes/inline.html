@@ -1,34 +1,29 @@
-{% spaceless %}
-    <fieldset class="module aligned grp-module djn-module {{ fieldset.classes }}">
-        {% if fieldset.name %}<h4 class="collapse-handler grp-collapse-handler">{{ fieldset.name }}</h4>{% endif %}
-        {% if fieldset.description %}<div class="grp-row"><p class="description grp-description">{{ fieldset.description|safe }}</p></div>{% endif %}
-        {% for line in fieldset %}
-            <div class="form-row row grp-row grp-cells-{{ line.fields|length }}{% if not line.fields|length_is:"1" %} grp-cells{% else %}{% if line.errors %} grp-errors{% endif %}{% endif %}{% for field in line %} {% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.is_hidden %} is-hidden{% endif %}{% endfor %}{% if forloop.last %} djn-form-row-last{% endif %}">
-                {% for field in line %}
-                    {# <div{% if not line.fields|length_is:"1" %} class="cell {{ field.field.name }}{% if field.errors %} error{% endif %}"{% endif %}> #}
-                    <div class="field-box l-2c-fluid l-d-4{% if line.fields|length_is:"1" %} cell grp-cell{% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">
-                        {% if field.is_checkbox %}
-                            <div class="c-1 column span-4">&nbsp;</div>
-                            <div class="c-2 column span-flexible">
-                                {{ field.field }}{{ field.label_tag }}
+<fieldset class="module aligned djn-module {{ fieldset.classes }}{% if inline_admin_form.form.inlines %} has-inlines{% endif %}">
+    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+    {% if fieldset.description %}
+        <div class="description">{{ fieldset.description|safe }}</div>
+    {% endif %}
+    {% for line in fieldset %}
+        <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}{% if forloop.last and forloop.parentloop.last %} djn-form-row-last{% endif %}">
+            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+            {% for field in line %}
+                <div class="{% if line.fields|length_is:'1' and field.is_checkbox %}checkbox-row{% else %}{% if not line.fields|length_is:'1' %}field-box{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %} {% endif %}field-{{ field.field.name }}{% endif %}">
+                    {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                    {% if field.is_checkbox %}
+                        {{ field.field }}{{ field.label_tag }}
+                    {% else %}
+                        {{ field.label_tag }}
+                        {% if field.is_readonly %}
+                            <p>{{ field.contents }}</p>
                         {% else %}
-                            <div class="c-1 column span-4">{{ field.label_tag }}</div>
-                            <div class="c-2 column span-flexible">
-                                {% if field.is_readonly %}
-                                    <p class="grp-readonly readonly">{{ field.contents }}</p>
-                                {% else %}
-                                    {{ field.field }}
-                                {% endif %}
+                            {{ field.field }}
                         {% endif %}
-                            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
-                            {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
-                            {% if field.field.field.help_text %}
-                                <p class="grp-help help">{{ field.field.field.help_text|safe }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </fieldset>
-{% endspaceless %}
+                    {% endif %}
+                    {% if field.field.help_text %}
+                        <p class="help">{{ field.field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</fieldset>

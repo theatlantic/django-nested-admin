@@ -2,12 +2,33 @@ import re
 from functools import wraps
 import json
 
+import django
 from django import template
+from django.apps import apps
 from django.conf import settings
 from django.utils.safestring import mark_for_escaping, mark_safe
 from django.utils.html import escape
 
 register = template.Library()
+
+
+if django.VERSION >= (1, 10):
+    from django.templatetags.static import static as _static
+else:
+    _static = None
+
+
+@register.simple_tag
+def static(path):
+    global _static
+    if _static is None:
+        if apps.is_installed('django-contrib.staticfiles'):
+            from django.contrib.staticfiles.templatetags.staticfiles import static as _static
+        else:
+            from django.templatetags.static import static as _static
+    if django.VERSION >= (1, 9) and path == 'admin/img/icon-unknown.gif':
+        path = 'admin/img/icon-unknown.svg'
+    return _static(path)
 
 
 @register.filter
@@ -127,28 +148,39 @@ def cell_count(inline_admin_form):
     return count
 
 
-class IfGrappelliNode(template.Node):
+class IfConditionNode(template.Node):
 
-    def __init__(self, nodelist, cond):
-        self.nodelist = nodelist
-        self.cond = cond
+    def __init__(self, nodelist_true, nodelist_false, value):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.value = value
 
     def render(self, context):
-        if self.cond != bool('grappelli' in settings.INSTALLED_APPS):
-            return ''
-        return self.nodelist.render(context)
+        if self.value:
+            return self.nodelist_true.render(context)
+        else:
+            return self.nodelist_false.render(context)
 
 
 @register.tag
-def ifnogrp(parser, token):
-    nodelist = parser.parse(('endifnogrp',))
-    parser.delete_first_token()
-    return IfGrappelliNode(nodelist, False)
+def ifdj110(parser, token):
+    nodelist_true = parser.parse(('else', 'endifdj110'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifdj110',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] == (1, 10))
 
 
 @register.tag
-def ifgrp(parser, token):
-    nodelist = parser.parse(('endifgrp',))
-    parser.delete_first_token()
-    return IfGrappelliNode(nodelist, True)
-
+def ifnotdj110(parser, token):
+    nodelist_true = parser.parse(('else', 'endifnotdj110'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifnotdj110',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] != (1, 10))

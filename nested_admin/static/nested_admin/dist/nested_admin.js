@@ -35,7 +35,7 @@ var DjangoFormset = function () {
         _classCallCheck(this, DjangoFormset);
 
         this.opts = {
-            emptyClass: 'empty-form grp-empty-form',
+            emptyClass: 'empty-form grp-empty-form djn-empty-form',
             predeleteClass: 'grp-predelete'
         };
         this.$inline = (0, _jquery2.default)(inline);
@@ -47,9 +47,9 @@ var DjangoFormset = function () {
         var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = _jquery2.default.extend({}, this.opts, {
-            addButtonSelector: '.add-handler.' + inlineModelClassName,
-            removeButtonSelector: '.remove-handler.' + inlineModelClassName,
-            deleteButtonSelector: '.delete-handler.' + inlineModelClassName,
+            addButtonSelector: '.djn-add-handler.' + inlineModelClassName,
+            removeButtonSelector: '.djn-remove-handler.' + inlineModelClassName,
+            deleteButtonSelector: '.djn-delete-handler.' + inlineModelClassName,
             formClass: 'dynamic-form-' + inlineModelClassName
         });
 
@@ -105,7 +105,7 @@ var DjangoFormset = function () {
                 self.add();
             });
             $el.find(this.opts.removeButtonSelector).filter(function () {
-                return !(0, _jquery2.default)(this).closest('.empty-form').length;
+                return !(0, _jquery2.default)(this).closest('.djn-empty-form').length;
             }).off('click.djnesting').on('click.djnesting', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -126,7 +126,7 @@ var DjangoFormset = function () {
             };
 
             var $deleteButton = $el.find(this.opts.deleteButtonSelector).filter(function () {
-                return !(0, _jquery2.default)(this).closest('.empty-form').length;
+                return !(0, _jquery2.default)(this).closest('.djn-empty-form').length;
             });
 
             $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
@@ -146,13 +146,13 @@ var DjangoFormset = function () {
             this.mgmtVal('TOTAL_FORMS', totalForms - 1);
 
             if (maxForms - totalForms >= 0) {
-                this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').show();
+                this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').show();
             }
 
             this._fillGap(index, isInitial);
 
             _utils2.default.updatePositions(this.prefix);
-            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
         }
     }, {
         key: 'delete',
@@ -195,7 +195,7 @@ var DjangoFormset = function () {
                 }
             });
             _utils2.default.updatePositions(this.prefix);
-            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
         }
     }, {
         key: 'undelete',
@@ -235,7 +235,7 @@ var DjangoFormset = function () {
                 }
             });
             _utils2.default.updatePositions(this.prefix);
-            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+            (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
         }
     }, {
         key: 'add',
@@ -258,7 +258,7 @@ var DjangoFormset = function () {
 
             this.mgmtVal('TOTAL_FORMS', index + 1);
             if (maxForms - index <= 0) {
-                this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').hide();
+                this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
             }
 
             _utils2.default.updateFormAttributes($form, new RegExp('^((lookup_)?id_)?' + (0, _regexquote2.default)(this.prefix + '-__prefix__')), '$1' + this.prefix + '-' + index);
@@ -269,7 +269,7 @@ var DjangoFormset = function () {
             if (_jquery2.default.isNumeric(spliceIndex)) {
                 this.spliceInto($form, spliceIndex, true);
             } else {
-                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
             }
 
             if (_grappelli2.default) {
@@ -282,7 +282,7 @@ var DjangoFormset = function () {
             _utils2.default.initAutocompleteFields(this.prefix);
             if (_jquery2.default.fn.grp_collapsible) {
                 $form.find('.collapse').andSelf().grp_collapsible({
-                    toggle_handler_slctr: '.collapse-handler:first',
+                    toggle_handler_slctr: '.grp-collapse-handler:first',
                     closed_css: 'closed grp-closed',
                     open_css: 'open grp-open',
                     on_toggle: function on_toggle() {
@@ -465,7 +465,7 @@ var DjangoFormset = function () {
 
             _utils2.default.updatePositions(newFormsetPrefix);
             if (!isNewAddition) {
-                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$formset]);
+                (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
             }
         }
     }, {
@@ -559,7 +559,7 @@ _jquery2.default.fn.djangoPrefixIndex = function () {
         prefix = (id.match(/^(.*)\-group$/) || [null, null])[1];
     }
 
-    if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
+    if (id && !prefix && $this.is('.djn-item') && id.match(/\d+$/)) {
         var _ref = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
 
         var _ref2 = _slicedToArray(_ref, 3);
@@ -1571,7 +1571,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 		var l = item.left,
 		    r = l + item.width,
 		    t = item.top,
-		    b = t + item.height;
+		    b = t + Math.max(10, item.height);
 
 		var dyClick = this.offset.click.top,
 		    dxClick = this.offset.click.left;
@@ -1591,7 +1591,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 
 	_intersectsWithPointer: function _intersectsWithPointer(item) {
 
-		var isOverElementHeight = this.options.axis === 'x' || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, item.height),
+		var isOverElementHeight = this.options.axis === 'x' || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, Math.max(10, item.height)),
 		    isOverElementWidth = this.options.axis === 'y' || this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
 		    isOverElement = isOverElementHeight && isOverElementWidth,
 		    verticalDirection = this._getDragVerticalDirection(),
@@ -1604,7 +1604,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 
 	_intersectsWithSides: function _intersectsWithSides(item) {
 
-		var isOverBottomHalf = this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top + item.height / 2, item.height),
+		var isOverBottomHalf = this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top + Math.max(10, item.height) / 2, Math.max(10, item.height)),
 		    isOverRightHalf = this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left + item.width / 2, item.width),
 		    verticalDirection = this._getDragVerticalDirection(),
 		    horizontalDirection = this._getDragHorizontalDirection();
@@ -1847,7 +1847,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 				if (this.items[j].item[0] == this.currentItem[0]) continue;
 				var cur = this.items[j].item.offset()[posProperty];
 				var nearBottom = false;
-				if (Math.abs(cur - base) > Math.abs(cur + this.items[j][sizeProperty] - base)) {
+				if (Math.abs(cur - base) > Math.abs(cur + Math.max(10, this.items[j][sizeProperty]) - base)) {
 					nearBottom = true;
 					cur += this.items[j][sizeProperty];
 				}
@@ -2599,7 +2599,7 @@ _jquery2.default.widget("ui.nestedSortable", _jquery2.default.ui.djnsortable, {
         if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) == 'object' && item.item) {
             this.lastRearrangedElement = item.item[0];
         }
-        if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) == 'object' && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
+        if (item && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) == 'object' && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
             // This means we have been dropped into a nested container down a level
             // from the parent.
             var placeholderParentItem = this.placeholder.closest(o.listItemSelector);
@@ -2921,7 +2921,7 @@ function updatePositions(prefix, skipDeleted) {
         $group.filterDjangoField(prefix, groupFkName).val(parentPkVal).trigger('change');
     }
 
-    $group.find('.module.djn-inline-form').each(function () {
+    $group.find('.djn-inline-form').each(function () {
         if (!this.id || this.id.substr(-6) == '-empty') {
             return true; // Same as continue
         }
@@ -2983,7 +2983,7 @@ function updatePositions(prefix, skipDeleted) {
 
 function createSortable($group) {
     return $group.find('> .djn-items, > .tabular > .module > .djn-items').nestedSortable({
-        handle: ['> h3.djn-drag-handler', '> .tools .drag-handler', '> .djn-td > .tools .djn-drag-handler', '> .djn-tr > td.is-sortable > .djn-drag-handler', '> .djn-tr > td.grp-tools-container .djn-drag-handler'].join(', '),
+        handle: ['> h3.djn-drag-handler', '> .djn-tools .drag-handler', '> .djn-td > .djn-tools .djn-drag-handler', '> .djn-tr > .is-sortable > .djn-drag-handler', '> .djn-tr > .grp-tools-container .djn-drag-handler'].join(', '),
         /**
          * items: The selector for ONLY the items underneath a given
          *        container at that level. Not to be confused with
@@ -2996,13 +2996,18 @@ function createSortable($group) {
             element: function element($currentItem) {
                 var el = (0, _jquery2.default)(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
 
-                if ($currentItem.is('tbody')) {
-                    var $tr = (0, _jquery2.default)('<tr></tr>');
-                    var $originalTr = $currentItem.children('tr').eq(0);
+                if ($currentItem.is('.djn-tbody')) {
+                    var $originalTr = $currentItem.children('.djn-tr').eq(0);
+                    var trTagName = $originalTr.prop('tagName').toLowerCase();
+                    var $tr = (0, _jquery2.default)('<' + trTagName + '></' + trTagName + '>');
                     $tr.addClass($originalTr.attr('class'));
-                    $originalTr.children('td').each(function (i, td) {
-                        $tr.append((0, _jquery2.default)('<td></td>').addClass((0, _jquery2.default)(td).attr('class')));
+                    var $originalTd = $originalTr.children('.djn-td').eq(0);
+                    var tdTagName = $originalTd.prop('tagName').toLowerCase();
+                    var numColumns = 0;
+                    $originalTr.children('.djn-td').each(function (i, td) {
+                        numColumns += parseInt((0, _jquery2.default)(td).attr('colspan'), 10) || 1;
                     });
+                    $tr.append((0, _jquery2.default)('<' + tdTagName + ' colspan="' + numColumns + '" class="djn-td grp-td"></' + tdTagName + '>'));
                     el.appendChild($tr[0]);
                 }
 
@@ -3017,8 +3022,9 @@ function createSortable($group) {
                 //    force it even if a class name is specified
                 if (opts.className && !opts.forcePlaceholderSize) return;
 
-                if ($placeholder.is('tbody')) {
-                    $placeholder = $placeholder.children('tr').eq(0).children('td').eq(1);
+                if ($placeholder.is('.djn-tbody')) {
+                    // debugger;
+                    $placeholder = $placeholder.children('.djn-tr').eq(0).children('.djn-td').eq(0);
                 }
 
                 // If the element doesn't have a actual height by itself
@@ -3068,7 +3074,7 @@ function createSortable($group) {
          * Triggered when a sortable is dropped into a container
          */
         receive: function receive(event, ui) {
-            var $inline = (0, _jquery2.default)(this).closest('.djn-group'); // $form = ui.item.find('> .module').first(),
+            var $inline = (0, _jquery2.default)(this).closest('.djn-group');
             $inline.djangoFormset().spliceInto(ui.item);
             updatePositions(ui.item.djangoFormsetPrefix());
         },
@@ -3145,7 +3151,7 @@ DJNesting.updatePositions = _sortable.updatePositions;
  */
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,div.group';
+        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,.djn-group,.djn-item';
     }
     $elem.find(selector).andSelf().each(function () {
         var $node = (0, _jquery2.default)(this),
@@ -3158,7 +3164,7 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
             }
         });
 
-        if ($node.attr('id') && $node.is('.module,.grp-module')) {
+        if ($node.attr('id') && $node.is('.djn-item')) {
             $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
         }
     });
@@ -3193,10 +3199,10 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
     var lookupFields = groupData.lookupRelated;
 
     _jquery2.default.each(lookupFields.fk || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
     _jquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
     _jquery2.default.each(lookupFields.generic || [], function () {
         var _ref = _slicedToArray(this, 2);
@@ -3204,7 +3210,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         var contentType = _ref[0];
         var objectId = _ref[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var $this = (0, _jquery2.default)(this);
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
@@ -3240,7 +3246,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     var lookupFields = groupData.lookupAutocomplete;
 
     _jquery2.default.each(lookupFields.fk || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _jquery2.default)(this).grp_autocomplete_fk({
                 lookup_url: lookupUrls.related,
                 autocomplete_lookup_url: lookupUrls.autocomplete
@@ -3248,7 +3254,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         });
     });
     _jquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
             (0, _jquery2.default)(this).grp_autocomplete_m2m({
                 lookup_url: lookupUrls.m2m,
                 autocomplete_lookup_url: lookupUrls.autocomplete
@@ -3261,7 +3267,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         var contentType = _ref4[0];
         var objectId = _ref4[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
             var _ref5 = (0, _jquery2.default)(this).attr('id').match(idRegex) || [];
@@ -3380,11 +3386,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     // These can occur on forms rendered after a validation error.
     (0, _jquery2.default)('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('predelete');
 
+    (0, _jquery2.default)(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
+        var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
+        var $rows = $items.children('.djn-tbody');
+        $rows.removeClass('row1 row2');
+        $rows.each(function (i, row) {
+            var n = 1 + i % 2;
+            (0, _jquery2.default)(row).addClass('row' + n);
+        });
+    });
+
     // Register the nested formset on top level djnesting-stacked elements.
     // It will handle recursing down the nested inlines.
     (0, _jquery2.default)('.djn-group-root').each(function (i, rootGroup) {
         (0, _jquery2.default)(rootGroup).djangoFormset();
     });
+
     (0, _jquery2.default)('form').on('submit.djnesting', function (e) {
         (0, _jquery2.default)('.djn-group').each(function () {
             _utils2.default.updatePositions((0, _jquery2.default)(this).djangoFormsetPrefix(), true);

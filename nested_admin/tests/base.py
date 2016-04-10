@@ -57,7 +57,7 @@ def xpath_cls(classname):
 
 
 def xpath_item(model_name=None):
-    xpath_item_predicate = 'not(contains(@class, "-drag")) and not(self::thead)'
+    xpath_item_predicate = 'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
     expr = "%s and %s" % (xpath_cls('djn-item'), xpath_item_predicate)
     if model_name:
         expr += ' and contains(@class, "-%s")' % model_name
@@ -409,7 +409,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes, is_group=True)
         new_index = self.get_num_inlines(indexes)
         model_name = indexes[-1]
-        add_selector = "#%s .grp-add-item > a.grp-add-handler.%s" % (
+        add_selector = "#%s .djn-add-item a.djn-add-handler.%s" % (
             self.get_group(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(add_selector) as el:
             el.click()
@@ -422,7 +422,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
     def remove_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        remove_selector = "#%s .grp-remove-handler.%s" % (
+        remove_selector = "#%s .djn-remove-handler.%s" % (
             self.get_item(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(remove_selector) as el:
             el.click()
@@ -431,24 +431,26 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        delete_selector = "#%s .grp-delete-handler.%s" % (
+        delete_selector = "#%s .djn-delete-handler.%s" % (
             item_id, model_name)
         with self.clickable_selector(delete_selector) as el:
             el.click()
-        undelete_selector = "#%s.grp-predelete .grp-delete-handler.%s" % (
-            item_id, model_name)
-        self.wait_until_clickable_selector(undelete_selector)
+        if self.has_grappelli:
+            undelete_selector = "#%s.grp-predelete .grp-delete-handler.%s" % (
+                item_id, model_name)
+            self.wait_until_clickable_selector(undelete_selector)
 
     def undelete_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        undelete_selector = "#%s .grp-delete-handler.%s" % (item_id, model_name)
+        undelete_selector = "#%s .djn-delete-handler.%s" % (item_id, model_name)
         with self.clickable_selector(undelete_selector) as el:
             el.click()
-        delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.%s" % (
-            item_id, model_name)
-        self.wait_until_clickable_selector(delete_selector)
+        if self.has_grappelli:
+            delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.%s" % (
+                item_id, model_name)
+            self.wait_until_clickable_selector(delete_selector)
 
     def get_form_field_selector(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)
@@ -611,10 +613,8 @@ class DragAndDropAction(object):
         for el in siblings:
             if el.id == ctx.id:
                 break
-            if el.tag_name == 'thead':
-                continue
             classes = set(re.split(r'\s+', el.get_attribute('class')))
-            if classes & {'djn-item'} and not(classes & {'djn-no-drag'}):
+            if classes & {'djn-item'} and not(classes & {'djn-no-drag', 'djn-thead'}):
                 count += 1
         return count
 

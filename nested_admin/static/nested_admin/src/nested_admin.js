@@ -12,11 +12,22 @@ $(document).ready(function() {
     // These can occur on forms rendered after a validation error.
     $('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('predelete');
 
+    $(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
+        var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
+        var $rows = $items.children('.djn-tbody');
+        $rows.removeClass('row1 row2');
+        $rows.each(function(i, row) {
+            var n = 1 + (i % 2);
+            $(row).addClass('row' + n);
+        });
+    });
+
     // Register the nested formset on top level djnesting-stacked elements.
     // It will handle recursing down the nested inlines.
     $('.djn-group-root').each(function(i, rootGroup) {
         $(rootGroup).djangoFormset();
     });
+
     $('form').on('submit.djnesting', function(e) {
         $('.djn-group').each(function() {
             DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);

@@ -462,7 +462,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 		var l = item.left,
 			r = l + item.width,
 			t = item.top,
-			b = t + item.height;
+			b = t + Math.max(10, item.height);
 
 		var dyClick = this.offset.click.top,
 			dxClick = this.offset.click.left;
@@ -486,7 +486,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
 	_intersectsWithPointer: function(item) {
 
-		var isOverElementHeight = (this.options.axis === 'x') || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, item.height),
+		var isOverElementHeight = (this.options.axis === 'x') || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, Math.max(10, item.height)),
 			isOverElementWidth = (this.options.axis === 'y') || this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
 			isOverElement = isOverElementHeight && isOverElementWidth,
 			verticalDirection = this._getDragVerticalDirection(),
@@ -503,7 +503,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
 	_intersectsWithSides: function(item) {
 
-		var isOverBottomHalf = this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top + (item.height/2), item.height),
+		var isOverBottomHalf = this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top + (Math.max(10, item.height)/2), Math.max(10, item.height)),
 			isOverRightHalf = this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left + (item.width/2), item.width),
 			verticalDirection = this._getDragVerticalDirection(),
 			horizontalDirection = this._getDragHorizontalDirection();
@@ -757,7 +757,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 				if(this.items[j].item[0] == this.currentItem[0]) continue;
 				var cur = this.items[j].item.offset()[posProperty];
 				var nearBottom = false;
-				if(Math.abs(cur - base) > Math.abs(cur + this.items[j][sizeProperty] - base)){
+				if(Math.abs(cur - base) > Math.abs(cur + Math.max(10, this.items[j][sizeProperty]) - base)){
 					nearBottom = true;
 					cur += this.items[j][sizeProperty];
 				}

@@ -19,7 +19,7 @@ DJNesting.updatePositions = updatePositions;
  */
 DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,div.group';
+        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,.djn-group,.djn-item';
     }
     $elem.find(selector).andSelf().each(function() {
         var $node = $(this),
@@ -32,7 +32,7 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
             }
         });
 
-        if ($node.attr('id') && $node.is('.module,.grp-module')) {
+        if ($node.attr('id') && $node.is('.djn-item')) {
             $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
         }
     });
@@ -67,18 +67,18 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     var lookupFields = groupData.lookupRelated;
 
     $.each(lookupFields.fk || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_fk({lookup_url: lookupUrls.related});
     });
     $.each(lookupFields.m2m || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_m2m({lookup_url: lookupUrls.m2m});
     });
     $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
             var $this = $(this);
@@ -110,7 +110,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     var lookupFields = groupData.lookupAutocomplete;
 
     $.each(lookupFields.fk || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_fk({
@@ -120,7 +120,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
         });
     });
     $.each(lookupFields.m2m || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_m2m({
@@ -131,7 +131,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     });
     $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
-        $('#' + prefix + '-group > .djn-items > *:not(.empty-form)')
+        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');

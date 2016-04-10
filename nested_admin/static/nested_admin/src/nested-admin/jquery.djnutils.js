@@ -27,7 +27,7 @@ $.fn.djangoPrefixIndex = function() {
         prefix = (id.match(/^(.*)\-group$/) || [null, null])[1];
     }
 
-    if (id && !prefix && $this.is('.module,.grp-module') && id.match(/\d+$/)) {
+    if (id && !prefix && $this.is('.djn-item') && id.match(/\d+$/)) {
         [cacheKey, prefix, index] = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
     }
 

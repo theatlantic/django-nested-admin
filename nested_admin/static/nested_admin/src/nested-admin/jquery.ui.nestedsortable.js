@@ -391,7 +391,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         if (item && typeof item == 'object' && item.item) {
             this.lastRearrangedElement = item.item[0];
         }
-        if (typeof(item) == 'object' && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
+        if (item && typeof(item) == 'object' && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
             // This means we have been dropped into a nested container down a level
             // from the parent.
             var placeholderParentItem = this.placeholder.closest(o.listItemSelector);

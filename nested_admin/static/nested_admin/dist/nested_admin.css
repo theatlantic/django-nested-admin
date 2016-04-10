@@ -1,17 +1,3 @@
-.djn-group .row.is-hidden {
-  display: none;
-}
-
-.djn-group .inline-related > h3 > span.delete {
-  float: right;
-}
-
-.djn-group.inline-group ul.tools li.open-handler-container,
-.djn-group.inline-group ul.tools li.close-handler-container,
-.djn-group.inline-group ul.tools li.add-handler-container {
-  display: none;
-}
-
 .djn-group .djn-group-nested {
   float: none;
   width: auto;
@@ -19,78 +5,38 @@
   background: transparent;
 }
 
-#content-inner > .container-flexible {
-  height: auto;
-}
-
-.container-flexible > .form-container > form > div {
-  overflow: hidden;
-}
-
-.form-container .group.djn-group, .form-container .djn-group .module {
-  min-width: 0;
-}
-
-.djn-group .span-4 {
-  width: 100px;
-  margin-right: 10px;
-}
-
-.djn-group .span-4 + .span-flexible {
-  margin-left: 110px;
-}
-
-.djn-group .inline-related .span-4 {
-  width: 80px;
-  margin-right: 5px;
-}
-
-.djn-group .inline-related .span-4 + .span-flexible {
-  margin-left: 85px;
-}
-
-.djn-group-nested h2.collapse-handler {
+.djn-group-nested.grp-stacked h2.djn-collapse-handler {
   display: none;
 }
 
-.djn-group-nested.group {
+.djn-group-nested {
   border-color: transparent;
 }
 
-.djn-group-nested.group div.items .inline-related {
+.djn-group-nested .djn-items .inline-related {
   border: 1px solid transparent;
   border-radius: 4px;
 }
 
-#grp-content .djn-group-nested.group div.items .inline-related {
+#grp-content .djn-group-nested .djn-items .inline-related {
   margin-bottom: 5px;
   border: 1px solid #a7a7a7;
 }
 
-.djn-group-nested.group div.items .inline-related:first-child {
-  margin-top: 0;
-}
-
-.djn-group-nested.group div.items .inline-related.last-related {
-  margin-bottom: 0;
-}
-
-.djn-group-nested.group div.items .module:first-child {
-  margin-top: 0 !important;
-}
-
-#grp-content .djn-group-nested.djn-stacked .module.add-item {
-  text-align: right;
-  background: transparent;
+#grp-content .djn-group-nested .djn-items .inline-related.djn-item-dragging {
   border: 0;
 }
 
-.djn-group .module .module .module.add-item > :first-child {
-  border-top: 0;
+.djn-group-nested .djn-items .inline-related:first-child {
+  margin-top: 0;
 }
 
-.djn-group .collapse.closed .djn-item {
-  display: block !important;
+.djn-group-nested .djn-items .inline-related.last-related {
+  margin-bottom: 0;
+}
+
+.djn-group-nested div.items .module:first-child {
+  margin-top: 0 !important;
 }
 
 .nested-placeholder, .djn-group .ui-sortable-placeholder {
@@ -102,25 +48,9 @@
   background: #9f6464 !important;
 }
 
-.djn-item.collapse .tools .drag-handler-container {
-  display: none !important;
-}
-
-.change-list .djn-group .module.footer ul.submit-row {
-  min-width: 450px;
-}
-
-.djn-group div.module .items fieldset.module .row div.tools {
-  top: -18px;
-}
-
 .djn-items {
   position: relative;
-  min-height: 10px;
-  overflow: visible;
-}
-
-.djn-items.djn-table {
+  min-height: 0;
   overflow: visible;
 }
 
@@ -150,21 +80,17 @@
   border: 0;
 }
 
-tbody.djn-item-dragging {
+.djn-tbody.djn-item-dragging {
   display: none !important;
 }
 
-tbody.ui-sortable-placeholder td {
+.djn-tbody.ui-sortable-placeholder td {
   background: #fbfad0;
-}
-
-.inline-group ul.tools a.grp-delete-handler span.delete {
-  display: none;
 }
 
 #grp-content .grp-tabular .grp-table .grp-tbody .grp-th,
 #grp-content .grp-tabular .grp-table .grp-tbody .grp-td {
-  vertical-align: middle;
+  vertical-align: top;
   overflow: visible;
 }
 
@@ -179,16 +105,87 @@ tbody.ui-sortable-placeholder td {
   border-bottom: 0 !important;
 }
 
-.grp-empty-form, .grp-empty-form * {
-  display: none !important;
+#grp-content .grp-tabular .grp-table .grp-thead .grp-th {
+  border-radius: 0;
+  border-top: 0;
+  border-bottom: 0;
+  line-height: 16px;
+  color: #aaa;
+  font-weight: bold;
 }
 
-.empty-form-container tr {
-  display: none !important;
+#grp-content table.djn-table thead > tr > th {
+  font-size: 11px;
+  line-height: inherit;
 }
 
-#content.colM tr.grp-predelete {
-  background: #f7dddd !important;
+#grp-content .grp-tabular .grp-table.djn-table .grp-thead > .grp-tr > .grp-th {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+#grp-content .grp-tabular .grp-table.djn-table .grp-thead > .grp-tr > .grp-th:last-of-type {
+  border-right: 0;
+}
+
+#grp-content .grp-tabular .grp-table.djn-table .grp-tbody > .grp-tr > .grp-td:first-of-type {
+  border-left: 1px solid #d4d4d4 !important;
+}
+
+table.djn-table.grp-table td div.grp-readonly,
+table.djn-table.grp-table th div.grp-readonly {
+  margin: 0 !important;
+}
+
+table.djn-table.grp-table td div.grp-readonly:empty,
+table.djn-table.grp-table th div.grp-readonly:empty {
+  margin-bottom: -5px !important;
+}
+
+table.djn-table.grp-table td > input[type="checkbox"],
+table.djn-table.grp-table td > input[type="radio"],
+table.djn-table.grp-table th > input[type="checkbox"],
+table.djn-table.grp-table th > input[type="radio"] {
+  margin: 3px 0.5ex !important;
+  margin: revert !important;
+}
+
+table.djn-table.grp-table td > textarea,
+table.djn-table.grp-table th > textarea {
+  margin: 0 !important;
+}
+
+table.djn-table.grp-table td > input[type="text"],
+table.djn-table.grp-table td > input[type="password"],
+table.djn-table.grp-table td > input[type="url"],
+table.djn-table.grp-table td > input[type="email"],
+table.djn-table.grp-table td > input[type="number"],
+table.djn-table.grp-table td > input[type="button"],
+table.djn-table.grp-table td > select,
+table.djn-table.grp-table td p input[type="text"],
+table.djn-table.grp-table td p input[type="url"],
+table.djn-table.grp-table td p input[type="email"],
+table.djn-table.grp-table td p input[type="number"],
+table.djn-table.grp-table td p > input[type="button"],
+table.djn-table.grp-table th > input[type="text"],
+table.djn-table.grp-table th > input[type="password"],
+table.djn-table.grp-table th > input[type="url"],
+table.djn-table.grp-table th > input[type="email"],
+table.djn-table.grp-table th > input[type="number"],
+table.djn-table.grp-table th > input[type="button"],
+table.djn-table.grp-table th > select,
+table.djn-table.grp-table th p input[type="text"],
+table.djn-table.grp-table th p input[type="url"],
+table.djn-table.grp-table th p input[type="email"],
+table.djn-table.grp-table th p input[type="number"],
+table.djn-table.grp-table th p > input[type="button"] {
+  vertical-align: middle;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.djn-empty-form, .djn-empty-form * {
+  display: none !important;
 }
 
 #content.colM .inline-group .tabular .ui-sortable-placeholder tr.has_original td {
@@ -199,45 +196,8 @@ tbody.ui-sortable-placeholder td {
   height: 0;
 }
 
-#content.colM .inline-group.djn-group ul.tools a.grp-delete-handler span.delete {
-  display: inline;
-}
-
-#content.colM .inline-group.djn-group ul.tools a.inline-deletelink,
-#content.colM .inline-group.djn-group ul.tools a.grp-delete-handler {
-  float: right;
-  margin-top: -18px;
-}
-
-#content.colM .inline-group.djn-group .tabular ul.tools li {
-  display: block;
-  padding: 0;
-  list-style-type: none;
-}
-
-#content.colM .inline-group.djn-group .tabular ul.tools a.grp-delete-handler span.delete {
-  display: block;
-}
-
-#content.colM .inline-group.djn-group .tabular ul.tools a.grp-delete-handler span.delete label {
-  display: none;
-}
-
-#content.colM .inline-group.djn-group .tabular ul.tools a.inline-deletelink,
-#content.colM .inline-group.djn-group .tabular ul.tools a.grp-delete-handler {
-  display: block;
-  float: none;
-  margin: 0;
-}
-
 #content.colM .djn-item.module {
   margin-bottom: 0;
-}
-
-#content.colM .inline-group.djn-group .tabular ul.tools li {
-  display: block;
-  padding: 0;
-  list-style-type: none;
 }
 
 #content.colM tr.djn-has-inlines td {
@@ -291,32 +251,7 @@ tbody.ui-sortable-placeholder td {
   left: 19px;
 }
 
-#content.colM .djn-group .inline-related .span-4 {
-  float: left;
-}
-
-#content.colM form .aligned p.datetime,
-#content.colM form .aligned p.help {
-  padding: 0;
-  margin: 0;
-}
-
-#content.colM .add-row br {
-  display: none;
-}
-
-#content.colM .inline-group.djn-group-root > div.add-row,
-#content.colM .inline-group.djn-group-root > .tabular > tr.add-row > td {
-  margin-bottom: 0;
-  border: 0;
-  border-top: 1px solid #ddd;
-}
-
-#content.colM .djn-group-root > .djn-items > .djn-item.module {
-  border: 0;
-}
-
-#content.colM .djn-form-row-last {
+#content.colM fieldset.has-inlines > .djn-form-row-last {
   border-bottom: 0;
 }
 

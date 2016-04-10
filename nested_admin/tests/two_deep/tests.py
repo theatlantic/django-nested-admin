@@ -38,7 +38,7 @@ class InlineAdminTestCaseMixin(object):
         self.load_admin(group)
 
         item_verbose_name = self.item_cls._meta.verbose_name.title()
-        with self.clickable_xpath('//a[text()="Add %s"]' % item_verbose_name) as el:
+        with self.clickable_xpath('//a[contains(string(.), "Add another %s")]' % item_verbose_name) as el:
             el.click()
         with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
             el.send_keys("Test")

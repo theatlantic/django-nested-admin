@@ -68,7 +68,19 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
             media = media + fs.media
             for inline in (getattr(fs.form, 'inlines', None) or []):
                 media = media + inline.media
-        return media
+
+        # Add nested-admin js and css here, to ensure it goes after any widgets
+        static_url = staticfiles_storage.url
+        server_data_js = reverse('nesting_server_data')
+        min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
+        return media + forms.Media(
+            js=(
+                server_data_js,
+                static_url('nested_admin/dist/nested_admin%s.js' % min_ext),
+            ),
+            css={'all': (
+                static_url('nested_admin/dist/nested_admin%s.css' % min_ext),
+            )})
     media = property(_media)
 
     def inline_formset_data(self):
@@ -99,24 +111,6 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
 
 
 class NestedModelAdminMixin(object):
-
-    @property
-    def media(self):
-        media = getattr(super(NestedModelAdminMixin, self), 'media', forms.Media())
-
-        static_url = staticfiles_storage.url
-
-        server_data_js = reverse('nesting_server_data')
-
-        min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
-        return media + forms.Media(
-            js=(
-                server_data_js,
-                static_url('nested_admin/dist/nested_admin%s.js' % min_ext),
-            ),
-            css={'all': (
-                static_url('nested_admin/dist/nested_admin%s.css' % min_ext),
-            )})
 
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):
@@ -249,12 +243,18 @@ class NestedInlineModelAdmin(NestedInlineModelAdminMixin, InlineModelAdmin):
 
 class NestedStackedInline(NestedInlineModelAdmin):
 
-    template = 'nesting/admin/inlines/stacked.html'
+    if 'grappelli' in settings.INSTALLED_APPS:
+        template = 'nesting/admin/inlines/grappelli_stacked.html'
+    else:
+        template = 'nesting/admin/inlines/stacked.html'
 
 
 class NestedTabularInline(NestedInlineModelAdmin):
 
-    template = 'nesting/admin/inlines/tabular.html'
+    if 'grappelli' in settings.INSTALLED_APPS:
+        template = 'nesting/admin/inlines/grappelli_tabular.html'
+    else:
+        template = 'nesting/admin/inlines/tabular.html'
 
 
 class NestedGenericInlineModelAdmin(NestedInlineModelAdminMixin, GenericInlineModelAdmin):
@@ -264,9 +264,15 @@ class NestedGenericInlineModelAdmin(NestedInlineModelAdminMixin, GenericInlineMo
 
 class NestedGenericStackedInline(NestedGenericInlineModelAdmin):
 
-    template = 'nesting/admin/inlines/stacked.html'
+    if 'grappelli' in settings.INSTALLED_APPS:
+        template = 'nesting/admin/inlines/grappelli_stacked.html'
+    else:
+        template = 'nesting/admin/inlines/stacked.html'
 
 
 class NestedGenericTabularInline(NestedGenericInlineModelAdmin):
 
-    template = 'nesting/admin/inlines/tabular.html'
+    if 'grappelli' in settings.INSTALLED_APPS:
+        template = 'nesting/admin/inlines/grappelli_tabular.html'
+    else:
+        template = 'nesting/admin/inlines/tabular.html'

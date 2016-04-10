@@ -30,7 +30,7 @@ export function updatePositions(prefix, skipDeleted) {
         $group.filterDjangoField(prefix, groupFkName).val(parentPkVal).trigger('change');
     }
 
-    $group.find('.module.djn-inline-form').each(function() {
+    $group.find('.djn-inline-form').each(function() {
         if (!this.id || this.id.substr(-6) == '-empty') {
             return true; // Same as continue
         }
@@ -88,10 +88,10 @@ export function createSortable($group) {
     return $group.find('> .djn-items, > .tabular > .module > .djn-items').nestedSortable({
         handle: [
             '> h3.djn-drag-handler',
-            '> .tools .drag-handler',
-            '> .djn-td > .tools .djn-drag-handler',
-            '> .djn-tr > td.is-sortable > .djn-drag-handler',
-            '> .djn-tr > td.grp-tools-container .djn-drag-handler'
+            '> .djn-tools .drag-handler',
+            '> .djn-td > .djn-tools .djn-drag-handler',
+            '> .djn-tr > .is-sortable > .djn-drag-handler',
+            '> .djn-tr > .grp-tools-container .djn-drag-handler'
         ].join(', '),
         /**
          * items: The selector for ONLY the items underneath a given
@@ -107,13 +107,18 @@ export function createSortable($group) {
                     .addClass($currentItem[0].className + ' ui-sortable-placeholder')
                     .removeClass('ui-sortable-helper')[0];
 
-                if ($currentItem.is('tbody')) {
-                    var $tr = $('<tr></tr>');
-                    var $originalTr = $currentItem.children('tr').eq(0);
+                if ($currentItem.is('.djn-tbody')) {
+                    var $originalTr = $currentItem.children('.djn-tr').eq(0);
+                    var trTagName = $originalTr.prop('tagName').toLowerCase();
+                    var $tr = $(`<${trTagName}></${trTagName}>`);
                     $tr.addClass($originalTr.attr('class'));
-                    $originalTr.children('td').each(function(i, td) {
-                        $tr.append($('<td></td>').addClass($(td).attr('class')));
+                    var $originalTd = $originalTr.children('.djn-td').eq(0);
+                    var tdTagName = $originalTd.prop('tagName').toLowerCase();
+                    var numColumns = 0;
+                    $originalTr.children('.djn-td').each(function(i, td) {
+                        numColumns += parseInt($(td).attr('colspan'), 10) || 1;
                     });
+                    $tr.append($(`<${tdTagName} colspan="${numColumns}" class="djn-td grp-td"></${tdTagName}>`));
                     el.appendChild($tr[0]);
                 }
 
@@ -128,8 +133,9 @@ export function createSortable($group) {
                 //    force it even if a class name is specified
                 if (opts.className && !opts.forcePlaceholderSize) return;
 
-                if ($placeholder.is('tbody')) {
-                    $placeholder = $placeholder.children('tr').eq(0).children('td').eq(1);
+                if ($placeholder.is('.djn-tbody')) {
+                    // debugger;
+                    $placeholder = $placeholder.children('.djn-tr').eq(0).children('.djn-td').eq(0);
                 }
 
                 // If the element doesn't have a actual height by itself
@@ -179,7 +185,7 @@ export function createSortable($group) {
          * Triggered when a sortable is dropped into a container
          */
         receive: function(event, ui) {
-            var $inline = $(this).closest('.djn-group'); // $form = ui.item.find('> .module').first(),
+            var $inline = $(this).closest('.djn-group');
             $inline.djangoFormset().spliceInto(ui.item);
             updatePositions(ui.item.djangoFormsetPrefix());
         },

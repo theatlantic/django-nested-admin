@@ -1,0 +1,35 @@
+{% load grp_tags %}
+{% spaceless %}
+    <fieldset class="module grp-module djn-module {{ fieldset.classes }}">
+        {% if fieldset.name %}<h4 class="djn-collapse-handler grp-collapse-handler">{{ fieldset.name }}</h4>{% endif %}
+        {% if fieldset.description %}<div class="grp-row"><p class="grp-description">{{ fieldset.description|safe }}</p></div>{% endif %}
+        {% for line in fieldset %}
+            <div class="form-row djn-row grp-row grp-cells-{{ line.fields|length }}{% if not line.fields|length_is:"1" %} grp-cells{% else %}{% if line.errors %} grp-errors{% endif %}{% endif %}{% if not line.has_visible_field %} grp-row-hidden{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %} ">
+                {% for field in line %}
+                    {# <div{% if not line.fields|length_is:"1" %} class="cell {{ field.field.name }}{% if field.errors %} error{% endif %}"{% endif %}> #}
+                    <div class="field-box l-2c-fluid l-d-4{% if line.fields|length_is:"1" %}{% else %} grp-cell{% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">
+                        {% if field.is_checkbox %}
+                            <div class="c-1">&nbsp;</div>
+                            <div class="c-2">
+                                {{ field.field }}{{ field.label_tag|prettylabel }}
+                        {% else %}
+                            <div class="c-1">{{ field.label_tag|prettylabel }}</div>
+                            <div class="c-2">
+                                {% if field.is_readonly %}
+                                    <div class="grp-readonly">{{ field.contents }}</div>
+                                {% else %}
+                                    {{ field.field }}
+                                {% endif %}
+                        {% endif %}
+                            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+                            {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                            {% if field.field.field.help_text %}
+                                <p class="grp-help">{{ field.field.field.help_text|safe }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </fieldset>
+{% endspaceless %}

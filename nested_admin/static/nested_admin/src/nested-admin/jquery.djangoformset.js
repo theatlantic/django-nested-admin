@@ -10,7 +10,7 @@ var pluginName = 'djangoFormset';
 class DjangoFormset {
     constructor(inline) {
         this.opts = {
-            emptyClass: 'empty-form grp-empty-form',
+            emptyClass: 'empty-form grp-empty-form djn-empty-form',
             predeleteClass: 'grp-predelete'
         };
         this.$inline = $(inline);
@@ -22,9 +22,9 @@ class DjangoFormset {
         var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = $.extend({}, this.opts, {
-            addButtonSelector: '.add-handler.' + inlineModelClassName,
-            removeButtonSelector: '.remove-handler.' + inlineModelClassName,
-            deleteButtonSelector: '.delete-handler.' + inlineModelClassName,
+            addButtonSelector: '.djn-add-handler.' + inlineModelClassName,
+            removeButtonSelector: '.djn-remove-handler.' + inlineModelClassName,
+            deleteButtonSelector: '.djn-delete-handler.' + inlineModelClassName,
             formClass: 'dynamic-form-' + inlineModelClassName
         });
 
@@ -73,7 +73,7 @@ class DjangoFormset {
             self.add();
         });
         $el.find(this.opts.removeButtonSelector).filter(function() {
-            return !$(this).closest('.empty-form').length;
+            return !$(this).closest('.djn-empty-form').length;
         }).off('click.djnesting').on('click.djnesting', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -94,7 +94,7 @@ class DjangoFormset {
         };
 
         var $deleteButton = $el.find(this.opts.deleteButtonSelector)
-           .filter(function() { return !$(this).closest('.empty-form').length; });
+           .filter(function() { return !$(this).closest('.djn-empty-form').length; });
 
         $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
         $deleteButton.find('[id$="-DELETE"]').on('mousedown.djnesting', deleteClickHandler);
@@ -111,13 +111,13 @@ class DjangoFormset {
         this.mgmtVal('TOTAL_FORMS', totalForms - 1);
 
         if (maxForms - totalForms >= 0) {
-            this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').show();
+            this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').show();
         }
 
         this._fillGap(index, isInitial);
 
         DJNesting.updatePositions(this.prefix);
-        $(document).trigger('djnesting:mutate', [this.$formset]);
+        $(document).trigger('djnesting:mutate', [this.$inline]);
     }
     delete(form) {
         var self = this,
@@ -158,7 +158,7 @@ class DjangoFormset {
             }
         });
         DJNesting.updatePositions(this.prefix);
-        $(document).trigger('djnesting:mutate', [this.$formset]);
+        $(document).trigger('djnesting:mutate', [this.$inline]);
     }
     undelete(form) {
         var $form = $(form),
@@ -196,7 +196,7 @@ class DjangoFormset {
             }
         });
         DJNesting.updatePositions(this.prefix);
-        $(document).trigger('djnesting:mutate', [this.$formset]);
+        $(document).trigger('djnesting:mutate', [this.$inline]);
     }
     add(spliceIndex) {
         var self = this;
@@ -217,7 +217,7 @@ class DjangoFormset {
 
         this.mgmtVal('TOTAL_FORMS', index + 1);
         if (maxForms - index <= 0) {
-            this.$inline.find(this.opts.addButtonSelector).parents('.grp-add-item').hide();
+            this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
         }
 
         DJNesting.updateFormAttributes($form,
@@ -230,7 +230,7 @@ class DjangoFormset {
         if ($.isNumeric(spliceIndex)) {
             this.spliceInto($form, spliceIndex, true);
         } else {
-            $(document).trigger('djnesting:mutate', [this.$formset]);
+            $(document).trigger('djnesting:mutate', [this.$inline]);
         }
 
         if (grappelli) {
@@ -243,7 +243,7 @@ class DjangoFormset {
         DJNesting.initAutocompleteFields(this.prefix);
         if ($.fn.grp_collapsible) {
             $form.find('.collapse').andSelf().grp_collapsible({
-                toggle_handler_slctr: '.collapse-handler:first',
+                toggle_handler_slctr: '.grp-collapse-handler:first',
                 closed_css: 'closed grp-closed',
                 open_css: 'open grp-open',
                 on_toggle: function() {
@@ -420,7 +420,7 @@ class DjangoFormset {
 
         DJNesting.updatePositions(newFormsetPrefix);
         if (!isNewAddition) {
-            $(document).trigger('djnesting:mutate', [this.$formset]);
+            $(document).trigger('djnesting:mutate', [this.$inline]);
         }
     }
     mgmtVal(name, newValue) {
