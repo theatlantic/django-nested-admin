@@ -112,6 +112,8 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
 
 class NestedModelAdminMixin(object):
 
+    inline_admin_formset_helper_cls = NestedInlineAdminFormset
+
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):
         inline_admin_formsets = []
@@ -121,9 +123,9 @@ class NestedModelAdminMixin(object):
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
             prepopulated = dict(inline.get_prepopulated_fields(request, obj))
-            inline_admin_formset = NestedInlineAdminFormset(inline, formset,
-                fieldsets, prepopulated, readonly, model_admin=self,
-                request=request)
+            inline_admin_formset = self.inline_admin_formset_helper_cls(
+                inline, formset, fieldsets, prepopulated, readonly,
+                model_admin=self, request=request)
             inline_admin_formsets.append(inline_admin_formset)
         return inline_admin_formsets
 
