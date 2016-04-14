@@ -33,7 +33,7 @@
                  {% endif %}
                  id="{{ inline_admin_formset.formset.prefix }}{% if forloop.last %}-empty{% else %}{{ inline_admin_form.form|form_index }}{% endif %}">
                 <h3 class="djn-collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djn-drag-handler{% endif %}">
-                    <div class="djn-collapse-handler-verbose-name">{{ inline_admin_formset.opts.verbose_name }}&nbsp;&nbsp;</span>{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% endif %}
+                    <div class="djn-collapse-handler-verbose-name">{{ inline_admin_formset.opts.verbose_name }}&nbsp;&nbsp;</div>{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% endif %}
                 </h3>
                 <ul class="djn-tools grp-tools">
                     {% if inline_admin_form.show_url %}
