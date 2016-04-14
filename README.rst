@@ -128,4 +128,6 @@ License <http://opensource.org/licenses/BSD-2-Clause>`_. View the
 copyright information.
 
 .. |build_badge| image:: https://travis-ci.org/theatlantic/django-nested-admin.svg?branch=master
+    :target: https://travis-ci.org/theatlantic/django-nested-admin
 .. |docs_badge| image:: https://readthedocs.org/projects/django-nested-admin/badge/?version=latest
+    :target: http://django-nested-admin.readthedocs.org/en/latest/
