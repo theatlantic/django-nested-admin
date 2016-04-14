@@ -1,0 +1,33 @@
+#why-use-django-nested-admin table.feature-grid {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+}
+
+#why-use-django-nested-admin table.feature-grid th {
+    position: relative;
+    border: 0;
+}
+#why-use-django-nested-admin table.feature-grid th a {
+    color: #404040;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: 0 4px 0 -2px #404040;
+    transform: rotate(-45deg);
+    transform-origin: 20px 28px 0;
+    text-align: left;
+    text-indent: 15px;
+    white-space: nowrap;
+}
+
+#why-use-django-nested-admin .wy-table-responsive {
+    overflow: visible;
+    margin-top: 120px;
+}
+
+.rst-content table.docutils.feature-grid td:first-child {
+    border-left-width: 1px;
+}
+.rst-content table.docutils.feature-grid td:last-child {
+    border-right-width: 1px;

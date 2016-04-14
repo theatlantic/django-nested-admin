@@ -1,14 +1,12 @@
-"""
-All this craziness is so that we can allow the classes in nested_admin.formsets
-to be importable directly from this module, e.g.:
-
-    from nested_admin import NestedInlineFormSet
-
-without running afoul of the strict import order required by Django 1.9+.
-This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
-
-Also included is a monkey-patch for django.forms.formsets.all_valid().
-"""
+# All this craziness is so that we can allow the classes in nested_admin.formsets
+# to be importable directly from this module, e.g.:
+#
+#     from nested_admin import NestedInlineFormSet
+#
+# without running afoul of the strict import order required by Django 1.9+.
+# This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
+#
+# Also included is a monkey-patch for django.forms.formsets.all_valid().
 import pkg_resources
 import sys
 from types import ModuleType
