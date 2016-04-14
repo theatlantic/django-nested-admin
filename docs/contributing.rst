@@ -1,7 +1,7 @@
 .. _contributing:
 
 Contributing
-------------
+============
 
 Editing javascript and css
 --------------------------
