@@ -77,6 +77,6 @@ If your test requires the creation of new test models, then it may make sense
 to write a new test app. Create a new subdirectory under ``nested_admin/tests``
 with an ``__init__.py``, ``admin.py``, ``models.py``, and ``tests.py``. The
 test runner will automatically add this to the list of ``INSTALLED_APPS``
-and execute the tests defined in ``tests.py``. The tests in :mod:`.one_deep`
+and execute the tests defined in ``tests.py``. The tests in :mod:`.two_deep`
 are the most complete, and can serve as a reference for how to use the
 helper methods for simulating user interactions.
