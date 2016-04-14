@@ -1,9 +1,7 @@
 django-nested-admin
 ###################
 
-.. image:: https://travis-ci.org/theatlantic/django-nested-admin.svg?branch=master
-    :target: https://travis-ci.org/theatlantic/django-nested-admin
-    :alt: Build Status
+|build_badge| |docs_badge|
 
 **django-nested-admin** is a project that makes it possible to nest
 admin inlines (that is, to define inlines on InlineModelAdmin classes).
@@ -128,3 +126,6 @@ The django code is licensed under the `Simplified BSD
 License <http://opensource.org/licenses/BSD-2-Clause>`_. View the
 ``LICENSE`` file under the root directory for complete license and
 copyright information.
+
+.. |build_badge| image:: https://travis-ci.org/theatlantic/django-nested-admin.svg?branch=master
+.. |docs_badge| image:: https://readthedocs.org/projects/django-nested-admin/badge/?version=latest
