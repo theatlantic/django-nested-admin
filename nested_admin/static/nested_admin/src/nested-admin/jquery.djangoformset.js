@@ -22,10 +22,11 @@ class DjangoFormset {
         var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = $.extend({}, this.opts, {
-            addButtonSelector: '.djn-add-handler.' + inlineModelClassName,
-            removeButtonSelector: '.djn-remove-handler.' + inlineModelClassName,
-            deleteButtonSelector: '.djn-delete-handler.' + inlineModelClassName,
-            formClass: 'dynamic-form-' + inlineModelClassName
+            addButtonSelector: '.djn-add-handler.djn-model-' + inlineModelClassName,
+            removeButtonSelector: '.djn-remove-handler.djn-model-' + inlineModelClassName,
+            deleteButtonSelector: '.djn-delete-handler.djn-model-' + inlineModelClassName,
+            formClass: 'dynamic-form grp-dynamic-form djn-dynamic-form-' + inlineModelClassName,
+            formClassSelector: '.djn-dynamic-form-' + inlineModelClassName
         });
 
         DJNesting.initRelatedFields(this.prefix, this.$inline.djnData());
@@ -77,14 +78,14 @@ class DjangoFormset {
         }).off('click.djnesting').on('click.djnesting', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var $form = $(this).closest('.' + self.opts.formClass);
+            var $form = $(this).closest(self.opts.formClassSelector);
             self.remove($form);
         });
 
         var deleteClickHandler = function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            var $form = $(this).closest('.' + self.opts.formClass);
+            var $form = $(this).closest(self.opts.formClassSelector);
             var $deleteInput = $('#id_' + $form.djangoFormPrefix() + 'DELETE');
             if (!$deleteInput.is(':checked')) {
                 self['delete']($form);
@@ -118,6 +119,9 @@ class DjangoFormset {
 
         DJNesting.updatePositions(this.prefix);
         $(document).trigger('djnesting:mutate', [this.$inline]);
+
+        // Also fire using the events that were added in Django 1.9
+        $(document).trigger('formset:removed', [$form, this.prefix]);
     }
     delete(form) {
         var self = this,
@@ -159,6 +163,7 @@ class DjangoFormset {
         });
         DJNesting.updatePositions(this.prefix);
         $(document).trigger('djnesting:mutate', [this.$inline]);
+        $(document.trigger('formset:deleted', [$form, this.prefix]);
     }
     undelete(form) {
         var $form = $(form),
@@ -197,6 +202,7 @@ class DjangoFormset {
         });
         DJNesting.updatePositions(this.prefix);
         $(document).trigger('djnesting:mutate', [this.$inline]);
+        $(document.trigger('formset:undeleted', [$form, this.prefix]);
     }
     add(spliceIndex) {
         var self = this;
@@ -268,6 +274,9 @@ class DjangoFormset {
         // Fire an event on the document so other javascript applications
         // can be alerted to the newly inserted inline
         $(document).trigger('djnesting:added', [this.$inline, $form]);
+
+        // Also fire using the events that were added in Django 1.9
+        $(document).trigger('formset:added', [$form, this.prefix]);
 
         return $form;
     }

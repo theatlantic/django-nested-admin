@@ -6,14 +6,14 @@
     id="{{ inline_admin_formset.formset.prefix }}-group"
     data-inline-type="stacked"
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
-    data-inline-model="{{ inline_opts.opts.object_name|lower }}">
+    data-inline-model="{{ inline_admin_formset.inline_model_id }}">
 
     <h2 class="djn-collapse-handler grp-collapse-handler">
         {% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}
     </h2>
     <ul class="djn-tools grp-tools">
         <li><a href="javascript://"
-               class="djn-add-handler grp-icon grp-add-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}"
+               class="djn-add-handler grp-icon grp-add-handler {{ inline_admin_formset.handler_classes|join:" " }}"
                title="{% trans 'Add Another' %}"> </a>
         </li>
     </ul>
@@ -73,9 +73,9 @@
 
     <div class="grp-module grp-transparent">
         <div class="grp-row djn-add-item">
-            <a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}"><strong>{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</strong></a>
+            <a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_admin_formset.handler_classes|join:" " }}"><strong>{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</strong></a>
             <ul class="djn-tools grp-tools">
-                <li><a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_opts.opts.object_name|lower }}" title="{% trans 'Add Item' %}"> </a></li>
+                <li><a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_admin_formset.handler_classes|join:" " }}" title="{% trans 'Add Item' %}"> </a></li>
             </ul>
         </div>
     </div>

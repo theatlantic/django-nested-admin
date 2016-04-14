@@ -6,7 +6,6 @@ import copy
 import re
 import time
 
-import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.contrib.auth.models import User
@@ -46,10 +45,7 @@ def is_str(o):
     return isinstance(o, six.string_types)
 
 
-if django.VERSION >= (1, 8):
-    get_model_name = lambda m: m._meta.model_name
-else:
-    get_model_name = lambda m: m._meta.object_name.lower()
+get_model_name = lambda m: "-".join([m._meta.app_label, m._meta.model_name])
 
 
 def xpath_cls(classname):
@@ -390,7 +386,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         model_name = indexes[-1]
         group = self.get_group(indexes=indexes)
         group_id = group.get_attribute('id')
-        selector = "#%s .dynamic-form-%s" % (group_id, model_name)
+        selector = "#%s .djn-dynamic-form-%s" % (group_id, model_name)
         return self.selenium.execute_script("return $('%s').length" % selector)
 
     def get_group(self, indexes=None):
@@ -414,7 +410,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes, is_group=True)
         new_index = self.get_num_inlines(indexes)
         model_name = indexes[-1]
-        add_selector = "#%s .djn-add-item a.djn-add-handler.%s" % (
+        add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
             self.get_group(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(add_selector) as el:
             el.click()
@@ -427,7 +423,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
     def remove_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        remove_selector = "#%s .djn-remove-handler.%s" % (
+        remove_selector = "#%s .djn-remove-handler.djn-model-%s" % (
             self.get_item(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(remove_selector) as el:
             el.click()
@@ -436,12 +432,12 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        delete_selector = "#%s .djn-delete-handler.%s" % (
+        delete_selector = "#%s .djn-delete-handler.djn-model-%s" % (
             item_id, model_name)
         with self.clickable_selector(delete_selector) as el:
             el.click()
         if self.has_grappelli:
-            undelete_selector = "#%s.grp-predelete .grp-delete-handler.%s" % (
+            undelete_selector = "#%s.grp-predelete .grp-delete-handler.djn-model-%s" % (
                 item_id, model_name)
             self.wait_until_clickable_selector(undelete_selector)
 
@@ -449,11 +445,11 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        undelete_selector = "#%s .djn-delete-handler.%s" % (item_id, model_name)
+        undelete_selector = "#%s .djn-delete-handler.djn-model-%s" % (item_id, model_name)
         with self.clickable_selector(undelete_selector) as el:
             el.click()
         if self.has_grappelli:
-            delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.%s" % (
+            delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.djn-model-%s" % (
                 item_id, model_name)
             self.wait_until_clickable_selector(delete_selector)
 

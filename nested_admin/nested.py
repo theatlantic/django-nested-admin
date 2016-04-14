@@ -83,6 +83,10 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
             )})
     media = property(_media)
 
+    @property
+    def inline_model_id(self):
+        return "-".join([self.opts.opts.app_label, self.opts.opts.model_name])
+
     def inline_formset_data(self):
         verbose_name = self.opts.verbose_name
         return json.dumps({
@@ -104,10 +108,15 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                     'position': getattr(self.opts, 'sortable_field_name', None),
                     'pk': self.opts.opts.pk.name,
                 },
-                'inlineModel': self.opts.opts.object_name.lower(),
+                'inlineModel': self.inline_model_id,
                 'sortableOptions': self.opts.sortable_options,
             },
         })
+
+    @property
+    def handler_classes(self):
+        classes = set(getattr(self.opts, 'handler_classes', None) or [])
+        return tuple(classes | {"djn-model-%s" % self.inline_model_id})
 
 
 class NestedModelAdminMixin(object):

@@ -6,9 +6,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () {
+    function defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }return function (Constructor, protoProps, staticProps) {
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+    };
+}();
 
-var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
+var _jquery = typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null;
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -20,13 +28,19 @@ var _utils = require('./utils');
 
 var _utils2 = _interopRequireDefault(_utils);
 
-var _grappelli = (typeof window !== "undefined" ? window['grappelli'] : typeof global !== "undefined" ? global['grappelli'] : null);
+var _grappelli = typeof window !== "undefined" ? window['grappelli'] : typeof global !== "undefined" ? global['grappelli'] : null;
 
 var _grappelli2 = _interopRequireDefault(_grappelli);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
+}
 
 var pluginName = 'djangoFormset';
 
@@ -47,10 +61,11 @@ var DjangoFormset = function () {
         var inlineModelClassName = this.$inline.djnData('inlineModel');
 
         this.opts = _jquery2.default.extend({}, this.opts, {
-            addButtonSelector: '.djn-add-handler.' + inlineModelClassName,
-            removeButtonSelector: '.djn-remove-handler.' + inlineModelClassName,
-            deleteButtonSelector: '.djn-delete-handler.' + inlineModelClassName,
-            formClass: 'dynamic-form-' + inlineModelClassName
+            addButtonSelector: '.djn-add-handler.djn-model-' + inlineModelClassName,
+            removeButtonSelector: '.djn-remove-handler.djn-model-' + inlineModelClassName,
+            deleteButtonSelector: '.djn-delete-handler.djn-model-' + inlineModelClassName,
+            formClass: 'dynamic-form grp-dynamic-form djn-dynamic-form-' + inlineModelClassName,
+            formClassSelector: '.djn-dynamic-form-' + inlineModelClassName
         });
 
         _utils2.default.initRelatedFields(this.prefix, this.$inline.djnData());
@@ -109,14 +124,14 @@ var DjangoFormset = function () {
             }).off('click.djnesting').on('click.djnesting', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var $form = (0, _jquery2.default)(this).closest('.' + self.opts.formClass);
+                var $form = (0, _jquery2.default)(this).closest(self.opts.formClassSelector);
                 self.remove($form);
             });
 
             var deleteClickHandler = function deleteClickHandler(e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                var $form = (0, _jquery2.default)(this).closest('.' + self.opts.formClass);
+                var $form = (0, _jquery2.default)(this).closest(self.opts.formClassSelector);
                 var $deleteInput = (0, _jquery2.default)('#id_' + $form.djangoFormPrefix() + 'DELETE');
                 if (!$deleteInput.is(':checked')) {
                     self['delete']($form);

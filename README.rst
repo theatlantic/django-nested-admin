@@ -107,7 +107,7 @@ which runs the tests against all supported Django installs. To run the tests
 within a virtualenv run ``python runtests.py`` from the repository directory.
 The tests require a selenium webdriver to be installed. By default the tests
 run with phantomjs, but it is also possible to run the tests with the chrome
-webdriver by passing `--selenium=chrome` to runtests.py or, if running with tox,
+webdriver by passing ``--selenium=chrome`` to runtests.py or, if running with tox,
 running ``tox -- --selenium=chrome``. See ``runtests.py --help`` for a complete
 list of the options available.
 

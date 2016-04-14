@@ -5,7 +5,8 @@
   background: transparent;
 }
 
-.djn-group-nested.grp-stacked h2.djn-collapse-handler {
+.djn-group-nested.grp-stacked h2.djn-collapse-handler,
+.djn-group-nested.grp-stacked > .grp-tools {
   display: none;
 }
 
@@ -86,6 +87,10 @@
 
 .djn-tbody.ui-sortable-placeholder td {
   background: #fbfad0;
+}
+
+.djn-collapse-handler-verbose-name {
+  display: inline;
 }
 
 #grp-content .grp-tabular .grp-table .grp-tbody .grp-th,

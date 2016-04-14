@@ -7,7 +7,7 @@
     id="{{ inline_admin_formset.formset.prefix }}-group"
     data-inline-type="stacked"
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
-    data-inline-model="{{ inline_opts.opts.object_name|lower }}">
+    data-inline-model="{{ inline_admin_formset.inline_model_id }}">
     <div class="tabular inline-related">
     <fieldset class="module">
 
@@ -93,10 +93,10 @@
                 {% endfor %}
                 {% if inline_admin_formset.formset.can_delete %}
                     {% if inline_admin_form.original %}
-                    <td class="delete djn-delete-handler {{ inline_opts.opts.object_name|lower }}">{{ inline_admin_form.deletion_field.field }}</td>
+                    <td class="delete djn-delete-handler {{ inline_admin_formset.handler_classes|join:" " }}">{{ inline_admin_form.deletion_field.field }}</td>
                     {% else %}
                     <td class="delete">
-                        <div><a class="inline-deletelink djn-remove-handler {{ inline_opts.opts.object_name|lower }}" href="javascript:void(0)">Remove</a></div>
+                        <div><a class="inline-deletelink djn-remove-handler {{ inline_admin_formset.handler_classes|join:" " }}" href="javascript:void(0)">Remove</a></div>
                     </td>
                     {% endif %}
                 {% endif %}
@@ -116,7 +116,7 @@
                 <tbody>
                     <tr class="add-row">
                         <td colspan="{{ inline_admin_form|cell_count }}" class="djn-add-item">
-                            <a href="javascript://" class="add-handler djn-add-handler {{ inline_opts.handler_classes|join:" "|default:"" }} {{ inline_opts.opts.object_name|lower }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</a>
+                            <a href="javascript://" class="add-handler djn-add-handler {{ inline_admin_formset.handler_classes|join:" " }}">{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</a>
                         </td>
                     </tr>
                 </tbody>
