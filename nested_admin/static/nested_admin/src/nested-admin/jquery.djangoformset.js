@@ -163,7 +163,7 @@ class DjangoFormset {
         });
         DJNesting.updatePositions(this.prefix);
         $(document).trigger('djnesting:mutate', [this.$inline]);
-        $(document.trigger('formset:deleted', [$form, this.prefix]);
+        $(document).trigger('formset:deleted', [$form, this.prefix]);
     }
     undelete(form) {
         var $form = $(form),
@@ -202,7 +202,7 @@ class DjangoFormset {
         });
         DJNesting.updatePositions(this.prefix);
         $(document).trigger('djnesting:mutate', [this.$inline]);
-        $(document.trigger('formset:undeleted', [$form, this.prefix]);
+        $(document).trigger('formset:undeleted', [$form, this.prefix]);
     }
     add(spliceIndex) {
         var self = this;
