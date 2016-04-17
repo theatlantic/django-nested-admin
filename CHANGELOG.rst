@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**3.0.2 (April 17, 2016)**
+
+* Feature: django-suit support
+* Fixed: javascript syntax error
+* Fixed: bug where tabular inlines without sortables could not be updated
+
 **3.0.0 (April 13, 2016)**
 
 * Added documentation
