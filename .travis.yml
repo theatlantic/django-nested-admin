@@ -6,6 +6,7 @@ python:
 env:
     - TOXENV=py27-dj18
     - TOXENV=py27-dj18-grp
+    - TOXENV=py27-dj18-suit
     - TOXENV=py27-dj19
     - TOXENV=py27-dj19-grp
     - TOXENV=py27-djmaster
@@ -17,6 +18,6 @@ install:
     - pip install tox 
 
 script:
-    - travis_retry travis_retry tox -- --failfast
+    - travis_retry travis_retry travis_retry tox -- --failfast
 
 sudo: false
