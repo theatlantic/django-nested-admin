@@ -44,7 +44,7 @@ class PlainStackedRoot(RootAbstract):
 
 
 class PlainStackedChild(ChildAbstract):
-    root = ForeignKey(PlainStackedRoot, related_name='section_set', on_delete=CASCADE)
+    root = ForeignKey(PlainStackedRoot, related_name='children', on_delete=CASCADE)
 
     class Meta:
         ordering = ('root', 'position')
@@ -60,7 +60,7 @@ class PlainTabularRoot(RootAbstract):
 
 
 class PlainTabularChild(ChildAbstract):
-    root = ForeignKey(PlainTabularRoot, related_name='section_set', on_delete=CASCADE)
+    root = ForeignKey(PlainTabularRoot, related_name='children', on_delete=CASCADE)
 
     class Meta:
         ordering = ('root', 'position')
@@ -76,7 +76,7 @@ class NestedStackedRoot(RootAbstract):
 
 
 class NestedStackedChild(ChildAbstract):
-    root = ForeignKey(NestedStackedRoot, related_name='section_set', on_delete=CASCADE)
+    root = ForeignKey(NestedStackedRoot, related_name='children', on_delete=CASCADE)
 
     class Meta:
         ordering = ('root', 'position')
@@ -92,7 +92,7 @@ class NestedTabularRoot(RootAbstract):
 
 
 class NestedTabularChild(ChildAbstract):
-    root = ForeignKey(NestedTabularRoot, related_name='section_set', on_delete=CASCADE)
+    root = ForeignKey(NestedTabularRoot, related_name='children', on_delete=CASCADE)
 
     class Meta:
         ordering = ('root', 'position')

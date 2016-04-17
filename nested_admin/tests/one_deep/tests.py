@@ -77,12 +77,18 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def model_names(self):
         return self.all_model_names[self.root_model]
 
-    def assertSameScreenshot(self, a, b):
+    def assertSameScreenshot(self, a, b, extra_args=None):
         diff_output_path = a.replace('_a.png', '_diff.png')
+        args = [
+            self.blinkdiff_bin, "--verbose", "--threshold", "1", "--delta", "0",
+            "--output", diff_output_path]
 
-        p = subprocess.Popen([
-            self.blinkdiff_bin, "--verbose", "--threshold", "1", "--delta", "0", "--output", diff_output_path, a, b],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if extra_args:
+            args += extra_args
+
+        args += [a, b]
+
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, _ = p.communicate()
         if p.returncode == 0:
             # No differences found
@@ -170,3 +176,56 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             self.add_inline()
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
+
+    def test_tabular_validation_error(self):
+        screenshots = []
+        for model in [PlainTabularRoot, NestedTabularRoot]:
+            self.root_model = model
+            self.load_admin()
+            self.add_inline()
+            with self.clickable_selector('#id_slug') as el:
+                el.send_keys('a')
+            with self.clickable_selector('#id_children-0-slug') as el:
+                el.send_keys('b')
+            self.save_form()
+            screenshots.append(self.get_admin_screenshot())
+        extra_args = []
+        if not self.has_grappelli:
+            # django has a bug where it doesn't show the 'Remove' link
+            # if there is a validationerror on a newly added inline
+            # see <https://code.djangoproject.com/ticket/15910>
+            delete_col = self.selenium.find_element_by_css_selector('#children0 .delete')
+            extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
+                'x': delete_col.location['x'],
+                'y': delete_col.location['y'],
+                'w': delete_col.size['width'],
+                'h': delete_col.size['height'],
+            }]
+        self.assertSameScreenshot(*screenshots, extra_args=extra_args)
+
+    def test_stacked_validation_error(self):
+        screenshots = []
+        for model in [PlainStackedRoot, NestedStackedRoot]:
+            self.root_model = model
+            self.load_admin()
+            self.add_inline()
+            with self.clickable_selector('#id_slug') as el:
+                el.send_keys('a')
+            with self.clickable_selector('#id_children-0-slug') as el:
+                el.send_keys('b')
+            self.save_form()
+            screenshots.append(self.get_admin_screenshot())
+        extra_args = []
+        if not self.has_grappelli:
+            # django has a bug where it doesn't show the 'Remove' link
+            # if there is a validationerror on a newly added inline
+            # see <https://code.djangoproject.com/ticket/15910>
+            delete_col = self.selenium.find_element_by_css_selector('#children0 .inline-deletelink')
+            extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
+                'x': delete_col.location['x'],
+                'y': delete_col.location['y'],
+                'w': delete_col.size['width'],
+                'h': delete_col.size['height'],
+            }]
+        self.assertSameScreenshot(*screenshots, extra_args=extra_args)
+

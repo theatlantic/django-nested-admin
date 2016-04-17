@@ -142,6 +142,10 @@ table.djn-table.grp-table th div.grp-readonly {
   margin: 0 !important;
 }
 
+.grp-tabular.djn-tabular td.grp-td ul.errorlist {
+  margin: 0 !important;
+}
+
 table.djn-table.grp-table td div.grp-readonly:empty,
 table.djn-table.grp-table th div.grp-readonly:empty {
   margin-bottom: -5px !important;
