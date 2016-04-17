@@ -11,9 +11,9 @@ Grappelli support.
 Compatibility
 =============
 
-django-nested-admin is compatible with Django 1.8+ and Python versions 2.7 and 3.4+ and works
-with or without Grappelli. It does not require Grappelli for the drag-and-drop
-sorting features.
+django-nested-admin is compatible with Django 1.8+ and Python versions 2.7 and 3.4+.
+It is also compatible with Grappelli and Django Suit. It does not require Grappelli
+or Django Suit for the drag-and-drop sorting features.
 
 
 Contents

@@ -22,7 +22,7 @@ class TestDeepNesting(BaseNestedAdminTestCase):
         self.save_form()
 
         field_id_with_error = self.selenium.execute_script(
-            "return $('ul.errorlist li').parent().parent().find('input').attr('id')")
+            "return $('ul.errorlist li').closest('.form-row').find('input').attr('id')")
 
         self.assertEqual(field_id_with_error, "id_children-0-name")
 

@@ -30,7 +30,7 @@
                  
                 <h3 class="{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djn-drag-handler{% endif %}">
                     <b>{{ inline_admin_formset.opts.verbose_name|capfirst }}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %} <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}
-                    {% else %}#{{ forloop.counter }}{% endif %}</span>
+                    {% else %}{% ifnotsuit %}#{{ forloop.counter }}{% endifnotsuit %}{% endif %}</span>
                           {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
                         {% if inline_admin_formset.formset.can_delete  %}
                         {% if inline_admin_form.original %}
@@ -48,7 +48,7 @@
                 {% endif %}
 
                 {% for fieldset in inline_admin_form %}
-                    {% include "nesting/admin/includes/inline.html" %}
+                    {% include inline_admin_formset.opts.fieldset_template %}
                 {% endfor %}
                 {% if inline_admin_form.has_auto_field or inline_admin_form.needs_explicit_pk_field %}
                     {{ inline_admin_form.pk_field.field }}

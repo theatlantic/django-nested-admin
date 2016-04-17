@@ -53,7 +53,7 @@
 
             <h3 style="display: none;"><b>{{ inline_admin_formset.opts.verbose_name }} #{{ forloop.counter }}</b>&nbsp;&nbsp;{% if inline_admin_form.original %} {{ inline_admin_form.original }}{% endif %}</h3>
 
-            {% include "nesting/admin/includes/grappelli_inline_tabular.html" %}
+            {% include inline_admin_formset.opts.fieldset_template %}
 
             </tr>
 

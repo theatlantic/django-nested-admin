@@ -221,6 +221,13 @@ class NestedInlineModelAdminMixin(object):
 
     inlines = []
 
+    if 'suit' in settings.INSTALLED_APPS:
+        fieldset_template = 'nesting/admin/includes/suit_inline.html'
+    elif 'grappelli' in settings.INSTALLED_APPS:
+        fieldset_template = 'nesting/admin/includes/grappelli_inline.html'
+    else:
+        fieldset_template = 'nesting/admin/includes/inline.html'
+
     def __init__(self, *args, **kwargs):
         sortable_options = {
             'disabled': not(self.is_sortable),
@@ -264,6 +271,7 @@ class NestedTabularInline(NestedInlineModelAdmin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_tabular.html'
+        fieldset_template = 'nesting/admin/includes/grappelli_inline_tabular.html'
     else:
         template = 'nesting/admin/inlines/tabular.html'
 
@@ -285,5 +293,6 @@ class NestedGenericTabularInline(NestedGenericInlineModelAdmin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_tabular.html'
+        fieldset_template = 'nesting/admin/includes/grappelli_inline_tabular.html'
     else:
         template = 'nesting/admin/inlines/tabular.html'

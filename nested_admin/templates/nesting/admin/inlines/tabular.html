@@ -18,7 +18,7 @@
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
 
-    <table class="djn-items tabular inline-related djn-table">
+    <table class="djn-items inline-related djn-table{% ifsuit %} table table-bordered table-condensed table-striped{% else %} tabular{% endifsuit %}">
       <thead class="djn-module djn-thead djn-item">
           <tr>
               {% ifdj110 %}<th class="original"></th>{% endifdj110 %}
@@ -44,9 +44,13 @@
 
             {% if inline_admin_form.form.non_field_errors %}
             <tr><td class="djn-td" colspan="{{ inline_admin_form|cell_count }}">
+                {% ifsuit %}
+                <div class="control-group error"><div class="help-block">{{ inline_admin_form.form.non_field_errors }}</div></div>
+                {% else %}
                 <ul class="errorlist">
                     <li>{{ inline_admin_form.form.non_field_errors }}</li>
                 </ul>
+                {% endifsuit %}
             </td></tr>
             {% endif %}
             <tr class="djn-tr form-row{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}">
@@ -54,7 +58,7 @@
                 <td class="original{% if inline_admin_formset.opts.sortable_field_name %} is-sortable{% endif %}">
                 {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
                 {% if inline_admin_form.original %}
-                {{ inline_admin_form.original }}
+                {% ifnotsuit %}{{ inline_admin_form.original }}{% endifnotsuit %}
                 {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}<a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}
                 {% endif %}
                 {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
@@ -79,11 +83,17 @@
                     {% for line in fieldset %}
                         {% for field in line %}
                             {% if not field.field.is_hidden %}
-                                <td class="djn-td field-{{ field.field.name }}">
+                                <td class="djn-td field-{{ field.field.name }}{% ifsuit %}{% if field.field.errors %} control-group error{% endif %}{% endifsuit %}">
                                     {% if field.is_readonly %}
                                         <p>{{ field.contents }}</p>
                                     {% else %}
-                                        {{ field.field.errors.as_ul }}
+                                        {% if field.field.errors %}
+                                        {% ifsuit %}
+                                            <div class="help-block">{{ field.field.errors.as_ul }}</div>
+                                        {% else %}
+                                            {{ field.field.errors.as_ul }}
+                                        {% endifsuit %}
+                                        {% endif %}
                                         {{ field.field }}
                                     {% endif %}
                                 </td>

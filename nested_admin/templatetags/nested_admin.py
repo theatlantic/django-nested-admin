@@ -184,3 +184,27 @@ def ifnotdj110(parser, token):
     else:
         nodelist_false = template.NodeList()
     return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] != (1, 10))
+
+
+@register.tag
+def ifsuit(parser, token):
+    nodelist_true = parser.parse(('else', 'endifsuit'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifsuit',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return IfConditionNode(nodelist_true, nodelist_false, 'suit' in settings.INSTALLED_APPS)
+
+
+@register.tag
+def ifnotsuit(parser, token):
+    nodelist_true = parser.parse(('else', 'endifnotsuit'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifnotsuit',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return IfConditionNode(nodelist_true, nodelist_false, 'suit' not in settings.INSTALLED_APPS)

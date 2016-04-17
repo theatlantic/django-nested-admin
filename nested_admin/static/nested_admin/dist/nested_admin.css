@@ -264,4 +264,8 @@ table.djn-table.grp-table th p > input[type="button"] {
   border-bottom: 0;
 }
 
+#suit-center .form-horizontal .djn-no-drag + .inline-related h3 {
+  margin-top: 0;
+}
+
 /*# sourceMappingURL=nested_admin.css.map */

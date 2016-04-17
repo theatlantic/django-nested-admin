@@ -37,7 +37,13 @@ TEMPLATES = [{
 try:
     import grappelli
 except ImportError:
-    INSTALLED_APPS = tuple([])
+    try:
+        import suit
+    except ImportError:
+        INSTALLED_APPS = tuple([])
+    else:
+        INSTALLED_APPS = tuple(['suit'])
+        SUIT_CONFIG = {'CONFIRM_UNSAVED_CHANGES': False}
 else:
     INSTALLED_APPS = tuple(['grappelli'])
 

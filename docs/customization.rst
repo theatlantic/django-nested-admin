@@ -7,7 +7,7 @@ Customization
 Sortables
 =========
 
-The steps for enabling drag-and-drop sorting functionality is identical to Grappelli’s (even with the vanilla Django admin), so the `Grappelli documentation <http://django-grappelli.readthedocs.org/en/latest/customization.html#inline-sortables>`_ for this feature is the best reference. The `other features of Grappelli <http://django-grappelli.readthedocs.org/en/latest/customization.html>`_ have not been ported to work with vanilla Django, but in principle they should all still work with nested inlines using django-nested-admin. If you run into any difficulty with this, please `create an issue <https://github.com/theatlantic/django-nested-admin/issues>`_ on this project’s Github.
+The steps for enabling drag-and-drop sorting functionality is identical to Grappelli’s (even with the vanilla Django admin), so the `Grappelli documentation <http://django-grappelli.readthedocs.org/en/latest/customization.html#inline-sortables>`_ for this feature is the best reference. This is equally true of sortables in Django Suit—do not follow Django Suit’s instructions for sortables, as they will not work. The `other features of Grappelli <http://django-grappelli.readthedocs.org/en/latest/customization.html>`_ have not been ported to work with vanilla Django, but in principle they should all still work with nested inlines using django-nested-admin if Grappelli is installed. If you run into any difficulty with this, please `create an issue <https://github.com/theatlantic/django-nested-admin/issues>`_ on this project’s Github.
 
 Events
 ======

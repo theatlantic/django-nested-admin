@@ -64,6 +64,7 @@ def xpath_item(model_name=None):
 class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
 
     has_grappelli = bool('grappelli' in settings.INSTALLED_APPS)
+    has_suit = bool('suit' in settings.INSTALLED_APPS)
 
     root_model = None
     nested_models = None
@@ -248,7 +249,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         browser_errors = [e for e in self.selenium.get_log('browser')
                           if 'favicon' not in e['message']]
         self.assertEqual(browser_errors, [])
-        self.selenium.find_element_by_xpath('//input[@name="_continue"]').click()
+        self.selenium.find_element_by_xpath('//*[@name="_continue"]').click()
         self.wait_page_loaded()
         self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)

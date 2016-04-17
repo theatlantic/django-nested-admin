@@ -100,6 +100,8 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
 
     @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
+    @skipIf(BaseNestedAdminTestCase.has_suit,
+        "Known bug with prepopulated fields and django-suit")
     def test_add_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -107,6 +109,8 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
 
     @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
+    @skipIf(BaseNestedAdminTestCase.has_suit,
+        "Known bug with prepopulated fields and django-suit")
     def test_add_initial_extra_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -143,6 +147,8 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
 
     @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
+    @skipIf(BaseNestedAdminTestCase.has_suit,
+        "Known bug with prepopulated fields and django-suit")
     def test_add_two_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -166,6 +172,8 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
 
     @skipIf(BaseNestedAdminTestCase.has_grappelli,
         "Known bug with prepopulated fields and grappelli")
+    @skipIf(BaseNestedAdminTestCase.has_suit,
+        "Known bug with prepopulated fields and django-suit")
     def test_add_three_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()

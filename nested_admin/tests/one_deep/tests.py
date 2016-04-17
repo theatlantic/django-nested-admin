@@ -83,6 +83,14 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             self.blinkdiff_bin, "--verbose", "--threshold", "1", "--delta", "0",
             "--output", diff_output_path]
 
+        if self.has_suit:
+            suit_left = self.selenium.find_element_by_css_selector('#suit-left')
+            args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
+                'x': suit_left.location['x'],
+                'y': suit_left.location['y'],
+                'w': suit_left.size['width'],
+                'h': suit_left.size['height'],
+            }]
         if extra_args:
             args += extra_args
 
@@ -182,6 +190,8 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         for model in [PlainTabularRoot, NestedTabularRoot]:
             self.root_model = model
             self.load_admin()
+            if self.has_suit:
+                self.selenium.set_window_size(1400, 800)
             self.add_inline()
             with self.clickable_selector('#id_slug') as el:
                 el.send_keys('a')

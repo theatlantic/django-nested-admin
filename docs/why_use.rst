@@ -19,6 +19,8 @@ Why use django-nested-admin?
 +-------------------------+------------------------+-------------------------+--------------------------+----------------------+-------------------------+
 | Selenium Tests          | ✓                      |                         |                          |                      |                         |
 +-------------------------+------------------------+-------------------------+--------------------------+----------------------+-------------------------+
+| Django Suit support     | ✓                      |                         |                          |                      |                         |
++-------------------------+------------------------+-------------------------+--------------------------+----------------------+-------------------------+
 
 Above, you will find a feature comparison of all other implementations of nested inlines in the django admin of which I am aware. `django-nested-inline`_, `django-nested-inlines`_, and `dj-nested-inlines`_ are all variations upon `a patch <https://code.djangoproject.com/attachment/ticket/9025/nested_inlines_finished.diff>`_ posted to Django `ticket #9025 <https://code.djangoproject.com/ticket/9025>`_. `django-nested-inlines`_ has had no commits since 2013 and appears to be abandoned, with `dj-nested-inlines`_ being a better maintained fork. It, along with `django-nested-inline`_, are maintained insofar as the maintainers merge in pull requests and update PyPI, but they do not appear to be working on improving these implementations themselves. `django-super-inlines`_ is a fresher take on the problem, and looks to be more promising.
 
