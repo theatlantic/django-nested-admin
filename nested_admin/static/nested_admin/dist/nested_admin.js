@@ -3208,9 +3208,11 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
     var lookupFields = groupData.lookupRelated;
 
     _jquery2.default.each(lookupFields.fk || [], function () {
+        if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
         (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
     _jquery2.default.each(lookupFields.m2m || [], function () {
+        if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
         (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
     _jquery2.default.each(lookupFields.generic || [], function () {
@@ -3221,6 +3223,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
 
         (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var $this = (0, _jquery2.default)(this);
+            if ($this.next('a').hasClass('related-lookup')) return;
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
