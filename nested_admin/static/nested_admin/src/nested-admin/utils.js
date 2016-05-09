@@ -67,11 +67,13 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     var lookupFields = groupData.lookupRelated;
 
     $.each(lookupFields.fk || [], function() {
+        if ($(this).next('a').hasClass('related-lookup')) return;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_fk({lookup_url: lookupUrls.related});
     });
     $.each(lookupFields.m2m || [], function() {
+        if ($(this).next('a').hasClass('related-lookup')) return;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
         .find('input[name^="' + prefix + '"][name$="' + this + '"]')
         .grp_related_m2m({lookup_url: lookupUrls.m2m});
@@ -82,6 +84,7 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
             var $this = $(this);
+            if ($this.next('a').hasClass('related-lookup')) return;
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
             var [, index] = id.match(idRegex) || [];
