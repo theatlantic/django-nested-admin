@@ -3223,7 +3223,6 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
 
         (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
             var $this = (0, _jquery2.default)(this);
-            if ($this.next('a').hasClass('related-lookup')) return;
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
@@ -3234,6 +3233,10 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
             var index = _ref3[1];
 
             if (index) {
+                if ($this.hasClass('grp-has-related-lookup')) {
+                    $this.parent().find('a.related-lookup').remove();
+                    $this.parent().find('.grp-placeholder-related-generic').remove();
+                }
                 $this.grp_related_generic({
                     content_type: '#id_' + prefix + index + contentType,
                     object_id: '#id_' + prefix + index + objectId,

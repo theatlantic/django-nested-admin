@@ -84,11 +84,14 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
         .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
         .each(function() {
             var $this = $(this);
-            if ($this.next('a').hasClass('related-lookup')) return;
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
             var [, index] = id.match(idRegex) || [];
             if (index) {
+                if ($this.hasClass('grp-has-related-lookup')) {
+                    $this.parent().find('a.related-lookup').remove();
+                    $this.parent().find('.grp-placeholder-related-generic').remove();
+                }
                 $this.grp_related_generic({
                     content_type: '#id_' + prefix + index + contentType,
                     object_id: '#id_' + prefix + index + objectId,
