@@ -14,8 +14,6 @@ let config = pjson.config;
 let taskName = process.argv[2];
 let dirs = config.directories;
 
-console.log(path.resolve(dirs.destination));
-
 // This will grab all js in the `gulp` directory
 // in order to load all gulp tasks
 wrench.readdirSyncRecursive('./gulp').filter((file) => {
