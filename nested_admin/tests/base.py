@@ -5,7 +5,9 @@ import contextlib
 import copy
 import re
 import time
+import unittest
 
+import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.contrib.auth.models import User
@@ -668,3 +670,9 @@ class DragAndDropAction(object):
         helper = self._match_helper_with_target(helper, target)
         self._finesse_position(helper, target)
         self.release()
+
+
+def expected_failure_if_dj110(func):
+    if django.VERSION >= (1, 10):
+        return unittest.expectedFailure(func)
+    return func

@@ -2,6 +2,8 @@ import glob
 import os
 import tempfile
 
+import django
+
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()
@@ -63,12 +65,25 @@ for p in glob.glob(os.path.join(current_dir, '*', 'models.py')):
     INSTALLED_APPS += tuple(["nested_admin.tests.%s" %
         os.path.basename(os.path.dirname(p))])
 
-MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-)
+
+if django.VERSION >= (1, 10):
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
+else:
+    MIDDLEWARE_CLASSES = (
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    )
 
 LOGGING = {
     'version': 1,

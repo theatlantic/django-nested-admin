@@ -9,10 +9,10 @@ env:
     - TOXENV=py27-dj18-suit
     - TOXENV=py27-dj19
     - TOXENV=py27-dj19-grp
-    - TOXENV=py27-djmaster
+    - TOXENV=py27-dj110
     - TOXENV=py34-dj18
     - TOXENV=py34-dj19
-    - TOXENV=py34-djmaster
+    - TOXENV=py34-dj110
 
 install:
     - pip install tox 
