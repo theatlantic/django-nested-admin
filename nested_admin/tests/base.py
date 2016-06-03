@@ -672,7 +672,25 @@ class DragAndDropAction(object):
         self.release()
 
 
+def expected_failure_if_dj19(func):
+    if django.VERSION >= (1, 9):
+        return unittest.expectedFailure(func)
+    return func
+
+
 def expected_failure_if_dj110(func):
     if django.VERSION >= (1, 10):
+        return unittest.expectedFailure(func)
+    return func
+
+
+def expected_failure_if_grappelli(func):
+    if 'grappelli' in settings.INSTALLED_APPS:
+        return unittest.expectedFailure(func)
+    return func
+
+
+def expected_failure_if_suit(func):
+    if 'suit' in settings.INSTALLED_APPS:
         return unittest.expectedFailure(func)
     return func

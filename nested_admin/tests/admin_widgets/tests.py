@@ -1,10 +1,12 @@
 import time
-from unittest import skipIf
+from unittest import expectedFailure
 
 from django.utils import six
 from django.utils.text import slugify
 
-from nested_admin.tests.base import BaseNestedAdminTestCase
+from nested_admin.tests.base import (
+    expected_failure_if_grappelli, expected_failure_if_suit,
+    BaseNestedAdminTestCase)
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1)
@@ -98,15 +100,13 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.check_datetime([0])
         self.check_datetime([0, 0])
 
-    @skipIf(BaseNestedAdminTestCase.has_suit,
-        "Known bug with prepopulated fields and django-suit")
+    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_prepopulated(self):
         self.load_admin()
         self.add_inline()
         self.check_prepopulated([1])
 
-    @skipIf(BaseNestedAdminTestCase.has_suit,
-        "Known bug with prepopulated fields and django-suit")
+    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_initial_extra_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -117,7 +117,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline()
         self.check_m2m([1])
 
-    @skipIf(True, "Known bug")
+    @expectedFailure  # Known bug
     def test_add_initial_extra_m2m(self):
         self.load_admin()
         self.add_inline()
@@ -128,8 +128,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline()
         self.check_datetime([1])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with datetime fields and grappelli")
+    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_initial_extra_datetime(self):
         self.load_admin()
         self.add_inline()
@@ -141,16 +140,14 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1])
         self.check_m2m([1, 1])
 
-    @skipIf(BaseNestedAdminTestCase.has_suit,
-        "Known bug with prepopulated fields and django-suit")
+    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_two_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
         self.add_inline([1])
         self.check_prepopulated([1, 1])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with datetime fields and grappelli")
+    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_two_deep_datetime(self):
         self.load_admin()
         self.add_inline()
@@ -164,8 +161,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1, 0, [1]])
         self.check_m2m([1, 0, [1, 0]])
 
-    @skipIf(BaseNestedAdminTestCase.has_suit,
-        "Known bug with prepopulated fields and django-suit")
+    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_three_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -173,8 +169,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1, 0, [1]])
         self.check_prepopulated([1, 0, [1, 0]])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with datetime fields and grappelli")
+    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_three_deep_datetime(self):
         self.load_admin()
         self.add_inline()

@@ -1,9 +1,7 @@
 import time
-from unittest import skipIf
 
-import django
-
-from nested_admin.tests.base import BaseNestedAdminTestCase, expected_failure_if_dj110
+from nested_admin.tests.base import (
+    BaseNestedAdminTestCase, expected_failure_if_dj19, expected_failure_if_dj110)
 from .models import GFKRoot, GFKA, GFKB
 
 
@@ -279,10 +277,10 @@ class TestGenericInlineAdmin(BaseNestedAdminTestCase):
             'root/y[1]/Y 0[0]',
             'root/y[1]/Y 1[1]'])
 
-    # This test fails with the phantomjs driver on Travis, but it passes locally
-    # and it passes with the Chrome driver, so chalking it up to a fluke
-    @skipIf(django.VERSION[:2] == (1, 9), "Skipping misbehaving test on travis")
-    @expected_failure_if_dj110
+    # This test fails with the phantomjs driver on Travis with Django 1.9+,
+    # but it passes locally and it passes with the Chrome driver, so chalking
+    # it up to a fluke
+    @expected_failure_if_dj19
     def test_drag_item_to_new_empty_parent(self):
         root = self.root_model.objects.create(slug='root')
         x = GFKA.objects.create(slug='x', content_object=root, position=0)
