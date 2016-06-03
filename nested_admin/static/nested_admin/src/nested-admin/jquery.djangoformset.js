@@ -227,7 +227,7 @@ class DjangoFormset {
         }
 
         DJNesting.updateFormAttributes($form,
-            new RegExp('^((lookup_)?id_)?' + regexQuote(this.prefix + '-__prefix__')),
+            new RegExp('^(\\#?(lookup_)?id_)?' + regexQuote(this.prefix + '-__prefix__')),
             '$1' + this.prefix + '-' + index);
 
         DJNesting.updateNestedFormIndex($form, this.prefix);

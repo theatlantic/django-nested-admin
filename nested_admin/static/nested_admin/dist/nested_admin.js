@@ -267,7 +267,7 @@ var DjangoFormset = function () {
                 this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
             }
 
-            _utils2.default.updateFormAttributes($form, new RegExp('^((lookup_)?id_)?' + (0, _regexquote2.default)(this.prefix + '-__prefix__')), '$1' + this.prefix + '-' + index);
+            _utils2.default.updateFormAttributes($form, new RegExp('^(\\#?(lookup_)?id_)?' + (0, _regexquote2.default)(this.prefix + '-__prefix__')), '$1' + this.prefix + '-' + index);
 
             _utils2.default.updateNestedFormIndex($form, this.prefix);
             _utils2.default.updatePositions(this.prefix);
@@ -3164,7 +3164,7 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     }
     $elem.find(selector).andSelf().each(function () {
         var $node = (0, _jquery2.default)(this),
-            attrs = ['id', 'name', 'for'];
+            attrs = ['id', 'name', 'for', 'href', 'class', 'onclick'];
 
         _jquery2.default.each(attrs, function (i, attrName) {
             var attrVal = $node.attr(attrName);
@@ -3176,6 +3176,14 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
         if ($node.attr('id') && $node.is('.djn-item')) {
             $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
         }
+    });
+    // update prepopulate ids for function initPrepopulatedFields
+    $elem.find('.prepopulated_field').each(function () {
+        var $node = (0, _jquery2.default)(this);
+        var dependencyIds = _jquery2.default.makeArray($node.data('dependency_ids') || []);
+        $node.data('dependency_ids', _jquery2.default.map(dependencyIds, function (id) {
+            return id.replace(search, replace);
+        }));
     });
 };
 
@@ -3330,7 +3338,7 @@ DJNesting.DjangoInlines = {
     initPrepopulatedFields: function initPrepopulatedFields(row) {
         row.find('.prepopulated_field').each(function () {
             var field = (0, _jquery2.default)(this),
-                input = field.find('input, select, textarea'),
+                input = field.is(':input') ? field : field.find(':input'),
                 dependencyList = input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
                 dependencies = [];

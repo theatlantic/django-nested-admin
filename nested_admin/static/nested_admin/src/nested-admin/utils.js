@@ -23,7 +23,7 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     }
     $elem.find(selector).andSelf().each(function() {
         var $node = $(this),
-            attrs = ['id', 'name', 'for'];
+            attrs = ['id', 'name', 'for', 'href', 'class', 'onclick'];
 
         $.each(attrs, function(i, attrName) {
             var attrVal = $node.attr(attrName);
@@ -35,6 +35,14 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
         if ($node.attr('id') && $node.is('.djn-item')) {
             $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
         }
+    });
+    // update prepopulate ids for function initPrepopulatedFields
+    $elem.find('.prepopulated_field').each(function() {
+        var $node = $(this);
+        var dependencyIds = $.makeArray($node.data('dependency_ids') || []);
+        $node.data('dependency_ids', $.map(dependencyIds, function(id) {
+            return id.replace(search, replace);
+        }));
     });
 };
 
@@ -184,7 +192,7 @@ DJNesting.DjangoInlines = {
     initPrepopulatedFields: function(row) {
         row.find('.prepopulated_field').each(function() {
             var field = $(this),
-                input = field.find('input, select, textarea'),
+                input = (field.is(':input') ? field : field.find(':input')),
                 dependencyList = input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
                 dependencies = [];

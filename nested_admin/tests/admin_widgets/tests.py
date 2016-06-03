@@ -98,8 +98,6 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.check_datetime([0])
         self.check_datetime([0, 0])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with prepopulated fields and grappelli")
     @skipIf(BaseNestedAdminTestCase.has_suit,
         "Known bug with prepopulated fields and django-suit")
     def test_add_prepopulated(self):
@@ -107,8 +105,6 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline()
         self.check_prepopulated([1])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with prepopulated fields and grappelli")
     @skipIf(BaseNestedAdminTestCase.has_suit,
         "Known bug with prepopulated fields and django-suit")
     def test_add_initial_extra_prepopulated(self):
@@ -145,8 +141,6 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1])
         self.check_m2m([1, 1])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with prepopulated fields and grappelli")
     @skipIf(BaseNestedAdminTestCase.has_suit,
         "Known bug with prepopulated fields and django-suit")
     def test_add_two_deep_prepopulated(self):
@@ -170,8 +164,6 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1, 0, [1]])
         self.check_m2m([1, 0, [1, 0]])
 
-    @skipIf(BaseNestedAdminTestCase.has_grappelli,
-        "Known bug with prepopulated fields and grappelli")
     @skipIf(BaseNestedAdminTestCase.has_suit,
         "Known bug with prepopulated fields and django-suit")
     def test_add_three_deep_prepopulated(self):
