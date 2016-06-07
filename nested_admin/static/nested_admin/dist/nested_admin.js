@@ -267,9 +267,8 @@ var DjangoFormset = function () {
                 this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
             }
 
-            _utils2.default.updateFormAttributes($form, new RegExp('^(\\#?(lookup_)?id_)?' + (0, _regexquote2.default)(this.prefix + '-__prefix__')), '$1' + this.prefix + '-' + index);
+            _utils2.default.updateFormAttributes($form, new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
 
-            _utils2.default.updateNestedFormIndex($form, this.prefix);
             _utils2.default.updatePositions(this.prefix);
 
             if (_jquery2.default.isNumeric(spliceIndex)) {
@@ -345,7 +344,7 @@ var DjangoFormset = function () {
                 return;
             }
             var oldIndex = $form.djangoFormIndex();
-            var oldFormPrefixRegex = new RegExp('^(id_)?' + (0, _regexquote2.default)(this.prefix + '-' + oldIndex));
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix + '-' + oldIndex));
             $form.attr('id', this.prefix + index);
             _utils2.default.updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index);
 
@@ -374,7 +373,7 @@ var DjangoFormset = function () {
                 return;
             }
 
-            var oldFormPrefixRegex = new RegExp('^(id_)?' + (0, _regexquote2.default)(this.prefix) + '-' + gapIndex);
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '-' + gapIndex);
             $existingForm.attr('id', this.prefix + totalFormCount);
             _utils2.default.updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount);
 
@@ -449,7 +448,7 @@ var DjangoFormset = function () {
                 }
 
                 // Replace the ids for the splice form
-                var oldFormPrefixRegex = new RegExp('^(id_)?' + (0, _regexquote2.default)($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
+                var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
                 newIndex = isInitial ? initialFormCount : totalFormCount;
                 $form.attr('id', newFormsetPrefix + newIndex);
                 _utils2.default.updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex);
@@ -3160,7 +3159,7 @@ DJNesting.updatePositions = _sortable.updatePositions;
  */
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,.djn-group,.djn-item';
+        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form';
     }
     $elem.find(selector).andSelf().each(function () {
         var $node = (0, _jquery2.default)(this),
@@ -3306,27 +3305,6 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.m2m
                 });
-            }
-        });
-    });
-};
-
-// This function will update the position prefix for empty-form elements
-// in nested forms.
-DJNesting.updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
-    var index = form.attr('id').replace(prefix, '');
-    var elems = form.find('*[id^="' + prefix + '-empty-"]').add('*[id^="id_' + prefix + '-empty-"]', form).add('*[id^="lookup_id_' + prefix + '-empty-"]', form).add('label[for^="id_' + prefix + '-empty-"]', form);
-    elems.each(function (i, elem) {
-        var emptyLen = '-empty'.length;
-        var attrs = ['id', 'name', 'for'];
-        _jquery2.default.each(attrs, function (i, attr) {
-            var val = elem.getAttribute(attr) || '',
-                emptyPos = val.indexOf('-empty');
-            if (emptyPos > 0) {
-                var beforeEmpty = val.substr(0, emptyPos + 1),
-                    afterEmpty = val.substr(emptyPos + emptyLen),
-                    newVal = beforeEmpty + index + afterEmpty;
-                elem.setAttribute(attr, newVal);
             }
         });
     });

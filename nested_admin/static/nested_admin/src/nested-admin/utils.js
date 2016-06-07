@@ -19,7 +19,7 @@ DJNesting.updatePositions = updatePositions;
  */
 DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,div.grp-module,div.module,.djn-group,.djn-item';
+        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form';
     }
     $elem.find(selector).andSelf().each(function() {
         var $node = $(this),
@@ -157,30 +157,6 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.m2m
                 });
-            }
-        });
-    });
-};
-
-// This function will update the position prefix for empty-form elements
-// in nested forms.
-DJNesting.updateNestedFormIndex = function updateNestedFormIndex(form, prefix) {
-    var index = form.attr('id').replace(prefix, '');
-    var elems = form.find('*[id^="' + prefix + '-empty-"]')
-                     .add('*[id^="id_' + prefix + '-empty-"]', form)
-                     .add('*[id^="lookup_id_' + prefix + '-empty-"]', form)
-                     .add('label[for^="id_' + prefix + '-empty-"]', form);
-    elems.each(function(i, elem) {
-        var emptyLen = '-empty'.length;
-        var attrs = ['id', 'name', 'for'];
-        $.each(attrs, function(i, attr) {
-            var val = elem.getAttribute(attr) || '',
-                emptyPos = val.indexOf('-empty');
-            if (emptyPos > 0) {
-                var beforeEmpty = val.substr(0, emptyPos+1),
-                    afterEmpty = val.substr(emptyPos+emptyLen),
-                    newVal = beforeEmpty + index + afterEmpty;
-                elem.setAttribute(attr, newVal);
             }
         });
     });

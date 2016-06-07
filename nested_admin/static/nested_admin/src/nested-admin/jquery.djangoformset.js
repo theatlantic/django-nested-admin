@@ -227,10 +227,9 @@ class DjangoFormset {
         }
 
         DJNesting.updateFormAttributes($form,
-            new RegExp('^(\\#?(lookup_)?id_)?' + regexQuote(this.prefix + '-__prefix__')),
-            '$1' + this.prefix + '-' + index);
+            new RegExp('([\\#_]|^)' + regexQuote(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'),
+            '$1' + this.prefix + '-' + index + '-');
 
-        DJNesting.updateNestedFormIndex($form, this.prefix);
         DJNesting.updatePositions(this.prefix);
 
         if ($.isNumeric(spliceIndex)) {
@@ -302,7 +301,7 @@ class DjangoFormset {
             return;
         }
         var oldIndex = $form.djangoFormIndex();
-        var oldFormPrefixRegex = new RegExp('^(id_)?'
+        var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
             + regexQuote(this.prefix + '-' + oldIndex));
         $form.attr('id', this.prefix + index);
         DJNesting.updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index);
@@ -330,7 +329,7 @@ class DjangoFormset {
             return;
         }
 
-        var oldFormPrefixRegex = new RegExp('^(id_)?'
+        var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
             + regexQuote(this.prefix) + '-' + gapIndex);
         $existingForm.attr('id', this.prefix + totalFormCount);
         DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount);
@@ -403,7 +402,7 @@ class DjangoFormset {
             }
 
             // Replace the ids for the splice form
-            var oldFormPrefixRegex = new RegExp('^(id_)?'
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
                 + regexQuote($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
             newIndex = (isInitial) ? initialFormCount : totalFormCount;
             $form.attr('id', newFormsetPrefix + newIndex);

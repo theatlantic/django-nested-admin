@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import collections
 import contextlib
 import copy
+import json
+import logging
 import re
 import time
 import unittest
@@ -28,6 +30,9 @@ from selenium.webdriver.support.expected_conditions import (
     visibility_of_element_located, element_to_be_clickable)
 
 from .selenium import SeleniumTestCase
+
+
+logger = logging.getLogger(__name__)
 
 
 if not hasattr(__builtins__, 'cmp'):
@@ -118,6 +123,19 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         self.selenium.set_page_load_timeout(10)
         User.objects.create_superuser(username='super', password='secret', email='super@example.com')
         self.logged_in = False
+
+    def tearDown(self):
+        # Close any popup windows that might have stuck around (for instance,
+        # if an assertion failed or an exception occurred while a popup was
+        # open)
+        try:
+            popup_window = self.selenium.window_handles[1]
+        except IndexError:
+            pass
+        else:
+            self.selenium.switch_to.window(popup_window)
+            self.selenium.close()
+            self.selenium.switch_to.window(self.selenium.window_handles[0])
 
     def wait_for(self, css_selector, timeout=10):
         """
@@ -228,8 +246,13 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         self.wait_until(lambda d: len(d.window_handles) == 2)
         self.selenium.switch_to.window(self.selenium.window_handles[1])
         yield
-        self.wait_until(lambda d: len(d.window_handles) == 1)
-        self.selenium.switch_to.window(self.selenium.window_handles[0])
+        try:
+            self.wait_until(lambda d: len(d.window_handles) == 1)
+        except:
+            self.close()
+            raise
+        finally:
+            self.selenium.switch_to.window(self.selenium.window_handles[0])
 
     def load_admin(self, obj=None):
         info = (self.root_model._meta.app_label, self.root_model._meta.object_name.lower())
@@ -250,13 +273,19 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
     def save_form(self):
         browser_errors = [e for e in self.selenium.get_log('browser')
                           if 'favicon' not in e['message']]
-        self.assertEqual(browser_errors, [])
-        self.selenium.find_element_by_xpath('//*[@name="_continue"]').click()
-        self.wait_page_loaded()
-        self.selenium.set_window_size(1120, 1300)
-        self.selenium.set_page_load_timeout(10)
-        self.selenium.execute_script("window.$ = django.jQuery")
-        self.make_header_footer_position_static()
+        if len(browser_errors) > 0:
+            logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
+        # Account for FK popups, which do not have "Save and continue editing"
+        has_continue = bool(
+            self.selenium.execute_script('return django.jQuery("[name=_continue]").length;'))
+        name_attr = "_continue" if has_continue else "_save"
+        self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr).click()
+        if has_continue:
+            self.wait_page_loaded()
+            self.selenium.set_window_size(1120, 1300)
+            self.selenium.set_page_load_timeout(10)
+            self.selenium.execute_script("window.$ = django.jQuery")
+            self.make_header_footer_position_static()
 
     def make_header_footer_position_static(self):
         """Make grappelli header and footer element styles 'position: static'"""
@@ -464,7 +493,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         field_prefix = re.sub(r'(?<=\D)(\d+)$', r'-\1', item_id)
         return "#id_%s-%s" % (field_prefix, attname)
 
-    def get_field(self, attname, indexes):
+    def get_field(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)
         field_selector = self.get_form_field_selector(attname, indexes=indexes)
         return self.selenium.find_element_by_css_selector(field_selector)
