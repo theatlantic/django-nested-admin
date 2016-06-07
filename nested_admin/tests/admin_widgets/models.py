@@ -34,7 +34,7 @@ class TestAdminWidgetsA(models.Model):
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
         on_delete=CASCADE)
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M)
+    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
         ordering = ('position', )
@@ -49,7 +49,7 @@ class TestAdminWidgetsB(models.Model):
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
         on_delete=CASCADE)
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M)
+    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
         ordering = ('position', )
@@ -64,7 +64,7 @@ class TestAdminWidgetsC0(models.Model):
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
         on_delete=CASCADE)
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M)
+    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
         ordering = ('position', )
@@ -79,7 +79,7 @@ class TestAdminWidgetsC1(models.Model):
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
         on_delete=CASCADE)
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M)
+    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
         ordering = ('position', )
