@@ -21,3 +21,6 @@ script:
     - travis_retry travis_retry travis_retry tox -- --failfast
 
 sudo: false
+
+addons:
+    sauce_connect: true

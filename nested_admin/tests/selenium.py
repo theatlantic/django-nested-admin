@@ -1,5 +1,6 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
+import os
 import sys
 import unittest
 
@@ -52,6 +53,29 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
         return import_string("selenium.webdriver.%s.webdriver.WebDriver" % browser)
 
     def create_webdriver(self):
+        if all([os.environ.get(k) for k in ['SAUCE_USERNAME', 'SAUCE_ACCESS_KEY', 'TRAVIS']]):
+            from selenium import webdriver
+
+            username = os.environ['SAUCE_USERNAME']
+            access_key = os.environ['SAUCE_ACCESS_KEY']
+
+            desired_capabilities = webdriver.DesiredCapabilities.CHROME
+            desired_capabilities['browserName'] = 'chrome'
+            desired_capabilities['version'] = '50.0'
+            desired_capabilities['platform'] = "OS X 10.11"
+            desired_capabilities['tunnel-identifier'] = os.environ.get('TRAVIS_JOB_NUMBER')
+            if os.environ.get('TRAVIS_BUILD_NUMBER'):
+                desired_capabilities["build"] = os.environ["TRAVIS_BUILD_NUMBER"]
+            if os.environ.get('TRAVIS_PYTHON_VERSION'):
+                desired_capabilities["tags"] = [os.environ["TRAVIS_PYTHON_VERSION"], "CI"]
+
+            hub_url = "http://%s:%s@localhost:4445/wd/hub" % (username, access_key)
+            driver = webdriver.Remote(
+                command_executor=hub_url,
+                desired_capabilities=desired_capabilities)
+            driver.implicitly_wait(10)
+            return driver
+
         return self.import_webdriver(self.browser)()
 
 
