@@ -108,4 +108,4 @@ MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = 'nested_admin.tests.runner.DiscoverRunner'

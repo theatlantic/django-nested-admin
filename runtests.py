@@ -33,7 +33,7 @@ def django_tests(verbosity, failfast, test_labels):
         warnings.filterwarnings("ignore", "django.conf.urls.patterns", DeprecationWarning)
 
     if not hasattr(settings, 'TEST_RUNNER'):
-        settings.TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+        settings.TEST_RUNNER = 'nested_admin.tests.runner.DiscoverRunner'
 
     TestRunner = get_runner(settings)
 
