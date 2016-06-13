@@ -58,6 +58,7 @@ INSTALLED_APPS += (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'nested_admin.tests',
 )
 
 # Add apps within the tests folder
@@ -102,7 +103,6 @@ LOGGING = {
 }
 
 SITE_ID = 1
-FIXTURE_DIRS = [os.path.join(current_dir, 'fixtures')]
 ROOT_URLCONF = 'nested_admin.tests.urls'
 MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'

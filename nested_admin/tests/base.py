@@ -130,7 +130,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         # open)
         try:
             popup_window = self.selenium.window_handles[1]
-        except IndexError:
+        except:
             pass
         else:
             self.selenium.switch_to.window(popup_window)
@@ -162,19 +162,30 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             # ignore it.
             pass
 
-    def admin_login(self, username, password, login_url='/admin/'):
+    def admin_login(self, username, password, login_url=None):
         """
         Helper function to log into the admin.
         """
-        self.selenium.get('%s%s' % (self.live_server_url, login_url))
-        username_input = self.selenium.find_element_by_name('username')
-        username_input.send_keys(username)
-        password_input = self.selenium.find_element_by_name('password')
-        password_input.send_keys(password)
-        login_text = _('Log in')
-        self.selenium.find_element_by_xpath(
-            '//input[@value="%s"]' % login_text).click()
-        self.wait_page_loaded()
+        if self.browser == 'chrome':
+            self.client.login(username=username, password=password)
+            self.selenium.get("%s%s" % (self.live_server_url, '/static/blank.html'))
+            self.wait_page_loaded()
+            for k, v in self.client.cookies.items():
+                self.selenium.add_cookie({'name': k, 'value': v.value})
+            if login_url:
+                self.selenium.get("%s%s" % (self.live_server_url, login_url))
+                self.wait_page_loaded()
+        else:
+            login_url = login_url or '/admin/'
+            self.selenium.get('%s%s' % (self.live_server_url, login_url))
+            username_input = self.selenium.find_element_by_name('username')
+            username_input.send_keys(username)
+            password_input = self.selenium.find_element_by_name('password')
+            password_input.send_keys(password)
+            login_text = _('Log in')
+            self.selenium.find_element_by_xpath(
+                '//input[@value="%s"]' % login_text).click()
+            self.wait_page_loaded()
         self.logged_in = True
 
     def wait_until(self, callback, timeout=10, message=None):
@@ -261,10 +272,10 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         else:
             url = reverse('admin:%s_%s_add' % info)
         if not self.logged_in:
-            self.admin_login("super", "secret", login_url=url)
+            self.admin_login("super", "secret", url)
         else:
             self.selenium.get('%s%s' % (self.live_server_url, url))
-        self.wait_page_loaded()
+            self.wait_page_loaded()
         self.selenium.set_window_size(1120, 1300)
         self.selenium.set_page_load_timeout(10)
         self.selenium.execute_script("window.$ = django.jQuery")
@@ -575,6 +586,8 @@ class DragAndDropAction(object):
 
     def initialize_drag(self):
         source = self.source
+        if self.test_case.has_suit and self.test_case.browser == 'chrome' and source.tag_name == 'h3':
+            source = source.find_element_by_css_selector('b')
         (ActionChains(self.selenium)
             .move_to_element_with_offset(source, 0, 0)
             .click_and_hold()

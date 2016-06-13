@@ -3,7 +3,8 @@ from unittest import skipIf
 
 import django
 
-from nested_admin.tests.base import BaseNestedAdminTestCase, expected_failure_if_dj110
+from nested_admin.tests.base import (
+    BaseNestedAdminTestCase, expected_failure_if_dj110, expected_failure_if_suit)
 from .models import (
     StackedGroup, StackedSection, StackedItem,
     TabularGroup, TabularSection, TabularItem,
@@ -266,6 +267,7 @@ class InlineAdminTestCaseMixin(object):
             'group/b[0]/B 1[1]',
             'group/b[0]/B 2[2]'])
 
+    @expected_failure_if_suit
     def test_delete_item_undelete_section(self):
         """
         Test that, if an item is deleted, then the section is deleted, and

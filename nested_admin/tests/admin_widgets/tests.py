@@ -1,5 +1,7 @@
+import sys
 import time
 from unittest import expectedFailure
+from unittest.case import _ExpectedFailure, _UnexpectedSuccess
 
 from django.utils import six
 from django.utils.text import slugify, unescape_entities
@@ -141,16 +143,25 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline()
         self.check_m2m([1])
 
-    @expected_failure_if_suit  # Known bug with this test, django-suit, and phantomjs
     def test_add_fk(self):
-        self.load_admin()
-        if self.has_grappelli:
-            time.sleep(0.3)
-        self.add_inline()
-        if self.has_grappelli:
-            time.sleep(0.3)
-        time.sleep(0.1)
-        self.check_fk([1])
+        # Known bug with this test, django-suit, and phantomjs
+        expected_failure = self.has_suit and self.browser == 'phantomjs'
+        try:
+            self.load_admin()
+            if self.has_grappelli:
+                time.sleep(0.3)
+            self.add_inline()
+            if self.has_grappelli:
+                time.sleep(0.3)
+            time.sleep(0.1)
+            self.check_fk([1])
+        except:
+            if expected_failure:
+                raise _ExpectedFailure(sys.exc_info())
+            raise
+        else:
+            if expected_failure:
+                raise _UnexpectedSuccess
 
     @expectedFailure  # Known bug
     def test_add_initial_extra_m2m(self):

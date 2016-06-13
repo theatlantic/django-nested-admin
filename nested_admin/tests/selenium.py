@@ -74,6 +74,7 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
                 command_executor=hub_url,
                 desired_capabilities=desired_capabilities)
             driver.implicitly_wait(10)
+            self.browser = 'chrome'
             return driver
 
         return self.import_webdriver(self.browser)()

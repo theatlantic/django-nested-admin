@@ -5,7 +5,7 @@ from django.contrib import admin
 
 # Explicitly import to register the admins for the test models
 for app in settings.INSTALLED_APPS:
-    if app.startswith('nested_admin.tests'):
+    if app.startswith('nested_admin.tests.'):
         __import__("%s.admin" % app)
 
 
