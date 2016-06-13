@@ -166,25 +166,13 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         """
         Helper function to log into the admin.
         """
-        if self.browser == 'chrome':
-            self.client.login(username=username, password=password)
-            self.selenium.get("%s%s" % (self.live_server_url, '/static/blank.html'))
-            self.wait_page_loaded()
-            for k, v in self.client.cookies.items():
-                self.selenium.add_cookie({'name': k, 'value': v.value})
-            if login_url:
-                self.selenium.get("%s%s" % (self.live_server_url, login_url))
-                self.wait_page_loaded()
-        else:
-            login_url = login_url or '/admin/'
-            self.selenium.get('%s%s' % (self.live_server_url, login_url))
-            username_input = self.selenium.find_element_by_name('username')
-            username_input.send_keys(username)
-            password_input = self.selenium.find_element_by_name('password')
-            password_input.send_keys(password)
-            login_text = _('Log in')
-            self.selenium.find_element_by_xpath(
-                '//input[@value="%s"]' % login_text).click()
+        self.client.login(username=username, password=password)
+        self.selenium.get("%s%s" % (self.live_server_url, '/static/blank.html'))
+        self.wait_page_loaded()
+        for k, v in self.client.cookies.items():
+            self.selenium.add_cookie({'name': k, 'value': v.value, 'path': '/'})
+        if login_url:
+            self.selenium.get("%s%s" % (self.live_server_url, login_url))
             self.wait_page_loaded()
         self.logged_in = True
 
