@@ -22,5 +22,5 @@ script:
 
 sudo: false
 
-addons:
-    sauce_connect: true
+# addons:
+#     sauce_connect: true

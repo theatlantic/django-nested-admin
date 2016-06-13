@@ -53,7 +53,7 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
         return import_string("selenium.webdriver.%s.webdriver.WebDriver" % browser)
 
     def create_webdriver(self):
-        if all([os.environ.get(k) for k in ['SAUCE_USERNAME', 'SAUCE_ACCESS_KEY', 'TRAVIS']]):
+        if False and all([os.environ.get(k) for k in ['SAUCE_USERNAME', 'SAUCE_ACCESS_KEY', 'TRAVIS']]):
             from selenium import webdriver
 
             username = os.environ['SAUCE_USERNAME']
