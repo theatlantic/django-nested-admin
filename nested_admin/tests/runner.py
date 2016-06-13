@@ -13,6 +13,11 @@ class TextTestResult(unittest.TextTestResult):
             self.stream.write("u")
             self.stream.flush()
 
+    def printErrors(self):
+        super(TextTestResult, self).printErrors()
+        self.printErrorList('UNEXPECTED SUCCESS',
+            [(t, 'Success') for t in self.unexpectedSuccesses])
+
 
 class DiscoverRunner(django.test.runner.DiscoverRunner):
     """Overridden DiscoverRunner that doesn't failfast on unexpected success"""
