@@ -11,6 +11,7 @@ import pkg_resources
 import sys
 from types import ModuleType
 
+import django
 import django.forms.formsets
 import monkeybiz
 
@@ -101,7 +102,11 @@ def all_valid(original_all_valid, formsets):
                     if not parent_form.instance.pk and not parent_form.has_changed():
                         # Force Django to try to save the instance,
                         # since we need it for the fk to work
-                        parent_form._changed_data = parent_form.fields.keys()
+                        changed_data = parent_form.fields.keys()
+                        if django.VERSION > (1, 9):
+                            parent_form.__dict__['changed_data'] = changed_data
+                        else:
+                            parent_form._changed_data = changed_data
                 if not hasattr(parent_form, 'parent_formset'):
                     break
                 parent_form.parent_formset._errors = None
