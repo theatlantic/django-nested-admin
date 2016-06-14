@@ -111,7 +111,7 @@ class DjangoFormset {
 
         this.mgmtVal('TOTAL_FORMS', totalForms - 1);
 
-        if (maxForms - totalForms >= 0) {
+        if (maxForms - totalForms > 0) {
             this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').show();
         }
 
@@ -222,7 +222,7 @@ class DjangoFormset {
         $form.insertBefore(this._$template);
 
         this.mgmtVal('TOTAL_FORMS', index + 1);
-        if (maxForms - index <= 0) {
+        if ((maxForms - (index + 1)) <= 0) {
             this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
         }
 
