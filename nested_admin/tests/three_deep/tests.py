@@ -86,3 +86,13 @@ class TestDeepNesting(BaseNestedAdminTestCase):
         self.assertEqual(len(l3_instances), 1, "Too many %s found" % self.l3_model.__name__)
         l3_instance = l3_instances[0]
         self.assertEqual(l3_instance.name, 'd', "%s.name has wrong value" % self.l3_model.__name__)
+
+    def test_save_missing_intermediate_inline(self):
+        self.load_admin()
+        self.set_field('name', 'a')
+        self.set_field('name', 'b', [0])
+        self.set_field('name', 'd', [0, 0, 0])
+        self.save_form()
+
+        root_instances = self.root_model.objects.all()
+        self.assertNotEqual(len(root_instances), 0, "%s did not save" % self.root_model.__name__)

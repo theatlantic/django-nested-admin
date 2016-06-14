@@ -98,6 +98,10 @@ def all_valid(original_all_valid, formsets):
                     parent_form.empty_permitted = False
                     # Reset the validation errors
                     parent_form._errors = None
+                    if not parent_form.instance.pk and not parent_form.has_changed():
+                        # Force Django to try to save the instance,
+                        # since we need it for the fk to work
+                        parent_form._changed_data = parent_form.fields.keys()
                 if not hasattr(parent_form, 'parent_formset'):
                     break
                 parent_form.parent_formset._errors = None
