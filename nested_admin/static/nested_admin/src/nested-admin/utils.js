@@ -77,19 +77,19 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     $.each(lookupFields.fk || [], function() {
         if ($(this).next('a').hasClass('related-lookup')) return;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
         .grp_related_fk({lookup_url: lookupUrls.related});
     });
     $.each(lookupFields.m2m || [], function() {
         if ($(this).next('a').hasClass('related-lookup')) return;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
         .grp_related_m2m({lookup_url: lookupUrls.m2m});
     });
     $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + objectId + '"]')
         .each(function() {
             var $this = $(this);
             var id = $this.attr('id');
@@ -125,7 +125,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
 
     $.each(lookupFields.fk || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_fk({
                 lookup_url: lookupUrls.related,
@@ -135,7 +135,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     });
     $.each(lookupFields.m2m || [], function() {
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + this + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
         .each(function() {
             $(this).grp_autocomplete_m2m({
                 lookup_url: lookupUrls.m2m,
@@ -146,7 +146,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     $.each(lookupFields.generic || [], function() {
         var [contentType, objectId] = this;
         $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="' + objectId + '"]')
+        .find('input[name^="' + prefix + '"][name$="-' + objectId + '"]')
         .each(function() {
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
             var [, index] = $(this).attr('id').match(idRegex) || [];
