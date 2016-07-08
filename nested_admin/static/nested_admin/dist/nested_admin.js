@@ -1442,9 +1442,9 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 			if (item.instance !== this.currentContainer) continue;
 
 			if (itemElement != this.currentItem[0] //cannot intersect with itself
-			 && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-			 && !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-			 && (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true)
+			&& this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
+			&& !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+			&& (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true)
 			//&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
 			) {
 
@@ -1591,9 +1591,9 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 		} else {
 
 			return l < x1 + this.helperProportions.width / 2 // Right Half
-			 && x2 - this.helperProportions.width / 2 < r // Left Half
-			 && t < y1 + this.helperProportions.height / 2 // Bottom Half
-			 && y2 - this.helperProportions.height / 2 < b; // Top Half
+			&& x2 - this.helperProportions.width / 2 < r // Left Half
+			&& t < y1 + this.helperProportions.height / 2 // Bottom Half
+			&& y2 - this.helperProportions.height / 2 < b; // Top Half
 		}
 	},
 
@@ -1996,13 +1996,13 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 
 		return {
 			top: pos.top // The absolute mouse position
-			 + this.offset.relative.top * mod // Only for relative positioned nodes: Relative offset from element to offset parent
-			 + this.offset.parent.top * mod // The offsetParent's offset without borders (offset + border)
-			 - (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()) * mod,
+			+ this.offset.relative.top * mod // Only for relative positioned nodes: Relative offset from element to offset parent
+			+ this.offset.parent.top * mod // The offsetParent's offset without borders (offset + border)
+			- (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()) * mod,
 			left: pos.left // The absolute mouse position
-			 + this.offset.relative.left * mod // Only for relative positioned nodes: Relative offset from element to offset parent
-			 + this.offset.parent.left * mod // The offsetParent's offset without borders (offset + border)
-			 - (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod
+			+ this.offset.relative.left * mod // Only for relative positioned nodes: Relative offset from element to offset parent
+			+ this.offset.parent.left * mod // The offsetParent's offset without borders (offset + border)
+			- (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod
 		};
 	},
 
@@ -2049,15 +2049,15 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 
 		return {
 			top: pageY // The absolute mouse position
-			 - this.offset.click.top // Click offset (relative to the element)
-			 - this.offset.relative.top // Only for relative positioned nodes: Relative offset from element to offset parent
-			 - this.offset.parent.top // The offsetParent's offset without borders (offset + border)
-			 + (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()),
+			- this.offset.click.top // Click offset (relative to the element)
+			- this.offset.relative.top // Only for relative positioned nodes: Relative offset from element to offset parent
+			- this.offset.parent.top // The offsetParent's offset without borders (offset + border)
+			+ (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()),
 			left: pageX // The absolute mouse position
-			 - this.offset.click.left // Click offset (relative to the element)
-			 - this.offset.relative.left // Only for relative positioned nodes: Relative offset from element to offset parent
-			 - this.offset.parent.left // The offsetParent's offset without borders (offset + border)
-			 + (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())
+			- this.offset.click.left // Click offset (relative to the element)
+			- this.offset.relative.left // Only for relative positioned nodes: Relative offset from element to offset parent
+			- this.offset.parent.left // The offsetParent's offset without borders (offset + border)
+			+ (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())
 		};
 	},
 
@@ -2484,11 +2484,11 @@ _jquery2.default.widget("ui.nestedSortable", _jquery2.default.ui.djnsortable, {
         }
 
         if (itemElement != this.currentItem[0] //cannot intersect with itself
-         && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-         && !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-         && (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
-         && (!o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) //maintain the nesting level of node
-         && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
+        && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
+        && !_jquery2.default.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+        && (this.options.type == 'semi-dynamic' ? !_jquery2.default.contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
+        && (!o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) //maintain the nesting level of node
+        && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
             this.lastItemElement = itemElement;
             return intersection;
         } else {
@@ -3216,11 +3216,11 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
 
     _jquery2.default.each(lookupFields.fk || [], function () {
         if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
     });
     _jquery2.default.each(lookupFields.m2m || [], function () {
         if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
     });
     _jquery2.default.each(lookupFields.generic || [], function () {
         var _ref = _slicedToArray(this, 2);
@@ -3228,7 +3228,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         var contentType = _ref[0];
         var objectId = _ref[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + objectId + '"]').each(function () {
             var $this = (0, _jquery2.default)(this);
             var id = $this.attr('id');
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
@@ -3268,7 +3268,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     var lookupFields = groupData.lookupAutocomplete;
 
     _jquery2.default.each(lookupFields.fk || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').each(function () {
             (0, _jquery2.default)(this).grp_autocomplete_fk({
                 lookup_url: lookupUrls.related,
                 autocomplete_lookup_url: lookupUrls.autocomplete
@@ -3276,7 +3276,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         });
     });
     _jquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + this + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').each(function () {
             (0, _jquery2.default)(this).grp_autocomplete_m2m({
                 lookup_url: lookupUrls.m2m,
                 autocomplete_lookup_url: lookupUrls.autocomplete
@@ -3289,7 +3289,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         var contentType = _ref4[0];
         var objectId = _ref4[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="' + objectId + '"]').each(function () {
+        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + objectId + '"]').each(function () {
             var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
 
             var _ref5 = (0, _jquery2.default)(this).attr('id').match(idRegex) || [];
