@@ -3159,7 +3159,7 @@ DJNesting.updatePositions = _sortable.updatePositions;
  */
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form';
+        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form,.cropduster-form';
     }
     $elem.find(selector).andSelf().each(function () {
         var $node = (0, _jquery2.default)(this),
