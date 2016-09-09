@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django import forms
+from django.utils import six
+
 from nested_admin import (
     NestedStackedInline, NestedTabularInline, NestedModelAdmin)
 
@@ -8,8 +11,18 @@ from .models import (
     SortableWithExtraRoot, SortableWithExtraChild)
 
 
+class ItemForm(forms.ModelForm):
+
+    def clean_name(self):
+        value = self.cleaned_data['name']
+        if not isinstance(value, six.string_types):
+            return value
+        return value.replace('X', 'A').replace('Y', 'B').replace('Z', 'C')
+
+
 class StackedItemInline(NestedStackedInline):
     model = StackedItem
+    form = ItemForm
     extra = 0
     sortable_field_name = "position"
     inline_classes = ("collapse", "open", )
@@ -30,6 +43,7 @@ class StackedGroupAdmin(NestedModelAdmin):
 
 class TabularItemInline(NestedTabularInline):
     model = TabularItem
+    form = ItemForm
     extra = 0
     sortable_field_name = "position"
 

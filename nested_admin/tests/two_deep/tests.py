@@ -772,6 +772,25 @@ class InlineAdminTestCaseMixin(object):
 
         self.assertEqual(item_a0.section, section_c, "Item was not moved to new section")
 
+    def test_nested_form_clean(self):
+        group = self.root_model.objects.create(slug='test')
+        section = self.section_cls.objects.create(slug='test', group=group, position=0)
+
+        self.load_admin(group)
+
+        item_verbose_name = self.item_cls._meta.verbose_name.title()
+        with self.clickable_xpath('//a[contains(string(.), "Add another %s")]' % item_verbose_name) as el:
+            el.click()
+        with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
+            el.send_keys("X 0")
+        self.save_form()
+
+        items = section.item_set.all()
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].name, "A 0")
+        self.assertEqual(items[0].position, 0)
+
 
 class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
 
