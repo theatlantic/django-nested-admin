@@ -14,6 +14,7 @@ from nested_admin.tests.selenium import SeleniumTestCaseBase
 warnings.simplefilter("error", DeprecationWarning)
 warnings.simplefilter("error", PendingDeprecationWarning)
 warnings.simplefilter("error", RuntimeWarning)
+warnings.filterwarnings('ignore', module="IPython", category=DeprecationWarning)
 
 
 def django_tests(verbosity, failfast, test_labels):
