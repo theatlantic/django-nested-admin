@@ -36,6 +36,9 @@ if (typeof $.fn.nearest != 'function') {
     };
 }
 
+var counter = 0;
+var expando = "djn" + ("" + Math.random()).replace(/\D/g, "");
+
 var createChildNestedSortable = function(parent, childContainer) {
     // Don't continue if the new element is the same as the old
     if (parent && parent.element && parent.element[0] == childContainer) {
@@ -182,15 +185,16 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         var self = this,
             $element = (typeof(element.selector) != 'undefined') ? element : $(element),
             uniqueId;
+
         if ($element.length > 1) {
             $element.each(function(i, el) {
                 self.addToConnectWith($(el));
             });
             return;
         }
-        uniqueId = element[0][$.expando];
+        uniqueId = element[0][expando];
         if (typeof uniqueId == 'undefined') {
-            uniqueId = element[0][$.expando + '1'];
+            uniqueId = element[0][expando] = ++counter;
         }
         if (typeof this.options.connectWith == 'string') {
             return;

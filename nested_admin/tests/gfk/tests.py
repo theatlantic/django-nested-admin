@@ -1,7 +1,7 @@
 import time
 
 from nested_admin.tests.base import (
-    BaseNestedAdminTestCase, expected_failure_if_dj19, expected_failure_if_dj110)
+    BaseNestedAdminTestCase, expected_failure_if_dj19)
 from .models import GFKRoot, GFKA, GFKB
 
 
@@ -306,7 +306,6 @@ class TestGenericInlineAdmin(BaseNestedAdminTestCase):
         self.assertEqual(["%s" % i for i in y.b_set.all()],
             ['root/y[1]/X 2[0]'])
 
-    @expected_failure_if_dj110
     def test_drag_existing_gfkb_to_new_parent_and_back(self):
         root = self.root_model.objects.create(slug='test')
         x = GFKA.objects.create(slug='x', content_object=root, position=0)

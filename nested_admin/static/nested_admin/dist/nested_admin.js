@@ -2260,6 +2260,9 @@ if (typeof _jquery2.default.fn.nearest != 'function') {
     };
 }
 
+var counter = 0;
+var expando = "djn" + ("" + Math.random()).replace(/\D/g, "");
+
 var createChildNestedSortable = function createChildNestedSortable(parent, childContainer) {
     // Don't continue if the new element is the same as the old
     if (parent && parent.element && parent.element[0] == childContainer) {
@@ -2408,15 +2411,16 @@ _jquery2.default.widget("ui.nestedSortable", _jquery2.default.ui.djnsortable, {
         var self = this,
             $element = typeof element.selector != 'undefined' ? element : (0, _jquery2.default)(element),
             uniqueId;
+
         if ($element.length > 1) {
             $element.each(function (i, el) {
                 self.addToConnectWith((0, _jquery2.default)(el));
             });
             return;
         }
-        uniqueId = element[0][_jquery2.default.expando];
+        uniqueId = element[0][expando];
         if (typeof uniqueId == 'undefined') {
-            uniqueId = element[0][_jquery2.default.expando + '1'];
+            uniqueId = element[0][expando] = ++counter;
         }
         if (typeof this.options.connectWith == 'string') {
             return;

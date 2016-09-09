@@ -4,7 +4,7 @@ from unittest import skipIf
 import django
 
 from nested_admin.tests.base import (
-    BaseNestedAdminTestCase, expected_failure_if_dj110, expected_failure_if_suit)
+    BaseNestedAdminTestCase, expected_failure_if_suit)
 from .models import (
     StackedGroup, StackedSection, StackedItem,
     TabularGroup, TabularSection, TabularItem,
@@ -419,7 +419,6 @@ class InlineAdminTestCaseMixin(object):
     # This test fails with the phantomjs driver on Travis, but it passes locally
     # and it passes with the Chrome driver, so chalking it up to a fluke
     @skipIf(django.VERSION[:2] == (1, 9), "Skipping misbehaving test on travis")
-    @expected_failure_if_dj110
     def test_drag_item_to_new_empty_section(self):
         group = self.root_model.objects.create(slug='group')
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
@@ -488,7 +487,6 @@ class InlineAdminTestCaseMixin(object):
 
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [])
 
-    @expected_failure_if_dj110
     def test_drag_existing_item_to_new_section_and_back(self):
         group = self.root_model.objects.create(slug='test')
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
@@ -586,7 +584,6 @@ class InlineAdminTestCaseMixin(object):
             'group/b[1]/A 0[0]',
             'group/b[1]/B 1[1]'])
 
-    @expected_failure_if_dj110
     def test_drag_first_item_to_new_section(self):
         """
         Test dragging the first of several items in a pre-existing section into
@@ -618,7 +615,6 @@ class InlineAdminTestCaseMixin(object):
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/A 0[0]'])
 
-    @expected_failure_if_dj110
     def test_drag_first_item_to_new_section_after_removing_item(self):
         """
         Test dragging the first of several items in a pre-existing section into
@@ -658,7 +654,6 @@ class InlineAdminTestCaseMixin(object):
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/A 0[0]', 'group/b[1]/B 1[1]'])
 
-    @expected_failure_if_dj110
     def test_add_remove_items_in_new_section_dragging_existing_items(self):
         """
         Tests for a regression that could be reproduced with the following steps:
@@ -756,7 +751,6 @@ class InlineAdminTestCaseMixin(object):
         self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
             'group/b[1]/B 1[0]'])
 
-    @expected_failure_if_dj110
     def test_drag_into_new_section_after_adding_and_removing_preceding_section(self):
         group = self.root_model.objects.create(slug='group')
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
