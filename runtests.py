@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import os
+import re
 import sys
 import warnings
 
@@ -15,6 +16,31 @@ warnings.simplefilter("error", DeprecationWarning)
 warnings.simplefilter("error", PendingDeprecationWarning)
 warnings.simplefilter("error", RuntimeWarning)
 warnings.filterwarnings('ignore', module="IPython", category=DeprecationWarning)
+
+# A dict for mapping test case classes to their import paths, to allow passing
+# TestCaseClass.test_function as shorthand to runtests.py
+TEST_CASE_MODULE_PATHS = {
+    'TestAdminWidgets': 'nested_admin.tests.admin_widgets.tests',
+    'TestGenericInlineAdmin': 'nested_admin.tests.gfk.tests',
+    'VisualComparisonTestCase': 'nested_admin.tests.one_deep.tests',
+    'TestDeepNesting': 'nested_admin.tests.three_deep.tests',
+    'TestStackedInlineAdmin': 'nested_admin.tests.two_deep.tests',
+    'TestTabularInlineAdmin': 'nested_admin.tests.two_deep.tests',
+    'TestSortablesWithExtra': 'nested_admin.tests.two_deep.tests',
+}
+
+
+def expand_test_module(module):
+    module = os.path.normpath(module)
+    matches = re.search(r'^([^/.]+)(\.[^./]+)?$', module)
+    if not matches:
+        return module
+    cls, test_fn = matches.groups()
+    if not test_fn:
+        test_fn = ''
+    if cls not in TEST_CASE_MODULE_PATHS:
+        return module
+    return "%s.%s%s" % (TEST_CASE_MODULE_PATHS[cls], cls, test_fn)
 
 
 def django_tests(verbosity, failfast, test_labels):
@@ -85,7 +111,7 @@ if __name__ == "__main__":
     options = parser.parse_args()
 
     # Allow including a trailing slash on app_labels for tab completion convenience
-    options.modules = [os.path.normpath(labels) for labels in options.modules]
+    options.modules = [expand_test_module(labels) for labels in options.modules]
 
     if options.settings:
         os.environ['DJANGO_SETTINGS_MODULE'] = options.settings
