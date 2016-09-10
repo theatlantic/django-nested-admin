@@ -1,6 +1,9 @@
+from contextlib import contextmanager
 import time
-from unittest import expectedFailure
+from unittest import expectedFailure, SkipTest
 
+import django
+from django.conf import settings
 from django.utils import six
 from django.utils.text import slugify, unescape_entities
 
@@ -10,6 +13,36 @@ from nested_admin.tests.base import (
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1)
+from .admin import (
+    TestAdminWidgetsAInline, TestAdminWidgetsBInline,
+    TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline)
+
+
+admin_classes = [
+    TestAdminWidgetsAInline, TestAdminWidgetsBInline,
+    TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
+]
+
+
+@contextmanager
+def enable_inline_collapsing():
+    """A context manager that configures the inline classes to be collapsible."""
+    if 'grappelli' in settings.INSTALLED_APPS:
+        class_attr = "inline_classes"
+        class_val = ("collapse", "closed", "grp-collapse", "grp-closed")
+        reset_val = ("collapse", "open", "grp-collapse", "grp-open")
+    else:
+        class_attr = "classes"
+        class_val = ("collapse", )
+        reset_val = None
+
+    for admin in admin_classes:
+        setattr(admin, class_attr, class_val)
+    try:
+        yield
+    finally:
+        for admin in admin_classes:
+            setattr(admin, class_attr, reset_val)
 
 
 class TestAdminWidgets(BaseNestedAdminTestCase):
@@ -98,6 +131,30 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         current_val = self.selenium.execute_script(
             'return $("#%s").find("option:selected").html()' % field_id)
         self.assertEqual(unescape_entities(current_val), name)
+
+    def test_collapsible_inlines(self):
+        if not self.has_grappelli and django.VERSION < (1, 10):
+            raise SkipTest("Collapsible inlines not supported")
+
+        with enable_inline_collapsing():
+            self.load_admin()
+            name_field = self.get_field('name', [0])
+
+            self.assertFalse(name_field.is_displayed(), "Inline did not load collapsed")
+
+            if self.has_grappelli:
+                collapse_handler = self.selenium.execute_script(
+                    'return $(arguments[0]).find("> .djn-collapse-handler")[0]',
+                    self.get_item([0]))
+            else:
+                collapse_handler = self.selenium.execute_script(
+                    'return $(arguments[0]).find("> fieldset > h2 > .collapse-toggle")[0]',
+                    self.get_group())
+
+            collapse_handler.click()
+            self.assertTrue(name_field.is_displayed(), "Inline did not expand")
+            collapse_handler.click()
+            self.assertFalse(name_field.is_displayed(), "Inline did not collapse")
 
     def test_initial_extra_prepopulated(self):
         self.load_admin()

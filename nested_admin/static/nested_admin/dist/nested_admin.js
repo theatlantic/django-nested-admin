@@ -2994,7 +2994,7 @@ function updatePositions(prefix, skipDeleted) {
 }
 
 function createSortable($group) {
-    return $group.find('> .djn-items, > .tabular > .module > .djn-items').nestedSortable({
+    return $group.find('> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items').nestedSortable({
         handle: ['> h3.djn-drag-handler', '> .djn-tools .drag-handler', '> .djn-td > .djn-tools .djn-drag-handler', '> .djn-tr > .is-sortable > .djn-drag-handler', '> .djn-tr > .grp-tools-container .djn-drag-handler'].join(', '),
         /**
          * items: The selector for ONLY the items underneath a given

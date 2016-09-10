@@ -6,6 +6,7 @@ import django
 from django import template
 from django.apps import apps
 from django.conf import settings
+from django.contrib.admin.options import InlineModelAdmin
 from django.utils.safestring import mark_for_escaping, mark_safe
 from django.utils.html import escape
 
@@ -172,6 +173,18 @@ def ifdj110(parser, token):
     else:
         nodelist_false = template.NodeList()
     return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] == (1, 10))
+
+
+@register.tag
+def ifinlineclasses(parser, token):
+    nodelist_true = parser.parse(('else', 'endifinlineclasses'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifinlineclasses',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    return IfConditionNode(nodelist_true, nodelist_false, hasattr(InlineModelAdmin, 'classes'))
 
 
 @register.tag

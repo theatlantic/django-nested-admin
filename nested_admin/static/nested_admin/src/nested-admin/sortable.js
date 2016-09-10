@@ -85,7 +85,7 @@ export function updatePositions(prefix, skipDeleted) {
 }
 
 export function createSortable($group) {
-    return $group.find('> .djn-items, > .tabular > .module > .djn-items').nestedSortable({
+    return $group.find('> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items').nestedSortable({
         handle: [
             '> h3.djn-drag-handler',
             '> .djn-tools .drag-handler',
