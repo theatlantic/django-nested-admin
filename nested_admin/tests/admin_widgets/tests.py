@@ -121,6 +121,10 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         field = self.get_field('fk', indexes)
         parent = field.find_element_by_xpath('parent::*')
         add_related = parent.find_element_by_css_selector('.add-related')
+        if self.has_grappelli:
+            # Grappelli can be very slow to initialize fk bindings, particularly
+            # when run on travis-ci
+            time.sleep(1)
         add_related.click()
         name = self.get_name_for_indexes(indexes)
         with self.switch_to_popup_window():
