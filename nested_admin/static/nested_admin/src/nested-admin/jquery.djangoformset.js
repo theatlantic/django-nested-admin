@@ -215,6 +215,8 @@ class DjangoFormset {
         var maxForms = this.mgmtVal('MAX_NUM_FORMS');
         var isNested = this.$inline.hasClass('djn-group-nested');
 
+        $(document).trigger('djnesting:beforeadded', [this.$inline, $form]);
+
         $form.removeClass(this.opts.emptyClass);
         $form.addClass('djn-item');
         $form.attr('id', $form.attr('id').replace('-empty', index));
