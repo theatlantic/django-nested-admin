@@ -51,6 +51,10 @@ class DjangoFormset {
     }
     _initializeForms() {
         var totalForms = this.mgmtVal('TOTAL_FORMS');
+        var maxForms = this.mgmtVal('MAX_NUM_FORMS');
+        if (maxForms <= totalForms) {
+            this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
+        }
         for (var i = 0; i < totalForms; i++) {
             this._initializeForm('#' + this.prefix + i);
         }
@@ -103,7 +107,7 @@ class DjangoFormset {
     remove(form) {
         var $form = $(form);
         var totalForms = this.mgmtVal('TOTAL_FORMS');
-        var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
+        var maxForms = this.mgmtVal('MAX_NUM_FORMS');
         var index = $form.djangoFormIndex();
         var isInitial = $form.data('isInitial');
 
@@ -208,7 +212,7 @@ class DjangoFormset {
         var self = this;
         var $form = this._$template.clone(true);
         var index = this.mgmtVal('TOTAL_FORMS');
-        var maxForms = this.mgmtVal('MAX_NUM_FORMS') || Infinity;
+        var maxForms = this.mgmtVal('MAX_NUM_FORMS');
         var isNested = this.$inline.hasClass('djn-group-nested');
 
         $form.removeClass(this.opts.emptyClass);
