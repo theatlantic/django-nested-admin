@@ -76,8 +76,16 @@ new_module.__dict__.update({
     '__docformat__':    'restructuredtext en',
 })
 
+all_valid_patch_modules = [django.forms.formsets]
 
-@monkeybiz.patch(django.forms.formsets)
+# If django.contrib.admin.options has already been imported, we'll need to
+# monkeypatch all_valid in that module as well
+admin_module = sys.modules.get('django.contrib.admin.options')
+if admin_module:
+    all_valid_patch_modules.append(admin_module)
+
+
+@monkeybiz.patch(all_valid_patch_modules)
 def all_valid(original_all_valid, formsets):
     """
     Checks validation on formsets, then handles a case where an inline
