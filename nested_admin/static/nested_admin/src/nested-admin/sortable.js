@@ -12,7 +12,7 @@ export function updatePositions(prefix, skipDeleted) {
         // The field name on the fieldset which is a ForeignKey to the parent model
         groupFkName = groupData.formsetFkName,
         parentPkVal,
-        [, parentPrefix, index] = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [],
+        [, parentPrefix, index] = prefix.match(/^(.*)\-(\d+)-[^\-]+(?:\-\d+)?$/) || [],
         sortableOptions = groupData.sortableOptions,
         sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
@@ -34,7 +34,7 @@ export function updatePositions(prefix, skipDeleted) {
         if (!this.id || this.id.substr(-6) == '-empty') {
             return true; // Same as continue
         }
-        var regex = new RegExp('^(?:id_)?' + regexQuote(prefix) + '\\d+$');
+        var regex = new RegExp('^(?:id_)?' + regexQuote(prefix) + '\\-\\d+$');
 
         if (!this.id.match(regex)) {
             return true;

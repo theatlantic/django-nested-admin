@@ -31,10 +31,6 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
                 $node.attr(attrName, attrVal.replace(search, replace));
             }
         });
-
-        if ($node.attr('id') && $node.is('.djn-item')) {
-            $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
-        }
     });
     // update prepopulate ids for function initPrepopulatedFields
     $elem.find('.prepopulated_field').each(function() {

@@ -56,7 +56,7 @@ class DjangoFormset {
             this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
         }
         for (var i = 0; i < totalForms; i++) {
-            this._initializeForm('#' + this.prefix + i);
+            this._initializeForm('#' + this.prefix + '-' + i);
         }
     }
     _initializeForm(form) {
@@ -219,7 +219,7 @@ class DjangoFormset {
 
         $form.removeClass(this.opts.emptyClass);
         $form.addClass('djn-item');
-        $form.attr('id', $form.attr('id').replace('-empty', index));
+        $form.attr('id', $form.attr('id').replace('-empty', '-' + index));
 
         if (isNested) {
             $form.append(DJNesting.createContainerElement());
@@ -308,8 +308,8 @@ class DjangoFormset {
         }
         var oldIndex = $form.djangoFormIndex();
         var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
-            + regexQuote(this.prefix + '-' + oldIndex));
-        $form.attr('id', this.prefix + index);
+            + regexQuote(this.prefix + '-' + oldIndex) + '(?!\\-\\d)');
+        $form.attr('id', this.prefix + '-' + index);
         DJNesting.updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index);
 
         // Update prefixes on nested DjangoFormset objects
@@ -329,15 +329,15 @@ class DjangoFormset {
         var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
             totalFormCount = this.mgmtVal('TOTAL_FORMS'),
             gapIndex = initialFormCount,
-            $existingForm = $('#' + this.prefix + gapIndex);
+            $existingForm = $('#' + this.prefix + '-' + gapIndex);
 
         if (!$existingForm.length) {
             return;
         }
 
         var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
-            + regexQuote(this.prefix) + '-' + gapIndex);
-        $existingForm.attr('id', this.prefix + totalFormCount);
+            + regexQuote(this.prefix) + '-' + gapIndex + '(?!\\-\\d)');
+        $existingForm.attr('id', this.prefix + '-' + totalFormCount);
         DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount);
 
         // Update prefixes on nested DjangoFormset objects
@@ -408,10 +408,9 @@ class DjangoFormset {
             }
 
             // Replace the ids for the splice form
-            var oldFormPrefixRegex = new RegExp('([\\#_]|^)'
-                + regexQuote($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + regexQuote($form.attr('id')) + '(?!\\-\\d)');
             newIndex = (isInitial) ? initialFormCount : totalFormCount;
-            $form.attr('id', newFormsetPrefix + newIndex);
+            $form.attr('id', newFormsetPrefix + '-' + newIndex);
             DJNesting.updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex);
 
             // Update prefixes on nested DjangoFormset objects

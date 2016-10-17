@@ -294,7 +294,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             "$('#grp-header').css('position', 'static');"
             "$('#grp-content').css('top', '0');")
 
-    def _normalize_indexes(self, indexes, is_group=False):
+    def _normalize_indexes(self, indexes, is_group=False, named_models=True):
         """
         To allow for the case where there are multiple inlines defined on a
         given ModelAdmin or InlineModelAdmin, we need indexes to be a list of
@@ -349,16 +349,17 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = list(indexes or [])
 
         # Are we already normalized? If so, just return
+        inline_type_check = is_str if named_models else is_integer
         if is_group:
-            if len(indexes) and is_str(indexes[-1]):
+            if len(indexes) and inline_type_check(indexes[-1]):
                 try:
-                    if all([is_str(a) and is_integer(b) for a, b in indexes[:-1]]):
+                    if all([inline_type_check(a) and is_integer(b) for a, b in indexes[:-1]]):
                         return indexes
                 except:
                     pass
         else:
             try:
-                if all([is_str(a) and is_integer(b) for a, b in indexes]):
+                if all([inline_type_check(a) and is_integer(b) for a, b in indexes]):
                     return indexes
             except:
                 pass
@@ -382,7 +383,10 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
                     raise ValueError(
                         "Terminal index to inline class omitted in group-level "
                         "operation, but parent has more than one inline")
-                norm_indexes.append(inline_model_names[0][0])
+                if named_models:
+                    norm_indexes.append(inline_model_names[0][0])
+                else:
+                    norm_indexes.append(0)
                 break
             if not is_sequence(level_indexes) and not is_integer(level_indexes):
                 raise ValueError("Unexpected type %s in list of indexes" % (
@@ -401,10 +405,16 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
                     raise ValueError("indexes[%d] must have only integers" % level)
                 inline_index, inline_item = level_indexes
                 inline_model_name, inline_model_names = inline_model_names[inline_index]
-                norm_indexes.append([inline_model_name, inline_item])
+                if named_models:
+                    norm_indexes.append([inline_model_name, inline_item])
+                else:
+                    norm_indexes.append([inline_index, inline_item])
 
         if group_index is not None:
-            norm_indexes.append(inline_model_names[group_index][0])
+            if named_models:
+                norm_indexes.append(inline_model_names[group_index][0])
+            else:
+                norm_indexes.append(group_index)
 
         return norm_indexes
 
@@ -488,8 +498,7 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         indexes = self._normalize_indexes(indexes)
         if not indexes:
             return "#id_%s" % attname
-        item_id = self.get_item(indexes=indexes).get_attribute('id')
-        field_prefix = re.sub(r'(?<=\D)(\d+)$', r'-\1', item_id)
+        field_prefix = self.get_item(indexes=indexes).get_attribute('id')
         return "#id_%s-%s" % (field_prefix, attname)
 
     def get_field(self, attname, indexes=None):
@@ -516,16 +525,24 @@ class DragAndDropAction(object):
         else:
             self.target_is_empty = False
 
-        self.from_indexes = self.test_case._normalize_indexes(from_indexes)
-        self.to_indexes = self.test_case._normalize_indexes(to_indexes, is_group=self.target_is_empty)
+        self.from_indexes = self.test_case._normalize_indexes(from_indexes, named_models=False)
+        self.to_indexes = self.test_case._normalize_indexes(
+            to_indexes, is_group=self.target_is_empty, named_models=False)
 
-        num_inlines_indexes = copy.deepcopy(self.to_indexes)
-        if not is_str(num_inlines_indexes[-1]):
+        num_inlines_indexes = self.test_case._normalize_indexes(
+            to_indexes, is_group=self.target_is_empty, named_models=True)
+        if not is_integer(num_inlines_indexes[-1]):
             num_inlines_indexes[-1] = num_inlines_indexes[-1][0]
         self.target_num_items = self.test_case.get_num_inlines(num_inlines_indexes)
 
-        if is_str(self.to_indexes[-1]):
+        if is_integer(self.to_indexes[-1]):
             self.to_indexes[-1] = [self.to_indexes[-1], 0]
+        self.to_indexes = [tuple(i) for i in self.to_indexes]
+
+        inline_models = self.test_case.models[1]
+        for inline_index, item_index in self.to_indexes[:-1]:
+            inline_models = inline_models[inline_index][1]
+        self.target_num_inlines = len(inline_models)
 
         if self.from_indexes[:-1] == self.to_indexes[:-1]:
             if self.from_indexes[-1][1] < self.to_indexes[-1][1]:
@@ -563,7 +580,8 @@ class DragAndDropAction(object):
                 target_inline_parent = self.test_case.get_item(self.to_indexes[:-1])
             else:
                 target_inline_parent = self.selenium
-            target_xpath = ".//*[%s]" % xpath_cls("djn-items")
+            target_xpath = ".//*[%s][%d]//*[%s]" % (
+                xpath_cls('djn-group'), self.to_indexes[-1][0] + 1, xpath_cls("djn-items"))
             if self.target_num_items != self.to_indexes[-1][1]:
                 target_xpath += "/*[%(item_pred)s][%(item_pos)d]" % {
                     'item_pred': xpath_item(),
@@ -588,7 +606,11 @@ class DragAndDropAction(object):
             return el
 
     def move_by_offset(self, x_offset, y_offset):
-        ActionChains(self.selenium).move_by_offset(x_offset, y_offset).perform()
+        increment = -15 if y_offset < 0 else 15
+        for offset in range(0, y_offset, increment):
+            ActionChains(self.selenium).move_by_offset(0, increment).perform()
+        if offset != y_offset:
+            ActionChains(self.selenium).move_by_offset(0, y_offset - offset).perform()
 
     def release(self):
         ActionChains(self.selenium).release().perform()
@@ -599,8 +621,9 @@ class DragAndDropAction(object):
         # True if aiming for the bottom of the target
         helper_height = helper.size['height']
         self.move_by_offset(0, -1)
-        desired_pos = tuple([i[1] for i in self.to_indexes])
+        desired_pos = tuple(self.to_indexes)
         target_bottom = bool(0 < self.to_indexes[-1][1] == (self.target_num_items - 1)
+            and self.to_indexes[-1][0] == (self.target_num_inlines - 1)
             and cmp(desired_pos[:-1], self.current_position[:-1]) > -1)
 
         while True:
@@ -632,7 +655,7 @@ class DragAndDropAction(object):
             count += 1
         return helper
 
-    def _num_preceding_djn_items(self, ctx):
+    def _num_preceding_siblings(self, ctx, condition):
         """
         For an unknown reason, evaluating XPath expressions of the form
 
@@ -647,10 +670,23 @@ class DragAndDropAction(object):
         for el in siblings:
             if el.id == ctx.id:
                 break
-            classes = set(re.split(r'\s+', el.get_attribute('class')))
-            if classes & {'djn-item'} and not(classes & {'djn-no-drag', 'djn-thead'}):
+            if condition(el):
                 count += 1
         return count
+
+    def _num_preceding_djn_items(self, ctx):
+        def is_djn_item(el):
+            classes = set(re.split(r'\s+', el.get_attribute('class')))
+            return (classes & {'djn-item'} and
+                not(classes & {'djn-no-drag', 'djn-thead', 'djn-item-dragging'}))
+
+        return self._num_preceding_siblings(ctx, condition=is_djn_item)
+
+    def _num_preceding_djn_groups(self, ctx):
+        def is_djn_group(el):
+            return "djn-group" in re.split(r'\s+', el.get_attribute('class'))
+
+        return self._num_preceding_siblings(ctx, condition=is_djn_group)
 
     @property
     def current_position(self):
@@ -664,7 +700,10 @@ class DragAndDropAction(object):
                 ctx = placeholder
             else:
                 ctx = ctx.find_element_by_xpath(ancestor_xpath)
-            pos.insert(0, self._num_preceding_djn_items(ctx))
+            item_index = self._num_preceding_djn_items(ctx)
+            ctx = ctx.find_element_by_xpath('ancestor::*[%s][1]' % xpath_cls("djn-group"))
+            inline_index = self._num_preceding_djn_groups(ctx)
+            pos.insert(0, (inline_index, item_index))
         return tuple(pos)
 
     def _finesse_position(self, helper, target):
@@ -675,7 +714,7 @@ class DragAndDropAction(object):
             dy = max(1, int(round(helper_height / 38.0)))
         else:
             dy = int(round(helper_height / 10.0))
-        desired_pos = tuple([i[1] for i in self.to_indexes])
+        desired_pos = tuple(self.to_indexes)
         while True:
             if count >= limit:
                 break
@@ -683,11 +722,7 @@ class DragAndDropAction(object):
             pos_diff = cmp(desired_pos, curr_pos)
             if pos_diff == 0:
                 break
-            if curr_pos[0] == desired_pos[0] and abs(curr_pos[1] - desired_pos[1]) > 1:
-                mult = 2
-            else:
-                mult = 1
-            self.move_by_offset(0, pos_diff * dy * mult)
+            self.move_by_offset(0, pos_diff * dy)
             count += 1
 
     def move_to_target(self, screenshot_hack=False):

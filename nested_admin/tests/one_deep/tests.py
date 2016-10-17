@@ -204,7 +204,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            delete_col = self.selenium.find_element_by_css_selector('#children0 .delete')
+            delete_col = self.selenium.find_element_by_css_selector('#children-0 .delete')
             extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
                 'x': delete_col.location['x'],
                 'y': delete_col.location['y'],
@@ -230,7 +230,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            delete_col = self.selenium.find_element_by_css_selector('#children0 .inline-deletelink')
+            delete_col = self.selenium.find_element_by_css_selector('#children-0 .inline-deletelink')
             extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
                 'x': delete_col.location['x'],
                 'y': delete_col.location['y'],

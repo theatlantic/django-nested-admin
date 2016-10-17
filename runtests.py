@@ -27,6 +27,7 @@ TEST_CASE_MODULE_PATHS = {
     'TestStackedInlineAdmin': 'nested_admin.tests.two_deep.tests',
     'TestTabularInlineAdmin': 'nested_admin.tests.two_deep.tests',
     'TestSortablesWithExtra': 'nested_admin.tests.two_deep.tests',
+    'TestIdenticalPrefixes': 'nested_admin.tests.identical_prefixes.tests',
 }
 
 

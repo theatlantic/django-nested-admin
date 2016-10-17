@@ -145,6 +145,7 @@ class NestedModelAdminMixin(object):
 
         formsets = []
         inline_instances = []
+        prefixes = {}
 
         for formset, inline_instance in zip(orig_formsets, orig_inline_instances):
             if not hasattr(formset, 'nesting_depth'):
@@ -172,6 +173,9 @@ class NestedModelAdminMixin(object):
                             form_obj = None
                         InlineFormSet = nested.get_formset(request, form_obj)
                         prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
+                        prefixes[prefix] = prefixes.get(prefix, 0) + 1
+                        if prefixes[prefix] != 1:
+                            prefix = "%s-%s" % (prefix, prefixes[prefix])
 
                         formset_params = {
                             'instance': form_obj,

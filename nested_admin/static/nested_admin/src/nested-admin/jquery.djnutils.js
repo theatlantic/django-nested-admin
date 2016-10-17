@@ -28,13 +28,13 @@ $.fn.djangoPrefixIndex = function() {
     }
 
     if (id && !prefix && $this.is('.djn-item') && id.match(/\d+$/)) {
-        [cacheKey, prefix, index] = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
+        [cacheKey, prefix, index] = id.match(/(.*?)\-(\d+)$/) || [null, null, null];
     }
 
     if (!prefix) {
         $form = $this.closest('.djn-inline-form');
         if ($form.length) {
-            [cacheKey, prefix, index] = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/)
+            [cacheKey, prefix, index] = $form.attr('id').match(/(.*?)\-(\d+)$/)
                 || [null, null, null];
         } else {
             $group = $this.closest('.djn-group');
@@ -80,9 +80,9 @@ $.fn.djangoFormsetPrefix = function() {
 
 var filterDjangoFormsetForms = function(form, $group, formsetPrefix) {
     var formId = form.getAttribute('id'),
-        formIndex = formId.substr(formsetPrefix.length);
+        formIndex = formId.substr(formsetPrefix.length + 1);
 
-    // Check if form id matches /{prefix}\d+/
+    // Check if form id matches /{prefix}-\d+/
     if (formId.indexOf(formsetPrefix) !== 0) { return false; }
     return (!formIndex.match(/\D/));
 };

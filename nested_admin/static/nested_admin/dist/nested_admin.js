@@ -84,7 +84,7 @@ var DjangoFormset = function () {
                 this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
             }
             for (var i = 0; i < totalForms; i++) {
-                this._initializeForm('#' + this.prefix + i);
+                this._initializeForm('#' + this.prefix + '-' + i);
             }
         }
     }, {
@@ -260,7 +260,7 @@ var DjangoFormset = function () {
 
             $form.removeClass(this.opts.emptyClass);
             $form.addClass('djn-item');
-            $form.attr('id', $form.attr('id').replace('-empty', index));
+            $form.attr('id', $form.attr('id').replace('-empty', '-' + index));
 
             if (isNested) {
                 $form.append(_utils2.default.createContainerElement());
@@ -350,8 +350,8 @@ var DjangoFormset = function () {
                 return;
             }
             var oldIndex = $form.djangoFormIndex();
-            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix + '-' + oldIndex));
-            $form.attr('id', this.prefix + index);
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix + '-' + oldIndex) + '(?!\\-\\d)');
+            $form.attr('id', this.prefix + '-' + index);
             _utils2.default.updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index);
 
             // Update prefixes on nested DjangoFormset objects
@@ -373,14 +373,14 @@ var DjangoFormset = function () {
             var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
                 totalFormCount = this.mgmtVal('TOTAL_FORMS'),
                 gapIndex = initialFormCount,
-                $existingForm = (0, _jquery2.default)('#' + this.prefix + gapIndex);
+                $existingForm = (0, _jquery2.default)('#' + this.prefix + '-' + gapIndex);
 
             if (!$existingForm.length) {
                 return;
             }
 
-            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '-' + gapIndex);
-            $existingForm.attr('id', this.prefix + totalFormCount);
+            var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '-' + gapIndex + '(?!\\-\\d)');
+            $existingForm.attr('id', this.prefix + '-' + totalFormCount);
             _utils2.default.updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount);
 
             // Update prefixes on nested DjangoFormset objects
@@ -454,9 +454,9 @@ var DjangoFormset = function () {
                 }
 
                 // Replace the ids for the splice form
-                var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)($form.attr('id').replace(/([^\-\d])(\d+)$/, '$1-$2')));
+                var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0, _regexquote2.default)($form.attr('id')) + '(?!\\-\\d)');
                 newIndex = isInitial ? initialFormCount : totalFormCount;
-                $form.attr('id', newFormsetPrefix + newIndex);
+                $form.attr('id', newFormsetPrefix + '-' + newIndex);
                 _utils2.default.updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex);
 
                 // Update prefixes on nested DjangoFormset objects
@@ -574,7 +574,7 @@ _jquery2.default.fn.djangoPrefixIndex = function () {
     }
 
     if (id && !prefix && $this.is('.djn-item') && id.match(/\d+$/)) {
-        var _ref = id.match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
+        var _ref = id.match(/(.*?)\-(\d+)$/) || [null, null, null];
 
         var _ref2 = _slicedToArray(_ref, 3);
 
@@ -586,7 +586,7 @@ _jquery2.default.fn.djangoPrefixIndex = function () {
     if (!prefix) {
         $form = $this.closest('.djn-inline-form');
         if ($form.length) {
-            var _ref3 = $form.attr('id').match(/(.*?[^\-\d])(\d+)$/) || [null, null, null];
+            var _ref3 = $form.attr('id').match(/(.*?)\-(\d+)$/) || [null, null, null];
 
             var _ref4 = _slicedToArray(_ref3, 3);
 
@@ -637,9 +637,9 @@ _jquery2.default.fn.djangoFormsetPrefix = function () {
 
 var filterDjangoFormsetForms = function filterDjangoFormsetForms(form, $group, formsetPrefix) {
     var formId = form.getAttribute('id'),
-        formIndex = formId.substr(formsetPrefix.length);
+        formIndex = formId.substr(formsetPrefix.length + 1);
 
-    // Check if form id matches /{prefix}\d+/
+    // Check if form id matches /{prefix}-\d+/
     if (formId.indexOf(formsetPrefix) !== 0) {
         return false;
     }
@@ -2916,7 +2916,7 @@ function updatePositions(prefix, skipDeleted) {
     var groupFkName = groupData.formsetFkName;
     var parentPkVal;
 
-    var _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+$/) || [];
+    var _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+(?:\-\d+)?$/) || [];
 
     var _ref2 = _slicedToArray(_ref, 3);
 
@@ -2943,7 +2943,7 @@ function updatePositions(prefix, skipDeleted) {
         if (!this.id || this.id.substr(-6) == '-empty') {
             return true; // Same as continue
         }
-        var regex = new RegExp('^(?:id_)?' + (0, _regexquote2.default)(prefix) + '\\d+$');
+        var regex = new RegExp('^(?:id_)?' + (0, _regexquote2.default)(prefix) + '\\-\\d+$');
 
         if (!this.id.match(regex)) {
             return true;
@@ -3181,10 +3181,6 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
                 $node.attr(attrName, attrVal.replace(search, replace));
             }
         });
-
-        if ($node.attr('id') && $node.is('.djn-item')) {
-            $node.attr('id', $node.attr('id').replace(/([^\-\d])\-(\d+)$/, '$1$2'));
-        }
     });
     // update prepopulate ids for function initPrepopulatedFields
     $elem.find('.prepopulated_field').each(function () {
