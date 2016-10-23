@@ -64,34 +64,29 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
         return;
     }
     var lookupUrls = DJNesting.LOOKUP_URLS;
+    var $inline = $('#' + prefix + '-group');
 
     if (!groupData) {
-        groupData = $('#' + prefix + '-group').djnData();
+        groupData = $inline.djnData();
     }
     var lookupFields = groupData.lookupRelated;
 
-    $.each(lookupFields.fk || [], function() {
-        if ($(this).next('a').hasClass('related-lookup')) return;
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
-        .grp_related_fk({lookup_url: lookupUrls.related});
-    });
-    $.each(lookupFields.m2m || [], function() {
-        if ($(this).next('a').hasClass('related-lookup')) return;
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
-        .grp_related_m2m({lookup_url: lookupUrls.m2m});
-    });
-    $.each(lookupFields.generic || [], function() {
-        var [contentType, objectId] = this;
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + objectId + '"]')
-        .each(function() {
-            var $this = $(this);
-            var id = $this.attr('id');
-            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
-            var [, index] = id.match(idRegex) || [];
-            if (index) {
+    $inline.djangoFormsetForms().each(function(i, form) {
+        $.each(lookupFields.fk || [], function(i, fk) {
+            $(form).djangoFormField(fk).each(function() {
+                $(this).grp_related_fk({lookup_url: lookupUrls.related});
+            });
+        });
+        $.each(lookupFields.m2m || [], function(i, m2m) {
+            $(form).djangoFormField(m2m).each(function() {
+                $(this).grp_related_m2m({lookup_url: lookupUrls.related});
+            });
+        });
+        $.each(lookupFields.generic || [], function() {
+            var [contentType, objectId] = this;
+            $(form).djangoFormField(objectId).each(function() {
+                var $this = $(this);
+                var index = $this.djangoFormIndex();
                 if ($this.hasClass('grp-has-related-lookup')) {
                     $this.parent().find('a.related-lookup').remove();
                     $this.parent().find('.grp-placeholder-related-generic').remove();
@@ -101,7 +96,7 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
                     object_id: '#id_' + prefix + index + objectId,
                     lookup_url: lookupUrls.related
                 });
-            }
+            });
         });
     });
 };
@@ -119,41 +114,49 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
     }
     var lookupFields = groupData.lookupAutocomplete;
 
-    $.each(lookupFields.fk || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
-        .each(function() {
-            $(this).grp_autocomplete_fk({
-                lookup_url: lookupUrls.related,
-                autocomplete_lookup_url: lookupUrls.autocomplete
+    $inline.djangoFormsetForms().each(function(i, form) {
+        $.each(lookupFields.fk || [], function(i, fk) {
+            $(form).djangoFormField(fk).each(function() {
+                var $this = $(this), id = $this.attr('id');
+                // An autocomplete widget has already been initialized, return
+                if ($('#' + id + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_fk({
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.autocomplete
+                });
             });
         });
-    });
-    $.each(lookupFields.m2m || [], function() {
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + this + '"]')
-        .each(function() {
-            $(this).grp_autocomplete_m2m({
-                lookup_url: lookupUrls.m2m,
-                autocomplete_lookup_url: lookupUrls.autocomplete
+        $.each(lookupFields.m2m || [], function(i, m2m) {
+            $(form).djangoFormField(m2m).each(function() {
+                var $this = $(this), id = $this.attr('id');
+                // An autocomplete widget has already been initialized, return
+                if ($('#' + id + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_m2m({
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.autocomplete
+                });
             });
         });
-    });
-    $.each(lookupFields.generic || [], function() {
-        var [contentType, objectId] = this;
-        $('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)')
-        .find('input[name^="' + prefix + '"][name$="-' + objectId + '"]')
-        .each(function() {
-            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
-            var [, index] = $(this).attr('id').match(idRegex) || [];
-            if (index) {
-                $(this).grp_autocomplete_generic({
+        $.each(lookupFields.generic || [], function() {
+            var [contentType, objectId] = this;
+            $(form).djangoFormField(objectId).each(function() {
+                var $this = $(this);
+                var index = $this.djangoFormIndex();
+                // An autocomplete widget has already been initialized, return
+                if ($('#' + $this.attr('id') + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_generic({
                     content_type: '#id_' + prefix + index + contentType,
                     object_id: '#id_' + prefix + index + objectId,
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.m2m
                 });
-            }
+            });
         });
     });
 };

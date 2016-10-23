@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <django-objects version="1.0">
-    <object pk="1" model="admin_widgets.testadminwidgetsrelated">
+    <object pk="1" model="admin_widgets.testadminwidgetsrelated1">
         <field type="CharField" name="name">I</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsrelated">
+    <object pk="2" model="admin_widgets.testadminwidgetsrelated1">
         <field type="CharField" name="name">J</field>
+    </object>
+    <object pk="1" model="admin_widgets.testadminwidgetsrelated2">
+        <field type="CharField" name="name">K</field>
+    </object>
+    <object pk="2" model="admin_widgets.testadminwidgetsrelated2">
+        <field type="CharField" name="name">L</field>
     </object>
     <object pk="1" model="admin_widgets.testadminwidgetsm2m">
         <field type="CharField" name="name">X</field>

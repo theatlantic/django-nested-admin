@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import collections
 import contextlib
 import copy
+import functools
 import json
 import logging
 import re
@@ -747,3 +748,12 @@ def expected_failure_if_suit(func):
     if 'suit' in settings.INSTALLED_APPS:
         return unittest.expectedFailure(func)
     return func
+
+
+def skip_if_not_grappelli(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if 'grappelli' not in settings.INSTALLED_APPS:
+            raise unittest.SkipTest("Skipping (grappelli required)")
+        return func(*args, **kwargs)
+    return wrapper

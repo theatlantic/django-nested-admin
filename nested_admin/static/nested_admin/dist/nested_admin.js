@@ -3214,38 +3214,33 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         return;
     }
     var lookupUrls = DJNesting.LOOKUP_URLS;
+    var $inline = (0, _jquery2.default)('#' + prefix + '-group');
 
     if (!groupData) {
-        groupData = (0, _jquery2.default)('#' + prefix + '-group').djnData();
+        groupData = $inline.djnData();
     }
     var lookupFields = groupData.lookupRelated;
 
-    _jquery2.default.each(lookupFields.fk || [], function () {
-        if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').grp_related_fk({ lookup_url: lookupUrls.related });
-    });
-    _jquery2.default.each(lookupFields.m2m || [], function () {
-        if ((0, _jquery2.default)(this).next('a').hasClass('related-lookup')) return;
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').grp_related_m2m({ lookup_url: lookupUrls.m2m });
-    });
-    _jquery2.default.each(lookupFields.generic || [], function () {
-        var _ref = _slicedToArray(this, 2);
+    $inline.djangoFormsetForms().each(function (i, form) {
+        _jquery2.default.each(lookupFields.fk || [], function (i, fk) {
+            (0, _jquery2.default)(form).djangoFormField(fk).each(function () {
+                (0, _jquery2.default)(this).grp_related_fk({ lookup_url: lookupUrls.related });
+            });
+        });
+        _jquery2.default.each(lookupFields.m2m || [], function (i, m2m) {
+            (0, _jquery2.default)(form).djangoFormField(m2m).each(function () {
+                (0, _jquery2.default)(this).grp_related_m2m({ lookup_url: lookupUrls.related });
+            });
+        });
+        _jquery2.default.each(lookupFields.generic || [], function () {
+            var _ref = _slicedToArray(this, 2);
 
-        var contentType = _ref[0];
-        var objectId = _ref[1];
+            var contentType = _ref[0];
+            var objectId = _ref[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + objectId + '"]').each(function () {
-            var $this = (0, _jquery2.default)(this);
-            var id = $this.attr('id');
-            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
-
-            var _ref2 = id.match(idRegex) || [];
-
-            var _ref3 = _slicedToArray(_ref2, 2);
-
-            var index = _ref3[1];
-
-            if (index) {
+            (0, _jquery2.default)(form).djangoFormField(objectId).each(function () {
+                var $this = (0, _jquery2.default)(this);
+                var index = $this.djangoFormIndex();
                 if ($this.hasClass('grp-has-related-lookup')) {
                     $this.parent().find('a.related-lookup').remove();
                     $this.parent().find('.grp-placeholder-related-generic').remove();
@@ -3255,7 +3250,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
                     object_id: '#id_' + prefix + index + objectId,
                     lookup_url: lookupUrls.related
                 });
-            }
+            });
         });
     });
 };
@@ -3273,45 +3268,55 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     }
     var lookupFields = groupData.lookupAutocomplete;
 
-    _jquery2.default.each(lookupFields.fk || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').each(function () {
-            (0, _jquery2.default)(this).grp_autocomplete_fk({
-                lookup_url: lookupUrls.related,
-                autocomplete_lookup_url: lookupUrls.autocomplete
+    $inline.djangoFormsetForms().each(function (i, form) {
+        _jquery2.default.each(lookupFields.fk || [], function (i, fk) {
+            (0, _jquery2.default)(form).djangoFormField(fk).each(function () {
+                var $this = (0, _jquery2.default)(this),
+                    id = $this.attr('id');
+                // An autocomplete widget has already been initialized, return
+                if ((0, _jquery2.default)('#' + id + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_fk({
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.autocomplete
+                });
             });
         });
-    });
-    _jquery2.default.each(lookupFields.m2m || [], function () {
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + this + '"]').each(function () {
-            (0, _jquery2.default)(this).grp_autocomplete_m2m({
-                lookup_url: lookupUrls.m2m,
-                autocomplete_lookup_url: lookupUrls.autocomplete
+        _jquery2.default.each(lookupFields.m2m || [], function (i, m2m) {
+            (0, _jquery2.default)(form).djangoFormField(m2m).each(function () {
+                var $this = (0, _jquery2.default)(this),
+                    id = $this.attr('id');
+                // An autocomplete widget has already been initialized, return
+                if ((0, _jquery2.default)('#' + id + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_m2m({
+                    lookup_url: lookupUrls.related,
+                    autocomplete_lookup_url: lookupUrls.autocomplete
+                });
             });
         });
-    });
-    _jquery2.default.each(lookupFields.generic || [], function () {
-        var _ref4 = _slicedToArray(this, 2);
+        _jquery2.default.each(lookupFields.generic || [], function () {
+            var _ref2 = _slicedToArray(this, 2);
 
-        var contentType = _ref4[0];
-        var objectId = _ref4[1];
+            var contentType = _ref2[0];
+            var objectId = _ref2[1];
 
-        (0, _jquery2.default)('#' + prefix + '-group > .djn-items > *:not(.djn-empty-form)').find('input[name^="' + prefix + '"][name$="-' + objectId + '"]').each(function () {
-            var idRegex = new RegExp('(\\-\\d+\\-)' + objectId + '$');
-
-            var _ref5 = (0, _jquery2.default)(this).attr('id').match(idRegex) || [];
-
-            var _ref6 = _slicedToArray(_ref5, 2);
-
-            var index = _ref6[1];
-
-            if (index) {
-                (0, _jquery2.default)(this).grp_autocomplete_generic({
+            (0, _jquery2.default)(form).djangoFormField(objectId).each(function () {
+                var $this = (0, _jquery2.default)(this);
+                var index = $this.djangoFormIndex();
+                // An autocomplete widget has already been initialized, return
+                if ((0, _jquery2.default)('#' + $this.attr('id') + '-autocomplete').length) {
+                    return;
+                }
+                $this.grp_autocomplete_generic({
                     content_type: '#id_' + prefix + index + contentType,
                     object_id: '#id_' + prefix + index + objectId,
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.m2m
                 });
-            }
+            });
         });
     });
 };

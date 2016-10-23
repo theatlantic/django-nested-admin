@@ -9,7 +9,7 @@ from django.utils.text import slugify, unescape_entities
 
 from nested_admin.tests.base import (
     expected_failure_if_grappelli, expected_failure_if_suit,
-    BaseNestedAdminTestCase)
+    skip_if_not_grappelli, BaseNestedAdminTestCase)
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1)
@@ -118,7 +118,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.assertEqual(selected, [1, 2, 3])
 
     def check_fk(self, indexes):
-        field = self.get_field('fk', indexes)
+        field = self.get_field('fk1', indexes)
         parent = field.find_element_by_xpath('parent::*')
         add_related = parent.find_element_by_css_selector('.add-related')
         if self.has_grappelli:
@@ -294,3 +294,15 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.add_inline([1])
         self.add_inline([1, 0, [1]])
         self.check_datetime([1, 0, [1, 0]])
+
+    @skip_if_not_grappelli
+    def test_autocomplete_single_init(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        autocomplete_elements = self.selenium.find_elements_by_xpath(
+            '//*[@id="id_testadminwidgetsa_set-1-testadminwidgetsb_set-0-fk2-autocomplete"]')
+        self.assertNotEqual(len(autocomplete_elements), 0,
+            "Zero autocomplete fields initialized")
+        self.assertEqual(len(autocomplete_elements), 1,
+            "Too many autocomplete fields initialized")

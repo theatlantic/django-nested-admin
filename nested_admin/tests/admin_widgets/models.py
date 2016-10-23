@@ -10,11 +10,23 @@ class TestAdminWidgetsRoot(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsRelated(models.Model):
+class TestAdminWidgetsRelated1(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
+
+@python_2_unicode_compatible
+class TestAdminWidgetsRelated2(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("name__icontains", )
 
 
 @python_2_unicode_compatible
@@ -32,7 +44,9 @@ class TestAdminWidgetsA(models.Model):
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
+    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE)
+    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE)
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
@@ -47,7 +61,9 @@ class TestAdminWidgetsB(models.Model):
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
+    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE)
+    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE)
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
@@ -62,7 +78,9 @@ class TestAdminWidgetsC0(models.Model):
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
+    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE)
+    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE)
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
@@ -77,7 +95,9 @@ class TestAdminWidgetsC1(models.Model):
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk = models.ForeignKey(TestAdminWidgetsRelated, blank=True, null=True,
+    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE)
+    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE)
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
