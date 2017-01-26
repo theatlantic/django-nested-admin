@@ -7,7 +7,7 @@ from django import template
 from django.apps import apps
 from django.conf import settings
 from django.contrib.admin.options import InlineModelAdmin
-from django.utils.safestring import mark_for_escaping, mark_safe
+from django.utils.safestring import mark_safe
 from django.utils.html import escape
 
 register = template.Library()
@@ -63,7 +63,7 @@ strip_parent_name.is_safe = True
 
 @register.filter
 def json_encode(data):
-    return mark_for_escaping(json.dumps(data))
+    return escape(json.dumps(data))
 
 def json_else_list_tag(f):
     """
