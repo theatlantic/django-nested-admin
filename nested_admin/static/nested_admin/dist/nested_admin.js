@@ -530,7 +530,7 @@ module.exports = exports['default'];
 (function (global){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -2221,7 +2221,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 (function (global){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
@@ -2908,22 +2908,19 @@ require('./jquery.ui.nestedsortable');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function updatePositions(prefix, skipDeleted) {
-    var position = 0;
-    var $group = (0, _jquery2.default)('#' + prefix + '-group');
-    var groupData = $group.djnData();
-    var fieldNames = groupData.fieldNames;
-    // The field name on the fieldset which is a ForeignKey to the parent model
-    var groupFkName = groupData.formsetFkName;
-    var parentPkVal;
+    var position = 0,
+        $group = (0, _jquery2.default)('#' + prefix + '-group'),
+        groupData = $group.djnData(),
+        fieldNames = groupData.fieldNames,
+        groupFkName = groupData.formsetFkName,
+        parentPkVal,
+        _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+(?:\-\d+)?$/) || [],
+        _ref2 = _slicedToArray(_ref, 3),
+        parentPrefix = _ref2[1],
+        index = _ref2[2],
+        sortableOptions = groupData.sortableOptions,
+        sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
-    var _ref = prefix.match(/^(.*)\-(\d+)-[^\-]+(?:\-\d+)?$/) || [];
-
-    var _ref2 = _slicedToArray(_ref, 3);
-
-    var parentPrefix = _ref2[1];
-    var index = _ref2[2];
-    var sortableOptions = groupData.sortableOptions;
-    var sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
 
     sortableExcludes.push(groupFkName);
 
@@ -2949,15 +2946,13 @@ function updatePositions(prefix, skipDeleted) {
             return true;
         }
         // Cache jQuery object
-        var $this = (0, _jquery2.default)(this);
+        var $this = (0, _jquery2.default)(this),
+            _ref3 = $this.djangoPrefixIndex() || [null, null],
+            _ref4 = _slicedToArray(_ref3, 2),
+            formPrefix = _ref4[0],
+            index = _ref4[1],
+            namePrefix = formPrefix + '-' + index + '-';
 
-        var _ref3 = $this.djangoPrefixIndex() || [null, null];
-
-        var _ref4 = _slicedToArray(_ref3, 2);
-
-        var formPrefix = _ref4[0];
-        var index = _ref4[1];
-        var namePrefix = formPrefix + '-' + index + '-';
 
         if (!formPrefix) {
             return;
@@ -3134,7 +3129,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _jquery = (typeof window !== "undefined" ? window['django']['jQuery'] : typeof global !== "undefined" ? global['django']['jQuery'] : null);
 
@@ -3229,14 +3224,13 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         });
         _jquery2.default.each(lookupFields.m2m || [], function (i, m2m) {
             (0, _jquery2.default)(form).djangoFormField(m2m).each(function () {
-                (0, _jquery2.default)(this).grp_related_m2m({ lookup_url: lookupUrls.related });
+                (0, _jquery2.default)(this).grp_related_m2m({ lookup_url: lookupUrls.m2m });
             });
         });
         _jquery2.default.each(lookupFields.generic || [], function () {
-            var _ref = _slicedToArray(this, 2);
-
-            var contentType = _ref[0];
-            var objectId = _ref[1];
+            var _ref = _slicedToArray(this, 2),
+                contentType = _ref[0],
+                objectId = _ref[1];
 
             (0, _jquery2.default)(form).djangoFormField(objectId).each(function () {
                 var $this = (0, _jquery2.default)(this);
@@ -3292,16 +3286,15 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
                     return;
                 }
                 $this.grp_autocomplete_m2m({
-                    lookup_url: lookupUrls.related,
+                    lookup_url: lookupUrls.m2m,
                     autocomplete_lookup_url: lookupUrls.autocomplete
                 });
             });
         });
         _jquery2.default.each(lookupFields.generic || [], function () {
-            var _ref2 = _slicedToArray(this, 2);
-
-            var contentType = _ref2[0];
-            var objectId = _ref2[1];
+            var _ref2 = _slicedToArray(this, 2),
+                contentType = _ref2[0],
+                objectId = _ref2[1];
 
             (0, _jquery2.default)(form).djangoFormField(objectId).each(function () {
                 var $this = (0, _jquery2.default)(this);

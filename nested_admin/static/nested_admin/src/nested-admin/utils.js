@@ -79,7 +79,7 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
         });
         $.each(lookupFields.m2m || [], function(i, m2m) {
             $(form).djangoFormField(m2m).each(function() {
-                $(this).grp_related_m2m({lookup_url: lookupUrls.related});
+                $(this).grp_related_m2m({lookup_url: lookupUrls.m2m});
             });
         });
         $.each(lookupFields.generic || [], function() {
@@ -136,7 +136,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                     return;
                 }
                 $this.grp_autocomplete_m2m({
-                    lookup_url: lookupUrls.related,
+                    lookup_url: lookupUrls.m2m,
                     autocomplete_lookup_url: lookupUrls.autocomplete
                 });
             });
