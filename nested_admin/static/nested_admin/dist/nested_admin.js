@@ -96,6 +96,14 @@ var DjangoFormset = function () {
             if ($form.hasClass('has_original')) {
                 (0, _jquery2.default)('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
             }
+            var minForms = this.mgmtVal('MIN_NUM_FORMS');
+            var totalForms = this.mgmtVal('TOTAL_FORMS');
+            var self = this;
+            var hideRemoveButton = totalForms <= minForms;
+            this.$inline.djangoFormsetForms().each(function () {
+                var showHideMethod = hideRemoveButton ? 'hide' : 'show';
+                (0, _jquery2.default)(this).find(self.opts.removeButtonSelector)[showHideMethod]();
+            });
         }
     }, {
         key: '_bindEvents',
@@ -142,19 +150,28 @@ var DjangoFormset = function () {
         value: function remove(form) {
             var $form = (0, _jquery2.default)(form);
             var totalForms = this.mgmtVal('TOTAL_FORMS');
+            var minForms = this.mgmtVal('MIN_NUM_FORMS');
             var maxForms = this.mgmtVal('MAX_NUM_FORMS');
             var index = $form.djangoFormIndex();
             var isInitial = $form.data('isInitial');
 
             $form.remove();
 
-            this.mgmtVal('TOTAL_FORMS', totalForms - 1);
+            totalForms -= 1;
+            this.mgmtVal('TOTAL_FORMS', totalForms);
 
-            if (maxForms - totalForms > 0) {
+            if (maxForms - totalForms >= 0) {
                 this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').show();
             }
 
             this._fillGap(index, isInitial);
+
+            var self = this;
+            var hideRemoveButton = totalForms <= minForms;
+            this.$inline.djangoFormsetForms().each(function () {
+                var showHideMethod = hideRemoveButton ? 'hide' : 'show';
+                (0, _jquery2.default)(this).find(self.opts.removeButtonSelector)[showHideMethod]();
+            });
 
             _utils2.default.updatePositions(this.prefix);
             (0, _jquery2.default)(document).trigger('djnesting:mutate', [this.$inline]);
