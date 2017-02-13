@@ -14,6 +14,10 @@
   border-color: transparent;
 }
 
+.grp-tools span.delete {
+  cursor: auto !important;
+}
+
 .djn-group-nested .djn-items .inline-related {
   border: 1px solid transparent;
   border-radius: 4px;
