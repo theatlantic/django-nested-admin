@@ -11,6 +11,13 @@ from django.utils.six.moves import xrange
 
 class NestedInlineFormSetMixin(object):
 
+    def _construct_form(self, i, **kwargs):
+        defaults = {}
+        if '-empty-' in self.prefix:
+            defaults['empty_permitted'] = True
+        defaults.update(kwargs)
+        return super(NestedInlineFormSetMixin, self)._construct_form(i, **defaults)
+
     def save(self, commit=True):
         """
         Saves model instances for every form, adding and changing instances
