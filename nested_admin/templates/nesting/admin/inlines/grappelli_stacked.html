@@ -26,7 +26,6 @@
             {% if forloop.first %}
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
-            {{ inline_admin_form.management_form }}
             <div class="{% if not forloop.last %}djn-item{% endif %} grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form grp-empty-form{% endif %} inline-related"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
@@ -69,7 +68,7 @@
                 {% if inline_admin_form.has_auto_field or inline_admin_form.needs_explicit_pk_field %}
                     {{ inline_admin_form.pk_field.field }}
                 {% endif %}
-                {{ inline_admin_form.fk_field.field }}
+                {% if inline_admin_form.fk_field %}{{ inline_admin_form.fk_field.field }}{% endif %}
                 {% if inline_admin_form.form.inlines %}
                     {% for nested in inline_admin_form.form.inlines %}
                         {% include nested.opts.template with inline_admin_formset=nested %}
@@ -79,8 +78,6 @@
             </div>
         {% endfor %}
         {% endwith %}
-
-        {{ inline_admin_formset.extra_forms }}
     </div>
     <div class="grp-module djn-module djn-add-item grp-transparent">
         <div class="grp-row">

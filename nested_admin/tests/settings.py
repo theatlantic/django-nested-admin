@@ -18,11 +18,26 @@ DATABASES = {
 }
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
 
+try:
+    import grappelli
+except ImportError:
+    try:
+        import suit
+    except ImportError:
+        INSTALLED_APPS = tuple([])
+    else:
+        INSTALLED_APPS = tuple(['suit'])
+        SUIT_CONFIG = {'CONFIRM_UNSAVED_CHANGES': False}
+else:
+    INSTALLED_APPS = tuple(['grappelli'])
+
+
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     'DIRS': [os.path.join(current_dir, 'templates')],
     'APP_DIRS': True,
     'OPTIONS': {
+        'string_if_invalid': 'INVALID {{ %s }}',
         'context_processors': [
             'django.contrib.auth.context_processors.auth',
             'django.template.context_processors.debug',
@@ -36,18 +51,11 @@ TEMPLATES = [{
     },
 }]
 
-try:
-    import grappelli
-except ImportError:
-    try:
-        import suit
-    except ImportError:
-        INSTALLED_APPS = tuple([])
-    else:
-        INSTALLED_APPS = tuple(['suit'])
-        SUIT_CONFIG = {'CONFIRM_UNSAVED_CHANGES': False}
-else:
-    INSTALLED_APPS = tuple(['grappelli'])
+if 'suit' in INSTALLED_APPS:
+    # django-suit has issues with string_if_invalid,
+    # so don't use this setting if testing suit.
+    TEMPLATES[0]['OPTIONS'].pop('string_if_invalid')
+
 
 INSTALLED_APPS += (
     'nested_admin',

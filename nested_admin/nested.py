@@ -220,6 +220,7 @@ class NestedModelAdminMixin(object):
 class NestedInlineModelAdminMixin(object):
 
     is_sortable = True
+    sortable_field_name = None
 
     formset = NestedInlineFormSet
 

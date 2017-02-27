@@ -11,6 +11,8 @@ from django.utils.six.moves import xrange
 
 class NestedInlineFormSetMixin(object):
 
+    is_nested = False
+
     def _construct_form(self, i, **kwargs):
         defaults = {}
         if '-empty-' in self.prefix:

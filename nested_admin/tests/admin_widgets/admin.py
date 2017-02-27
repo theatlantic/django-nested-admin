@@ -22,7 +22,6 @@ class TestAdminWidgetsC1Inline(NestedStackedInline):
     model = TestAdminWidgetsC1
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
-    sortable_field_name = "position"
     extra = 0
     inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']

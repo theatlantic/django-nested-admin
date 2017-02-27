@@ -45,9 +45,9 @@ class TestAdminWidgetsA(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
@@ -62,9 +62,9 @@ class TestAdminWidgetsB(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
@@ -79,9 +79,9 @@ class TestAdminWidgetsC0(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
@@ -96,9 +96,9 @@ class TestAdminWidgetsC1(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
-        on_delete=CASCADE)
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:

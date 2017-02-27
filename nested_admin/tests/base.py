@@ -77,6 +77,8 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
     root_model = None
     nested_models = None
 
+    maxDiff = None
+
     @property
     def available_apps(self):
         apps = [
@@ -138,6 +140,10 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             self.selenium.close()
             self.selenium.switch_to.window(self.selenium.window_handles[0])
 
+    def assertNotRegex(self, s, r):
+        matches = r.findall(s)
+        self.assertEqual(matches, [])
+
     def wait_for(self, css_selector, timeout=10):
         """
         Helper function that blocks until a CSS selector is found on the page.
@@ -148,6 +154,8 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             ec.presence_of_element_located((By.CSS_SELECTOR, css_selector)),
             timeout
         )
+
+    invalid_re = re.compile(r'(?<=INVALID {{ )((?:.(?!}}))*?) }}')
 
     def wait_page_loaded(self):
         """
@@ -162,6 +170,8 @@ class BaseNestedAdminTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             # display the webpage" and doesn't load the next page. We just
             # ignore it.
             pass
+        else:
+            self.assertNotRegex(self.selenium.page_source, self.invalid_re)
 
     def admin_login(self, username, password, login_url=None):
         """

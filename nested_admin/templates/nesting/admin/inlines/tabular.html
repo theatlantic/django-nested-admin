@@ -35,7 +35,6 @@
 
         {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
         {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
-            {{ inline_admin_form.management_form }}
             <tbody class="djn-tbody{% if not forloop.last %} djn-item{% endif %} djn-inline-form{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
                 {% if inline_admin_form.pk_field.field %}
                 data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
@@ -67,7 +66,7 @@
                 <span class="djn-drag-handler"></span>
                 {% endif %}
                 {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
-                {{ inline_admin_form.fk_field.field }}
+                {% if inline_admin_form.fk_field %}{{ inline_admin_form.fk_field.field }}{% endif %}
                 {% spaceless %}
                 {% for fieldset in inline_admin_form %}
                     {% for line in fieldset %}
