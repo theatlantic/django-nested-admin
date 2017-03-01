@@ -19,6 +19,9 @@ else:
     _static = None
 
 
+django_version = django.VERSION[:2]
+
+
 @register.simple_tag
 def static(path):
     global _static
@@ -163,16 +166,28 @@ class IfConditionNode(template.Node):
             return self.nodelist_false.render(context)
 
 
-@register.tag
-def ifdj110(parser, token):
-    nodelist_true = parser.parse(('else', 'endifdj110'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endifdj110',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = template.NodeList()
-    return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] == (1, 10))
+def str_to_version(string):
+    return tuple([int(s) for s in string.split('.')])
+
+
+@register.filter
+def django_version_lt(string):
+    return django_version < str_to_version(string)
+
+
+@register.filter
+def django_version_lte(string):
+    return django_version <= str_to_version(string)
+
+
+@register.filter
+def django_version_gt(string):
+    return django_version > str_to_version(string)
+
+
+@register.filter
+def django_version_gte(string):
+    return django_version >= str_to_version(string)
 
 
 @register.tag
@@ -185,18 +200,6 @@ def ifinlineclasses(parser, token):
     else:
         nodelist_false = template.NodeList()
     return IfConditionNode(nodelist_true, nodelist_false, hasattr(InlineModelAdmin, 'classes'))
-
-
-@register.tag
-def ifnotdj110(parser, token):
-    nodelist_true = parser.parse(('else', 'endifnotdj110'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endifnotdj110',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = template.NodeList()
-    return IfConditionNode(nodelist_true, nodelist_false, django.VERSION[:2] != (1, 10))
 
 
 @register.tag

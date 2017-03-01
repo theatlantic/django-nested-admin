@@ -45,20 +45,26 @@ def expand_test_module(module):
 
 
 def django_tests(verbosity, failfast, test_labels):
-    sys.stderr.write('Using Python version %s from %s\n' % (sys.version[:5], sys.executable))
+    version_str = "%d.%d.%d" % sys.version_info[:3]
+    sys.stderr.write('Using Python version %s from %s\n' % (version_str, sys.executable))
     sys.stderr.write('Using Django version %s from %s\n' % (
         django.get_version(),
         os.path.dirname(os.path.abspath(django.__file__))))
-
-    settings.INSTALLED_APPS
-    if settings.configured:
-        django.setup()
 
     if 'grappelli' in settings.INSTALLED_APPS:
         # Grappelli uses the deprecated django.conf.urls.patterns, but we
         # don't want this to fail our tests.
         warnings.filterwarnings("ignore", "django.conf.urls.patterns", PendingDeprecationWarning)
         warnings.filterwarnings("ignore", "django.conf.urls.patterns", DeprecationWarning)
+
+    # Ignore a python 3.6 DeprecationWarning in ModelBase.__new__ that isn't
+    # fixed in Django 1.x
+    if sys.version_info > (3, 6) and django.VERSION < (2,):
+        warnings.filterwarnings("ignore", "__class__ not set defining", DeprecationWarning)
+
+    settings.INSTALLED_APPS
+    if settings.configured:
+        django.setup()
 
     if not hasattr(settings, 'TEST_RUNNER'):
         settings.TEST_RUNNER = 'nested_admin.tests.runner.DiscoverRunner'

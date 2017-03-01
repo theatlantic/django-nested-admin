@@ -83,7 +83,6 @@ if django.VERSION >= (1, 10):
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
-        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ]
 else:

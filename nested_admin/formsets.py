@@ -1,5 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
+import contextlib
+
+import django
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
@@ -7,6 +10,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
 from django.utils.encoding import force_text
 from django.utils.six.moves import xrange
+
+
+@contextlib.contextmanager
+def mutable_querydict(qd):
+    orig_mutable = None
+    if getattr(qd, '_mutable', None) is False:
+        orig_mutable = False
+        qd._mutable = True
+    yield
+    if orig_mutable is not None:
+        qd._mutable = orig_mutable
 
 
 class NestedInlineFormSetMixin(object):
@@ -177,7 +191,15 @@ class NestedInlineFormSetMixin(object):
                     # a form that was deleted, which causes the pk clean to
                     # fail (because the instance has been deleted). To get
                     # around this we clear the pk and save it as if it were new.
-                    form.data[form.add_prefix(pk_name)] = ''
+                    with mutable_querydict(form.data):
+                        form.data[form.add_prefix(pk_name)] = ''
+
+                    if not form.has_changed():
+                        if django.VERSION > (1, 9):
+                            form.__dict__['changed_data'].append(pk_name)
+                        else:
+                            form._changed_data.append(pk_name)
+
                     saved_instances.extend(self.save_new_objects([form], commit))
                     continue
                 pk_value = getattr(pk_value, 'pk', pk_value)

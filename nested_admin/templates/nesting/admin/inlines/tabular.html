@@ -21,11 +21,11 @@
     <table class="djn-items inline-related djn-table{% ifsuit %} table table-bordered table-condensed table-striped{% else %} tabular{% endifsuit %}">
       <thead class="djn-module djn-thead djn-item">
           <tr>
-              {% ifdj110 %}<th class="original"></th>{% endifdj110 %}
+              {% if "1.10"|django_version_gte %}<th class="original"></th>{% endif %}
               {% for field in inline_admin_formset.fields %}
                   {% if not field.widget.is_hidden %}
-                      <th{% if forloop.first %}{% ifnotdj110 %} colspan="2"{% endifnotdj110 %}{% endif %} class="djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">{{ field.label|capfirst }}
-                      {% if field.help_text %}&nbsp;<img src="{% static "admin/img/icon-unknown.gif" %}" class="help help-tooltip" width="10" height="10" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />{% endif %}
+                      <th{% if forloop.first %}{% if "1.10"|django_version_lt %} colspan="2"{% endif %}{% endif %} class="djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">{{ field.label|capfirst }}
+                      {% if field.help_text %}&nbsp;<img src="{% if "1.10"|django_version_gte %}{% static "admin/img/icon-unknown.gif" %}{% else %}{% static "admin/img/icon-unknown.gif" %}{% endif %}" class="help help-tooltip" width="10" height="10" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />{% endif %}
                       </th>
                   {% endif %}
               {% endfor %}

@@ -1,26 +1,35 @@
 language: python
 
-python:
-    - 2.7
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=py27-dj18
+    - python: 2.7
+      env: TOXENV=py27-dj18-grp
+    - python: 2.7
+      env: TOXENV=py27-dj18-suit
+    - python: 2.7
+      env: TOXENV=py27-dj19
+    - python: 2.7
+      env: TOXENV=py27-dj19-grp
+    - python: 2.7
+      env: TOXENV=py27-dj110
+    - python: 3.6
+      env: TOXENV=py36-dj18
+    - python: 3.6
+      env: TOXENV=py36-dj19
+    - python: 3.6
+      env: TOXENV=py36-dj110
+    - python: 3.6
+      env: TOXENV=py36-djmaster
+  allow_failures:
+    - env: TOXENV=py36-djmaster
 
-env:
-    - TOXENV=py27-dj18
-    - TOXENV=py27-dj18-grp
-    - TOXENV=py27-dj18-suit
-    - TOXENV=py27-dj19
-    - TOXENV=py27-dj19-grp
-    - TOXENV=py27-dj110
-    - TOXENV=py34-dj18
-    - TOXENV=py34-dj19
-    - TOXENV=py34-dj110
 
 install:
-    - pip install tox 
+  - pip install tox 
 
 script:
-    - travis_retry travis_retry travis_retry tox -- --failfast
+  - travis_retry travis_retry travis_retry tox -- --failfast
 
 sudo: false
-
-# addons:
-#     sauce_connect: true

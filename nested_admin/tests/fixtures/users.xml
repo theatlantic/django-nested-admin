@@ -5,7 +5,7 @@
         <field type="CharField" name="first_name">Super</field>
         <field type="CharField" name="last_name">User</field>
         <field type="CharField" name="email">super@example.com</field>
-        <field type="CharField" name="password">sha1$995a3$6011485ea3834267d719b4c801409b8b1ddd0158</field>
+        <field type="CharField" name="password">pbkdf2_sha256$30000$nBZ6K71b1sjJ$SocvUphuDLMcJEjCq8gVg7sIeCTywbfWvCei65tpAGc=</field>
         <field type="BooleanField" name="is_staff">True</field>
         <field type="BooleanField" name="is_active">True</field>
         <field type="BooleanField" name="is_superuser">True</field>
