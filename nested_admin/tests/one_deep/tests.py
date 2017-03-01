@@ -2,18 +2,26 @@ try:
     from distutils.spawn import find_executable
 except:
     find_executable = lambda f: None
-import django
+from datetime import datetime
 import inspect
 import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from unittest import SkipTest
 
+import django
+from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
+from django.test import override_settings
+from django.utils.six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
-from nested_admin.tests.base import BaseNestedAdminTestCase, get_model_name
+from storages.backends.s3boto3 import S3Boto3Storage
+
+from nested_admin.tests.base import (
+    BaseNestedAdminTestCase, get_model_name, expected_failure_if_suit)
 from .models import (
     PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot)
 
@@ -21,10 +29,26 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 
+def strip_query_from_url(url):
+    parts = list(urlparse(url))
+    parts[ParseResult._fields.index('query')] = ''
+    return urlunparse(parts)
+
+
+class disable_string_if_invalid_for_grappelli(override_settings):
+
+    def __init__(self):
+        self.options = {"TEMPLATES": [settings.TEMPLATES[0].copy()]}
+        if BaseNestedAdminTestCase.has_grappelli:
+            self.options['TEMPLATES'][0]['OPTIONS'].pop('string_if_invalid')
+
+
+@disable_string_if_invalid_for_grappelli()
 class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
     root_model = None
     root_models = [PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot]
+    storage = None
 
     @classmethod
     def setUpClass(cls):
@@ -36,6 +60,20 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         cls.screenshot_output_dir = os.environ.get('SCREENSHOT_OUTPUT_DIR')
         super(BaseNestedAdminTestCase, cls).setUpClass()
         cls.root_temp_dir = tempfile.mkdtemp()
+
+        if os.environ.get('TRAVIS_BUILD_NUMBER'):
+            cls.path_prefix = "travis_%s" % os.environ['TRAVIS_BUILD_NUMBER']
+        else:
+            cls.path_prefix = "local_%s" % datetime.now().strftime('%Y%m%dT%H%M%S')
+
+        if all(k in os.environ for k in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']):
+            try:
+                storage = S3Boto3Storage()
+                bucket = storage.bucket  # noqa
+            except:
+                pass
+            else:
+                cls.storage = storage
 
         cls.all_models = {}
         cls.all_model_names = {}
@@ -67,6 +105,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def setUp(self):
         super(VisualComparisonTestCase, self).setUp()
         self.temp_dir = tempfile.mkdtemp(dir=self.root_temp_dir)
+        os.makedirs(os.path.join(self.temp_dir, self.path_prefix))
         self.selenium.set_window_size(780, 600)
 
     @property
@@ -108,15 +147,24 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         else:
             logger.info(stdout)
             msg = "Screenshots do not match"
-            if self.screenshot_output_dir:
+            if self.storage:
+                s3_name = "%s/%s" % (self.path_prefix, os.path.basename(diff_output_path))
+                with open(diff_output_path, 'rb') as f:
+                    s3_name = self.storage.save(s3_name, f)
+                s3_url = strip_query_from_url(self.storage.url(s3_name))
+                msg = "%s (See <%s>)" % (msg, s3_url)
+            elif self.screenshot_output_dir:
                 msg = "%s (See %s)" % (msg, diff_output_path)
             raise AssertionError(msg)
 
     def get_admin_screenshot(self):
         name = inspect.stack()[1][3]
-        prefix = "dj%s%s" % django.VERSION[:2]
+        prefix = "%s/py%s%s_dj%s%s" % (
+            (self.path_prefix,) + sys.version_info[:2] + django.VERSION[:2])
         if self.has_grappelli:
             prefix += "_grp"
+        elif self.has_suit:
+            prefix += "_suit"
         output_dir = self.screenshot_output_dir or self.temp_dir
         suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
         image_path = os.path.join(output_dir, "%s_%s_%s.png" % (prefix, name, suffix))
@@ -137,6 +185,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
+    @expected_failure_if_suit
     def test_tabular_empty(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -145,6 +194,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
+    @expected_failure_if_suit
     def test_tabular_one_item(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -167,6 +217,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
+    @expected_failure_if_suit
     def test_tabular_added_item(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -185,6 +236,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
+    @expected_failure_if_suit
     def test_tabular_validation_error(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -213,6 +265,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             }]
         self.assertSameScreenshot(*screenshots, extra_args=extra_args)
 
+    @expected_failure_if_suit
     def test_stacked_validation_error(self):
         screenshots = []
         for model in [PlainStackedRoot, NestedStackedRoot]:
@@ -238,4 +291,3 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
                 'h': delete_col.size['height'],
             }]
         self.assertSameScreenshot(*screenshots, extra_args=extra_args)
-

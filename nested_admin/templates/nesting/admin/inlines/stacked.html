@@ -2,7 +2,7 @@
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
-<div class="inline-group group djn-group djn-stacked{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}"
+<div class="inline-group group djn-group djn-stacked{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}{% if inline_opts.suit_classes %} {{ inline_opts.suit_classes }}{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
     data-inline-type="stacked"
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"

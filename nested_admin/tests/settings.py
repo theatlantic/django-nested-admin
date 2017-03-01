@@ -116,3 +116,6 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
 TEST_RUNNER = 'nested_admin.tests.runner.DiscoverRunner'
+
+AWS_S3_REGION_NAME = "us-east-1"
+AWS_STORAGE_BUCKET_NAME = 'django-nested-admin-artifacts'
