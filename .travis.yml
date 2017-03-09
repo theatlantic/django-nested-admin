@@ -2,32 +2,37 @@ language: python
 
 matrix:
   include:
-    - python: 2.7
-      env: TOXENV=py27-dj18
-    - python: 2.7
-      env: TOXENV=py27-dj18-grp
-    - python: 2.7
-      env: TOXENV=py27-dj18-suit
-    - python: 2.7
-      env: TOXENV=py27-dj19
-    - python: 2.7
-      env: TOXENV=py27-dj19-grp
-    - python: 2.7
-      env: TOXENV=py27-dj110
+    - { python: 2.7, env: TOXENV=py27-dj18 }
+    - { python: 3.6, env: TOXENV=py36-dj18 }
+    - { python: 2.7, env: TOXENV=py27-dj18-grp }
+    - { python: 2.7, env: TOXENV=py27-dj18-suit }
+    - { python: 2.7, env: TOXENV=py27-dj19 }
+    - { python: 3.6, env: TOXENV=py36-dj19 }
+    - { python: 2.7, env: TOXENV=py27-dj19-grp }
+    - { python: 2.7, env: TOXENV=py27-dj110 }
+    - { python: 2.7, env: TOXENV=py27-dj110-grp }
+    - { python: 3.6, env: TOXENV=py36-dj110 }
+    - { python: 2.7, env: TOXENV=py27-dj111 }
+    - { python: 3.6, env: TOXENV=py36-dj111 }
     - python: 3.6
-      env: TOXENV=py36-dj18
-    - python: 3.6
-      env: TOXENV=py36-dj19
-    - python: 3.6
-      env: TOXENV=py36-dj110
-    - python: 3.6
-      env: TOXENV=py36-djmaster
+      env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
   allow_failures:
-    - env: TOXENV=py36-djmaster
+    - env: TOXENV=py27-dj111
+    - env: TOXENV=py36-dj111
+    - env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
+
+cache:
+  pip: true
+  directories:
+    - node_modules
 
 env:
   global:
     - BLINKDIFF_BIN=$TRAVIS_BUILD_DIR/node_modules/.bin/blink-diff
+
+before_script:
+  - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "DROP DATABASE IF EXISTS nested_admin_test;" -U postgres; fi
+  - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "create database nested_admin_test;" -U postgres; fi
 
 before_install:
   - nvm install node

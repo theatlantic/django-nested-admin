@@ -4,6 +4,9 @@ import tempfile
 
 import django
 
+import django_admin_testutils.settings
+import dj_database_url
+
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()
@@ -11,18 +14,22 @@ temp_dir = tempfile.mkdtemp()
 
 DEBUG = NESTED_ADMIN_DEBUG = True
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:'
-    }
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL', 'sqlite://:memory:')),
 }
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
 
+if django.VERSION > (2, 0):
+    MIGRATION_MODULES = {
+        'auth': None,
+        'contenttypes': None,
+        'sessions': None,
+    }
+
 try:
-    import grappelli
+    import grappelli  # noqa
 except ImportError:
     try:
-        import suit
+        import suit  # noqa
     except ImportError:
         INSTALLED_APPS = tuple([])
     else:
@@ -34,7 +41,7 @@ else:
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [os.path.join(current_dir, 'templates')],
+    'DIRS': django_admin_testutils.settings.TEMPLATES[0]['DIRS'],
     'APP_DIRS': True,
     'OPTIONS': {
         'string_if_invalid': 'INVALID {{ %s }}',
@@ -58,6 +65,7 @@ if 'suit' in INSTALLED_APPS:
 
 
 INSTALLED_APPS += (
+    'django_admin_testutils',
     'nested_admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -104,7 +112,7 @@ LOGGING = {
     'loggers': {
         'nested_admin.tests': {
             'handlers': ['console'],
-            'level': os.getenv('NESTED_ADMIN_LOG_LEVEL', 'WARNING'),
+            'level': 'WARNING',
         },
     },
 }
@@ -115,7 +123,7 @@ MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
-TEST_RUNNER = 'nested_admin.tests.runner.DiscoverRunner'
+TEST_RUNNER = 'django_admin_testutils.DiscoverRunner'
 
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_STORAGE_BUCKET_NAME = 'django-nested-admin-artifacts'
