@@ -17,8 +17,6 @@ matrix:
     - python: 3.6
       env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
   allow_failures:
-    - env: TOXENV=py27-dj111
-    - env: TOXENV=py36-dj111
     - env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
 
 cache:
