@@ -10,7 +10,7 @@ $(document).ready(function() {
 
     // Set predelete class on any form elements with the DELETE input checked.
     // These can occur on forms rendered after a validation error.
-    $('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('predelete');
+    $('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('grp-predelete');
 
     $(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
         var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
@@ -30,7 +30,7 @@ $(document).ready(function() {
 
     $('form').on('submit.djnesting', function(e) {
         $('.djn-group').each(function() {
-            DJNesting.updatePositions($(this).djangoFormsetPrefix(), true);
+            DJNesting.updatePositions($(this).djangoFormsetPrefix());
             $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
         });
     });

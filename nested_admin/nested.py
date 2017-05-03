@@ -255,6 +255,16 @@ class NestedInlineModelAdminMixin(object):
     if hasattr(ModelAdmin, '_get_formsets'):
         _get_formsets = get_method_function(ModelAdmin._get_formsets)
 
+    def get_formset(self, request, obj=None, **kwargs):
+        FormSet = BaseFormSet = kwargs.pop('formset', self.formset)
+
+        if self.sortable_field_name:
+            class FormSet(BaseFormSet):
+                sortable_field_name = self.sortable_field_name
+
+        kwargs['formset'] = FormSet
+        return super(NestedInlineModelAdminMixin, self).get_formset(request, obj, **kwargs)
+
 
 class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):
     pass

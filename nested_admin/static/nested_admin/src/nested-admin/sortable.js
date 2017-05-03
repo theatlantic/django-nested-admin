@@ -4,7 +4,7 @@ import $ from 'jquery';
 import regexQuote from './regexquote';
 import './jquery.ui.nestedsortable';
 
-export function updatePositions(prefix, skipDeleted) {
+export function updatePositions(prefix) {
     var position = 0,
         $group = $('#' + prefix + '-group'),
         groupData = $group.djnData(),
@@ -74,13 +74,8 @@ export function updatePositions(prefix, skipDeleted) {
             return;
         }
 
-        // Skip the element if it's marked to be deleted
-        if (skipDeleted && ($this.hasClass('predelete') || $this.hasClass('grp-predelete'))) {
-            $positionField.val('0').trigger('change');
-        } else {
-            $positionField.val(position).trigger('change');
-            position++;
-        }
+        $positionField.val(position).trigger('change');
+        position++;
     });
 }
 

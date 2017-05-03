@@ -9,6 +9,7 @@ from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
 from django.utils.encoding import force_text
+from django.utils import six
 from django.utils.six.moves import xrange
 
 
@@ -78,6 +79,9 @@ class NestedInlineFormSetMixin(object):
         for form in forms:
             instance = self.get_saved_instance_for_form(form, commit, form_instances)
             if instance is not None:
+                # Copy _list_position to instance
+                instance._list_position = form._list_position
+
                 # Store saved instances so we can reference it for
                 # sub-instanced nested beneath not-yet-saved instances.
                 saved_instances += [instance]
@@ -92,7 +96,9 @@ class NestedInlineFormSetMixin(object):
 
     def process_forms_pre_save(self, forms):
         """
-        Sort by the sortable_field_name of the formset, if it has been set.
+        Sort by the sortable_field_name of the formset, if it has been set,
+        and re-index the form positions (to account for gaps caused by blank
+        or deleted forms)
 
         Allows customizable sorting and modification of self.forms before
         they're iterated through in save().
@@ -100,8 +106,40 @@ class NestedInlineFormSetMixin(object):
         Returns list of forms.
         """
         sort_field = getattr(self, 'sortable_field_name', None)
+
+        def get_position(form):
+            return getattr(form, 'cleaned_data', {sort_field: 0}).get(sort_field, 0)
+
         if sort_field is not None:
-            forms.sort(key=lambda f: getattr(f, 'cleaned_data', {sort_field: 0})).get(sort_field, 0)
+            forms.sort(key=get_position)
+
+            i = 0
+            for form in forms:
+                if self._should_delete_form(form):
+                    # Skip deleted forms
+                    continue
+
+                original_position = getattr(form.instance, sort_field, None)
+
+                if i != original_position:
+                    # If this is an unchanged extra form, continue because
+                    # this form will be skipped when saving
+                    if not form.changed_data and not form._is_initial:
+                        continue
+
+                    # Set the sort field on the instance and in the form data
+                    setattr(form.instance, sort_field, i)
+                    with mutable_querydict(form.data):
+                        form.data[form.add_prefix(sort_field)] = six.text_type(i)
+
+                    # Force recalculation of changed_data
+                    if django.VERSION > (1, 9):
+                        form.__dict__.pop('changed_data', None)
+                    else:
+                        form._changed_data = None
+
+                i += 1
+
         return forms
 
     def get_saved_instance_for_form(self, form, commit, form_instances=None):
