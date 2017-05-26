@@ -119,9 +119,9 @@ class NestedInlineFormSetMixin(object):
                     # Skip deleted forms
                     continue
 
-                original_position = getattr(form.instance, sort_field, None)
+                original_position = form.data.get(form.add_prefix(sort_field))
 
-                if i != original_position:
+                if ("%s" % i) != original_position:
                     # If this is an unchanged extra form, continue because
                     # this form will be skipped when saving
                     if not form.changed_data and not form._is_initial:
@@ -275,10 +275,10 @@ class NestedInlineFormSetMixin(object):
                     old_ct_val = getattr(original_instance, ct_field.get_attname())
 
             if form.has_changed() or fk_val != old_fk_val or ct_val != old_ct_val:
-               self.changed_objects.append((obj, form.changed_data))
-               saved_instances.append(self.save_existing(form, obj, commit=commit))
-               if not commit:
-                   self.saved_forms.append(form)
+                self.changed_objects.append((obj, form.changed_data))
+                saved_instances.append(self.save_existing(form, obj, commit=commit))
+                if not commit:
+                    self.saved_forms.append(form)
         return saved_instances
 
     def save_new_objects(self, extra_forms=None, commit=True):
