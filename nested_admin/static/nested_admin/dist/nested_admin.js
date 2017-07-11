@@ -2926,6 +2926,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function updatePositions(prefix) {
     var position = 0,
+        count = 1,
         $group = (0, _jquery2.default)('#' + prefix + '-group'),
         groupData = $group.djnData(),
         fieldNames = groupData.fieldNames,
@@ -2937,7 +2938,6 @@ function updatePositions(prefix) {
         index = _ref2[2],
         sortableOptions = groupData.sortableOptions,
         sortableExcludes = (sortableOptions || {}).sortableExcludes || [];
-
 
     sortableExcludes.push(groupFkName);
 
@@ -2974,6 +2974,11 @@ function updatePositions(prefix) {
         if (!formPrefix) {
             return;
         }
+
+        // Set header position for stacked inlines in Django 1.9+
+        var $inlineLabel = $this.find('> h3 > .inline_label');
+        $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, '#' + count));
+        count++;
 
         var $fields = $this.djangoFormField('*'),
             $positionField,

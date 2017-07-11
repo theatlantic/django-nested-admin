@@ -5,7 +5,8 @@ import regexQuote from './regexquote';
 import './jquery.ui.nestedsortable';
 
 export function updatePositions(prefix) {
-    var position = 0,
+    var position = 0,  // the value of the position formfield
+        count = 1,     // The count displayed in stacked inline headers
         $group = $('#' + prefix + '-group'),
         groupData = $group.djnData(),
         fieldNames = groupData.fieldNames,
@@ -47,6 +48,11 @@ export function updatePositions(prefix) {
         if (!formPrefix) {
             return;
         }
+
+        // Set header position for stacked inlines in Django 1.9+
+        var $inlineLabel = $this.find('> h3 > .inline_label');
+        $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, '#' + count));
+        count++;
 
         var $fields = $this.djangoFormField('*'),
             $positionField,

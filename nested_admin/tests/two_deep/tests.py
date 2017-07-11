@@ -1,5 +1,5 @@
 import time
-from unittest import skipIf
+from unittest import skipIf, SkipTest
 
 import django
 
@@ -777,6 +777,30 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
 
     root_model = StackedGroup
     nested_models = (StackedSection, StackedItem)
+
+    def test_add_item_inline_label_update(self):
+        if django.VERSION < (1, 9):
+            raise SkipTest("Test only applies to Django 1.9+")
+        if self.has_grappelli:
+            raise SkipTest("Test does not apply if using django-grappelli")
+        if self.has_suit:
+            raise SkipTest("Test does not apply if using django-suit")
+        group = self.root_model.objects.create(slug='test')
+        self.section_cls.objects.create(slug='test', group=group, position=0)
+
+        self.load_admin(group)
+        item_verbose_name = self.item_cls._meta.verbose_name.title()
+        with self.clickable_xpath('//a[contains(string(.), "Add another %s")]' % item_verbose_name) as el:
+            el.click()
+        with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
+            el.send_keys("Test 1")
+        with self.clickable_xpath('//a[contains(string(.), "Add another %s")]' % item_verbose_name) as el:
+            el.click()
+        with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
+            el.send_keys("Test 2")
+
+        inline_label = self.get_item([0, 1]).find_element_by_class_name('inline_label')
+        self.assertEqual(inline_label.text, '#2')
 
 
 class TestTabularInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
