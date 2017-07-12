@@ -51,7 +51,9 @@ export function updatePositions(prefix) {
 
         // Set header position for stacked inlines in Django 1.9+
         var $inlineLabel = $this.find('> h3 > .inline_label');
-        $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, '#' + count));
+        if ($inlineLabel.length) {
+            $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, '#' + count));
+        }
         count++;
 
         var $fields = $this.djangoFormField('*'),
