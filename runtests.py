@@ -42,6 +42,10 @@ class RunTests(django_admin_testutils.RunTests):
 
 def main():
     warnings.simplefilter("error", Warning)
+    warnings.filterwarnings(
+        "ignore",
+        "name used for saved screenshot does not match file type",
+        UserWarning)
     runtests = RunTests("nested_admin.tests.settings", "nested_admin")
     runtests()
 
