@@ -19,7 +19,10 @@ DJNesting.updatePositions = updatePositions;
  */
 DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form,.cropduster-form';
+        selector = [
+            ':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p',
+            'img', '.djn-group', '.djn-inline-form', '.cropduster-form',
+            '.dal-forward-conf'].join(',');
     }
     $elem.find(selector).andSelf().each(function() {
         var $node = $(this),

@@ -283,14 +283,14 @@ var DjangoFormset = function () {
                 $form.append(_utils2.default.createContainerElement());
             }
 
+            _utils2.default.updateFormAttributes($form, new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
+
             $form.insertBefore(this._$template);
 
             this.mgmtVal('TOTAL_FORMS', index + 1);
             if (maxForms - (index + 1) <= 0) {
                 this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
             }
-
-            _utils2.default.updateFormAttributes($form, new RegExp('([\\#_]|^)' + (0, _regexquote2.default)(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
 
             _utils2.default.updatePositions(this.prefix);
 
@@ -3183,7 +3183,7 @@ DJNesting.updatePositions = _sortable.updatePositions;
  */
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     if (!selector) {
-        selector = ':input,span,table,iframe,label,a,ul,p,img,.djn-group,.djn-inline-form,.cropduster-form';
+        selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
     }
     $elem.find(selector).andSelf().each(function () {
         var $node = (0, _jquery2.default)(this),

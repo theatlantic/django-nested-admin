@@ -242,16 +242,16 @@ class DjangoFormset {
             $form.append(DJNesting.createContainerElement());
         }
 
+        DJNesting.updateFormAttributes($form,
+            new RegExp('([\\#_]|^)' + regexQuote(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'),
+            '$1' + this.prefix + '-' + index + '-');
+
         $form.insertBefore(this._$template);
 
         this.mgmtVal('TOTAL_FORMS', index + 1);
         if ((maxForms - (index + 1)) <= 0) {
             this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
         }
-
-        DJNesting.updateFormAttributes($form,
-            new RegExp('([\\#_]|^)' + regexQuote(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'),
-            '$1' + this.prefix + '-' + index + '-');
 
         DJNesting.updatePositions(this.prefix);
 
