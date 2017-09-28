@@ -24,13 +24,22 @@ cache:
   directories:
     - node_modules
 
+addons:
+  chrome: stable
+
 env:
   global:
     - BLINKDIFF_BIN=$TRAVIS_BUILD_DIR/node_modules/.bin/blink-diff
+    - PATH=$HOME/bin:$PATH
 
 before_script:
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "DROP DATABASE IF EXISTS nested_admin_test;" -U postgres; fi
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "create database nested_admin_test;" -U postgres; fi
+  - mkdir -p ~/bin
+  - wget -N http://chromedriver.storage.googleapis.com/2.32/chromedriver_linux64.zip -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/bin
+  - rm ~/chromedriver_linux64.zip
+  - chmod +x ~/bin/chromedriver
 
 before_install:
   - nvm install node
@@ -41,6 +50,6 @@ install:
   - pip install tox 
 
 script:
-  - travis_retry travis_retry travis_retry tox -- --failfast
+  - travis_retry travis_retry travis_retry tox -- --selenium=chrome-headless --failfast
 
 sudo: false
