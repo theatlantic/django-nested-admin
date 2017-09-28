@@ -272,4 +272,8 @@ table.djn-table.grp-table th p > input[type="button"] {
   margin-top: 0;
 }
 
+#suit-center .form-horizontal .inline-group .add-row a {
+  display: block;
+}
+
 /*# sourceMappingURL=nested_admin.css.map */

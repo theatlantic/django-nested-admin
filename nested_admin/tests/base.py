@@ -1,55 +1,23 @@
 from __future__ import absolute_import
 
-import collections
 import functools
 import json
 import logging
-import re
-import time
 import unittest
 
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
-from django.utils import six
-
-from selenium.webdriver.common.action_chains import ActionChains
 
 from django_admin_testutils import AdminSeleniumTestCase
+from .drag_drop import DragAndDropAction
+from .utils import (
+    xpath_item, is_sequence, is_integer, is_str, ElementRect)
 
 
 logger = logging.getLogger(__name__)
 
 
-if not hasattr(__builtins__, 'cmp'):
-    def cmp(a, b):
-        return (a > b) - (a < b)
-
-
-def is_sequence(o):
-    return isinstance(o, collections.Sequence)
-
-
-def is_integer(o):
-    return isinstance(o, six.integer_types)
-
-
-def is_str(o):
-    return isinstance(o, six.string_types)
-
-
 get_model_name = lambda m: "-".join([m._meta.app_label, m._meta.model_name])
-
-
-def xpath_cls(classname):
-    return 'contains(concat(" ", @class, " "), " %s ")' % classname
-
-
-def xpath_item(model_name=None):
-    xpath_item_predicate = 'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
-    expr = "%s and %s" % (xpath_cls('djn-item'), xpath_item_predicate)
-    if model_name:
-        expr += ' and contains(@class, "-%s")' % model_name
-    return expr
 
 
 class BaseNestedAdminTestCase(AdminSeleniumTestCase):
@@ -86,12 +54,31 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
             obj = self.root_model
         super(BaseNestedAdminTestCase, self).load_admin(obj)
 
+    def initialize_page(self):
+        super(BaseNestedAdminTestCase, self).initialize_page()
+        # Store last mousemove event, so we can track the mouse position
+        self.selenium.execute_script("""
+            if (window.DJNesting) {
+                document.body.addEventListener('mousemove', function(event) {
+                    DJNesting.lastMouseMove = event;
+                });
+            }
+        """)
+
     def save_form(self):
         browser_errors = [e for e in self.selenium.get_log('browser')
                           if 'favicon' not in e['message']]
         if len(browser_errors) > 0:
             logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
-        super(BaseNestedAdminTestCase, self).save_form()
+
+        has_continue = bool(
+            self.selenium.execute_script(
+                'return django.jQuery("[name=_continue]").length'))
+        name_attr = "_continue" if has_continue else "_save"
+        self.click(self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr))
+        if has_continue:
+            self.wait_page_loaded()
+            self.initialize_page()
 
     def _normalize_indexes(self, indexes, is_group=False, named_models=True):
         """
@@ -217,6 +204,20 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
 
         return norm_indexes
 
+    def click(self, element):
+        """A safe click method that ensures the element is scrolled into view"""
+        try:
+            element.click()
+        except:
+            rect = ElementRect(element)
+            if rect.top < 0:
+                self.selenium.execute_script(
+                    'document.documentElement.scrollTop += arguments[0]', rect.top)
+            else:
+                self.selenium.execute_script('arguments[0].scrollIntoView()', element)
+
+            element.click()
+
     def drag_and_drop_item(self, from_indexes, to_indexes, screenshot_hack=False):
         action = DragAndDropAction(self, from_indexes=from_indexes, to_indexes=to_indexes)
         action.move_to_target(screenshot_hack=screenshot_hack)
@@ -253,7 +254,7 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
         add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
             self.get_group(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(add_selector) as el:
-            el.click()
+            self.click(el)
         indexes[-1] = [model_name, new_index]
         if name is not None:
             self.set_field("name", name, indexes=indexes)
@@ -266,7 +267,7 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
         remove_selector = "#%s .djn-remove-handler.djn-model-%s" % (
             self.get_item(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(remove_selector) as el:
-            el.click()
+            self.click(el)
 
     def delete_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
@@ -275,7 +276,7 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
         delete_selector = "#%s .djn-delete-handler.djn-model-%s" % (
             item_id, model_name)
         with self.clickable_selector(delete_selector) as el:
-            el.click()
+            self.click(el)
         if self.has_grappelli:
             undelete_selector = "#%s.grp-predelete .grp-delete-handler.djn-model-%s" % (
                 item_id, model_name)
@@ -287,7 +288,7 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
         item_id = self.get_item(indexes).get_attribute('id')
         undelete_selector = "#%s .djn-delete-handler.djn-model-%s" % (item_id, model_name)
         with self.clickable_selector(undelete_selector) as el:
-            el.click()
+            self.click(el)
         if self.has_grappelli:
             delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.djn-model-%s" % (
                 item_id, model_name)
@@ -311,229 +312,6 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
         with self.clickable_selector(field_selector) as el:
             el.clear()
             el.send_keys(value)
-
-
-class DragAndDropAction(object):
-
-    def __init__(self, test_case, from_indexes, to_indexes):
-        self.test_case = test_case
-        self.selenium = test_case.selenium
-
-        if len(from_indexes) > len(to_indexes):
-            self.target_is_empty = True
-        else:
-            self.target_is_empty = False
-
-        self.from_indexes = self.test_case._normalize_indexes(from_indexes, named_models=False)
-        self.to_indexes = self.test_case._normalize_indexes(
-            to_indexes, is_group=self.target_is_empty, named_models=False)
-
-        num_inlines_indexes = self.test_case._normalize_indexes(
-            to_indexes, is_group=self.target_is_empty, named_models=True)
-        if not is_integer(num_inlines_indexes[-1]):
-            num_inlines_indexes[-1] = num_inlines_indexes[-1][0]
-        self.target_num_items = self.test_case.get_num_inlines(num_inlines_indexes)
-
-        if is_integer(self.to_indexes[-1]):
-            self.to_indexes[-1] = [self.to_indexes[-1], 0]
-        self.to_indexes = [tuple(i) for i in self.to_indexes]
-
-        inline_models = self.test_case.models[1]
-        for inline_index, item_index in self.to_indexes[:-1]:
-            inline_models = inline_models[inline_index][1]
-        self.target_num_inlines = len(inline_models)
-
-        if self.from_indexes[:-1] == self.to_indexes[:-1]:
-            if self.from_indexes[-1][1] < self.to_indexes[-1][1]:
-                self.to_indexes[-1][1] += 1
-
-        self.test_case.assertEqual(len(to_indexes), len(from_indexes),
-            "Depth of source and target must be the same")
-
-    @property
-    def source(self):
-        if not hasattr(self, '_source'):
-            source_item = self.test_case.get_item(indexes=self.from_indexes)
-            if source_item.tag_name == 'div':
-                drag_handler_xpath = "h3"
-            elif self.test_case.has_grappelli:
-                drag_handler_xpath = "/".join([
-                    "*[%s]" % xpath_cls("djn-tr"),
-                    "*[%s]" % xpath_cls("djn-td"),
-                    "*[%s]" % xpath_cls("tools"),
-                    "/*[%s]" % xpath_cls("djn-drag-handler"),
-                ])
-            else:
-                drag_handler_xpath = "/".join([
-                    "*[%s]" % xpath_cls("djn-tr"),
-                    "*[%s]" % xpath_cls("is-sortable"),
-                    "*[%s]" % xpath_cls("djn-drag-handler"),
-                ])
-            self._source = source_item.find_element_by_xpath(drag_handler_xpath)
-        return self._source
-
-    @property
-    def target(self):
-        if not hasattr(self, '_target'):
-            if len(self.to_indexes) > 1:
-                target_inline_parent = self.test_case.get_item(self.to_indexes[:-1])
-            else:
-                target_inline_parent = self.selenium
-            target_xpath = ".//*[%s][%d]//*[%s]" % (
-                xpath_cls('djn-group'), self.to_indexes[-1][0] + 1, xpath_cls("djn-items"))
-            if self.target_num_items != self.to_indexes[-1][1]:
-                target_xpath += "/*[%(item_pred)s][%(item_pos)d]" % {
-                    'item_pred': xpath_item(),
-                    'item_pos': self.to_indexes[-1][1] + 1,
-                }
-            self._target = target_inline_parent.find_element_by_xpath(target_xpath)
-        return self._target
-
-    def initialize_drag(self):
-        source = self.source
-        if self.test_case.has_suit and self.test_case.browser == 'chrome' and source.tag_name == 'h3':
-            source = source.find_element_by_css_selector('b')
-        (ActionChains(self.selenium)
-            .move_to_element_with_offset(source, 0, 0)
-            .click_and_hold()
-            .perform())
-        time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, -15).perform()
-        time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, 15).perform()
-        with self.test_case.visible_selector('.ui-sortable-helper') as el:
-            return el
-
-    def move_by_offset(self, x_offset, y_offset):
-        increment = -15 if y_offset < 0 else 15
-        for offset in range(0, y_offset, increment):
-            ActionChains(self.selenium).move_by_offset(0, increment).perform()
-        if offset != y_offset:
-            ActionChains(self.selenium).move_by_offset(0, y_offset - offset).perform()
-
-    def release(self):
-        ActionChains(self.selenium).release().perform()
-
-    def _match_helper_with_target(self, helper, target):
-        limit = 8
-        count = 0
-        # True if aiming for the bottom of the target
-        helper_height = helper.size['height']
-        self.move_by_offset(0, -1)
-        desired_pos = tuple(self.to_indexes)
-        target_bottom = bool(0 < self.to_indexes[-1][1] == (self.target_num_items - 1)
-            and self.to_indexes[-1][0] == (self.target_num_inlines - 1)
-            and cmp(desired_pos[:-1], self.current_position[:-1]) > -1)
-
-        while True:
-            helper_y = helper.location['y']
-            y_offset = target.location['y'] - helper_y
-            if target_bottom:
-                if y_offset > 0:
-                    y_offset += target.size['height']
-                else:
-                    y_offset += target.size['height'] - helper_height
-            if abs(y_offset) < 1:
-                break
-            if count >= limit:
-                break
-            scaled_offset = int(round(y_offset * 0.9))
-            self.move_by_offset(0, scaled_offset)
-            if count == 0 and helper_y == helper.location['y']:
-                # phantomjs: the drag didn't have any effect.
-                # refresh the action chain
-                self.release()
-                time.sleep(0.1)
-                helper = self.initialize_drag()
-                time.sleep(0.1)
-                self.move_by_offset(0, scaled_offset)
-            curr_pos = self.current_position
-            pos_diff = cmp(desired_pos, curr_pos)
-            if pos_diff == 0:
-                break
-            count += 1
-        return helper
-
-    def _num_preceding_siblings(self, ctx, condition):
-        """
-        For an unknown reason, evaluating XPath expressions of the form
-
-            preceding-sibling::*[not(contains(@attr, 'value'))]
-
-        Where 'value' is contained in at least one of the preceding siblings,
-        is extraordinarily slow. So we just grab all siblings and iterate
-        through the elements in python.
-        """
-        siblings = ctx.find_element_by_xpath('parent::*').find_elements_by_xpath('*')
-        count = 0
-        for el in siblings:
-            if el.id == ctx.id:
-                break
-            if condition(el):
-                count += 1
-        return count
-
-    def _num_preceding_djn_items(self, ctx):
-        def is_djn_item(el):
-            classes = set(re.split(r'\s+', el.get_attribute('class')))
-            return (classes & {'djn-item'} and
-                not(classes & {'djn-no-drag', 'djn-thead', 'djn-item-dragging'}))
-
-        return self._num_preceding_siblings(ctx, condition=is_djn_item)
-
-    def _num_preceding_djn_groups(self, ctx):
-        def is_djn_group(el):
-            return "djn-group" in re.split(r'\s+', el.get_attribute('class'))
-
-        return self._num_preceding_siblings(ctx, condition=is_djn_group)
-
-    @property
-    def current_position(self):
-        placeholder = self.selenium.find_element_by_css_selector(
-            '.ui-sortable-placeholder')
-        pos = []
-        ctx = None
-        ancestor_xpath = 'ancestor::*[%s][1]' % xpath_cls("djn-item")
-        for i in range(0, len(self.to_indexes)):
-            if ctx is None:
-                ctx = placeholder
-            else:
-                ctx = ctx.find_element_by_xpath(ancestor_xpath)
-            item_index = self._num_preceding_djn_items(ctx)
-            ctx = ctx.find_element_by_xpath('ancestor::*[%s][1]' % xpath_cls("djn-group"))
-            inline_index = self._num_preceding_djn_groups(ctx)
-            pos.insert(0, (inline_index, item_index))
-        return tuple(pos)
-
-    def _finesse_position(self, helper, target):
-        limit = 200
-        count = 0
-        helper_height = helper.size['height']
-        if self.target_num_items == 0:
-            dy = max(1, int(round(helper_height / 38.0)))
-        else:
-            dy = int(round(helper_height / 10.0))
-        desired_pos = tuple(self.to_indexes)
-        while True:
-            if count >= limit:
-                break
-            curr_pos = self.current_position
-            pos_diff = cmp(desired_pos, curr_pos)
-            if pos_diff == 0:
-                break
-            self.move_by_offset(0, pos_diff * dy)
-            count += 1
-
-    def move_to_target(self, screenshot_hack=False):
-        target = self.target
-        helper = self.initialize_drag()
-        if screenshot_hack and 'phantomjs' in self.test_case.browser:
-            # I don't know why, but saving a screenshot fixes a weird bug
-            # in phantomjs
-            self.selenium.save_screenshot('/dev/null')
-        helper = self._match_helper_with_target(helper, target)
-        self._finesse_position(helper, target)
-        self.release()
 
 
 def expected_failure_if_grappelli(func):

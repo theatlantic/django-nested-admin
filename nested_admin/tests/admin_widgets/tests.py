@@ -90,17 +90,17 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
             now_link_xpath = "following-sibling::*[1]/a[1]"
         date_el.clear()
         time_el.clear()
-        date_el.find_element_by_xpath(now_link_xpath).click()
+        self.click(date_el.find_element_by_xpath(now_link_xpath))
         if self.has_grappelli:
             selector = '#ui-datepicker-div .ui-state-highlight'
             with self.clickable_selector(selector, timeout=1) as el:
-                el.click()
+                self.click(el)
         time.sleep(0.1)
-        time_el.find_element_by_xpath(now_link_xpath).click()
+        self.click(time_el.find_element_by_xpath(now_link_xpath))
         if self.has_grappelli:
             selector = '#ui-timepicker .ui-state-active'
             with self.clickable_selector(selector, timeout=1) as el:
-                el.click()
+                self.click(el)
         time.sleep(0.10)
         self.assertNotEqual(date_el.get_attribute('value'), '', 'Date was not set')
         self.assertNotEqual(time_el.get_attribute('value'), '', 'Time was not set')
@@ -108,8 +108,8 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
     def check_m2m(self, indexes):
         add_all_link = self.get_field('m2m_add_all_link', indexes)
         remove_all_link = self.get_field('m2m_remove_all_link', indexes)
-        remove_all_link.click()
-        add_all_link.click()
+        self.click(remove_all_link)
+        self.click(add_all_link)
         m2m_to_sel = self.get_form_field_selector('m2m_to', indexes)
         time.sleep(0.2)
         selected = self.selenium.execute_script(
@@ -125,7 +125,7 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
             # Grappelli can be very slow to initialize fk bindings, particularly
             # when run on travis-ci
             time.sleep(1)
-        add_related.click()
+        self.click(add_related)
         name = self.get_name_for_indexes(indexes)
         with self.switch_to_popup_window():
             self.set_field('name', name)
@@ -155,9 +155,9 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
                     'return $(arguments[0]).find("> fieldset > h2 > .collapse-toggle")[0]',
                     self.get_group())
 
-            collapse_handler.click()
+            self.click(collapse_handler)
             self.assertTrue(name_field.is_displayed(), "Inline did not expand")
-            collapse_handler.click()
+            self.click(collapse_handler)
             self.assertFalse(name_field.is_displayed(), "Inline did not collapse")
 
     def test_initial_extra_prepopulated(self):

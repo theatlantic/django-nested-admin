@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from unittest import SkipTest
 
 import django
@@ -18,6 +19,7 @@ from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
+from selenium.webdriver.common.action_chains import ActionChains
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from nested_admin.tests.base import (
@@ -126,13 +128,16 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             "--output", diff_output_path]
 
         if self.has_suit:
-            suit_left = self.selenium.find_element_by_css_selector('#suit-left')
-            args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
-                'x': suit_left.location['x'],
-                'y': suit_left.location['y'],
-                'w': suit_left.size['width'],
-                'h': suit_left.size['height'],
-            }]
+            to_block = ['#suit-left', '#header']
+            for selector in to_block:
+                el = self.selenium.find_element_by_css_selector(selector)
+                args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
+                    'x': el.location['x'],
+                    'y': el.location['y'],
+                    'w': el.size['width'],
+                    'h': el.size['height'],
+                }]
+
         if extra_args:
             args += extra_args
 
@@ -171,6 +176,12 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         output_dir = self.screenshot_output_dir or self.temp_dir
         suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
         image_path = os.path.join(output_dir, "%s_%s_%s.png" % (prefix, name, suffix))
+        # Move mouse to a consistent place, to avoid hover styles confusing things
+        body_element = self.selenium.execute_script('return document.body')
+        (ActionChains(self.selenium)
+            .move_to_element_with_offset(body_element, 0, 0)
+            .perform())
+        time.sleep(0.2)
         self.selenium.save_screenshot(image_path)
         return image_path
 
