@@ -36,7 +36,7 @@ before_script:
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "DROP DATABASE IF EXISTS nested_admin_test;" -U postgres; fi
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "create database nested_admin_test;" -U postgres; fi
   - mkdir -p ~/bin
-  - wget -N http://chromedriver.storage.googleapis.com/2.32/chromedriver_linux64.zip -P ~/
+  - wget -N http://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip -P ~/
   - unzip ~/chromedriver_linux64.zip -d ~/bin
   - rm ~/chromedriver_linux64.zip
   - chmod +x ~/bin/chromedriver
