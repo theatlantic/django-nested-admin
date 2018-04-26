@@ -23,20 +23,9 @@
                         {{ field.field }}
                         {{ field.field.errors.as_ul }}
                     {% endif %}
+                    {% if "1.11"|django_version_lt %}
                     {% if field.field.help_text %}<p class="grp-help">{{ field.field.help_text }}</p>{% endif %}
-                    {# Super hacky! Put all hidden fields inside the first cell, so that grappelli's #}
-                    {# :first-child styles come through #}
-                    {# {% if forloop.first and forloop.parentloop.first and forloop.parentloop.parentloop.first %} #}
-                    {# {% spaceless %} #}
-                    {# {% for fieldset_for_hidden in inline_admin_form %} #}
-                    {#     {% for line_for_hidden in fieldset_for_hidden %} #}
-                    {#         {% for field_for_hidden in line_for_hidden %} #}
-                    {#             {% if field_for_hidden.field.is_hidden %} {{ field_for_hidden.field }} {% endif %} #}
-                    {#         {% endfor %} #}
-                    {#     {% endfor %} #}
-                    {# {% endfor %} #}
-                    {# {% endspaceless %} #}
-                    {# {% endif %} #}
+                    {% endif %}
                 </td>
             {% endif %}
         {% endfor %}

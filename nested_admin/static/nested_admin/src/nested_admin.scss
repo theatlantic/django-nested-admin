@@ -243,6 +243,7 @@ table.djn-table.grp-table th p > input[type="button"] {
     td.original.is-sortable p {
         top: 0;
         left: 19px;
+        white-space: nowrap;
     }
 
     fieldset.has-inlines > .djn-form-row-last {

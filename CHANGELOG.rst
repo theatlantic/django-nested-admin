@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**3.0.22b1 (unreleased)**
+
+* Fixed: NestedTabularInline support in Django 2.0 (`#97`_)
+
+.. _#97: https://github.com/theatlantic/django-nested-admin/issues/97
+
 **3.0.21 (Nov 1, 2017)**
 
 * Fixed: Bug when saving child models that use django-polymorphic

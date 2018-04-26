@@ -123,8 +123,9 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 		if(!currentItem) return false;
 		if(this.options.handle && !overrideHandle) {
 			var validHandle = false;
+			var addBackMethod = ($.fn.addBack) ? 'addBack' : 'andSelf';
 
-			$(this.options.handle, currentItem).find("*").andSelf().each(function() { if(this == event.target) validHandle = true; });
+			$(this.options.handle, currentItem).find("*")[addBackMethod]().each(function() { if(this == event.target) validHandle = true; });
 			if(!validHandle) return false;
 		}
 

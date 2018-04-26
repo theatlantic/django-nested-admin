@@ -3,26 +3,28 @@ language: python
 matrix:
   include:
     - { python: 2.7, env: TOXENV=py27-dj18 }
-    - { python: 3.6, env: TOXENV=py36-dj18 }
     - { python: 2.7, env: TOXENV=py27-dj18-grp }
-    - { python: 2.7, env: TOXENV=py27-dj18-suit }
+    - { python: 3.4, env: TOXENV=py34-dj18 }
     - { python: 2.7, env: TOXENV=py27-dj19 }
-    - { python: 3.6, env: TOXENV=py36-dj19 }
     - { python: 2.7, env: TOXENV=py27-dj19-grp }
+    - { python: 3.4, env: TOXENV=py34-dj19 }
     - { python: 2.7, env: TOXENV=py27-dj110 }
     - { python: 2.7, env: TOXENV=py27-dj110-grp }
-    - { python: 3.6, env: TOXENV=py36-dj110 }
+    - { python: 3.4, env: TOXENV=py34-dj110 }
     - { python: 2.7, env: TOXENV=py27-dj111 }
+    - { python: 2.7, env: TOXENV=py27-dj111-grp }
     - { python: 3.6, env: TOXENV=py36-dj111 }
-    - python: 3.6
-      env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
+    - { python: 3.6, env: TOXENV=py36-dj20 }
+    - { python: 3.6, env: TOXENV=py36-dj20-grp }
+    - { python: 3.6, env: TOXENV=py36-dj21 }
   allow_failures:
-    - env: TOXENV=py36-dj20 DATABASE_URL='postgres://postgres@127.0.0.1/nested_admin_test'
+    - env: TOXENV=py36-dj21
 
 cache:
   pip: true
-  # directories:
-  #   - node_modules
+  directories:
+    - node_modules
+    - bin
 
 addons:
   chrome: stable
@@ -36,10 +38,14 @@ before_script:
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "DROP DATABASE IF EXISTS nested_admin_test;" -U postgres; fi
   - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "create database nested_admin_test;" -U postgres; fi
   - mkdir -p ~/bin
-  - wget -N http://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip -P ~/
-  - unzip ~/chromedriver_linux64.zip -d ~/bin
-  - rm ~/chromedriver_linux64.zip
-  - chmod +x ~/bin/chromedriver
+  - |
+    if [ ! -e ~/bin/chromedriver ]; then
+      export CHROMEDRIVER_VERSION=$(curl -q http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+      wget -N http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -P ~/
+      unzip ~/chromedriver_linux64.zip -d ~/bin
+      rm ~/chromedriver_linux64.zip
+      chmod +x ~/bin/chromedriver
+    fi
 
 # before_install:
 #   - nvm install node
@@ -50,6 +56,6 @@ install:
   - pip install tox 
 
 script:
-  - travis_retry travis_retry travis_retry tox -- --selenium=chrome-headless --failfast
+  - travis_retry travis_retry travis_retry tox -- --verbosity=3 --selenium=chrome-headless --failfast
 
 sudo: false

@@ -66,6 +66,7 @@ if 'suit' in INSTALLED_APPS:
 
 INSTALLED_APPS += (
     'django_admin_testutils',
+    'nested_admin.tests',
     'nested_admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,7 +75,6 @@ INSTALLED_APPS += (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'nested_admin.tests',
 )
 
 # Add apps within the tests folder
