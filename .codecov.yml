@@ -1,0 +1,28 @@
+comment:
+  require_changes: yes
+  layout: "header, diff, flags, files, footer"
+
+coverage:
+  status:
+    project: no
+    patch: no
+    changes: no
+    project:
+      default: off
+      javascript:
+        flags: javascript
+      python:
+        flags: python
+
+ignore:
+  - "nested_admin/tests/**/*.*"
+  - "nested_admin/tests/*"
+
+flags:
+  python:
+    paths:
+      - "nested_admin/*.py"
+      - "nested_admin/**/*.py"
+  javascript:
+    paths:
+      - "nested_admin/**/*.js"

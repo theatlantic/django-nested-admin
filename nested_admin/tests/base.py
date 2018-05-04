@@ -1,14 +1,20 @@
 from __future__ import absolute_import
 
+from datetime import datetime
 import functools
+import inspect
 import json
 import logging
+import os
+import sys
+import time
 import unittest
 
+import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 
-from django_admin_testutils import AdminSeleniumTestCase
+from selenosis import AdminSelenosisTestCase
 from .drag_drop import DragAndDropAction
 from .utils import (
     xpath_item, is_sequence, is_integer, is_str, ElementRect)
@@ -20,7 +26,7 @@ logger = logging.getLogger(__name__)
 get_model_name = lambda m: "-".join([m._meta.app_label, m._meta.model_name])
 
 
-class BaseNestedAdminTestCase(AdminSeleniumTestCase):
+class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
     root_urlconf = "nested_admin.tests.urls"
 
@@ -49,6 +55,10 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
 
         cls.model_names = recursive_map_model_names(cls.models)
 
+    def tearDown(self):
+        self.dump_js_coverage()
+        super(BaseNestedAdminTestCase, self).tearDown()
+
     def load_admin(self, obj=None):
         if obj is None:
             obj = self.root_model
@@ -65,11 +75,49 @@ class BaseNestedAdminTestCase(AdminSeleniumTestCase):
             }
         """)
 
+    def get_test_filename_base(self):
+        """Returns a unique filename based on the current test conditions"""
+        if self.has_grappelli:
+            admin_type = "grp"
+        elif self.has_suit:
+            admin_type = "suit"
+        else:
+            admin_type = "std"
+
+        return "py%(pyver)s_dj%(djver)s_%(type)s.%(cls)s.%(fn)s.%(ts)s%(usec)s" % {
+            'pyver': "%s%s" % sys.version_info[:2],
+            'djver': "%s%s" % django.VERSION[:2],
+            'type': admin_type,
+            'cls': type(self).__name__,
+            'fn': self._testMethodName,
+            'ts': datetime.now().strftime('%Y%m%d%H%M%S'),
+            'usec': ("%.6f" % time.time()).split('.')[1],
+        }
+
+    def dump_js_coverage(self):
+        try:
+            coverage_dumped = self.selenium.execute_script('return window._coverage_dumped')
+            if coverage_dumped:
+                return
+            else:
+                json = self.selenium.execute_script('return JSON.stringify(__coverage__)')
+                self.selenium.execute_script('window._coverage_dumped = true')
+        except:
+            return
+        nyc_output_dir = os.path.join(os.getcwd(), '.nyc_output')
+        if not os.path.exists(nyc_output_dir):
+            os.makedirs(nyc_output_dir)
+        filename = "%s.json" % self.get_test_filename_base()
+        with open(os.path.join(nyc_output_dir, filename), mode='w') as f:
+            f.write(json)
+
     def save_form(self):
         browser_errors = [e for e in self.selenium.get_log('browser')
                           if 'favicon' not in e['message']]
         if len(browser_errors) > 0:
             logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
+
+        self.dump_js_coverage()
 
         has_continue = bool(
             self.selenium.execute_script(

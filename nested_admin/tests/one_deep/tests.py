@@ -6,6 +6,7 @@ from datetime import datetime
 import inspect
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -13,10 +14,14 @@ import tempfile
 import time
 from unittest import SkipTest
 
+import PIL.Image
+import PIL.ImageDraw
+
 import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
+from django.utils import six
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
 from selenium.webdriver.common.action_chains import ActionChains
@@ -52,13 +57,17 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     root_models = [PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot]
     storage = None
 
+    window_size = (1200, 800)
+
     @classmethod
     def setUpClass(cls):
-        cls.blinkdiff_bin = os.environ.get('BLINKDIFF_BIN')
-        if not cls.blinkdiff_bin:
-            cls.blinkdiff_bin = find_executable('blink-diff')
-        if not cls.blinkdiff_bin or not os.path.exists(cls.blinkdiff_bin):
-            raise SkipTest("blink-diff not installed")
+        if six.PY2:
+            raise SkipTest("Skipping redundant test")
+        cls.pixelmatch_bin = os.environ.get('PIXELMATCH_BIN')
+        if not cls.pixelmatch_bin:
+            cls.pixelmatch_bin = find_executable('pixelmatch')
+        if not cls.pixelmatch_bin or not os.path.exists(cls.pixelmatch_bin):
+            raise SkipTest("pixelmatch not installed")
         cls.screenshot_output_dir = os.environ.get('SCREENSHOT_OUTPUT_DIR')
         super(BaseNestedAdminTestCase, cls).setUpClass()
         cls.root_temp_dir = tempfile.mkdtemp()
@@ -69,9 +78,18 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
                 raise SkipTest("Issue with travis and Django >= 1.11")
             cls.path_prefix = "travis_%s" % os.environ['TRAVIS_BUILD_NUMBER']
         else:
-            cls.path_prefix = "local_%s" % datetime.now().strftime('%Y%m%dT%H%M%S')
+            cls.path_prefix = "local"
+            # cls.path_prefix = "local_%s" % datetime.now().strftime('%Y%m%dT%H%M%S')
 
-        if all(k in os.environ for k in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']):
+        #
+        cls.temp_dir = tempfile.mkdtemp(dir=cls.root_temp_dir)
+        os.makedirs(os.path.join(cls.temp_dir, cls.path_prefix))
+        if cls.screenshot_output_dir:
+            sceenshot_path = os.path.join(cls.screenshot_output_dir, cls.path_prefix)
+            if not os.path.exists(sceenshot_path):
+                os.makedirs(sceenshot_path)
+
+        if all(os.environ.get(k) for k in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']):
             try:
                 storage = S3Boto3Storage()
                 bucket = storage.bucket  # noqa
@@ -107,11 +125,15 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         super(VisualComparisonTestCase, cls).tearDownClass()
         shutil.rmtree(cls.root_temp_dir)
 
-    def setUp(self):
-        super(VisualComparisonTestCase, self).setUp()
-        self.temp_dir = tempfile.mkdtemp(dir=self.root_temp_dir)
-        os.makedirs(os.path.join(self.temp_dir, self.path_prefix))
-        self.selenium.set_window_size(780, 600)
+    # def setUp(self):
+    #     super(VisualComparisonTestCase, self).setUp()
+    #     self.temp_dir = tempfile.mkdtemp(dir=self.root_temp_dir)
+    #     os.makedirs(os.path.join(self.temp_dir, self.path_prefix))
+    #     if self.screenshot_output_dir:
+    #         sceenshot_path = os.path.join(self.screenshot_output_dir, self.path_prefix)
+    #         if not os.path.exists(sceenshot_path):
+    #             os.makedirs(sceenshot_path)
+    #     # self.selenium.set_window_size(780, 600)
 
     @property
     def models(self):
@@ -121,31 +143,51 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def model_names(self):
         return self.all_model_names[self.root_model]
 
-    def assertSameScreenshot(self, a, b, extra_args=None):
+    def _block_out_arg(self, selector):
+        """
+        Generate the --block-out argument passed to pixelmatch that excludes
+        an element from the diff
+        """
+        el = self.selenium.find_element_by_css_selector(selector)
+        return ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
+            'x': el.location['x'],
+            'y': el.location['y'],
+            'w': el.size['width'],
+            'h': el.size['height'],
+        }]
+
+    def exclude_from_screenshots(self, imgs, exclude=None):
+        pixel_density = self.selenium.execute_script('return window.devicePixelRatio') or 1
+        exclude = exclude or []
+        rects = []
+        for selector in exclude:
+            el = self.selenium.find_element_by_css_selector(selector)
+            x0, y0 = el.location['x'], el.location['y']
+            w, h = el.size['width'], el.size['height']
+            x1, y1 = x0 + w, y0 + h
+            coords = [v * pixel_density for v in [x0, y0, x1, y1]]
+            rects.append(coords)
+        for img_path in imgs:
+            im = PIL.Image.open(img_path)
+            draw = PIL.ImageDraw.Draw(im)
+            for rect in rects:
+                draw.rectangle(rect, fill='black')
+            im.save(img_path)
+
+    def assertSameScreenshot(self, a, b, exclude=None):
         diff_output_path = a.replace('_a.png', '_diff.png')
-        args = [
-            self.blinkdiff_bin, "--verbose", "--threshold", "1", "--delta", "0",
-            "--output", diff_output_path]
+        args = [self.pixelmatch_bin, a, b, diff_output_path, 'threshold=0']
 
+        exclude = exclude or []
         if self.has_suit:
-            to_block = ['#suit-left', '#header']
-            for selector in to_block:
-                el = self.selenium.find_element_by_css_selector(selector)
-                args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
-                    'x': el.location['x'],
-                    'y': el.location['y'],
-                    'w': el.size['width'],
-                    'h': el.size['height'],
-                }]
-
-        if extra_args:
-            args += extra_args
-
-        args += [a, b]
+            exclude += ['#suit-left', '#header']
+        self.exclude_from_screenshots([a, b], exclude)
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, _ = p.communicate()
-        if p.returncode == 0:
+        stdout = stdout.decode('utf-8')
+        diff_pixels = int(re.search(r'different pixels: (\d+)', stdout).group(1))
+        if diff_pixels == 0:
             # No differences found
             if self.screenshot_output_dir:
                 os.unlink(a)
@@ -153,8 +195,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
                 os.unlink(diff_output_path)
             return
         else:
-            logger.info(stdout)
-            msg = "Screenshots do not match"
+            msg = "Screenshots do not match (%d pixels differ)" % diff_pixels
             if self.storage:
                 s3_name = "%s/%s" % (self.path_prefix, os.path.basename(diff_output_path))
                 with open(diff_output_path, 'rb') as f:
@@ -181,6 +222,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         (ActionChains(self.selenium)
             .move_to_element_with_offset(body_element, 0, 0)
             .perform())
+        self.selenium.execute_script('$("*:focus").blur()')
         time.sleep(0.2)
         self.selenium.save_screenshot(image_path)
         return image_path
@@ -265,19 +307,13 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
                 el.send_keys('b')
             self.save_form()
             screenshots.append(self.get_admin_screenshot())
-        extra_args = []
+        exclude = []
         if not self.has_grappelli:
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            delete_col = self.selenium.find_element_by_css_selector('#children-0 .delete')
-            extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
-                'x': delete_col.location['x'],
-                'y': delete_col.location['y'],
-                'w': delete_col.size['width'],
-                'h': delete_col.size['height'],
-            }]
-        self.assertSameScreenshot(*screenshots, extra_args=extra_args)
+            exclude += ['#children-0 .delete']
+        self.assertSameScreenshot(*screenshots, exclude=exclude)
 
     @expected_failure_if_suit
     def test_stacked_validation_error(self):
@@ -292,16 +328,10 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
                 el.send_keys('b')
             self.save_form()
             screenshots.append(self.get_admin_screenshot())
-        extra_args = []
+        exclude = []
         if not self.has_grappelli:
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            delete_col = self.selenium.find_element_by_css_selector('#children-0 .inline-deletelink')
-            extra_args += ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
-                'x': delete_col.location['x'],
-                'y': delete_col.location['y'],
-                'w': delete_col.size['width'],
-                'h': delete_col.size['height'],
-            }]
-        self.assertSameScreenshot(*screenshots, extra_args=extra_args)
+            exclude += ['.inline-related:not(.empty-form) > h3']
+        self.assertSameScreenshot(*screenshots, exclude=exclude)

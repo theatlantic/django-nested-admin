@@ -1,6 +1,6 @@
-import $ from 'jquery';
-import './nested-admin/jquery.djangoformset';
-import DJNesting from './nested-admin/utils';
+const $ = require('jquery');
+const DJNesting = require('./utils');
+DJNesting.DjangoFormset = require('./jquery.djangoformset');
 
 $(document).ready(function() {
     // Remove the border on any empty fieldsets
@@ -35,3 +35,5 @@ $(document).ready(function() {
         });
     });
 });
+
+module.exports = DJNesting;

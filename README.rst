@@ -112,12 +112,10 @@ list of the options available.
 Contributing
 ============
 
-This project uses `gulp <http://gulpjs.com/>`_, `babel <https://babeljs.io/>`_,
-`browserify <http://browserify.org/>`_, and `scss <http://sass-lang.com/>`_ for
-building its javascript and css. To install the dependencies for the build
-process, run ``npm install`` from the root of the repository. You can then run
-``gulp`` to rebuild the static files, or ``gulp watch`` when actively editing
-these files to detect changes and rebuild automatically.
+This project uses `webpack <https://webpack.js.org/>`_ for building its
+javascript and css. To install the dependencies for the build process, run
+``npm install`` from the root of the repository. You can then run
+``npm run build`` to rebuild the static files.
 
 License
 =======

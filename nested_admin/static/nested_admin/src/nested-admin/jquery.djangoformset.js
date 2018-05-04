@@ -1,9 +1,9 @@
 'use strict';
 
-import $ from 'jquery';
-import regexQuote from './regexquote';
-import DJNesting from './utils';
-import grappelli from 'grappelli';
+const $ = require('jquery');
+const regexQuote = require('./regexquote');
+const DJNesting = require('./utils');
+const grappelli = require('grappelli');
 
 var pluginName = 'djangoFormset';
 
@@ -488,4 +488,4 @@ $.fn[pluginName] = function() {
     }
 };
 
-export default DjangoFormset;
+module.exports = DjangoFormset;

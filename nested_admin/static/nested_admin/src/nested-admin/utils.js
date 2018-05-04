@@ -1,11 +1,11 @@
 'use strict';
 
-import $ from 'jquery';
-import './jquery.djnutils.js';
-import {createSortable, updatePositions} from './sortable';
-import regexQuote from './regexquote';
-import DateTimeShortcuts from 'django/date-time-shortcuts';
-import SelectFilter from 'django/select-filter';
+const $ = require('jquery');
+require('./jquery.djnutils.js');
+const {createSortable, updatePositions} = require('./sortable');
+const regexQuote = require('./regexquote');
+const DateTimeShortcuts = require('django/date-time-shortcuts');
+const SelectFilter = require('django/select-filter');
 
 var DJNesting = (typeof window.DJNesting != 'undefined')
                ? window.DJNesting : {};
@@ -209,6 +209,4 @@ DJNesting.DjangoInlines = {
     }
 };
 
-window.DJNesting = DJNesting;
-
-export default DJNesting;
+module.exports = DJNesting;

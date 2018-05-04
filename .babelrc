@@ -1,5 +1,25 @@
-
 {
-  "presets": ["es2015"],
-  "plugins": [["add-module-exports"]]
+  "presets": [
+    ["@babel/env", {
+      "loose": true,
+      "useBuiltIns": "usage",
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7", "ie 9"],
+        "node": "8"
+      }
+    }]
+  ],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./nested_admin/static/nested_admin/src"],
+      "alias": {
+        "jquery": "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js"
+      }
+    }]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["istanbul"]
+    }
+  }
 }

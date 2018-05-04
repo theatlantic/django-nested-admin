@@ -1,10 +1,10 @@
 'use strict';
 
-import $ from 'jquery';
-import regexQuote from './regexquote';
-import './jquery.ui.nestedsortable';
+const $ = require('jquery');
+const regexQuote = require('./regexquote');
+require('./jquery.ui.nestedsortable');
 
-export function updatePositions(prefix) {
+function updatePositions(prefix) {
     var position = 0,  // the value of the position formfield
         count = 1,     // The count displayed in stacked inline headers
         $group = $('#' + prefix + '-group'),
@@ -87,7 +87,7 @@ export function updatePositions(prefix) {
     });
 }
 
-export function createSortable($group) {
+function createSortable($group) {
     return $group.find('> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items').nestedSortable({
         handle: [
             '> h3.djn-drag-handler',
@@ -217,3 +217,5 @@ export function createSortable($group) {
         }
     });
 }
+
+module.exports = {updatePositions, createSortable};

@@ -1,7 +1,7 @@
 'use strict';
 
-import $ from 'jquery';
-import './jquery.ui.djnsortable';
+const $ = require('jquery');
+require('./jquery.ui.djnsortable');
 
 /*
  * jQuery UI Nested Sortable

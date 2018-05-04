@@ -1,3 +1,3 @@
-export default function regexQuote(str) {
+module.exports = function regexQuote(str) {
     return (str+'').replace(/([\.\?\*\+\^\$\[\]\\\(\)\{\}\|\-])/g, '\\$1');
 };

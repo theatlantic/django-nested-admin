@@ -4,13 +4,8 @@ matrix:
   include:
     - { python: 2.7, env: TOXENV=py27-dj18 }
     - { python: 2.7, env: TOXENV=py27-dj18-grp }
+    - { python: 2.7, env: TOXENV=py27-dj18-suit }
     - { python: 3.4, env: TOXENV=py34-dj18 }
-    - { python: 2.7, env: TOXENV=py27-dj19 }
-    - { python: 2.7, env: TOXENV=py27-dj19-grp }
-    - { python: 3.4, env: TOXENV=py34-dj19 }
-    - { python: 2.7, env: TOXENV=py27-dj110 }
-    - { python: 2.7, env: TOXENV=py27-dj110-grp }
-    - { python: 3.4, env: TOXENV=py34-dj110 }
     - { python: 2.7, env: TOXENV=py27-dj111 }
     - { python: 2.7, env: TOXENV=py27-dj111-grp }
     - { python: 3.6, env: TOXENV=py36-dj111 }
@@ -32,11 +27,9 @@ addons:
 env:
   global:
     - PATH=$HOME/bin:$PATH
-    # - BLINKDIFF_BIN=$TRAVIS_BUILD_DIR/node_modules/.bin/blink-diff
+    - PIXELMATCH_BIN=$TRAVIS_BUILD_DIR/node_modules/.bin/pixelmatch
 
 before_script:
-  - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "DROP DATABASE IF EXISTS nested_admin_test;" -U postgres; fi
-  - if [ "$DATABASE_URL" == "postgres://postgres@127.0.0.1/nested_admin_test" ]; then psql -c "create database nested_admin_test;" -U postgres; fi
   - mkdir -p ~/bin
   - |
     if [ ! -e ~/bin/chromedriver ]; then
@@ -47,15 +40,25 @@ before_script:
       chmod +x ~/bin/chromedriver
     fi
 
-# before_install:
-#   - nvm install node
-#   - nvm use node
-#   - npm install blink-diff
+before_install:
+  - nvm install node
+  - nvm use node
+  - travis_retry travis_retry npm install
+  - travis_retry travis_retry npm install codecov
+  - travis_retry travis_retry npm install pixelmatch
+  - NODE_ENV=test npm run build
 
 install:
-  - pip install tox 
+  - pip install tox coverage codecov
 
 script:
-  - travis_retry travis_retry travis_retry tox -- --verbosity=3 --selenium=chrome-headless --failfast
+  - |
+    travis_retry travis_retry travis_retry tox -- \
+      --selenium=chrome-headless \
+      --failfast
+  - npm run report
+  - npm run codecov
+  - coverage xml
+  - codecov -F python
 
 sudo: false

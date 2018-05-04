@@ -1,4 +1,4 @@
-import $ from 'jquery';
+const $ = require('jquery');
 
 var prefixCache = {};
 

@@ -13,3 +13,7 @@ pip-log.txt
 *swp
 .tox
 node_modules
+.coverage.*
+/.nyc_output
+/coverage/
+/nested_admin/tests/static

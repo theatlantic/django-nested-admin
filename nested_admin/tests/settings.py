@@ -4,7 +4,7 @@ import tempfile
 
 import django
 
-import django_admin_testutils.settings
+import selenosis.settings
 import dj_database_url
 
 
@@ -41,7 +41,7 @@ else:
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': django_admin_testutils.settings.TEMPLATES[0]['DIRS'],
+    'DIRS': selenosis.settings.TEMPLATES[0]['DIRS'],
     'APP_DIRS': True,
     'OPTIONS': {
         'string_if_invalid': 'INVALID {{ %s }}',
@@ -65,7 +65,7 @@ if 'suit' in INSTALLED_APPS:
 
 
 INSTALLED_APPS += (
-    'django_admin_testutils',
+    'selenosis',
     'nested_admin.tests',
     'nested_admin',
     'django.contrib.auth',
@@ -123,7 +123,7 @@ MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
-TEST_RUNNER = 'django_admin_testutils.DiscoverRunner'
+TEST_RUNNER = 'selenosis.DiscoverRunner'
 
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_STORAGE_BUCKET_NAME = 'django-nested-admin-artifacts'
