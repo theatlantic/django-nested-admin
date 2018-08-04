@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -309,7 +309,7 @@ var DjangoFormset = function () {
             _utils2.default.initRelatedFields(this.prefix);
             _utils2.default.initAutocompleteFields(this.prefix);
             if (_jquery2.default.fn.grp_collapsible) {
-                $form.find('.collapse').andSelf().grp_collapsible({
+                $form.find('.collapse').addBack().grp_collapsible({
                     toggle_handler_slctr: '.grp-collapse-handler:first',
                     closed_css: 'closed grp-closed',
                     open_css: 'open grp-open',
@@ -1285,7 +1285,7 @@ _jquery2.default.widget("ui.djnsortable", _jquery2.default.ui.mouse, {
 		if (this.options.handle && !overrideHandle) {
 			var validHandle = false;
 
-			(0, _jquery2.default)(this.options.handle, currentItem).find("*").andSelf().each(function () {
+			(0, _jquery2.default)(this.options.handle, currentItem).find("*").addBack().each(function () {
 				if (this == event.target) validHandle = true;
 			});
 			if (!validHandle) return false;
@@ -3185,7 +3185,7 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     if (!selector) {
         selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
     }
-    $elem.find(selector).andSelf().each(function () {
+    $elem.find(selector).addBack().each(function () {
         var $node = (0, _jquery2.default)(this),
             attrs = ['id', 'name', 'for', 'href', 'class', 'onclick'];
 
