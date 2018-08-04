@@ -270,7 +270,7 @@ class DjangoFormset {
         DJNesting.initRelatedFields(this.prefix);
         DJNesting.initAutocompleteFields(this.prefix);
         if ($.fn.grp_collapsible) {
-            $form.find('.collapse').andSelf().grp_collapsible({
+            $form.find('.collapse').addBack().grp_collapsible({
                 toggle_handler_slctr: '.grp-collapse-handler:first',
                 closed_css: 'closed grp-closed',
                 open_css: 'open grp-open',
