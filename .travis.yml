@@ -12,8 +12,9 @@ matrix:
     - { python: 3.6, env: TOXENV=py36-dj20 }
     - { python: 3.6, env: TOXENV=py36-dj20-grp }
     - { python: 3.6, env: TOXENV=py36-dj21 }
+    - { python: 3.6, env: TOXENV=py36-dj22 }
   allow_failures:
-    - env: TOXENV=py36-dj21
+    - env: TOXENV=py36-dj22
 
 cache:
   pip: true
