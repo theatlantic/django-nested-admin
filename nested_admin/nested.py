@@ -10,14 +10,14 @@ try:
 except ImportError:
     # Django <= 1.9
     from django.core.urlresolvers import reverse
-from django import forms
 from django.template.defaultfilters import capfirst
 from django.utils import six
 from django.utils.six.moves import zip
 from django.utils.translation import ugettext
-
-from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
+
+from .compat import MergeSafeMedia
+from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 
 
 __all__ = (
@@ -63,7 +63,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
             yield inline_admin_form
 
     def _media(self):
-        media = self.opts.media + self.formset.media
+        media = MergeSafeMedia(self.formset.media) + self.opts.media
         for fs in self:
             media = media + fs.media
             for inline in (getattr(fs.form, 'inlines', None) or []):
@@ -73,7 +73,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
         static_url = staticfiles_storage.url
         server_data_js = reverse('nesting_server_data')
         min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
-        return media + forms.Media(
+        return media + MergeSafeMedia(
             js=(
                 server_data_js,
                 static_url('nested_admin/dist/nested_admin%s.js' % min_ext),

@@ -37,6 +37,7 @@ class TestAdminWidgetsM2M(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class TestAdminWidgetsA(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -53,7 +54,11 @@ class TestAdminWidgetsA(models.Model):
     class Meta:
         ordering = ('position', )
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class TestAdminWidgetsB(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -70,7 +75,12 @@ class TestAdminWidgetsB(models.Model):
     class Meta:
         ordering = ('position', )
 
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)
 
+
+@python_2_unicode_compatible
 class TestAdminWidgetsC0(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -87,7 +97,12 @@ class TestAdminWidgetsC0(models.Model):
     class Meta:
         ordering = ('position', )
 
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)
 
+
+@python_2_unicode_compatible
 class TestAdminWidgetsC1(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -103,3 +118,77 @@ class TestAdminWidgetsC1(models.Model):
 
     class Meta:
         ordering = ('position', )
+
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)
+
+
+class TestWidgetMediaOrderRoot(models.Model):
+    name = models.CharField(max_length=200)
+
+
+@python_2_unicode_compatible
+class TestWidgetMediaOrderA(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+    parent = ForeignKey(TestWidgetMediaOrderRoot, on_delete=CASCADE)
+    position = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ('position', )
+
+    def __str__(self):
+        return self.name
+
+
+@python_2_unicode_compatible
+class TestWidgetMediaOrderB(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+    parent = ForeignKey(TestWidgetMediaOrderA, on_delete=CASCADE)
+    position = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ('position', )
+
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)
+
+
+@python_2_unicode_compatible
+class TestWidgetMediaOrderC0(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+    parent = ForeignKey(TestWidgetMediaOrderB, on_delete=CASCADE)
+    position = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ('position', )
+
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)
+
+
+@python_2_unicode_compatible
+class TestWidgetMediaOrderC1(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+    parent = ForeignKey(TestWidgetMediaOrderB, on_delete=CASCADE)
+    position = models.PositiveIntegerField()
+    date = models.DateTimeField(blank=True, null=True)
+    upload = models.FileField(blank=True, null=True, upload_to='foo')
+    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
+
+    class Meta:
+        ordering = ('position', )
+
+    def __str__(self):
+        parent_name = self.parent.name if self.parent else '?'
+        return "%s - %s" % (parent_name, self.name)

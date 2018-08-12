@@ -4,7 +4,9 @@ from nested_admin import NestedStackedInline, NestedModelAdmin
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsM2M, TestAdminWidgetsRelated1,
     TestAdminWidgetsRelated2, TestAdminWidgetsA, TestAdminWidgetsB,
-    TestAdminWidgetsC0, TestAdminWidgetsC1)
+    TestAdminWidgetsC0, TestAdminWidgetsC1,
+    TestWidgetMediaOrderRoot, TestWidgetMediaOrderA, TestWidgetMediaOrderB,
+    TestWidgetMediaOrderC0, TestWidgetMediaOrderC1)
 
 
 class TestAdminWidgetsC0Inline(NestedStackedInline):
@@ -60,3 +62,41 @@ class TestAdminWidgetsRootAdmin(NestedModelAdmin):
 admin.site.register(TestAdminWidgetsRelated1, NestedModelAdmin)
 admin.site.register(TestAdminWidgetsRelated2, NestedModelAdmin)
 admin.site.register(TestAdminWidgetsM2M, NestedModelAdmin)
+
+
+class TestWidgetMediaOrderC0Inline(NestedStackedInline):
+    model = TestWidgetMediaOrderC0
+    sortable_field_name = "position"
+    extra = 0
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+
+
+class TestWidgetMediaOrderC1Inline(NestedStackedInline):
+    model = TestWidgetMediaOrderC1
+    prepopulated_fields = {'slug': ('name', )}
+    filter_horizontal = ['m2m']
+    extra = 0
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    raw_id_fields = ['fk2']
+    autocomplete_lookup_fields = {'fk': ['fk2']}
+
+
+class TestWidgetMediaOrderBInline(NestedStackedInline):
+    model = TestWidgetMediaOrderB
+    inlines = [TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline]
+    sortable_field_name = "position"
+    extra = 1
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+
+
+class TestWidgetMediaOrderAInline(NestedStackedInline):
+    model = TestWidgetMediaOrderA
+    inlines = [TestWidgetMediaOrderBInline]
+    sortable_field_name = "position"
+    extra = 1
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+
+
+@admin.register(TestWidgetMediaOrderRoot)
+class TestWidgetMediaOrderRootAdmin(NestedModelAdmin):
+    inlines = [TestWidgetMediaOrderAInline]

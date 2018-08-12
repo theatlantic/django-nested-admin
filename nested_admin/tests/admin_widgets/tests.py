@@ -12,51 +12,50 @@ from nested_admin.tests.base import (
     skip_if_not_grappelli, BaseNestedAdminTestCase)
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
-    TestAdminWidgetsC0, TestAdminWidgetsC1)
+    TestAdminWidgetsC0, TestAdminWidgetsC1,
+    TestWidgetMediaOrderRoot, TestWidgetMediaOrderA, TestWidgetMediaOrderB,
+    TestWidgetMediaOrderC0, TestWidgetMediaOrderC1)
 from .admin import (
     TestAdminWidgetsAInline, TestAdminWidgetsBInline,
-    TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline)
-
-
-admin_classes = [
-    TestAdminWidgetsAInline, TestAdminWidgetsBInline,
     TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
-]
+    TestWidgetMediaOrderAInline, TestWidgetMediaOrderBInline,
+    TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline)
 
 
-@contextmanager
-def enable_inline_collapsing():
-    """A context manager that configures the inline classes to be collapsible."""
-    if 'grappelli' in settings.INSTALLED_APPS:
-        class_attr = "inline_classes"
-        class_val = ("collapse", "closed", "grp-collapse", "grp-closed")
-        reset_val = ("collapse", "open", "grp-collapse", "grp-open")
-    else:
-        class_attr = "classes"
-        class_val = ("collapse", )
-        reset_val = None
+class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
-    for admin in admin_classes:
-        setattr(admin, class_attr, class_val)
-    try:
-        yield
-    finally:
-        for admin in admin_classes:
-            setattr(admin, class_attr, reset_val)
+    admin_classes = []
 
-
-class TestAdminWidgets(BaseNestedAdminTestCase):
+    root_model = None
+    nested_models = []
 
     fixtures = ['admin-widgets.xml']
 
-    root_model = TestAdminWidgetsRoot
-    nested_models = (TestAdminWidgetsA, TestAdminWidgetsB,
-        (TestAdminWidgetsC0, TestAdminWidgetsC1))
-
     @classmethod
     def setUpClass(cls):
-        super(TestAdminWidgets, cls).setUpClass()
-        cls.a_model, cls.b_model, (cls.c0_model, cls.c1_model) = cls.nested_models
+        super(BaseWidgetTestCase, cls).setUpClass()
+        if cls.nested_models:
+            cls.a_model, cls.b_model, (cls.c0_model, cls.c1_model) = cls.nested_models
+
+    @contextmanager
+    def enable_inline_collapsing(self):
+        """A context manager that configures the inline classes to be collapsible."""
+        if 'grappelli' in settings.INSTALLED_APPS:
+            class_attr = "inline_classes"
+            class_val = ("collapse", "closed", "grp-collapse", "grp-closed")
+            reset_val = ("collapse", "open", "grp-collapse", "grp-open")
+        else:
+            class_attr = "classes"
+            class_val = ("collapse", )
+            reset_val = None
+
+        for admin in self.admin_classes:
+            setattr(admin, class_attr, class_val)
+        try:
+            yield
+        finally:
+            for admin in self.admin_classes:
+                setattr(admin, class_attr, reset_val)
 
     def get_name_for_indexes(self, indexes):
         name = "Item %s" % (" ABC"[len(indexes)])
@@ -112,9 +111,9 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
         self.click(add_all_link)
         m2m_to_sel = self.get_form_field_selector('m2m_to', indexes)
         time.sleep(0.2)
-        selected = self.selenium.execute_script(
-            'return $("%s").find("option").toArray().map(function(el) { return parseInt(el.value, 10); })'
-                % m2m_to_sel)
+        selected = self.selenium.execute_script((
+            'return $("%s").find("option").toArray().map('
+            '  function(el) { return parseInt(el.value, 10); })') % m2m_to_sel)
         self.assertEqual(selected, [1, 2, 3])
 
     def check_fk(self, indexes):
@@ -136,11 +135,23 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
             'return $("#%s").find("option:selected").html()' % field_id)
         self.assertEqual(unescape_entities(current_val), name)
 
+
+class TestAdminWidgets(BaseWidgetTestCase):
+
+    admin_classes = [
+        TestAdminWidgetsAInline, TestAdminWidgetsBInline,
+        TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
+    ]
+
+    root_model = TestAdminWidgetsRoot
+    nested_models = (TestAdminWidgetsA, TestAdminWidgetsB,
+        (TestAdminWidgetsC0, TestAdminWidgetsC1))
+
     def test_collapsible_inlines(self):
         if not self.has_grappelli and django.VERSION < (1, 10):
             raise SkipTest("Collapsible inlines not supported")
 
-        with enable_inline_collapsing():
+        with self.enable_inline_collapsing():
             self.load_admin()
             name_field = self.get_field('name', [0])
 
@@ -306,3 +317,45 @@ class TestAdminWidgets(BaseNestedAdminTestCase):
             "Zero autocomplete fields initialized")
         self.assertEqual(len(autocomplete_elements), 1,
             "Too many autocomplete fields initialized")
+
+
+class TestWidgetMediaOrder(BaseWidgetTestCase):
+
+    admin_classes = [
+        TestWidgetMediaOrderAInline, TestWidgetMediaOrderBInline,
+        TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline,
+    ]
+
+    root_model = TestWidgetMediaOrderRoot
+    nested_models = (TestWidgetMediaOrderA, TestWidgetMediaOrderB,
+        (TestWidgetMediaOrderC0, TestWidgetMediaOrderC1))
+
+    def test_add_three_deep_m2m(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_m2m([1, 0, [1, 0]])
+
+    def test_add_three_deep_fk(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_fk([1, 0, [1, 0]])
+
+    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
+    def test_add_three_deep_prepopulated(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_prepopulated([1, 0, [1, 0]])
+
+    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
+    def test_add_three_deep_datetime(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_datetime([1, 0, [1, 0]])

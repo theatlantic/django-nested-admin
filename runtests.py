@@ -10,6 +10,7 @@ import selenosis
 # TestCaseClass.test_function as shorthand to runtests.py
 TEST_CASE_MODULE_PATHS = {
     'TestAdminWidgets': 'nested_admin.tests.admin_widgets.tests',
+    'TestWidgetMediaOrder': 'nested_admin.tests.admin_widgets.tests',
     'TestGenericInlineAdmin': 'nested_admin.tests.gfk.tests',
     'VisualComparisonTestCase': 'nested_admin.tests.one_deep.tests',
     'TestDeepNesting': 'nested_admin.tests.three_deep.tests',
