@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='django-nested-admin',
-    version="3.0.22b1",
+    version="3.1.0",
     install_requires=[
         'python-monkey-business>=1.0.0',
     ],

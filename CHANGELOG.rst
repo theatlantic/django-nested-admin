@@ -1,10 +1,14 @@
 Changelog
 =========
 
-**3.0.22b1 (unreleased)**
+**3.1.0 (Aug 13, 2018)**
 
 * Fixed: NestedTabularInline support in Django 2.0 (`#97`_)
+* Fixed: Ensure correct relative order of js media. (`#71`_)
+* Switch js build process to use webpack, without gulp
+* Add test coverage reporting for both python and js code
 
+.. _#71: https://github.com/theatlantic/django-nested-admin/issues/71
 .. _#97: https://github.com/theatlantic/django-nested-admin/issues/97
 
 **3.0.21 (Nov 1, 2017)**
