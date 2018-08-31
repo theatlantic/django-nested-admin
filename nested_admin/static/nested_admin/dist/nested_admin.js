@@ -86,9 +86,36 @@ __webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-j
 
 var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
+var grappelli = __webpack_require__(/*! grappelli */ "grappelli");
+
 var DJNesting = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
 
 DJNesting.DjangoFormset = __webpack_require__(/*! ./jquery.djangoformset */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djangoformset.js");
+
+if (grappelli) {
+  // grappelli initializes the jQuery UI datePicker and timePicker widgets
+  // on nested inlines of empty inline formsets. This later prevents proper
+  // initialization of these elements when they are added. Here, we wrap and
+  // override these methods, excluding template forms (i.e., those with
+  // '-empty' and '__prefix__' in their names/ids) from the calls to the
+  // widget initialization.
+  if (typeof $.fn.datepicker === 'function') {
+    $.fn.datepicker = function (orig) {
+      return function datepicker() {
+        orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+      };
+    }($.fn.datepicker);
+  }
+
+  if (typeof $.fn.grp_timepicker === 'function') {
+    $.fn.grp_timepicker = function (orig) {
+      return function grp_timepicker() {
+        orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+      };
+    }($.fn.grp_timepicker);
+  }
+}
+
 $(document).ready(function () {
   // Remove the border on any empty fieldsets
   $('fieldset.grp-module, fieldset.module').filter(function (i, element) {

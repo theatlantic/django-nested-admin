@@ -1,6 +1,11 @@
 Changelog
 =========
 
+**3.1.2 (unreleased)**
+
+* Fixed: Bug with grappelli that prevented deeply nested datepicker and
+  timepicker widgets from working.
+
 **3.1.0 (Aug 13, 2018)**
 
 * Fixed: NestedTabularInline support in Django 2.0 (`#97`_)

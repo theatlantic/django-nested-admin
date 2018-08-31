@@ -1,6 +1,26 @@
 const $ = require('jquery');
+const grappelli = require('grappelli');
 const DJNesting = require('./utils');
 DJNesting.DjangoFormset = require('./jquery.djangoformset');
+
+if (grappelli) {
+    // grappelli initializes the jQuery UI datePicker and timePicker widgets
+    // on nested inlines of empty inline formsets. This later prevents proper
+    // initialization of these elements when they are added. Here, we wrap and
+    // override these methods, excluding template forms (i.e., those with
+    // '-empty' and '__prefix__' in their names/ids) from the calls to the
+    // widget initialization.
+    if (typeof $.fn.datepicker === 'function') {
+        $.fn.datepicker = ((orig) => function datepicker() {
+            orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+        })($.fn.datepicker);
+    }
+    if (typeof $.fn.grp_timepicker === 'function') {
+        $.fn.grp_timepicker = ((orig) => function grp_timepicker() {
+            orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+        })($.fn.grp_timepicker);
+    }
+}
 
 $(document).ready(function() {
     // Remove the border on any empty fieldsets

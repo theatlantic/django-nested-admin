@@ -4,12 +4,12 @@ from unittest import expectedFailure, SkipTest
 
 import django
 from django.conf import settings
+from django.test import override_settings
 from django.utils import six
 from django.utils.text import slugify, unescape_entities
 
 from nested_admin.tests.base import (
-    expected_failure_if_grappelli, expected_failure_if_suit,
-    skip_if_not_grappelli, BaseNestedAdminTestCase)
+    expected_failure_if_suit, skip_if_not_grappelli, BaseNestedAdminTestCase)
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1,
@@ -244,7 +244,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline()
         self.check_datetime([1])
 
-    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_initial_extra_datetime(self):
         self.load_admin()
         self.add_inline()
@@ -269,7 +268,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline([1])
         self.check_prepopulated([1, 1])
 
-    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_two_deep_datetime(self):
         self.load_admin()
         self.add_inline()
@@ -298,7 +296,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline([1, 0, [1]])
         self.check_prepopulated([1, 0, [1, 0]])
 
-    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_three_deep_datetime(self):
         self.load_admin()
         self.add_inline()
@@ -352,7 +349,6 @@ class TestWidgetMediaOrder(BaseWidgetTestCase):
         self.add_inline([1, 0, [1]])
         self.check_prepopulated([1, 0, [1, 0]])
 
-    @expected_failure_if_grappelli  # Known bug with datetime fields and grappelli
     def test_add_three_deep_datetime(self):
         self.load_admin()
         self.add_inline()
