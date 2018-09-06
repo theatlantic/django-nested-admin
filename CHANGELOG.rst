@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**3.1.2 (unreleased)**
+**3.1.2 (Sep 6, 2018)**
 
 * Fixed: Bug with grappelli that prevented deeply nested datepicker and
   timepicker widgets from working.
