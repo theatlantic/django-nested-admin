@@ -416,6 +416,46 @@ class InlineAdminTestCaseMixin(object):
             'group/b[1]/B 0[0]',
             'group/b[1]/B 1[1]'])
 
+    def test_drag_item_from_last_position(self):
+        group = self.root_model.objects.create(slug='group')
+        section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
+        section_b = self.section_cls.objects.create(slug='b', group=group, position=1)
+        self.item_cls.objects.create(name='A 0', section=section_a, position=0)
+        self.item_cls.objects.create(name='A 1', section=section_a, position=1)
+        self.item_cls.objects.create(name='A 2', section=section_a, position=2)
+        self.item_cls.objects.create(name='B 0', section=section_b, position=0)
+        self.item_cls.objects.create(name='B 1', section=section_b, position=1)
+        self.item_cls.objects.create(name='B 2', section=section_b, position=2)
+
+        self.load_admin(group)
+
+        # Swap top-level last with top-level first
+        self.drag_and_drop_item(from_indexes=[1], to_indexes=[0])
+        # Drag last item of (the now) last top-level to the first top-level, in last position
+        self.drag_and_drop_item(from_indexes=[1, 2], to_indexes=[0, 3])
+
+        self.save_form()
+
+        section_a.refresh_from_db()
+        section_b.refresh_from_db()
+
+        self.assertEqual(section_b.position, 0, "section b did not change position")
+        self.assertEqual(section_a.position, 1, "section a did not change position")
+
+        item_a_2 = self.item_cls.objects.get(name='A 2')
+        self.assertEqual(item_a_2.section, section_b, "item is in incorrect section")
+        self.assertEqual(item_a_2.position, 3, "item was not moved to the correct position")
+
+        self.assertEqual(["%s" % i for i in section_a.item_set.all().order_by('position')], [
+            'group/a[1]/A 0[0]',
+            'group/a[1]/A 1[1]'])
+
+        self.assertEqual(["%s" % i for i in section_b.item_set.all().order_by('position')], [
+            'group/b[0]/B 0[0]',
+            'group/b[0]/B 1[1]',
+            'group/b[0]/B 2[2]',
+            'group/b[0]/A 2[3]'])
+
     # This test fails with the phantomjs driver on Travis, but it passes locally
     # and it passes with the Chrome driver, so chalking it up to a fluke
     @skipIf(django.VERSION[:2] == (1, 9), "Skipping misbehaving test on travis")
