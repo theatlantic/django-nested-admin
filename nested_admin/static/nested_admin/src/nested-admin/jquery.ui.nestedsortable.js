@@ -24,7 +24,7 @@ if (typeof $.fn.nearest != 'function') {
         var nearest = $([]), node = this, distance = 10000;
         node.find(selector).each(function(){
             var n = $(this),
-                d = n.parentsUntil(node).size();
+                d = n.parentsUntil(node).length;
             if (d < distance) {
                 distance = d;
                 nearest = n;
