@@ -35,11 +35,12 @@
 
         {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
         {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
-            <tbody class="djn-tbody{% if not forloop.last %} djn-item{% endif %} djn-inline-form{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
+            <tbody class="djn-tbody djn-inline-form{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}
+        {% ifemptyform forloop inline_admin_formset %} djn-empty-form empty-form{% else %} djn-item{% endifemptyform %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
                 {% if inline_admin_form.pk_field.field %}
                 data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                 {% endif %}
-                id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last %}empty{% else %}{%if is_nested %}{% endif %}{{ inline_admin_form.form|form_index }}{% endif %}">
+                id="{{ inline_admin_formset.formset.prefix }}-{% ifemptyform forloop inline_admin_formset %}empty{% else %}{%if is_nested %}{% endif %}{{ inline_admin_form.form|form_index }}{% endifemptyform %}">
 
             {% if inline_admin_form.form.non_field_errors %}
             <tr><td class="djn-td" colspan="{{ inline_admin_form|cell_count }}">
@@ -121,7 +122,7 @@
             {% endif %}
 
             </tbody>
-            {% if forloop.last %}
+            {% ifemptyform forloop inline_admin_formset %}
                 <tbody>
                     <tr class="add-row">
                         <td colspan="{{ inline_admin_form|cell_count }}" class="djn-add-item">
@@ -129,7 +130,7 @@
                         </td>
                     </tr>
                 </tbody>
-            {% endif %}
+            {% endifemptyform %}
         {% endfor %}
         {% endwith %}
 

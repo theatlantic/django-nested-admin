@@ -1,5 +1,6 @@
 import json
 
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
@@ -134,10 +135,25 @@ class NestedModelAdminMixin(object):
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
             prepopulated = dict(inline.get_prepopulated_fields(request, obj))
-            inline_admin_formset = self.inline_admin_formset_helper_cls(
-                inline, formset, fieldsets, prepopulated, readonly,
-                model_admin=self, request=request)
+
+            if DJANGO_VERSION >= (2, 1):
+                has_add_permission = inline._has_add_permission(request, obj)
+                has_change_permission = inline.has_change_permission(request, obj)
+                has_delete_permission = inline.has_delete_permission(request, obj)
+                has_view_permission = inline.has_view_permission(request, obj)
+
+                inline_admin_formset = self.inline_admin_formset_helper_cls(
+                    inline, formset, fieldsets, prepopulated, readonly,
+                    model_admin=self, request=request,
+                    has_add_permission=has_add_permission,
+                    has_change_permission=has_change_permission,
+                    has_delete_permission=has_delete_permission, has_view_permission=has_view_permission,)
+            else:
+                inline_admin_formset = self.inline_admin_formset_helper_cls(
+                    inline, formset, fieldsets, prepopulated, readonly,
+                    model_admin=self, request=request)
             inline_admin_formsets.append(inline_admin_formset)
+
         return inline_admin_formsets
 
     def _create_formsets(self, request, obj, change):
@@ -159,7 +175,7 @@ class NestedModelAdminMixin(object):
             if getattr(inline_instance, 'inlines', []):
                 inlines_and_formsets = [
                     (nested, formset)
-                    for nested in inline_instance.get_inline_instances(request)]
+                    for nested in inline_instance.get_inline_instances(request, obj)]
                 i = 0
                 while i < len(inlines_and_formsets):
                     nested, formset = inlines_and_formsets[i]
@@ -201,16 +217,16 @@ class NestedModelAdminMixin(object):
                         nested_formset.parent_form = form
 
                         if form is None:
-                            obj = formset
+                            form_or_formset = formset
                         else:
-                            obj = form
+                            form_or_formset = form
                             if request.method == 'POST':
                                 formsets.append(nested_formset)
                                 inline_instances.append(nested)
-                        obj.nested_formsets = getattr(obj, 'nested_formsets', None) or []
-                        obj.nested_inlines = getattr(obj, 'nested_inlines', None) or []
-                        obj.nested_formsets.append(nested_formset)
-                        obj.nested_inlines.append(nested)
+                        form_or_formset.nested_formsets = getattr(form_or_formset, 'nested_formsets', None) or []
+                        form_or_formset.nested_inlines = getattr(form_or_formset, 'nested_inlines', None) or []
+                        form_or_formset.nested_formsets.append(nested_formset)
+                        form_or_formset.nested_inlines.append(nested)
 
                         if hasattr(nested, 'get_inline_instances'):
                             inlines_and_formsets += [

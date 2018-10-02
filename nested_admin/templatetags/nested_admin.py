@@ -3,6 +3,7 @@ from functools import wraps
 import json
 
 import django
+from django import VERSION as DJANGO_VERSION
 from django import template
 from django.apps import apps
 from django.conf import settings
@@ -224,3 +225,41 @@ def ifnotsuit(parser, token):
     else:
         nodelist_false = template.NodeList()
     return IfConditionNode(nodelist_true, nodelist_false, 'suit' not in settings.INSTALLED_APPS)
+
+@register.tag
+def ifemptyform(parser, token):
+    nodelist_true = parser.parse(('else', 'endifemptyform'))
+    try:
+        tag_name, forloop, inline_admin_formset = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(
+            "%r tag requires exactly two arguments" % token.contents.split()[0]
+        )
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifemptyform',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+
+    return IfEmptyFormNode(nodelist_true, nodelist_false, forloop, inline_admin_formset)
+
+
+class IfEmptyFormNode(template.Node):
+    def __init__(self, nodelist_true, nodelist_false, forloop, inline_admin_formset):
+        self.nodelist_true = nodelist_true
+        self.nodelist_false = nodelist_false
+        self.forloop = template.Variable(forloop)
+        self.inline_admin_formset = template.Variable(inline_admin_formset)
+
+    def render(self, context):
+        forloop = self.forloop.resolve(context)
+        inline_admin_formset = self.inline_admin_formset.resolve(context)
+        is_empty = forloop['last']
+        if DJANGO_VERSION >= (2, 1):
+            is_empty = is_empty and inline_admin_formset.has_add_permission
+
+        if is_empty:
+            return self.nodelist_true.render(context)
+        else:
+            return self.nodelist_false.render(context)
