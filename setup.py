@@ -10,14 +10,14 @@ except ImportError:
 
 setup(
     name='django-nested-admin',
-    version="3.1.2",
+    version="3.1.3",
     install_requires=[
         'python-monkey-business>=1.0.0',
     ],
     description="Django admin classes that allow for nested inlines",
     author='The Atlantic',
     author_email='programmers@theatlantic.com',
-    url='https://github.com/theatlantic/django-nested-admin',
+    url='http://ugitlab/libraries/django-nested-admin',
     packages=find_packages(),
     license='BSD',
     platforms='any',
