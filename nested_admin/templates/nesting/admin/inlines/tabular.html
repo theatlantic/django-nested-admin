@@ -29,7 +29,7 @@
                       </th>
                   {% endif %}
               {% endfor %}
-              {% if inline_admin_formset.formset.can_delete %}<th class="djn-th">Delete?</th>{% endif %}
+              {% if inline_admin_formset.formset.can_delete %}<th class="djn-th">{% trans "Delete?" %}</th>{% endif %}
           </tr>
       </thead>
 
