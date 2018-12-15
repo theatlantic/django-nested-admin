@@ -41,9 +41,13 @@ def form_index(form):
     The id of the root 'form' element in a formset is the form's 'prefix'
     without the '-' preceding the index of the form. So, for instance, in a case
     where the form's 'id' field has the field name:
+
         prefix-2-id
+
     the 'form' element's id would be:
+
         prefix2
+
     and the form's index is '2'
     """
     matches = re.search(r'\-(\d+)$', form.prefix)

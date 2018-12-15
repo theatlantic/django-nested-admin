@@ -1,1 +1,8 @@
 Django>=1.8
+selenium==3.8.0
+django-selenosis
+dj-database-url
+python-monkey-business
+boto3==1.4.4
+django-storages==1.5.2
+Pillow
