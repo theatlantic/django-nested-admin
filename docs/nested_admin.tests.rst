@@ -8,6 +8,7 @@ Subpackages
 
     nested_admin.tests.admin_widgets
     nested_admin.tests.gfk
+    nested_admin.tests.identical_prefixes
     nested_admin.tests.one_deep
     nested_admin.tests.three_deep
     nested_admin.tests.two_deep
@@ -23,10 +24,10 @@ nested_admin.tests.base module
     :undoc-members:
     :show-inheritance:
 
-nested_admin.tests.selenium module
-----------------------------------
+nested_admin.tests.drag_drop module
+------------------------------------
 
-.. automodule:: nested_admin.tests.selenium
+.. automodule:: nested_admin.tests.drag_drop
     :members:
     :undoc-members:
     :show-inheritance:
@@ -43,6 +44,14 @@ nested_admin.tests.urls module
 ------------------------------
 
 .. automodule:: nested_admin.tests.urls
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+nested_admin.tests.utils module
+-------------------------------
+
+.. automodule:: nested_admin.tests.utils
     :members:
     :undoc-members:
     :show-inheritance:

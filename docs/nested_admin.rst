@@ -14,15 +14,40 @@ Subpackages
 
 .. toctree::
 
+    nested_admin.templatetags
     nested_admin.tests
 
 Submodules
 ----------
 
+nested_admin.compat module
+--------------------------
+
+.. automodule:: nested_admin.compat
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+nested_admin.exceptions module
+------------------------------
+
+.. automodule:: nested_admin.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 nested_admin.formsets module
 ----------------------------
 
 .. automodule:: nested_admin.formsets
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+nested_admin.models module
+--------------------------
+
+.. automodule:: nested_admin.models
     :members:
     :undoc-members:
     :show-inheritance:
