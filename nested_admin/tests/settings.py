@@ -38,6 +38,12 @@ except ImportError:
 else:
     INSTALLED_APPS = tuple(['grappelli'])
 
+try:
+    import polymorphic
+except ImportError:
+    polymorphic = None
+else:
+    INSTALLED_APPS += ('polymorphic',)
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -79,6 +85,8 @@ INSTALLED_APPS += (
 
 # Add apps within the tests folder
 for p in glob.glob(os.path.join(current_dir, '*', 'models.py')):
+    if 'polymorphic' in p and polymorphic is None:
+        continue
     INSTALLED_APPS += tuple(["nested_admin.tests.%s" %
         os.path.basename(os.path.dirname(p))])
 

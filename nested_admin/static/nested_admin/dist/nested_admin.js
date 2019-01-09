@@ -163,6 +163,8 @@ __webpack_require__(/*! core-js/modules/es6.array.sort */ "./node_modules/core-j
 
 __webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
 
+__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
+
 __webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
 var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
@@ -192,6 +194,7 @@ function () {
     this._$template = $('#' + this.prefix + '-empty');
     var inlineModelClassName = this.$inline.djnData('inlineModel');
     this.opts = $.extend({}, this.opts, {
+      childTypes: this.$inline.data('inlineFormset').options.childTypes,
       addButtonSelector: '.djn-add-handler.djn-model-' + inlineModelClassName,
       removeButtonSelector: '.djn-remove-handler.djn-model-' + inlineModelClassName,
       deleteButtonSelector: '.djn-delete-handler.djn-model-' + inlineModelClassName,
@@ -200,6 +203,10 @@ function () {
     });
     DJNesting.initRelatedFields(this.prefix, this.$inline.djnData());
     DJNesting.initAutocompleteFields(this.prefix, this.$inline.djnData());
+
+    if (this.opts.childTypes) {
+      this._setupPolymorphic();
+    }
 
     this._bindEvents();
 
@@ -219,6 +226,21 @@ function () {
   }
 
   var _proto = DjangoFormset.prototype;
+
+  _proto._setupPolymorphic = function _setupPolymorphic() {
+    if (!this.opts.childTypes) {
+      throw Error('The polymorphic fieldset options.childTypes is not defined!');
+    }
+
+    var menu = '<div class="polymorphic-type-menu" style="display: none"><ul>';
+    this.opts.childTypes.forEach(function (c) {
+      menu += "<li><a href=\"#\" data-type=\"" + c.type + "\">" + c.name + "</a></li>";
+    });
+    menu += '</ul></div>';
+    var $addButton = this.$inline.find(this.opts.addButtonSelector);
+    var $menu = $(menu);
+    $addButton.after($menu);
+  };
 
   _proto._initializeForms = function _initializeForms() {
     var totalForms = this.mgmtVal('TOTAL_FORMS');
@@ -259,10 +281,38 @@ function () {
       $el = this.$inline;
     }
 
-    $el.find(this.opts.addButtonSelector).off('click.djnesting').on('click.djnesting', function (e) {
+    var $addButton = $el.find(this.opts.addButtonSelector);
+    $addButton.off('click.djnesting').on('click.djnesting', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      self.add();
+      var $menu = $(this).next('.polymorphic-type-menu');
+
+      if (!$menu.length) {
+        self.add();
+      } else {
+        if (!$menu.is(':visible')) {
+          var hideMenu = function hideMenu() {
+            $menu.hide();
+            $(document).off('click', hideMenu);
+          };
+
+          $(document).on('click', hideMenu);
+        }
+
+        $menu.show();
+      }
+    });
+    var $menuButtons = $addButton.parent().find('.polymorphic-type-menu a');
+    $menuButtons.off('click.djnesting').on('click.djnesting', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var polymorphicType = $(this).attr('data-type');
+      self.add(null, polymorphicType);
+      var $menu = $(e.target).closest('.polymorphic-type-menu');
+
+      if ($menu.is(':visible')) {
+        $menu.hide();
+      }
     });
     $el.find(this.opts.removeButtonSelector).filter(function () {
       return !$(this).closest('.djn-empty-form').length;
@@ -413,25 +463,30 @@ function () {
     $(document).trigger('formset:undeleted', [$form, this.prefix]);
   };
 
-  _proto.add = function add(spliceIndex) {
+  _proto.add = function add(spliceIndex, ctype) {
     var self = this;
-
-    var $form = this._$template.clone(true);
-
+    var $template = ctype ? $("#" + this.prefix + "-empty-" + ctype) : this._$template;
+    var $form = $template.clone(true);
     var index = this.mgmtVal('TOTAL_FORMS');
     var maxForms = this.mgmtVal('MAX_NUM_FORMS');
     var isNested = this.$inline.hasClass('djn-group-nested');
     $(document).trigger('djnesting:beforeadded', [this.$inline, $form]);
     $form.removeClass(this.opts.emptyClass);
     $form.addClass('djn-item');
-    $form.attr('id', $form.attr('id').replace('-empty', '-' + index));
+    $form.attr('id', $form.attr('id').replace(/\-empty.*?$/, '-' + index));
 
     if (isNested) {
       $form.append(DJNesting.createContainerElement());
     }
 
     DJNesting.updateFormAttributes($form, new RegExp('([\\#_]|^)' + regexQuote(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
-    $form.insertBefore(this._$template);
+    var $firstTemplate = this._$template;
+
+    if (this.opts.childTypes) {
+      $firstTemplate = $template.closest('.djn-group').find('> .grp-items > [id*="-empty"], > [id*="-empty"]').eq(0);
+    }
+
+    $form.insertBefore($firstTemplate);
     this.mgmtVal('TOTAL_FORMS', index + 1);
 
     if (maxForms - (index + 1) <= 0) {

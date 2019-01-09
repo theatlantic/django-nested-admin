@@ -24,7 +24,10 @@ __all__ = (
     'NestedModelAdmin', 'NestedModelAdminMixin', 'NestedInlineAdminFormset',
     'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline',
     'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
-    'NestedGenericStackedInline', 'NestedGenericTabularInline')
+    'NestedStackedInlineMixin', 'NestedTabularInlineMixin',
+    'NestedGenericStackedInline', 'NestedGenericTabularInline',
+    'NestedGenericStackedInlineMixin', 'NestedGenericTabularInlineMixin',
+    'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin')
 
 
 def get_method_function(fn):
@@ -35,13 +38,14 @@ lazy_reverse = lazy(reverse, str)
 server_data_js_url = lazy_reverse('nesting_server_data')
 
 
-class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
+class NestedInlineAdminFormsetMixin(object):
 
     classes = None
 
     def __init__(self, inline, *args, **kwargs):
         self.request = kwargs.pop('request', None)
-        super(NestedInlineAdminFormset, self).__init__(inline, *args, **kwargs)
+        self.obj = kwargs.pop('obj', None)
+        super(NestedInlineAdminFormsetMixin, self).__init__(inline, *args, **kwargs)
 
         if getattr(inline, 'classes', None):
             self.classes = ' '.join(inline.classes)
@@ -49,7 +53,7 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
             self.classes = ''
 
     def __iter__(self):
-        for inline_admin_form in super(NestedInlineAdminFormset, self).__iter__():
+        for inline_admin_form in super(NestedInlineAdminFormsetMixin, self).__iter__():
             if not getattr(inline_admin_form.form, 'inlines', None):
                 form = inline_admin_form.form
                 obj = form.instance if form.instance.pk else None
@@ -90,16 +94,25 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
         return "-".join([self.opts.opts.app_label, self.opts.opts.model_name])
 
     def inline_formset_data(self):
-        verbose_name = self.opts.verbose_name
-        return json.dumps({
-            'name': '#%s' % self.formset.prefix,
-            'options': {
-                'prefix': self.formset.prefix,
-                'addText': ugettext('Add another %(verbose_name)s') % {
-                    'verbose_name': capfirst(verbose_name),
+        super_cls = super(NestedInlineAdminFormsetMixin, self)
+
+        # Django 1.8 conditional
+        if hasattr(super_cls, 'inline_formset_data'):
+            data = json.loads(super_cls.inline_formset_data())
+        else:
+            verbose_name = self.opts.verbose_name
+            data = {
+                'name': '#%s' % self.formset.prefix,
+                'options': {
+                    'prefix': self.formset.prefix,
+                    'addText': ugettext('Add another %(verbose_name)s') % {
+                        'verbose_name': capfirst(verbose_name),
+                    },
+                    'deleteText': ugettext('Remove'),
                 },
-                'deleteText': ugettext('Remove'),
-            },
+            }
+
+        data.update({
             'nestedOptions': {
                 'sortableFieldName': getattr(self.opts, 'sortable_field_name', None),
                 'lookupRelated': getattr(self.opts, 'related_lookup_fields', {}),
@@ -114,11 +127,16 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
                 'sortableOptions': self.opts.sortable_options,
             },
         })
+        return json.dumps(data)
 
     @property
     def handler_classes(self):
         classes = set(getattr(self.opts, 'handler_classes', None) or [])
         return tuple(classes | {"djn-model-%s" % self.inline_model_id})
+
+
+class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, helpers.InlineAdminFormSet):
+    pass
 
 
 class NestedModelAdminMixin(object):
@@ -137,6 +155,8 @@ class NestedModelAdminMixin(object):
             inline_admin_formset = self.inline_admin_formset_helper_cls(
                 inline, formset, fieldsets, prepopulated, readonly,
                 model_admin=self, request=request)
+            inline_admin_formset.request = request
+            inline_admin_formset.obj = obj
             inline_admin_formsets.append(inline_admin_formset)
         return inline_admin_formsets
 
@@ -276,7 +296,7 @@ class NestedInlineModelAdmin(NestedInlineModelAdminMixin, InlineModelAdmin):
     pass
 
 
-class NestedStackedInline(NestedInlineModelAdmin):
+class NestedStackedInlineMixin(NestedInlineModelAdminMixin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_stacked.html'
@@ -284,7 +304,11 @@ class NestedStackedInline(NestedInlineModelAdmin):
         template = 'nesting/admin/inlines/stacked.html'
 
 
-class NestedTabularInline(NestedInlineModelAdmin):
+class NestedStackedInline(NestedStackedInlineMixin, InlineModelAdmin):
+    pass
+
+
+class NestedTabularInlineMixin(NestedInlineModelAdminMixin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_tabular.html'
@@ -293,12 +317,20 @@ class NestedTabularInline(NestedInlineModelAdmin):
         template = 'nesting/admin/inlines/tabular.html'
 
 
-class NestedGenericInlineModelAdmin(NestedInlineModelAdminMixin, GenericInlineModelAdmin):
+class NestedTabularInline(NestedTabularInlineMixin, InlineModelAdmin):
+    pass
+
+
+class NestedGenericInlineModelAdminMixin(NestedInlineModelAdminMixin):
 
     formset = NestedBaseGenericInlineFormSet
 
 
-class NestedGenericStackedInline(NestedGenericInlineModelAdmin):
+class NestedGenericInlineModelAdmin(NestedGenericInlineModelAdminMixin, GenericInlineModelAdmin):
+    pass
+
+
+class NestedGenericStackedInlineMixin(NestedGenericInlineModelAdminMixin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_stacked.html'
@@ -306,10 +338,18 @@ class NestedGenericStackedInline(NestedGenericInlineModelAdmin):
         template = 'nesting/admin/inlines/stacked.html'
 
 
-class NestedGenericTabularInline(NestedGenericInlineModelAdmin):
+class NestedGenericStackedInline(NestedGenericStackedInlineMixin, GenericInlineModelAdmin):
+    pass
+
+
+class NestedGenericTabularInlineMixin(NestedGenericInlineModelAdminMixin):
 
     if 'grappelli' in settings.INSTALLED_APPS:
         template = 'nesting/admin/inlines/grappelli_tabular.html'
         fieldset_template = 'nesting/admin/includes/grappelli_inline_tabular.html'
     else:
         template = 'nesting/admin/inlines/tabular.html'
+
+
+class NestedGenericTabularInline(NestedGenericTabularInlineMixin, GenericInlineModelAdmin):
+    pass
