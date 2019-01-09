@@ -308,6 +308,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             self.set_field("name", name, indexes=indexes)
         if slug is not None:
             self.set_field("slug", slug, indexes=indexes)
+        return indexes
 
     def remove_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)

@@ -28,11 +28,20 @@ all_by_module = {
         'NestedModelAdmin', 'NestedModelAdminMixin', 'NestedInlineAdminFormset',
         'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline',
         'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
-        'NestedGenericStackedInline', 'NestedGenericTabularInline')
+        'NestedGenericStackedInline', 'NestedGenericTabularInline',
+        'NestedStackedInlineMixin', 'NestedTabularInlineMixin',
+        'NestedGenericStackedInline', 'NestedGenericTabularInline',
+        'NestedGenericStackedInlineMixin', 'NestedGenericTabularInlineMixin',
+        'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin'),
 }
 
+all_by_module['nested_admin.polymorphic'] = (
+    'NestedPolymorphicInlineAdminFormset', 'NestedPolymorphicInlineModelAdmin',
+    'NestedStackedPolymorphicInline', 'NestedPolymorphicInlineSupportMixin',
+    'NestedPolymorphicModelAdmin')
+
 # modules that should be imported when accessed as attributes of nested_admin
-attribute_modules = frozenset(['formsets', 'nested'])
+attribute_modules = frozenset(['formsets', 'nested', 'polymorphic'])
 
 object_origins = {}
 for module, items in all_by_module.items():

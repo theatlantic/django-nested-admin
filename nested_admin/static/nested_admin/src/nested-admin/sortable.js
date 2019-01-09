@@ -88,6 +88,7 @@ function updatePositions(prefix) {
 }
 
 function createSortable($group) {
+    const isPolymorphic = $group.is('.djn-is-polymorphic');
     return $group.find('> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items').nestedSortable({
         handle: [
             '> h3.djn-drag-handler',
@@ -167,6 +168,13 @@ function createSortable($group) {
         isAllowed: function(currentItem, parentItem) {
             if (parentItem && parentItem.hasClass('predelete')) {
                 return false;
+            }
+            if (isPolymorphic) {
+                const childModels = parentItem.closest('.djn-group').data('inlineFormset').nestedOptions.childModels;
+                const inlineModel = currentItem.data('inlineModel');
+                if (childModels.indexOf(inlineModel) === -1) {
+                    return false;
+                }
             }
             return true;
         },

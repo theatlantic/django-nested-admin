@@ -38,6 +38,15 @@ except ImportError:
 else:
     INSTALLED_APPS = tuple(['grappelli'])
 
+polymorphic = None
+
+if django.VERSION < (3, 0):
+    try:
+        import polymorphic
+    except ImportError:
+        pass
+    else:
+        INSTALLED_APPS += ('polymorphic',)
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -81,6 +90,12 @@ INSTALLED_APPS += (
 for p in glob.glob(os.path.join(current_dir, '*', 'models.py')):
     INSTALLED_APPS += tuple(["nested_admin.tests.%s" %
         os.path.basename(os.path.dirname(p))])
+
+
+if polymorphic is not None:
+    for p in glob.glob(os.path.join(current_dir, 'nested_polymorphic/*/models.py')):
+        INSTALLED_APPS += tuple(["nested_admin.tests.nested_polymorphic.%s" %
+            os.path.basename(os.path.dirname(p))])
 
 
 if django.VERSION >= (1, 10):

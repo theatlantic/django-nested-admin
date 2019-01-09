@@ -46,8 +46,11 @@
     margin-bottom: 5px;
     background: #9f9f9f !important;
 }
-.djn-group .ui-nestedsortable-error {
+.djn-group .ui-nestedsortable-error, .djn-group .ui-nestedSortable-error {
     background: #9f6464 !important;
+}
+.ui-sortable .grp-module.ui-sortable-placeholder.ui-nestedSortable-error {
+  background-color: #9f6464 !important;
 }
 
 .djn-items {
@@ -256,4 +259,30 @@ table.djn-table.grp-table th p > input[type="button"] {
     .form-horizontal .inline-group .add-row a {
         display: block;
     }
+}
+
+// polymorphic
+.polymorphic-add-choice {
+  .grp-tools {
+    overflow: visible;
+  }
+  .grp-tools li {
+    float: none;
+  }
+  .grp-tools li:first-child,
+  .grp-tools li:last-child {
+    padding: 4px 8px;
+  }
+  .grp-tools a {
+    width: auto;
+    height: auto;
+  }
+  .grp-tools > li > a {
+    min-width: 24px;
+    min-height: 24px;
+  }
+  .grp-tools .polymorphic-type-menu {
+    right: 0.5em;
+    left: auto;
+  }
 }

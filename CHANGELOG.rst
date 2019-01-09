@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**master (unreleased)**
+
+* Feature: added beta support for django-polymorphic admin (`#86`_)
+
+.. _#86: https://github.com/theatlantic/django-nested-admin/issues/86
+
 **3.1.3 (Dec 15, 2018)**
 
 * Fixed: Use ``jQuery.fn.length``, not ``.size``, for compatibility with

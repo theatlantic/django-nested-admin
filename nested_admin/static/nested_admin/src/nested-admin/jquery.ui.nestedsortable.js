@@ -21,18 +21,17 @@ if (typeof $.fn.nearest != 'function') {
      * $.fn.closest(), in reverse).
      */
     $.fn.nearest = function(selector) {
-        var nearest = $([]), node = this, distance = 10000;
+        var nearest = [], node = this, distance = 10000;
         node.find(selector).each(function(){
-            var n = $(this),
-                d = n.parentsUntil(node).length;
+            var d = $(this).parentsUntil(node).length;
             if (d < distance) {
                 distance = d;
-                nearest = n;
+                nearest = [this];
             } else if (d == distance) {
-                nearest.add(this);
+                nearest.push(this);
             }
         });
-        return this.pushStack(nearest.get());
+        return this.pushStack(nearest, 'nearest', [selector]);
     };
 }
 
@@ -285,9 +284,6 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
             this._clearEmpty(this.lastItemElement);
         }
 
-        if (this.options.fixedNestingDepth) {
-            return $.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
-        }
 
         var o = this.options,
         _parentItem = this.placeholder.closest(o.listItemSelector),
@@ -565,7 +561,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         result = 0;
         depth = depth || 0;
 
-        $(parent).nearest(o.containerElementSelector).find(o.items).each(function (index, child) {
+        $(parent).nearest(o.containerElementSelector).first().find(o.items).each(function (index, child) {
             if ($(child).is('.djn-no-drag,.djn-thead')) {
                 return;
             }
@@ -588,6 +584,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         if (parentItem && typeof(parentItem) == 'object' && typeof(parentItem.selector) == 'undefined') {
             parentItem = $(parentItem);
         }
+
         if (!o.isAllowed.call(this, this.currentItem, parentItem, this.placeholder) ||
             parentItem && parentItem.hasClass(o.disableNesting) ||
             o.protectRoot && (parentItem == null && !isRoot || isRoot && level > 1)) {

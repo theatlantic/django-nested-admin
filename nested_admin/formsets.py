@@ -376,10 +376,7 @@ class NestedInlineFormSet(NestedInlineFormSetMixin, BaseInlineFormSet):
     pass
 
 
-class NestedBaseGenericInlineFormSet(NestedInlineFormSetMixin, BaseGenericInlineFormSet):
-    """
-    The nested InlineFormSet for inlines of generic content-type relations
-    """
+class NestedBaseGenericInlineFormSetMixin(NestedInlineFormSetMixin):
 
     def save_existing(self, form, instance, commit=True):
         """Saves and returns an existing model instance for the given form."""
@@ -388,3 +385,10 @@ class NestedBaseGenericInlineFormSet(NestedInlineFormSetMixin, BaseGenericInline
         setattr(form.instance, self.ct_fk_field.get_attname(),
             self.instance.pk)
         return form.save(commit=commit)
+
+
+class NestedBaseGenericInlineFormSet(NestedBaseGenericInlineFormSetMixin, BaseGenericInlineFormSet):
+    """
+    The nested InlineFormSet for inlines of generic content-type relations
+    """
+    pass

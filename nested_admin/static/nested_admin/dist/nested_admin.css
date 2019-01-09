@@ -34,8 +34,11 @@
   margin-bottom: 5px;
   background: #9f9f9f !important; }
 
-.djn-group .ui-nestedsortable-error {
+.djn-group .ui-nestedsortable-error, .djn-group .ui-nestedSortable-error {
   background: #9f6464 !important; }
+
+.ui-sortable .grp-module.ui-sortable-placeholder.ui-nestedSortable-error {
+  background-color: #9f6464 !important; }
 
 .djn-items {
   position: relative;
@@ -223,5 +226,27 @@ table.djn-table.grp-table th p > input[type="button"] {
 
 #suit-center .form-horizontal .inline-group .add-row a {
   display: block; }
+
+.polymorphic-add-choice .grp-tools {
+  overflow: visible; }
+
+.polymorphic-add-choice .grp-tools li {
+  float: none; }
+
+.polymorphic-add-choice .grp-tools li:first-child,
+.polymorphic-add-choice .grp-tools li:last-child {
+  padding: 4px 8px; }
+
+.polymorphic-add-choice .grp-tools a {
+  width: auto;
+  height: auto; }
+
+.polymorphic-add-choice .grp-tools > li > a {
+  min-width: 24px;
+  min-height: 24px; }
+
+.polymorphic-add-choice .grp-tools .polymorphic-type-menu {
+  right: 0.5em;
+  left: auto; }
 
 /*# sourceMappingURL=nested_admin.css.map*/

@@ -27,12 +27,15 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     var addBackMethod = ($.fn.addBack) ? 'addBack' : 'andSelf';
     $elem.find(selector)[addBackMethod]().each(function() {
         var $node = $(this),
-            attrs = ['id', 'name', 'for', 'href', 'class', 'onclick'];
+            attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset'];
 
         $.each(attrs, function(i, attrName) {
             var attrVal = $node.attr(attrName);
             if (attrVal) {
                 $node.attr(attrName, attrVal.replace(search, replace));
+                if (attrName === 'data-inline-formset') {
+                    $node.data('inlineFormset', JSON.parse($node.attr(attrName)));
+                }
             }
         });
     });
