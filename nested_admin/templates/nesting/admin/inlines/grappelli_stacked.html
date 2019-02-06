@@ -2,7 +2,7 @@
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
-<div class="inline-group group grp-group djn-group grp-stacked djn-stacked{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}"
+<div class="inline-group group grp-group djn-group grp-stacked djn-stacked{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
     data-inline-type="stacked"
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
@@ -26,7 +26,7 @@
             {% if forloop.first %}
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
-            <div class="{% if not forloop.last %}djn-item{% endif %} grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }} {% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form grp-empty-form{% endif %} inline-related"
+            <div class="{% if not forloop.last %}djn-item{% endif %} grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }} {% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form grp-empty-form{% endif %} inline-related"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
