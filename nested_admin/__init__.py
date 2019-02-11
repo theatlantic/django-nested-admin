@@ -16,11 +16,6 @@ import django.forms.formsets
 import monkeybiz
 
 try:
-    import polymorphic
-except ImportError:
-    polymorphic = None
-
-try:
     __version__ = pkg_resources.get_distribution('django-nested-admin').version
 except pkg_resources.DistributionNotFound:
     __version__ = None
@@ -40,17 +35,13 @@ all_by_module = {
         'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin'),
 }
 
-if polymorphic is not None:
-    all_by_module['nested_admin.polymorphic'] = (
-        'NestedPolymorphicInlineAdminFormset', 'NestedPolymorphicInlineModelAdmin',
-        'NestedStackedPolymorphicInline', 'NestedPolymorphicInlineSupportMixin',
-        'NestedPolymorphicModelAdmin')
+all_by_module['nested_admin.polymorphic'] = (
+    'NestedPolymorphicInlineAdminFormset', 'NestedPolymorphicInlineModelAdmin',
+    'NestedStackedPolymorphicInline', 'NestedPolymorphicInlineSupportMixin',
+    'NestedPolymorphicModelAdmin')
 
 # modules that should be imported when accessed as attributes of nested_admin
-if polymorphic is not None:
-    attribute_modules = frozenset(['formsets', 'nested', 'polymorphic'])
-else:
-    attribute_modules = frozenset(['formsets', 'nested'])
+attribute_modules = frozenset(['formsets', 'nested', 'polymorphic'])
 
 object_origins = {}
 for module, items in all_by_module.items():
