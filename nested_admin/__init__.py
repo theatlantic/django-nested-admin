@@ -22,6 +22,8 @@ except pkg_resources.DistributionNotFound:
 
 # import mapping to objects in other modules
 all_by_module = {
+    'nested_admin.forms': (
+        'SortableHiddenMixin'),
     'nested_admin.formsets': (
         'NestedInlineFormSet', 'NestedBaseGenericInlineFormSet'),
     'nested_admin.nested': (
@@ -42,7 +44,7 @@ all_by_module['nested_admin.polymorphic'] = (
     'NestedGenericStackedPolymorphicInline')
 
 # modules that should be imported when accessed as attributes of nested_admin
-attribute_modules = frozenset(['formsets', 'nested', 'polymorphic'])
+attribute_modules = frozenset(['forms', 'formsets', 'nested', 'polymorphic'])
 
 object_origins = {}
 for module, items in all_by_module.items():
