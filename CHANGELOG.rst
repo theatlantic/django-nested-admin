@@ -5,9 +5,14 @@ Changelog
 
 * Fixed: visual inconsistencies in grappelli tabular inline styles (`#136`_)
 * Fixed: numerous issues with django-polymorphic integration (`#138`_)
+* Feature: Added ``SortableHiddenMixin`` akin to grappelli’s
+`GrappelliSortableHiddenMixin`_ (`#123`_). Thanks `@brandenhall`_!
 
 .. _#136: https://github.com/theatlantic/django-nested-admin/issues/136
 .. _#138: https://github.com/theatlantic/django-nested-admin/issues/138
+.. _GrappelliSortableHiddenMixin: https://django-grappelli.readthedocs.io/en/2.12.2/customization.html#grappellisortablehiddenmixin
+.. _#123: https://github.com/theatlantic/django-nested-admin/pull/123
+.. @brandenhall_: https://github.com/brandenhall
 
 **3.2.2 (Apr 9, 2019)**
 

@@ -9,6 +9,28 @@ Sortables
 
 The steps for enabling drag-and-drop sorting functionality is identical to Grappelli’s (even with the vanilla Django admin), so the `Grappelli documentation <http://django-grappelli.readthedocs.org/en/latest/customization.html#inline-sortables>`_ for this feature is the best reference. This is equally true of sortables in Django Suit—do not follow Django Suit’s instructions for sortables, as they will not work. The `other features of Grappelli <http://django-grappelli.readthedocs.org/en/latest/customization.html>`_ have not been ported to work with vanilla Django, but in principle they should all still work with nested inlines using django-nested-admin if Grappelli is installed. If you run into any difficulty with this, please `create an issue <https://github.com/theatlantic/django-nested-admin/issues>`_ on this project’s Github.
 
+If you want to have a sortable inline and also want to hide the field you're sorting, you can use  ``SortableHiddenMixin``. Note that this mixin sets ``sortable_field_name`` to ``position`` by default (though this can be overridden by setting ``sortable_field_name`` on your inline class) and must be inherited prior to ``NestedStackedInline`` or ``NestedTabularInline``.
+
+.. code-block:: python
+
+    import nested_admin
+    from django.contrib import admin
+    from .models import TableOfContents, TocArticle, TocSection
+
+    class TocArticleInline(nested_admin.SortableHiddenMixin,
+                           nested_admin.NestedStackedInline):
+        model = TocArticle
+
+    class TocSectionInline(nested_admin.SortableHiddenMixin,
+                           nested_admin.NestedStackedInline):
+        model = TocSection
+        inlines = [TocArticleInline]
+
+    @admin.register(TableOfContents)
+    class TableOfContentsAdmin(nested_admin.NestedModelAdmin):
+        inlines = [TocSectionInline]
+
+
 Events
 ======
 
