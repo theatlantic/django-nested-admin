@@ -149,7 +149,7 @@ class DragAndDropAction(object):
         ActionChains(self.selenium).release().perform()
 
     def _match_helper_with_target(self, helper_element, target_element):
-        ActionChains(self.selenium).move_by_offset(0, -16).perform()
+        ActionChains(self.selenium).move_by_offset(0, -15).perform()
 
         desired_pos = tuple(self.to_indexes)
 
