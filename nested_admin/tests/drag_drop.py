@@ -145,18 +145,11 @@ class DragAndDropAction(object):
         with self.test_case.visible_selector('.ui-sortable-helper') as el:
             return el
 
-    def move_by_offset(self, x_offset, y_offset):
-        increment = -15 if y_offset < 0 else 15
-        for offset in range(0, y_offset, increment):
-            ActionChains(self.selenium).move_by_offset(0, increment).perform()
-        if offset != y_offset:
-            ActionChains(self.selenium).move_by_offset(0, y_offset - offset).perform()
-
     def release(self):
         ActionChains(self.selenium).release().perform()
 
     def _match_helper_with_target(self, helper_element, target_element):
-        self.move_by_offset(0, -1)
+        ActionChains(self.selenium).move_by_offset(0, -16).perform()
 
         desired_pos = tuple(self.to_indexes)
 
