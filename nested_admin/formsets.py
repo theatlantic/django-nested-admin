@@ -24,9 +24,40 @@ def mutable_querydict(qd):
         qd._mutable = orig_mutable
 
 
+PATCH_FORM_IS_MULTIPART = ((2, 1) < django.VERSION < (3, 0))
+
+
+class FixDjango2MultipartFormMixin(object):
+    def is_multipart(self, check_formset=True):
+        """
+        Overridden is_multipart for Django 2.1 and 2.2 that returns the
+        formset's is_multipart by default.
+
+        Parameters
+        ----------
+        check_formset : bool (default=True)
+            If ``False``, returns the form's original is_multipart value.
+            Exists to prevent infinite recursion in the formset's is_multipart
+            lookup.
+        """
+        parent_formset = getattr(self, 'parent_formset', None)
+        if check_formset and parent_formset:
+            return parent_formset.is_multipart()
+        else:
+            return super(FixDjango2MultipartFormMixin, self).is_multipart()
+
+
 class NestedInlineFormSetMixin(object):
 
     is_nested = False
+
+    def __init__(self, *args, **kwargs):
+        super(NestedInlineFormSetMixin, self).__init__(*args, **kwargs)
+        if PATCH_FORM_IS_MULTIPART:
+            self.form = type(
+                self.form.__name__, (FixDjango2MultipartFormMixin, self.form), {
+                    'parent_formset': self,
+                })
 
     def _construct_form(self, i, **kwargs):
         defaults = {}
@@ -34,6 +65,27 @@ class NestedInlineFormSetMixin(object):
             defaults['empty_permitted'] = True
         defaults.update(kwargs)
         return super(NestedInlineFormSetMixin, self)._construct_form(i, **defaults)
+
+    def is_multipart(self):
+        if not PATCH_FORM_IS_MULTIPART:
+            if super(NestedInlineFormSetMixin, self).is_multipart():
+                return True
+        else:
+            forms = [f for f in self]
+            if not forms:
+                if hasattr(type(self), 'empty_forms'):
+                    forms = self.empty_forms  # django-polymorphic compat
+                else:
+                    forms = [self.empty_form]
+            for form in forms:
+                if form.is_multipart(check_formset=False):
+                    return True
+
+        for nested_formset in getattr(self, 'nested_formsets', []):
+            if nested_formset.is_multipart():
+                return True
+
+        return False
 
     def save(self, commit=True):
         """

@@ -1,3 +1,5 @@
+import os
+import tempfile
 import time
 from unittest import skipIf, SkipTest
 
@@ -841,6 +843,29 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
 
         inline_label = self.get_item([0, 1]).find_element_by_class_name('inline_label')
         self.assertEqual(inline_label.text, '#2')
+
+    def test_upload_file(self):
+        group = self.root_model.objects.create(slug='group')
+
+        self.load_admin(group)
+
+        self.add_inline(slug="a")
+        self.add_inline(indexes=[0], name='A 0')
+
+        fd, path = tempfile.mkstemp()
+        try:
+            with os.fdopen(fd, 'w') as tmp:
+                tmp.write('Test file. Used as a payload for testing file uploads.')
+            with self.clickable_xpath('//input[@name="section_set-0-item_set-0-upload"]') as el:
+                el.send_keys(path)
+            self.save_form()
+        finally:
+            os.remove(path)
+
+        item_a_0 = self.item_cls.objects.get(name='A 0')
+        upload_name = 'foo/' + os.path.basename(path)
+
+        self.assertEqual(item_a_0.upload.name, upload_name, 'File upload failed')
 
 
 class TestTabularInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):

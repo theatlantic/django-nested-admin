@@ -62,6 +62,7 @@ class StackedSection(SectionAbstract):
 
 class StackedItem(ItemAbstract):
     section = ForeignKey(StackedSection, related_name='item_set', on_delete=CASCADE)
+    upload = models.FileField(blank=True, null=True, upload_to='foo')
 
     class Meta:
         ordering = ('section', 'position')
