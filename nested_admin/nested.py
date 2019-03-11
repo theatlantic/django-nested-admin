@@ -43,9 +43,11 @@ class NestedInlineAdminFormsetMixin(object):
     classes = None
 
     def __init__(self, inline, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-        self.obj = kwargs.pop('obj', None)
+        request = kwargs.pop('request', None)
+        obj = kwargs.pop('obj', None)
         super(NestedInlineAdminFormsetMixin, self).__init__(inline, *args, **kwargs)
+        self.request = request
+        self.obj = obj
 
         if getattr(inline, 'classes', None):
             self.classes = ' '.join(inline.classes)
@@ -176,66 +178,78 @@ class NestedModelAdminMixin(object):
             formsets.append(formset)
             inline_instances.append(inline_instance)
 
+            inlines_and_formsets = []
+            if hasattr(inline_instance, 'child_inline_instances'):
+                for child_inline_instance in inline_instance.child_inline_instances:
+                    inlines_and_formsets += [
+                        (nested_nested, formset)
+                        for nested_nested in child_inline_instance.get_inline_instances(request)]
+
             if getattr(inline_instance, 'inlines', []):
-                inlines_and_formsets = [
+                inlines_and_formsets += [
                     (nested, formset)
                     for nested in inline_instance.get_inline_instances(request)]
-                i = 0
-                while i < len(inlines_and_formsets):
-                    nested, formset = inlines_and_formsets[i]
-                    i += 1
-                    formset_forms = list(formset.forms) + [None]
-                    for form in formset_forms:
-                        if form is not None:
-                            form.parent_formset = formset
-                            form_prefix = form.prefix
-                            form_obj = form.instance
-                        else:
-                            form_prefix = formset.add_prefix('empty')
-                            form_obj = None
-                        InlineFormSet = nested.get_formset(request, form_obj)
-                        prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
-                        prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                        if prefixes[prefix] != 1:
-                            prefix = "%s-%s" % (prefix, prefixes[prefix])
+            i = 0
+            while i < len(inlines_and_formsets):
+                nested, formset = inlines_and_formsets[i]
+                i += 1
+                formset_forms = list(formset.forms) + [None]
+                for form in formset_forms:
+                    if form is not None:
+                        form.parent_formset = formset
+                        form_prefix = form.prefix
+                        form_obj = form.instance
+                    else:
+                        form_prefix = formset.add_prefix('empty')
+                        form_obj = None
+                    InlineFormSet = nested.get_formset(request, form_obj)
+                    prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
+                    prefixes[prefix] = prefixes.get(prefix, 0) + 1
+                    if prefixes[prefix] != 1:
+                        prefix = "%s-%s" % (prefix, prefixes[prefix])
 
-                        formset_params = {
-                            'instance': form_obj,
-                            'prefix': prefix,
-                            'queryset': nested.get_queryset(request),
-                        }
+                    formset_params = {
+                        'instance': form_obj,
+                        'prefix': prefix,
+                        'queryset': nested.get_queryset(request),
+                    }
+                    if request.method == 'POST':
+                        formset_params.update({
+                            'data': request.POST,
+                            'files': request.FILES,
+                            'save_as_new': '_saveasnew' in request.POST
+                        })
+
+                    nested_formset = InlineFormSet(**formset_params)
+                    # We set `is_nested` to True so that we have a way
+                    # to identify this formset as such and skip it if
+                    # there is an error in the POST and we have to create
+                    # inline admin formsets.
+                    nested_formset.is_nested = True
+                    nested_formset.nesting_depth = formset.nesting_depth + 1
+                    nested_formset.parent_form = form
+
+                    if form is None:
+                        obj = formset
+                    else:
+                        obj = form
                         if request.method == 'POST':
-                            formset_params.update({
-                                'data': request.POST,
-                                'files': request.FILES,
-                                'save_as_new': '_saveasnew' in request.POST
-                            })
+                            formsets.append(nested_formset)
+                            inline_instances.append(nested)
+                    obj.nested_formsets = getattr(obj, 'nested_formsets', None) or []
+                    obj.nested_inlines = getattr(obj, 'nested_inlines', None) or []
+                    obj.nested_formsets.append(nested_formset)
+                    obj.nested_inlines.append(nested)
 
-                        nested_formset = InlineFormSet(**formset_params)
-                        # We set `is_nested` to True so that we have a way
-                        # to identify this formset as such and skip it if
-                        # there is an error in the POST and we have to create
-                        # inline admin formsets.
-                        nested_formset.is_nested = True
-                        nested_formset.nesting_depth = formset.nesting_depth + 1
-                        nested_formset.parent_form = form
-
-                        if form is None:
-                            obj = formset
-                        else:
-                            obj = form
-                            if request.method == 'POST':
-                                formsets.append(nested_formset)
-                                inline_instances.append(nested)
-                        obj.nested_formsets = getattr(obj, 'nested_formsets', None) or []
-                        obj.nested_inlines = getattr(obj, 'nested_inlines', None) or []
-                        obj.nested_formsets.append(nested_formset)
-                        obj.nested_inlines.append(nested)
-
-                        if hasattr(nested, 'get_inline_instances'):
+                    if hasattr(nested, 'get_inline_instances'):
+                        inlines_and_formsets += [
+                            (nested_nested, nested_formset)
+                            for nested_nested in nested.get_inline_instances(request)]
+                    if hasattr(nested, 'child_inline_instances'):
+                        for nested_child in nested.child_inline_instances:
                             inlines_and_formsets += [
                                 (nested_nested, nested_formset)
-                                for nested_nested in nested.get_inline_instances(request)]
+                                for nested_nested in nested_child.get_inline_instances(request)]
         return formsets, inline_instances
 
 
