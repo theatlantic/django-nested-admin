@@ -5,7 +5,7 @@ from unittest import expectedFailure, SkipTest
 import django
 from django.conf import settings
 from django.test import override_settings
-from django.utils import six
+import six
 from django.utils.text import slugify, unescape_entities
 
 from nested_admin.tests.base import (

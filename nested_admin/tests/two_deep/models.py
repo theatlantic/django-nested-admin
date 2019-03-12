@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from django.utils.encoding import python_2_unicode_compatible
+from nested_admin.tests.compat import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible

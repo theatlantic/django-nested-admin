@@ -8,9 +8,13 @@ from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
-from django.utils.encoding import force_text
-from django.utils import six
-from django.utils.six.moves import xrange
+import six
+from six.moves import range
+
+if six.PY2:
+    from django.utils.encoding import force_text as force_str
+else:
+    from django.utils.encoding import force_str
 
 
 @contextlib.contextmanager
@@ -238,7 +242,7 @@ class NestedInlineFormSetMixin(object):
 
         if not hasattr(self, '__queryset'):
             pk_keys = ["%s-%s" % (self.add_prefix(i), self.model._meta.pk.name)
-                       for i in xrange(0, self.initial_form_count())]
+                       for i in range(0, self.initial_form_count())]
             pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
 
             qs = self.model._default_manager.get_queryset()
@@ -306,7 +310,7 @@ class NestedInlineFormSetMixin(object):
                 try:
                     obj = model_cls.objects.get(pk=pk_value)
                 except model_cls.DoesNotExist:
-                    if pk_value and force_text(form.instance.pk) == force_text(pk_value):
+                    if pk_value and force_str(form.instance.pk) == force_str(pk_value):
                         obj = form.instance
             if obj is None:
                 obj = self._existing_object(pk_value)

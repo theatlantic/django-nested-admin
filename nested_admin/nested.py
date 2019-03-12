@@ -10,10 +10,10 @@ except ImportError:
     # Django <= 1.9
     from django.core.urlresolvers import reverse
 from django.template.defaultfilters import capfirst
-from django.utils import six
+import six
 from django.utils.functional import lazy
-from django.utils.six.moves import zip
-from django.utils.translation import ugettext
+from six.moves import zip
+from django.utils.translation import gettext
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
 from .compat import MergeSafeMedia
@@ -95,10 +95,10 @@ class NestedInlineAdminFormset(helpers.InlineAdminFormSet):
             'name': '#%s' % self.formset.prefix,
             'options': {
                 'prefix': self.formset.prefix,
-                'addText': ugettext('Add another %(verbose_name)s') % {
+                'addText': gettext('Add another %(verbose_name)s') % {
                     'verbose_name': capfirst(verbose_name),
                 },
-                'deleteText': ugettext('Remove'),
+                'deleteText': gettext('Remove'),
             },
             'nestedOptions': {
                 'sortableFieldName': getattr(self.opts, 'sortable_field_name', None),

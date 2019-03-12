@@ -21,11 +21,15 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
-from django.utils import six
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse, ParseResult
+import six
+from six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
 from selenium.webdriver.common.action_chains import ActionChains
-from storages.backends.s3boto3 import S3Boto3Storage
+
+try:
+    from storages.backends.s3boto3 import S3Boto3Storage
+except:
+    S3Boto3Storage = None
 
 from nested_admin.tests.base import (
     BaseNestedAdminTestCase, get_model_name, expected_failure_if_suit)

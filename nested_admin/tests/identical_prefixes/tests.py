@@ -1,4 +1,4 @@
-from django.utils import six
+import six
 
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import Root, AX, AY, BX, BY

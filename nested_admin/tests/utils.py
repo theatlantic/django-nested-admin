@@ -1,7 +1,7 @@
 import collections
 
-from django.utils import six
-from django.utils.encoding import python_2_unicode_compatible
+import six
+from nested_admin.tests.compat import python_2_unicode_compatible
 
 
 def xpath_cls(classname):
