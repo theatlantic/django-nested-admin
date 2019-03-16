@@ -46,11 +46,18 @@ is installed for your version of Django.
         'nested_admin',
     )
 
-    # urls.py
+    # urls.py (Django 1.x)
 
     urlpatterns = patterns('',
         # ...
         url(r'^nested_admin/', include('nested_admin.urls')),
+    )
+
+    # urls.py (Django 2.x)
+
+    urlpatterns = patterns('',
+        # ...
+        path('nested_admin/', include('nested_admin.urls')),
     )
 
 Example Usage
