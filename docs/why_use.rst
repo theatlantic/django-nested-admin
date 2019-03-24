@@ -4,6 +4,11 @@
 Why use django-nested-admin?
 ============================
 
+First of all: because it's the only implementation (currently known to us) that is actively developed/maintained, and therefor tested with Django 2.x versions.
+
+Besides that, some other points:
+
+
 .. rst-class:: feature-grid
 
 +-------------------------+------------------------+-------------------------+--------------------------+----------------------+-------------------------+
