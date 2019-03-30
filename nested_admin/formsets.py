@@ -24,7 +24,7 @@ def mutable_querydict(qd):
         qd._mutable = orig_mutable
 
 
-PATCH_FORM_IS_MULTIPART = ((2, 1) < django.VERSION < (3, 0))
+PATCH_FORM_IS_MULTIPART = (2, 1) < django.VERSION < (3, 0)
 
 
 class FixDjango2MultipartFormMixin(object):
@@ -78,7 +78,11 @@ class NestedInlineFormSetMixin(object):
                 else:
                     forms = [self.empty_form]
             for form in forms:
-                if form.is_multipart(check_formset=False):
+                if isinstance(form, FixDjango2MultipartFormMixin):
+                    form_is_multipart = form.is_multipart(check_formset=False)
+                else:
+                    form_is_multipart = form.is_multipart(check_formset=False)
+                if form_is_multipart:
                     return True
 
         for nested_formset in getattr(self, 'nested_formsets', []):
