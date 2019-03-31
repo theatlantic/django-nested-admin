@@ -75,7 +75,10 @@ class NestedInlineFormSetMixin(object):
             if super(NestedInlineFormSetMixin, self).is_multipart():
                 return True
         else:
-            forms = [f for f in self]
+            try:
+                forms = [f for f in self]
+            except:
+                forms = []
             if not forms:
                 if hasattr(type(self), 'empty_forms'):
                     forms = self.empty_forms  # django-polymorphic compat

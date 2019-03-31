@@ -1,5 +1,6 @@
 import json
 
+import django
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
@@ -45,6 +46,20 @@ class NestedInlineAdminFormsetMixin(object):
     def __init__(self, inline, *args, **kwargs):
         request = kwargs.pop('request', None)
         obj = kwargs.pop('obj', None)
+
+        self.has_add_permission = kwargs.pop('has_add_permission', True)
+        self.has_change_permission = kwargs.pop('has_change_permission', True)
+        self.has_delete_permission = kwargs.pop('has_delete_permission', True)
+        self.has_view_permission = kwargs.pop('has_view_permission', True)
+
+        if django.VERSION > (2, 1):
+            kwargs.update({
+                'has_add_permission': self.has_add_permission,
+                'has_change_permission': self.has_change_permission,
+                'has_delete_permission': self.has_delete_permission,
+                'has_view_permission': self.has_view_permission,
+            })
+
         super(NestedInlineAdminFormsetMixin, self).__init__(inline, *args, **kwargs)
         self.request = request
         self.obj = obj
@@ -160,10 +175,30 @@ class NestedModelAdminMixin(object):
                 continue
             fieldsets = list(inline.get_fieldsets(request, obj))
             readonly = list(inline.get_readonly_fields(request, obj))
+
+            try:
+                has_add_permission = inline.has_add_permission(request, obj)
+            except TypeError:
+                # Django before 2.2 didn't require obj kwarg
+                has_add_permission = inline.has_add_permission(request)
+
+            has_change_permission = inline.has_change_permission(request, obj)
+            has_delete_permission = inline.has_delete_permission(request, obj)
+
+            if hasattr(inline, 'has_view_permission'):
+                has_view_permission = inline.has_view_permission(request, obj)
+            else:
+                has_view_permission = True
+
             prepopulated = dict(inline.get_prepopulated_fields(request, obj))
             inline_admin_formset = self.inline_admin_formset_helper_cls(
                 inline, formset, fieldsets, prepopulated, readonly,
-                model_admin=self, request=request)
+                model_admin=self,
+                request=request,
+                has_add_permission=has_add_permission,
+                has_change_permission=has_change_permission,
+                has_delete_permission=has_delete_permission,
+                has_view_permission=has_view_permission)
             inline_admin_formset.request = request
             inline_admin_formset.obj = obj
             inline_admin_formsets.append(inline_admin_formset)
@@ -179,28 +214,31 @@ class NestedModelAdminMixin(object):
         prefixes = {}
         has_polymorphic = False
 
-        for formset, inline_instance in zip(orig_formsets, orig_inline_instances):
-            if not hasattr(formset, 'nesting_depth'):
-                formset.nesting_depth = 1
+        for orig_formset, orig_inline in zip(orig_formsets, orig_inline_instances):
+            if not hasattr(orig_formset, 'nesting_depth'):
+                orig_formset.nesting_depth = 1
 
-            formsets.append(formset)
-            inline_instances.append(inline_instance)
+            formsets.append(orig_formset)
+            inline_instances.append(orig_inline)
 
-            inlines_and_formsets = []
-            if hasattr(inline_instance, 'child_inline_instances'):
+            nested_formsets_and_inline_instances = []
+            if hasattr(orig_inline, 'child_inline_instances'):
                 has_polymorphic = True
-                for child_inline_instance in inline_instance.child_inline_instances:
-                    inlines_and_formsets += [
-                        (nested_nested, formset)
-                        for nested_nested in child_inline_instance.get_inline_instances(request)]
+                for child_inline in orig_inline.child_inline_instances:
+                    nested_formsets_and_inline_instances += [
+                        (orig_formset, inline)
+                        for inline
+                        in child_inline.get_inline_instances(request, obj)]
 
-            if getattr(inline_instance, 'inlines', []):
-                inlines_and_formsets += [
-                    (nested, formset)
-                    for nested in inline_instance.get_inline_instances(request)]
+            if getattr(orig_inline, 'inlines', []):
+                nested_formsets_and_inline_instances += [
+                    (orig_formset, inline)
+                    for inline
+                    in orig_inline.get_inline_instances(request, obj)]
+
             i = 0
-            while i < len(inlines_and_formsets):
-                nested, formset = inlines_and_formsets[i]
+            while i < len(nested_formsets_and_inline_instances):
+                formset, inline = nested_formsets_and_inline_instances[i]
                 i += 1
                 formset_forms = list(formset.forms) + [None]
                 for form in formset_forms:
@@ -211,7 +249,7 @@ class NestedModelAdminMixin(object):
                     else:
                         form_prefix = formset.add_prefix('empty')
                         form_obj = None
-                    InlineFormSet = nested.get_formset(request, form_obj)
+                    InlineFormSet = inline.get_formset(request, form_obj)
 
                     if has_polymorphic and form_obj:
                         rel_model = compat_rel_to(InlineFormSet.fk)
@@ -226,11 +264,11 @@ class NestedModelAdminMixin(object):
                     formset_params = {
                         'instance': form_obj,
                         'prefix': prefix,
-                        'queryset': nested.get_queryset(request),
+                        'queryset': inline.get_queryset(request),
                     }
                     if request.method == 'POST':
                         formset_params.update({
-                            'data': request.POST,
+                            'data': request.POST.copy(),
                             'files': request.FILES,
                             'save_as_new': '_saveasnew' in request.POST
                         })
@@ -245,28 +283,85 @@ class NestedModelAdminMixin(object):
                     nested_formset.nesting_depth = formset.nesting_depth + 1
                     nested_formset.parent_form = form
 
-                    if form is None:
-                        obj = formset
-                    else:
-                        obj = form
-                        if request.method == 'POST':
-                            formsets.append(nested_formset)
-                            inline_instances.append(nested)
-                    obj.nested_formsets = getattr(obj, 'nested_formsets', None) or []
-                    obj.nested_inlines = getattr(obj, 'nested_inlines', None) or []
-                    obj.nested_formsets.append(nested_formset)
-                    obj.nested_inlines.append(nested)
+                    def user_deleted_form(request, obj, formset, index):
+                        """Return whether or not the user deleted the form."""
+                        return (
+                            inline.has_delete_permission(request, obj) and
+                            '{}-{}-DELETE'.format(formset.prefix, index) in request.POST
+                        )
 
-                    if hasattr(nested, 'get_inline_instances'):
-                        inlines_and_formsets += [
-                            (nested_nested, nested_formset)
-                            for nested_nested in nested.get_inline_instances(request)]
-                    if hasattr(nested, 'child_inline_instances'):
-                        for nested_child in nested.child_inline_instances:
-                            inlines_and_formsets += [
-                                (nested_nested, nested_formset)
-                                for nested_nested in nested_child.get_inline_instances(request)]
+                    # Bypass validation of each view-only inline form (since the form's
+                    # data won't be in request.POST), unless the form was deleted.
+                    if not inline.has_change_permission(request, form_obj):
+                        if '-empty-' not in nested_formset.prefix:
+                            for index, initial_form in enumerate(nested_formset.initial_forms):
+                                if user_deleted_form(request, form_obj, nested_formset, index):
+                                    continue
+                                initial_form._errors = {}
+                                initial_form.cleaned_data = initial_form.initial
+
+                    # If request.method == 'POST', this is an attempted save,
+                    # so we need to include the nested formsets and inline
+                    # instances in the top level lists returned by this method
+                    if form is not None and request.method == 'POST':
+                        formsets.append(nested_formset)
+                        inline_instances.append(inline)
+
+                    # nested_obj is a form or an empty formset
+                    nested_obj = form or formset
+
+                    if not hasattr(nested_obj, 'nested_formsets'):
+                        nested_obj.nested_formsets = []
+                    if not hasattr(nested_obj, 'nested_inlines'):
+                        nested_obj.nested_inlines = []
+
+                    nested_obj.nested_formsets.append(nested_formset)
+                    nested_obj.nested_inlines.append(inline)
+
+                    if hasattr(inline, 'get_inline_instances'):
+                        nested_formsets_and_inline_instances += [
+                            (nested_formset, nested_inline)
+                            for nested_inline
+                            in inline.get_inline_instances(request, form_obj)]
+                    if hasattr(inline, 'child_inline_instances'):
+                        for nested_child in inline.child_inline_instances:
+                            nested_formsets_and_inline_instances += [
+                                (nested_formset, nested_inline)
+                                for nested_inline
+                                in nested_child.get_inline_instances(request, form_obj)]
         return formsets, inline_instances
+
+    def render_change_form(self, request, context, obj=None, *args, **kwargs):
+        response = super(NestedModelAdminMixin, self).render_change_form(
+            request, context, obj=obj, *args, **kwargs)
+
+        has_editable_inline_admin_formsets = response.context_data.get(
+            'has_editable_inline_admin_formsets')
+
+        # We only care about potential condition where has_editable_inline_admin_formsets
+        # is set, but it is False (and might be True if permissions are checked on
+        # deeply nested inlines)
+        if has_editable_inline_admin_formsets is not False:
+            return response
+
+        inline_admin_formsets = context['inline_admin_formsets']
+        nested_admin_formsets = []
+
+        for inline_admin_formset in inline_admin_formsets:
+            for admin_form in inline_admin_formset:
+                if hasattr(admin_form.form, 'inlines'):
+                    nested_admin_formsets += admin_form.form.inlines
+
+        for inline in nested_admin_formsets:
+            if (inline.has_add_permission or inline.has_change_permission
+                    or inline.has_delete_permission):
+                has_editable_inline_admin_formsets = True
+                break
+
+        if has_editable_inline_admin_formsets:
+            response.context_data['has_editable_inline_admin_formsets'] = True
+
+        return response
 
 
 class NestedInlineModelAdminMixin(object):

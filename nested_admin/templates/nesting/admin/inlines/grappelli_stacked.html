@@ -26,11 +26,11 @@
             {% if forloop.first %}
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
-            <div class="{% if not forloop.last %}djn-item{% endif %} grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }} {% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last %} djn-empty-form grp-empty-form{% endif %} inline-related"
+            <div class="{% if not forloop.last %}djn-item{% endif %} grp-module djn-module djn-inline-form {{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} djn-empty-form grp-empty-form{% endif %} inline-related"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
-                 id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last %}empty{% else %}{{ inline_admin_form.form|form_index }}{% endif %}">
+                 id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% else %}{{ inline_admin_form.form|form_index }}{% endif %}">
                 <h3 class="djn-collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djn-drag-handler{% endif %}">
                     <div class="djn-collapse-handler-verbose-name">{{ inline_admin_formset.opts.verbose_name }}&nbsp;&nbsp;</div>{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% endif %}
                 </h3>
