@@ -85,7 +85,7 @@ class NestedInlineFormSetMixin(object):
                 if isinstance(form, FixDjango2MultipartFormMixin):
                     form_is_multipart = form.is_multipart(check_formset=False)
                 else:
-                    form_is_multipart = form.is_multipart(check_formset=False)
+                    form_is_multipart = form.is_multipart()
                 if form_is_multipart:
                     return True
 
