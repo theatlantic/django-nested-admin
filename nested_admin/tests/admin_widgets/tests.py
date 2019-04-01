@@ -1,10 +1,9 @@
 from contextlib import contextmanager
 import time
-from unittest import expectedFailure, SkipTest
+from unittest import SkipTest
 
 import django
 from django.conf import settings
-from django.test import override_settings
 import six
 from django.utils.text import slugify, unescape_entities
 
@@ -224,7 +223,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         time.sleep(0.1)
         self.check_fk([1])
 
-    @expectedFailure  # Known bug
     def test_add_initial_extra_m2m(self):
         self.load_admin()
         self.add_inline()
