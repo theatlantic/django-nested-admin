@@ -225,7 +225,9 @@ class TestAdminWidgets(BaseWidgetTestCase):
 
     def test_add_initial_extra_m2m(self):
         self.load_admin()
+        time.sleep(0.2)
         self.add_inline()
+        time.sleep(0.2)
         self.check_m2m([1, 0])
 
     def test_add_initial_extra_fk(self):

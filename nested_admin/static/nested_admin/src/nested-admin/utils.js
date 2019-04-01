@@ -212,19 +212,26 @@ DJNesting.DjangoInlines = {
     }
 };
 
-setTimeout(function() {
-    // Patch SelectFilter.init so that it doesn't initialize on deeply-nested empty forms
-    if (typeof window.SelectFilter !== 'undefined') {
-        window.SelectFilter.init = (function(oldFn) {
-            return function init(field_id, field_name, is_stacked) {
-                if (field_id.match(/\-empty\-/)) {
-                    return;
-                } else {
-                    oldFn.apply(this, arguments);
-                }
-            };
-        }(window.SelectFilter.init));
-    }
-}, 12);
+function patchSelectFilter() {
+    window.SelectFilter.init = (function(oldFn) {
+        return function init(field_id, field_name, is_stacked) {
+            if (field_id.match(/\-empty\-/)) {
+                return;
+            } else {
+                oldFn.apply(this, arguments);
+            }
+        };
+    }(window.SelectFilter.init));
+}
+
+if (typeof window.SelectFilter !== 'undefined') {
+    patchSelectFilter();
+} else {
+    setTimeout(function() {
+        if (typeof window.SelectFilter !== 'undefined') {
+            patchSelectFilter();
+        }
+    }, 12);
+}
 
 module.exports = DJNesting;
