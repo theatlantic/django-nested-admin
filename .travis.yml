@@ -16,7 +16,6 @@ matrix:
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj22 }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj30 }
   allow_failures:
-    - env: TOXENV=py36-dj22
     - env: TOXENV=py36-dj30
 
 cache:
