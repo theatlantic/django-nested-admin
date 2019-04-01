@@ -3792,6 +3792,7 @@ module.exports = {
 
 "use strict";
 
+/* globals SelectFilter, DateTimeShortcuts */
 
 __webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
 
@@ -3812,10 +3813,6 @@ var _require = __webpack_require__(/*! ./sortable */ "./nested_admin/static/nest
     updatePositions = _require.updatePositions;
 
 var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
-
-var DateTimeShortcuts = __webpack_require__(/*! django/date-time-shortcuts */ "django/date-time-shortcuts");
-
-var SelectFilter = __webpack_require__(/*! django/select-filter */ "django/select-filter");
 
 var DJNesting = typeof window.DJNesting != 'undefined' ? window.DJNesting : {};
 DJNesting.regexQuote = regexQuote;
@@ -4018,7 +4015,7 @@ DJNesting.DjangoInlines = {
   },
   reinitDateTimeShortCuts: function reinitDateTimeShortCuts() {
     // Reinitialize the calendar and clock widgets by force
-    if (typeof DateTimeShortcuts !== 'undefined') {
+    if (typeof window.DateTimeShortcuts !== 'undefined') {
       $('.datetimeshortcuts').remove();
       DateTimeShortcuts.init();
     }
@@ -4026,7 +4023,7 @@ DJNesting.DjangoInlines = {
   updateSelectFilter: function updateSelectFilter($form) {
     // If any SelectFilter widgets are a part of the new form,
     // instantiate a new SelectFilter instance for it.
-    if (typeof SelectFilter !== 'undefined') {
+    if (typeof window.SelectFilter !== 'undefined') {
       $form.find('.selectfilter').each(function (index, value) {
         var namearr = value.name.split('-');
         SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
@@ -5014,28 +5011,6 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 __webpack_require__(/*! /Users/fdintino/Sites/cms/src/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
 module.exports = __webpack_require__(/*! /Users/fdintino/Sites/cms/src/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
-
-/***/ }),
-
-/***/ "django/date-time-shortcuts":
-/*!************************************!*\
-  !*** external "DateTimeShortcuts" ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-(function() { module.exports = window["DateTimeShortcuts"]; }());
-
-/***/ }),
-
-/***/ "django/select-filter":
-/*!*******************************!*\
-  !*** external "SelectFilter" ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-(function() { module.exports = window["SelectFilter"]; }());
 
 /***/ }),
 

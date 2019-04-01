@@ -1,11 +1,11 @@
 'use strict';
 
+/* globals SelectFilter, DateTimeShortcuts */
+
 const $ = require('jquery');
 require('./jquery.djnutils.js');
 const {createSortable, updatePositions} = require('./sortable');
 const regexQuote = require('./regexquote');
-const DateTimeShortcuts = require('django/date-time-shortcuts');
-const SelectFilter = require('django/select-filter');
 
 var DJNesting = (typeof window.DJNesting != 'undefined')
                ? window.DJNesting : {};
@@ -191,7 +191,7 @@ DJNesting.DjangoInlines = {
     },
     reinitDateTimeShortCuts: function() {
         // Reinitialize the calendar and clock widgets by force
-        if (typeof DateTimeShortcuts !== 'undefined') {
+        if (typeof window.DateTimeShortcuts !== 'undefined') {
             $('.datetimeshortcuts').remove();
             DateTimeShortcuts.init();
         }
@@ -199,7 +199,7 @@ DJNesting.DjangoInlines = {
     updateSelectFilter: function($form) {
         // If any SelectFilter widgets are a part of the new form,
         // instantiate a new SelectFilter instance for it.
-        if (typeof SelectFilter !== 'undefined') {
+        if (typeof window.SelectFilter !== 'undefined') {
             $form.find('.selectfilter').each(function(index, value) {
                 var namearr = value.name.split('-');
                 SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);

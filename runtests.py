@@ -48,7 +48,7 @@ def main():
         "ignore",
         "name used for saved screenshot does not match file type",
         UserWarning)
-    runtests = RunTests("nested_admin.tests.settings", "nested_admin")
+    runtests = RunTests("nested_admin.tests.settings", "nested_admin.tests")
     runtests()
 
 
