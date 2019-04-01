@@ -3,9 +3,27 @@ Changelog
 
 **master (unreleased)**
 
-* Feature: added beta support for django-polymorphic admin (`#86`_)
+* Feature: Added beta support for django-polymorphic admin (`#86`_)
+* Feature: Made compatible with Django 2.2 and 3.0. Django 3.0 is still
+  in alpha, so the django-nested-admin compatibility is likewise not yet
+  stable
+* Fixed: django-nested-admin now respects permissions for inline model admins
+  in Django 2.1+, including the new 'view' permission.
+* Fixed: (grappelli) Collapsing inline groups now works for stacked inlines
+  (thanks `@maldn`_) (`#121`_)
+* Fixed: FileFields in deeply nested inlines now works in Django 2.1 (thanks
+  `@btknu`_) (`#111`_, `#127`_)
+* Fixed: Use correct translation for 'Delete?' text in templates (thanks
+  `@kigawas`_) (`#116`_)
 
 .. _#86: https://github.com/theatlantic/django-nested-admin/issues/86
+.. _@maldn: https://github.com/maldn
+.. _#121: https://github.com/theatlantic/django-nested-admin/pull/121
+.. _@btknu: https://github.com/btknu
+.. _#111: https://github.com/theatlantic/django-nested-admin/issues/111
+.. _#127: https://github.com/theatlantic/django-nested-admin/pull/127
+.. _@kigawas: https://github.com/kigawas
+.. _#116: https://github.com/theatlantic/django-nested-admin/pull/116
 
 **3.1.3 (Dec 15, 2018)**
 
