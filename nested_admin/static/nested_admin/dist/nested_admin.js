@@ -3704,7 +3704,7 @@ function createSortable($group) {
     },
     helper: 'clone',
     opacity: 0.6,
-    maxLevels: 3,
+    maxLevels: 0,
     connectWith: '.djn-items',
     tolerance: 'intersection',
     // Don't allow dragging beneath an inline that is marked for deletion
@@ -3717,7 +3717,7 @@ function createSortable($group) {
         var childModels = parentItem.closest('.djn-group').data('inlineFormset').nestedOptions.childModels;
         var inlineModel = currentItem.data('inlineModel');
 
-        if (childModels.indexOf(inlineModel) === -1) {
+        if (childModels && childModels.indexOf(inlineModel) === -1) {
           return false;
         }
       }

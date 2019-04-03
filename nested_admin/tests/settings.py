@@ -53,6 +53,7 @@ TEMPLATES = [{
     'DIRS': selenosis.settings.TEMPLATES[0]['DIRS'],
     'APP_DIRS': True,
     'OPTIONS': {
+        'debug': True,
         'string_if_invalid': 'INVALID {{ %s }}',
         'context_processors': [
             'django.contrib.auth.context_processors.auth',
