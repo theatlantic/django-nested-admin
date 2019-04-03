@@ -22,26 +22,30 @@
     {{ inline_admin_formset.formset.non_form_errors }}
 
     <table class="djn-items tabular inline-related grp-module grp-table djn-table">
-      <thead class="module grp-module grp-thead djn-thead">
-          <tr class="grp-tr">
-              {% for field in inline_admin_formset.fields %}
-                  {% if not field.widget.is_hidden %}
-                      <th class="grp-th djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">
-                        {{ field.label|capfirst }}
-                        {% if "1.11"|django_version_gte %}
-                        {% if field.help_text %}
-                        &nbsp;<img src="{% static "admin/img/icon-unknown.svg" %}" class="grp-help-tooltip" width="12" height="12" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />
-                        {% endif %}
-                        {% endif %}
-                      </th>
-                  {% endif %}
-              {% endfor %}
-              {% if inline_admin_formset.formset.can_delete %}<th class="grp-th djn-th">&nbsp;</th>{% endif %}
-          </tr>
-      </thead>
 
         {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
         {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
+
+            {% if not forloop.last %}
+            <thead class="module grp-module grp-thead djn-thead">
+                <tr class="grp-tr">
+                    {% for field in inline_admin_formset.fields %}
+                        {% if not field.widget.is_hidden %}
+                            <th class="grp-th djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">
+                                {{ field.label|capfirst }}
+                                {% if "1.11"|django_version_gte %}
+                                {% if field.help_text %}
+                                &nbsp;<img src="{% static "admin/img/icon-unknown.svg" %}" class="grp-help-tooltip" width="12" height="12" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />
+                                {% endif %}
+                                {% endif %}
+                            </th>
+                        {% endif %}
+                    {% endfor %}
+                    {% if inline_admin_formset.formset.can_delete %}<th class="grp-th djn-th">&nbsp;</th>{% endif %}
+                </tr>
+            </thead>
+            {% endif %}
+
             <tbody class="grp-tbody djn-tbody{% if not forloop.last %} djn-item{% endif %} form-row grp-module djn-inline-form{% if inline_admin_formset.opts.classes %} {{ inline_admin_formset.opts.classes|join:" " }}{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} djn-empty-form grp-empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
                 {% if inline_admin_form.pk_field.field %}
                 data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
