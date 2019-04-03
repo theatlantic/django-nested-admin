@@ -25,6 +25,7 @@ Contents
    quickstart
    why_use
    customization
+   integrations
    contributing
    changelog
 
