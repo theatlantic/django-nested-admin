@@ -491,9 +491,10 @@ function () {
       var compatibleParents = this.$inline.djnData('compatibleParents') || {};
       $form.find('> .djn-group').each(function (i, el) {
         var fkModel = $(el).djnData('formsetFkModel');
-        var compatibleModels = compatibleParents[ctype] || [];
+        var compatModels = compatibleParents[ctype] || [];
+        var isPolymorphic = !!$(el).data('inlineFormset').options.childTypes;
 
-        if (fkModel !== ctype && compatibleModels.indexOf(fkModel) === -1) {
+        if (isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
           el.parentNode.removeChild(el);
         }
       });

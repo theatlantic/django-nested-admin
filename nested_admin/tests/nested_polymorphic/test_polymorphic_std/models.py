@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 import django
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from nested_admin.tests.compat import python_2_unicode_compatible
@@ -104,8 +106,27 @@ class ALevelTwoC(ALevelTwo):
     ac = models.CharField(max_length=200)
 
 
+@python_2_unicode_compatible
+class GFKX(models.Model):
+    name = models.CharField(max_length=255)
+    position = models.PositiveIntegerField()
+    content_type = ForeignKey(ContentType, on_delete=CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+
+    class Meta:
+        ordering = ['object_id', 'position']
+
+    def __str__(self):
+        parts = ["%s[%d]" % (self.name, self.position)]
+        if self.content_object:
+            parts.insert(0, "%s" % self.content_object)
+        return "/".join(parts)
+
+
 class ALevelTwoD(ALevelTwo):
     ad = models.CharField(max_length=200)
+    x_set = GenericRelation(GFKX)
 
 
 @python_2_unicode_compatible

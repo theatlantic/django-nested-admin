@@ -38,7 +38,8 @@ all_by_module = {
 all_by_module['nested_admin.polymorphic'] = (
     'NestedPolymorphicInlineAdminFormset', 'NestedPolymorphicInlineModelAdmin',
     'NestedStackedPolymorphicInline', 'NestedPolymorphicInlineSupportMixin',
-    'NestedPolymorphicModelAdmin')
+    'NestedPolymorphicModelAdmin', 'NestedGenericPolymorphicInlineModelAdmin',
+    'NestedGenericStackedPolymorphicInline')
 
 # modules that should be imported when accessed as attributes of nested_admin
 attribute_modules = frozenset(['formsets', 'nested', 'polymorphic'])

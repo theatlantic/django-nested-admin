@@ -251,7 +251,7 @@ class NestedModelAdminMixin(object):
                         form_obj = None
                     InlineFormSet = inline.get_formset(request, form_obj)
 
-                    if has_polymorphic and form_obj:
+                    if has_polymorphic and form_obj and hasattr(InlineFormSet, 'fk'):
                         rel_model = compat_rel_to(InlineFormSet.fk)
                         if not isinstance(form_obj, rel_model):
                             continue

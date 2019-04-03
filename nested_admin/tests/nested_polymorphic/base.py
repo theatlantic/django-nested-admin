@@ -9,6 +9,16 @@ from polymorphic.utils import get_base_polymorphic_model
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from nested_admin.tests.utils import xpath_item, xpath_cls, is_sequence, is_integer, is_str
 
+try:
+    from polymorphic.models import PolymorphicModel
+except:
+    # Temporary until django-polymorphic supports django 3.0
+    if django.VERSION < (3, 0):
+        raise
+    else:
+        class PolymorphicModel(object):
+            pass
+
 
 class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
@@ -130,7 +140,10 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         model_id, item_index = indexes[-1]
         app_label, model_name = model_id.split('-')
         model_cls = apps.get_model(app_label, model_name)
-        base_model_cls = get_base_polymorphic_model(model_cls)
+        if issubclass(model_cls, PolymorphicModel):
+            base_model_cls = get_base_polymorphic_model(model_cls)
+        else:
+            base_model_cls = model_cls
         base_model_id = "%s-%s" % (
             base_model_cls._meta.app_label, base_model_cls._meta.model_name)
         group_indexes.append(base_model_id)
@@ -145,7 +158,10 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
     def add_inline(self, indexes=None, model=None, **kwargs):
         model_name = "%s-%s" % (model._meta.app_label, model._meta.model_name)
-        base_model = get_base_polymorphic_model(model)
+        if issubclass(model, PolymorphicModel):
+            base_model = get_base_polymorphic_model(model)
+        else:
+            base_model = model
         base_model_identifier = "%s-%s" % (
             base_model._meta.app_label, base_model._meta.model_name)
 
@@ -170,7 +186,9 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         add_link_selector = "return $('.polymorphic-type-menu:visible [data-type=\"%s\"]')[0]" % (
             model_name)
         poly_add_link = self.selenium.execute_script(add_link_selector)
-        poly_add_link.click()
+
+        if poly_add_link:
+            poly_add_link.click()
 
         indexes = self._normalize_indexes(indexes)
 

@@ -17,13 +17,10 @@ from .formsets import NestedInlineFormSetMixin, NestedBaseGenericInlineFormSetMi
 from .nested import (
     NestedModelAdminMixin,
     NestedInlineModelAdminMixin, NestedGenericInlineModelAdminMixin,
-    NestedInlineAdminFormsetMixin)
+    NestedInlineAdminFormsetMixin, NestedInlineAdminFormset)
 
 
 def get_base_polymorphic_models(child_model):
-    """
-    First the first concrete model in the inheritance chain that inherited from the PolymorphicModel.
-    """
     models = []
     for model in reversed(child_model.mro()):
         if (isinstance(model, PolymorphicModelBase)
@@ -55,11 +52,6 @@ def get_compatible_parents(model):
     for m in related_models:
         compatibility_map[m] = get_base_polymorphic_models(m)
     return compatibility_map
-    # base_models = get_base_polymorphic_models(child_model)
-    # compatible = set([])
-    # for m in base_models:
-    #     compatible |= set(m.__subclasses__())
-    # return list(compatible)
 
 
 def get_model_id(model_cls):
@@ -91,8 +83,8 @@ class NestedPolymorphicInlineAdminFormset(
                     obj_with_nesting_data = self.formset
                 formsets = getattr(obj_with_nesting_data, 'nested_formsets', None) or []
                 inlines = getattr(obj_with_nesting_data, 'nested_inlines', None) or []
-                form.inlines = self.model_admin.get_inline_formsets(self.request, formsets, inlines,
-                    obj=obj, allow_nested=True)
+                form.inlines = self.model_admin.get_inline_formsets(self.request, formsets,
+                    inlines, obj=obj, allow_nested=True)
             for nested_inline in inline_admin_form.form.inlines:
                 for nested_form in nested_inline:
                     inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
@@ -107,7 +99,6 @@ class NestedPolymorphicInlineAdminFormset(
         else:
             formset_fk_model = ''
             parent_models = []
-            # compatible_parents = {}
         compatible_parents = get_compatible_parents(self.formset.model)
         sub_models = self.formset.model()._get_inheritance_relation_fields_and_models()
         data['nestedOptions'].update({
@@ -118,26 +109,43 @@ class NestedPolymorphicInlineAdminFormset(
                 get_model_id(k): [get_model_id(m) for m in v]
                 for k, v in compatible_parents.items()},
         })
-        data['options'].update({
-            'childTypes': [
-                {
-                    'type': get_model_id(model),
-                    'name': force_text(model._meta.verbose_name),
-                } for model in self.formset.child_forms.keys()
-            ],
-        })
+        if hasattr(self.formset, 'child_forms'):
+            data['options'].update({
+                'childTypes': [
+                    {
+                        'type': get_model_id(model),
+                        'name': force_text(model._meta.verbose_name),
+                    } for model in self.formset.child_forms.keys()
+                ],
+            })
         return json.dumps(data)
 
 
+class NestedPolymorphicAdminFormsetHelperMixin(object):
+
+    @staticmethod
+    def inline_admin_formset_helper_cls(
+            inline, formset, fieldsets, prepopulated, readonly, *args, **kwargs):
+        if hasattr(formset, 'child_forms'):
+            cls = NestedPolymorphicInlineAdminFormset
+        else:
+            cls = NestedInlineAdminFormset
+        return cls(
+            inline, formset, fieldsets, prepopulated, readonly, *args, **kwargs)
+
+
+class NestedPolymorphicInlineModelAdminMixin(
+        NestedPolymorphicAdminFormsetHelperMixin, NestedInlineModelAdminMixin):
+    pass
+
+
 class NestedPolymorphicInlineModelAdmin(
-        NestedInlineModelAdminMixin, PolymorphicInlineModelAdmin):
+        NestedPolymorphicInlineModelAdminMixin, PolymorphicInlineModelAdmin):
 
     formset = NestedBasePolymorphicInlineFormSet
-    inline_admin_formset_helper_cls = NestedPolymorphicInlineAdminFormset
 
-    class Child(NestedInlineModelAdminMixin, PolymorphicInlineModelAdmin.Child):
+    class Child(NestedPolymorphicInlineModelAdminMixin, PolymorphicInlineModelAdmin.Child):
         formset = NestedBasePolymorphicInlineFormSet
-        inline_admin_formset_helper_cls = NestedPolymorphicInlineAdminFormset
 
         def get_formset(self, request, obj=None, **kwargs):
             FormSet = BaseFormSet = kwargs.pop('formset', self.formset)
@@ -147,7 +155,8 @@ class NestedPolymorphicInlineModelAdmin(
                     sortable_field_name = self.sortable_field_name
 
             kwargs['formset'] = FormSet
-            return super(PolymorphicInlineModelAdmin.Child, self).get_formset(request, obj, **kwargs)
+            return super(PolymorphicInlineModelAdmin.Child, self).get_formset(
+                request, obj, **kwargs)
 
 
 class NestedStackedPolymorphicInline(NestedPolymorphicInlineModelAdmin):
@@ -166,11 +175,9 @@ class NestedGenericPolymorphicInlineModelAdmin(
         NestedGenericInlineModelAdminMixin, GenericPolymorphicInlineModelAdmin):
 
     formset = NestedBaseGenericPolymorphicInlineFormSet
-    inline_admin_formset_helper_cls = NestedPolymorphicInlineAdminFormset
 
     class Child(NestedGenericInlineModelAdminMixin, GenericPolymorphicInlineModelAdmin.Child):
         formset = NestedBaseGenericPolymorphicInlineFormSet
-        inline_admin_formset_helper_cls = NestedPolymorphicInlineAdminFormset
 
         def get_formset(self, request, obj=None, **kwargs):
             FormSet = BaseFormSet = kwargs.pop('formset', self.formset)
@@ -193,9 +200,8 @@ class NestedGenericStackedPolymorphicInline(NestedGenericPolymorphicInlineModelA
 
 
 class NestedPolymorphicInlineSupportMixin(
-        PolymorphicInlineSupportMixin, NestedModelAdminMixin):
-
-    inline_admin_formset_helper_cls = NestedPolymorphicInlineAdminFormset
+        NestedPolymorphicAdminFormsetHelperMixin, PolymorphicInlineSupportMixin,
+        NestedModelAdminMixin):
 
     def get_inline_formsets(self, request, formsets, inline_instances, obj=None, *args, **kwargs):
         return super(PolymorphicInlineSupportMixin, self).get_inline_formsets(

@@ -299,8 +299,9 @@ class DjangoFormset {
             const compatibleParents = this.$inline.djnData('compatibleParents') || {};
             $form.find('> .djn-group').each((i, el) => {
                 const fkModel = $(el).djnData('formsetFkModel');
-                const compatibleModels = compatibleParents[ctype] || [];
-                if (fkModel !== ctype && compatibleModels.indexOf(fkModel) === -1) {
+                const compatModels = compatibleParents[ctype] || [];
+                const isPolymorphic = !!($(el).data('inlineFormset').options.childTypes);
+                if (isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
                     el.parentNode.removeChild(el);
                 }
             });

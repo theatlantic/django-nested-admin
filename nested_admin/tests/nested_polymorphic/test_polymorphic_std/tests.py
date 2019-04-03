@@ -1,9 +1,12 @@
+import time
 from unittest import SkipTest
 from django.test import TestCase
 
 from .models import (
-    # LevelOneA, LevelTwoC, LevelTwoD, ALevelTwo, ALevelTwoC, ALevelTwoD, BLevelTwo, LevelTwoC
-    TopLevel, LevelOne, LevelOneB, LevelTwo, BLevelTwoC, BLevelTwoD)
+    # ALevelTwoC, LevelTwoC, LevelTwoD, ALevelTwo, BLevelTwo, LevelTwoC,
+    LevelOneA, ALevelTwoD, TopLevel, LevelOne, LevelOneB,
+    LevelTwo, BLevelTwoC, BLevelTwoD, GFKX)
+
 
 try:
     from nested_admin.tests.nested_polymorphic.base import BaseNestedPolymorphicTestCase
@@ -87,3 +90,34 @@ class PolymorphicStdTestCase(BaseNestedPolymorphicTestCase):
         self.assertIsInstance(b_children[1], BLevelTwoC)
         self.assertEqual(b_children[1].name, 'y')
         self.assertEqual(b_children[1].bc, 'bcy')
+
+    def test_add_level_two_child_gfk_inline(self):
+        obj = self.root_model.objects.create(name='test')
+        self.load_admin(obj)
+        idx_a = self.add_inline(model=LevelOneA, name='x', a='ax')
+        idx_a_d = self.add_inline(idx_a, model=ALevelTwoD, name='y', ad='ady')
+        self.add_inline(idx_a_d, model=GFKX)
+        gfk_name_selector = (
+            '#id_children-0-a_set-0-test_polymorphic_std-gfkx-content_type-object_id-0-name')
+        with self.available_selector(gfk_name_selector) as el:
+            el.clear()
+            el.send_keys('Z')
+
+        self.save_form()
+
+        children = obj.children.all()
+        self.assertEqual(len(children), 1)
+        self.assertIsInstance(children[0], LevelOneA)
+        a = children[0]
+        self.assertEqual(a.name, 'x')
+        self.assertEqual(a.a, 'ax')
+
+        a_children = a.a_set.all()
+        self.assertEqual(len(a_children), 1)
+        self.assertIsInstance(a_children[0], ALevelTwoD)
+        self.assertEqual(a_children[0].name, 'y')
+        self.assertEqual(a_children[0].ad, 'ady')
+
+        gfk_children = a_children[0].x_set.all()
+        self.assertEqual(len(gfk_children), 1)
+        self.assertEqual(gfk_children[0].name, 'Z')

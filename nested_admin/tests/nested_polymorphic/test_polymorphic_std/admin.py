@@ -3,7 +3,7 @@ import nested_admin
 
 from .models import (
     TopLevel, LevelOne, LevelOneA, LevelOneB, LevelTwo, LevelTwoC, LevelTwoD,
-    ALevelTwo, ALevelTwoC, ALevelTwoD, BLevelTwo, BLevelTwoC, BLevelTwoD)
+    ALevelTwo, ALevelTwoC, ALevelTwoD, BLevelTwo, BLevelTwoC, BLevelTwoD, GFKX)
 
 
 class LevelTwoInline(nested_admin.NestedStackedPolymorphicInline):
@@ -21,6 +21,14 @@ class LevelTwoInline(nested_admin.NestedStackedPolymorphicInline):
     child_inlines = (LevelTwoCInline, LevelTwoDInline)
 
 
+
+class GFKXInline(nested_admin.NestedGenericStackedInline):
+    model = GFKX
+    extra = 1
+    sortable_field_name = "position"
+    inline_classes = ("collapse", "open", "grp-collapse", "grp-open", )
+
+
 class ALevelTwoInline(nested_admin.NestedStackedPolymorphicInline):
     model = ALevelTwo
     extra = 0
@@ -32,6 +40,7 @@ class ALevelTwoInline(nested_admin.NestedStackedPolymorphicInline):
 
     class ALevelTwoDInline(nested_admin.NestedStackedPolymorphicInline.Child):
         model = ALevelTwoD
+        inlines = [GFKXInline]
 
     child_inlines = (ALevelTwoCInline, ALevelTwoDInline)
 
