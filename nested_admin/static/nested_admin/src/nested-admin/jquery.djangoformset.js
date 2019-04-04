@@ -332,7 +332,9 @@ class DjangoFormset {
         DJNesting.initAutocompleteFields(this.prefix);
         if ($.fn.grp_collapsible) {
             var addBackMethod = ($.fn.addBack) ? 'addBack' : 'andSelf';
-            $form.find('.collapse')[addBackMethod]().grp_collapsible({
+            $form.find(
+                '.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])'
+            )[addBackMethod]().grp_collapsible({
                 toggle_handler_slctr: '.grp-collapse-handler:first',
                 closed_css: 'closed grp-closed',
                 open_css: 'open grp-open',
