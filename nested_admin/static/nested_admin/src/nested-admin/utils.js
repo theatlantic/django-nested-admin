@@ -234,4 +234,28 @@ if (typeof window.SelectFilter !== 'undefined') {
     }, 12);
 }
 
+const grpFuncs = [
+    'grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m',
+    'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk',
+    'grp_related_generic', 'grp_related_m2m', 'grp_timepicker'];
+
+grpFuncs.forEach((funcName) => {
+    (function patchGrpFunction(callCount) {
+        if (callCount > 2) {
+            return;
+        }
+        if (typeof $ === 'undefined' || typeof $.fn[funcName] === 'undefined') {
+            return setTimeout(() => patchGrpFunction(callCount++), 12);
+        }
+        $.fn[funcName] = (function(oldFn) {
+            return function grp_fn_patch()  {
+                return oldFn.apply(
+                    this.filter(
+                        ':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'),
+                        arguments);
+            }
+        }($.fn[funcName]));
+    }(0));
+});
+
 module.exports = DJNesting;
