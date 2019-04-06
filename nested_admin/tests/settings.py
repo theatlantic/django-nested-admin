@@ -16,6 +16,8 @@ DEBUG = NESTED_ADMIN_DEBUG = True
 DATABASES = {
     'default': dj_database_url.parse(os.environ.get('DATABASE_URL', 'sqlite://:memory:')),
 }
+DATABASES['default']['TEST'] = dict(DATABASES['default'])
+
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
 
 if django.VERSION > (2, 0):

@@ -31,6 +31,7 @@ env:
   global:
     - PATH=$HOME/bin:$PATH
     - PIXELMATCH_BIN=$TRAVIS_BUILD_DIR/node_modules/.bin/pixelmatch
+    - DATABASE_URL=sqlite:////tmp/test.db
 
 before_script:
   - mkdir -p ~/bin
