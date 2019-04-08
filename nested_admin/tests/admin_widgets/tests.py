@@ -4,8 +4,12 @@ from unittest import SkipTest
 
 import django
 from django.conf import settings
-import six
 from django.utils.text import slugify, unescape_entities
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import Select
+import six
 
 from nested_admin.tests.base import (
     expected_failure_if_suit, skip_if_not_grappelli, BaseNestedAdminTestCase)
@@ -15,7 +19,7 @@ from .models import (
     TestWidgetMediaOrderRoot, TestWidgetMediaOrderA, TestWidgetMediaOrderB,
     TestWidgetMediaOrderC0, TestWidgetMediaOrderC1)
 from .admin import (
-    TestAdminWidgetsAInline, TestAdminWidgetsBInline,
+    TestAdminWidgetsAInline, TestAdminWidgetsBInline, TestAdminWidgetsM2M,
     TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
     TestWidgetMediaOrderAInline, TestWidgetMediaOrderBInline,
     TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline)
@@ -133,6 +137,37 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         current_val = self.selenium.execute_script(
             'return $("#%s").find("option:selected").html()' % field_id)
         self.assertEqual(unescape_entities(current_val), name)
+
+    def check_gfk_related_lookup(self, indexes):
+        ctype_field = self.get_field('content_type', indexes)
+        select = Select(ctype_field)
+        select.select_by_visible_text('test admin widgets m2m')
+        object_id_field = self.get_field('object_id', indexes)
+        object_id_field_id = object_id_field.get_attribute('id')
+        related_lookup_selector = (
+            "#%s + .related-lookup" % object_id_field_id)
+
+        self.wait_until(
+            ec.element_to_be_clickable((By.CSS_SELECTOR, related_lookup_selector)),
+            message="Timeout waiting for related lookup widget on '#%s'" % object_id_field_id)
+
+        lookup_el = self.selenium.find_element_by_css_selector(related_lookup_selector)
+        lookup_el.click()
+        with self.switch_to_popup_window():
+            with self.clickable_xpath('//tr//a[text()="Zither"]') as el:
+                el.click()
+        time.sleep(0.1)
+
+        z_pk = "%s" % TestAdminWidgetsM2M.objects.get(name='Zither').pk
+
+        def element_value_populated(d):
+            el = d.find_element_by_css_selector("#%s" % object_id_field_id)
+            return el.get_attribute('value')
+
+        self.wait_until(
+            element_value_populated,
+            message='Timeout waiting for gfk object_id value')
+        self.assertEqual(z_pk, object_id_field.get_attribute('value'))
 
 
 class TestAdminWidgets(BaseWidgetTestCase):
@@ -314,6 +349,20 @@ class TestAdminWidgets(BaseWidgetTestCase):
             "Zero autocomplete fields initialized")
         self.assertEqual(len(autocomplete_elements), 1,
             "Too many autocomplete fields initialized")
+
+    @skip_if_not_grappelli
+    def test_gfk_related_lookup_initial_extra(self):
+        self.load_admin()
+        self.check_gfk_related_lookup([0])
+        self.check_gfk_related_lookup([0, 0])
+
+    @skip_if_not_grappelli
+    def test_gfk_related_lookup_add_three_deep(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_gfk_related_lookup([1, 0, [1, 0]])
 
 
 class TestWidgetMediaOrder(BaseWidgetTestCase):

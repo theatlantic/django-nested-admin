@@ -99,8 +99,8 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
                     $this.parent().find('.grp-placeholder-related-generic').remove();
                 }
                 $this.grp_related_generic({
-                    content_type: '#id_' + prefix + index + contentType,
-                    object_id: '#id_' + prefix + index + objectId,
+                    content_type: `#id_${prefix}-${index}-${contentType}`,
+                    object_id: `#id_${prefix}-${index}-${objectId}`,
                     lookup_url: lookupUrls.related
                 });
             });
@@ -158,8 +158,8 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                     return;
                 }
                 $this.grp_autocomplete_generic({
-                    content_type: '#id_' + prefix + index + contentType,
-                    object_id: '#id_' + prefix + index + objectId,
+                    content_type: `#id_${prefix}-${index}-${contentType}`,
+                    object_id: `#id_${prefix}-${index}-${objectId}`,
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.m2m
                 });
