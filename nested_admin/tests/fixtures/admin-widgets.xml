@@ -8,9 +8,11 @@
     </object>
     <object pk="1" model="admin_widgets.testadminwidgetsrelated2">
         <field type="CharField" name="name">K</field>
+        <field type="DateTimeField" name="date_created">2019-01-01T00:00:00</field>
     </object>
     <object pk="2" model="admin_widgets.testadminwidgetsrelated2">
         <field type="CharField" name="name">L</field>
+                <field type="DateTimeField" name="date_created">2019-01-01T00:00:00</field>
     </object>
     <object pk="1" model="admin_widgets.testadminwidgetsm2m">
         <field type="CharField" name="name">X</field>

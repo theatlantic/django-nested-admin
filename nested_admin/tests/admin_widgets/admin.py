@@ -1,5 +1,6 @@
+from django.conf import settings
 from django.contrib import admin
-from nested_admin import NestedStackedInline, NestedModelAdmin
+from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsM2M, TestAdminWidgetsRelated1,
@@ -15,19 +16,22 @@ class TestAdminWidgetsC0Inline(NestedStackedInline):
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
     extra = 0
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']
     autocomplete_lookup_fields = {'fk': ['fk2']}
+    autocomplete_fields = ['fk3']
 
 
-class TestAdminWidgetsC1Inline(NestedStackedInline):
+class TestAdminWidgetsC1Inline(NestedTabularInline):
     model = TestAdminWidgetsC1
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
+    sortable_field_name = "position"
     extra = 0
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']
     autocomplete_lookup_fields = {'fk': ['fk2']}
+    autocomplete_fields = ['fk3']
 
 
 class TestAdminWidgetsBInline(NestedStackedInline):
@@ -37,9 +41,10 @@ class TestAdminWidgetsBInline(NestedStackedInline):
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
     extra = 1
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']
     autocomplete_lookup_fields = {'fk': ['fk2']}
+    autocomplete_fields = ['fk3']
 
 
 class TestAdminWidgetsAInline(NestedStackedInline):
@@ -49,9 +54,10 @@ class TestAdminWidgetsAInline(NestedStackedInline):
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
     extra = 1
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']
     autocomplete_lookup_fields = {'fk': ['fk2']}
+    autocomplete_fields = ['fk3']
 
 
 @admin.register(TestAdminWidgetsRoot)
@@ -60,25 +66,30 @@ class TestAdminWidgetsRootAdmin(NestedModelAdmin):
 
 
 admin.site.register(TestAdminWidgetsRelated1, NestedModelAdmin)
-admin.site.register(TestAdminWidgetsRelated2, NestedModelAdmin)
 admin.site.register(TestAdminWidgetsM2M, NestedModelAdmin)
+
+
+@admin.register(TestAdminWidgetsRelated2)
+class TestAdminWidgetsRelated2Admin(NestedModelAdmin):
+    ordering = ['-date_created']
+    search_fields = ['name']
 
 
 class TestWidgetMediaOrderC0Inline(NestedStackedInline):
     model = TestWidgetMediaOrderC0
     sortable_field_name = "position"
     extra = 0
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
 
 
-class TestWidgetMediaOrderC1Inline(NestedStackedInline):
+class TestWidgetMediaOrderC1Inline(NestedTabularInline):
     model = TestWidgetMediaOrderC1
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     extra = 0
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
     raw_id_fields = ['fk2']
     autocomplete_lookup_fields = {'fk': ['fk2']}
+    autocomplete_fields = ['fk3']
 
 
 class TestWidgetMediaOrderBInline(NestedStackedInline):
@@ -86,7 +97,7 @@ class TestWidgetMediaOrderBInline(NestedStackedInline):
     inlines = [TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline]
     sortable_field_name = "position"
     extra = 1
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
 
 
 class TestWidgetMediaOrderAInline(NestedStackedInline):
@@ -94,7 +105,7 @@ class TestWidgetMediaOrderAInline(NestedStackedInline):
     inlines = [TestWidgetMediaOrderBInline]
     sortable_field_name = "position"
     extra = 1
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = ("grp-collapse", "grp-open",)
 
 
 @admin.register(TestWidgetMediaOrderRoot)

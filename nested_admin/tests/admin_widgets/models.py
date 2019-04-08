@@ -20,6 +20,10 @@ class TestAdminWidgetsRelated1(models.Model):
 @python_2_unicode_compatible
 class TestAdminWidgetsRelated2(models.Model):
     name = models.CharField(max_length=200)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_created']
 
     def __str__(self):
         return self.name
@@ -49,6 +53,10 @@ class TestAdminWidgetsA(models.Model):
         on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
+    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
@@ -69,6 +77,10 @@ class TestAdminWidgetsB(models.Model):
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
@@ -92,6 +104,10 @@ class TestAdminWidgetsC0(models.Model):
         on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
+    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
     class Meta:
@@ -113,6 +129,10 @@ class TestAdminWidgetsC1(models.Model):
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 
@@ -183,6 +203,10 @@ class TestWidgetMediaOrderC1(models.Model):
     fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+        on_delete=CASCADE, related_name='+')
+    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
     m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
 

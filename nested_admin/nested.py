@@ -87,24 +87,31 @@ class NestedInlineAdminFormsetMixin(object):
                     inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
             yield inline_admin_form
 
-    def _media(self):
-        media = MergeSafeMedia(self.formset.media) + self.opts.media
+    @property
+    def media(self):
+        media = self.opts.media
+        if not isinstance(media, MergeSafeMedia):
+            media = MergeSafeMedia(media)
+        media = media + self.formset.media
         for fs in self:
             media = media + fs.media
             for inline in (getattr(fs.form, 'inlines', None) or []):
                 media = media + inline.media
 
-        # Add nested-admin js and css here, to ensure it goes after any widgets
         min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
-        return media + MergeSafeMedia(
-            js=(
-                server_data_js_url,
-                'nested_admin/dist/nested_admin%s.js' % min_ext,
-            ),
+
+        js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
+
+        media += MergeSafeMedia(
+            js=(server_data_js_url,),
             css={'all': (
                 'nested_admin/dist/nested_admin%s.css' % min_ext,
             )})
-    media = property(_media)
+
+        media_js = media._js
+        if js_file not in media_js:
+            media_js += [js_file]
+        return MergeSafeMedia(js=media_js, css=media._css)
 
     @property
     def inline_model_id(self):

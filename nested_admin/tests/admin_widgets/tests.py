@@ -41,8 +41,8 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         """A context manager that configures the inline classes to be collapsible."""
         if 'grappelli' in settings.INSTALLED_APPS:
             class_attr = "inline_classes"
-            class_val = ("collapse", "closed", "grp-collapse", "grp-closed")
-            reset_val = ("collapse", "open", "grp-collapse", "grp-open")
+            class_val = ("grp-collapse", "grp-closed")
+            reset_val = ("grp-collapse", "grp-open")
         else:
             class_attr = "classes"
             class_val = ("collapse", )
