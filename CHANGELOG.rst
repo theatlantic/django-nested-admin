@@ -1,6 +1,18 @@
 Changelog
 =========
 
+**master (unreleased)**
+
+* Fixed: Django 2.x ``autocomplete_fields`` support (`#118`_)
+* Fixed: (grappelli) proper initialization of admin widgets in deeply nested
+  inlines (`#122`_)
+* Fixed: (grappelli) generic ``related_lookup`` and
+  ``autocomplete_lookup_fields`` (`#114`_)
+
+.. _#114: https://github.com/theatlantic/django-nested-admin/issues/114
+.. _#118: https://github.com/theatlantic/django-nested-admin/issues/118
+.. _#122: https://github.com/theatlantic/django-nested-admin/issues/122
+
 **3.2.0 (Apr 3, 2019)**
 
 * Feature: Added beta support for django-polymorphic admin (`#86`_)
