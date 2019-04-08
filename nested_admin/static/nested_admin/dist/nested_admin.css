@@ -256,4 +256,13 @@ table.djn-table.grp-table th p > input[type="button"] {
 .grp-td > .grp-related-widget-wrapper .grp-related-widget-tools {
   overflow: visible; }
 
+#grp-content .grp-stacked > .grp-items > .grp-module > .grp-tabular {
+  background: #fff;
+  border: 2px solid #ccc;
+  margin-bottom: 5px; }
+  #grp-content .grp-stacked > .grp-items > .grp-module > .grp-tabular::after {
+    content: '';
+    display: block;
+    clear: both; }
+
 /*# sourceMappingURL=nested_admin.css.map*/

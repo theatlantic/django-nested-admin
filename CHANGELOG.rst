@@ -8,7 +8,10 @@ Changelog
   inlines (`#122`_)
 * Fixed: (grappelli) generic ``related_lookup`` and
   ``autocomplete_lookup_fields`` (`#114`_)
+* Fixed: (grappelli) Collapsible tabular inlines with
+  ``NestedTabularInline.classes`` now work. (`#90`_)
 
+.. _#90: https://github.com/theatlantic/django-nested-admin/issues/90
 .. _#114: https://github.com/theatlantic/django-nested-admin/issues/114
 .. _#118: https://github.com/theatlantic/django-nested-admin/issues/118
 .. _#122: https://github.com/theatlantic/django-nested-admin/issues/122
