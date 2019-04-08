@@ -249,4 +249,11 @@ table.djn-table.grp-table th p > input[type="button"] {
   right: 0.5em;
   left: auto; }
 
+.grp-tools.grp-related-widget-tools a.add-another {
+  top: 0;
+  margin: 0; }
+
+.grp-td > .grp-related-widget-wrapper .grp-related-widget-tools {
+  overflow: visible; }
+
 /*# sourceMappingURL=nested_admin.css.map*/

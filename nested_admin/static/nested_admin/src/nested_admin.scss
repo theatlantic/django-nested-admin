@@ -286,3 +286,11 @@ table.djn-table.grp-table th p > input[type="button"] {
     left: auto;
   }
 }
+
+.grp-tools.grp-related-widget-tools a.add-another {
+  top: 0;
+  margin: 0;
+}
+.grp-td > .grp-related-widget-wrapper .grp-related-widget-tools {
+  overflow: visible;
+}
