@@ -10,8 +10,11 @@ Changelog
   ``autocomplete_lookup_fields`` (`#114`_)
 * Fixed: (grappelli) Collapsible tabular inlines with
   ``NestedTabularInline.classes`` now work. (`#90`_)
+* Fixed: Suppress validation errors of inlines nested beneath deleted inlines
+  (`#101`_)
 
 .. _#90: https://github.com/theatlantic/django-nested-admin/issues/90
+.. _#101: https://github.com/theatlantic/django-nested-admin/issues/101
 .. _#114: https://github.com/theatlantic/django-nested-admin/issues/114
 .. _#118: https://github.com/theatlantic/django-nested-admin/issues/118
 .. _#122: https://github.com/theatlantic/django-nested-admin/issues/122

@@ -95,6 +95,30 @@ if admin_module:
     all_valid_patch_modules.append(admin_module)
 
 
+def descend_form(form):
+    for formset in getattr(form, 'nested_formsets', None) or []:
+        for child_formset, child_form in descend_formset(formset):
+            yield (child_formset, child_form)
+
+
+def descend_formset(formset):
+    for form in formset:
+        yield (formset, form)
+        for child_formset, child_form in descend_form(form):
+            yield child_formset, child_form
+
+
+def patch_delete_children_empty_permitted(formsets):
+    """Set empty_permitted=True for descendent forms of forms that are to be deleted"""
+    for top_level_formset in formsets:
+        for formset, form in descend_formset(top_level_formset):
+            formset._errors = None
+            form._errors = None
+            if formset.can_delete and formset._should_delete_form(form):
+                for _, child_form in descend_form(form):
+                    child_form.empty_permitted = True
+
+
 @monkeybiz.patch(all_valid_patch_modules)
 def all_valid(original_all_valid, formsets):
     """
@@ -104,8 +128,16 @@ def all_valid(original_all_valid, formsets):
     This causes a bug when one of the parent forms has empty_permitted == True,
     which happens if it is an "extra" form in the formset and its index
     is >= the formset's min_num.
+
+    Also hooks into the original validation to suppress validation errors thrown
+    by descendent inlines of deleted forms.
     """
     if not original_all_valid(formsets):
+        if len(formsets) and getattr(formsets[0], 'data', None):
+            has_delete = any(k for k in formsets[0].data if k.endswith('-DELETE'))
+            if has_delete:
+                patch_delete_children_empty_permitted(formsets)
+                return original_all_valid(formsets)
         return False
 
     for formset in formsets:
