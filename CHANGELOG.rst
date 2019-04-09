@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**master (unreleased)**
+**3.2.2 (Apr 9, 2019)**
 
 * Fixed: Django 2.x ``autocomplete_fields`` support (`#118`_)
 * Fixed: (grappelli) proper initialization of admin widgets in deeply nested
