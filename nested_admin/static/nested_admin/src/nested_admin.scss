@@ -293,9 +293,15 @@ table.djn-table.grp-table th p > input[type="button"] {
 }
 .grp-td > .grp-related-widget-wrapper .grp-related-widget-tools {
   overflow: visible;
+  display: flex;
 }
 
-#grp-content .grp-stacked > .grp-items > .grp-module > .grp-tabular {
+.select2-container + .grp-tools.grp-related-widget-tools {
+  position: relative;
+  right: 0;
+}
+
+#grp-content .grp-group > .grp-items > .grp-module > .grp-tabular {
   background: #fff;
   border: 2px solid #ccc;
   margin-bottom: 5px;
@@ -305,4 +311,67 @@ table.djn-table.grp-table th p > input[type="button"] {
     display: block;
     clear: both;
   }
+}
+
+table.grp-table.djn-table td.djn-td > input[type="text"],
+table.grp-table.djn-table td.djn-td > input[type="password"],
+table.grp-table.djn-table td.djn-td > input[type="url"],
+table.grp-table.djn-table td.djn-td > input[type="email"],
+table.grp-table.djn-table td.djn-td > input[type="number"],
+table.grp-table.djn-table td.djn-td > input[type="button"],
+table.grp-table.djn-table td.djn-td > select,
+table.grp-table.djn-table td.djn-td p input[type="text"],
+table.grp-table.djn-table td.djn-td p input[type="url"],
+table.grp-table.djn-table td.djn-td p input[type="email"],
+table.grp-table.djn-table td.djn-td p input[type="number"],
+table.grp-table.djn-table td.djn-td p > input[type="button"],
+table.grp-table.djn-table td.djn-td div.grp-related-widget-wrapper,
+table.grp-table.djn-table th.djn-th > input[type="text"],
+table.grp-table.djn-table th.djn-th > input[type="password"],
+table.grp-table.djn-table th.djn-th > input[type="url"],
+table.grp-table.djn-table th.djn-th > input[type="email"],
+table.grp-table.djn-table th.djn-th > input[type="number"],
+table.grp-table.djn-table th.djn-th > input[type="button"],
+table.grp-table.djn-table th.djn-th > select,
+table.grp-table.djn-table th.djn-th p input[type="text"],
+table.grp-table.djn-table th.djn-th p input[type="url"],
+table.grp-table.djn-table th.djn-th p input[type="email"],
+table.grp-table.djn-table th.djn-th p input[type="number"],
+table.grp-table.djn-table th.djn-th p > input[type="button"],
+table.grp-table.djn-table th.djn-th div.grp-related-widget-wrapper {
+  vertical-align: baseline;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+table.grp-table.djn-table td.djn-td a.fb_show,
+table.grp-table.djn-table td.djn-td a.related-lookup,
+table.grp-table.djn-table td.djn-td .ui-datepicker-trigger,
+table.grp-table.djn-table td.djn-td .ui-timepicker-trigger,
+table.grp-table.djn-table th.djn-th a.fb_show,
+table.grp-table.djn-table th.djn-th a.related-lookup,
+table.grp-table.djn-table th.djn-th .ui-datepicker-trigger,
+table.grp-table.djn-table th.djn-th .ui-timepicker-trigger {
+  margin: 0 0 0 -25px !important;
+}
+
+table.grp-table.djn-table td.djn-td .grp-autocomplete-wrapper-m2m,
+table.grp-table.djn-table td.djn-td .grp-autocomplete-wrapper-fk,
+table.grp-table.djn-table th.djn-th .grp-autocomplete-wrapper-m2m,
+table.grp-table.djn-table th.djn-th .grp-autocomplete-wrapper-fk {
+  margin: 0 !important;
+}
+
+table.grp-table.djn-table td.djn-td > input[type="file"],
+table.grp-table.djn-table td.djn-td > input[type="checkbox"],
+table.grp-table.djn-table td.djn-td > input[type="radio"],
+table.grp-table.djn-table td.djn-td > select,
+table.grp-table.djn-table td.djn-td p input[type="text"],
+table.grp-table.djn-table th.djn-th > input[type="file"],
+table.grp-table.djn-table th.djn-th > input[type="checkbox"],
+table.grp-table.djn-table th.djn-th > input[type="radio"],
+table.grp-table.djn-table th.djn-th > select,
+table.grp-table.djn-table th.djn-th p input[type="text"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
