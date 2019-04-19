@@ -67,28 +67,6 @@ class NestedBasePolymorphicInlineFormSet(
 class NestedPolymorphicInlineAdminFormset(
         NestedInlineAdminFormsetMixin, PolymorphicInlineAdminFormSet):
 
-    def __iter__(self):
-        if isinstance(self.formset, BasePolymorphicModelFormSet):
-            super_iter = super(NestedPolymorphicInlineAdminFormset, self).__iter__()
-        else:
-            super_iter = super(PolymorphicInlineAdminFormSet, self).__iter__()
-
-        for inline_admin_form in super_iter:
-            if not getattr(inline_admin_form.form, 'inlines', None):
-                form = inline_admin_form.form
-                obj = form.instance if form.instance.pk else None
-                formsets, inlines = [], []
-                obj_with_nesting_data = form
-                if form.prefix.endswith('__prefix__'):
-                    obj_with_nesting_data = self.formset
-                formsets = getattr(obj_with_nesting_data, 'nested_formsets', None) or []
-                inlines = getattr(obj_with_nesting_data, 'nested_inlines', None) or []
-                form.inlines = self.model_admin.get_inline_formsets(self.request, formsets,
-                    inlines, obj=obj, allow_nested=True)
-            for nested_inline in inline_admin_form.form.inlines:
-                for nested_form in nested_inline:
-                    inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
-            yield inline_admin_form
 
     def inline_formset_data(self):
         json_str = super(NestedPolymorphicInlineAdminFormset, self).inline_formset_data()

@@ -35,6 +35,11 @@ def get_method_function(fn):
     return fn.im_func if six.PY2 else fn
 
 
+def get_model_id(model_cls):
+    opts = model_cls._meta
+    return "%s-%s" % (opts.app_label, opts.model_name)
+
+
 lazy_reverse = lazy(reverse, str)
 server_data_js_url = lazy_reverse('nesting_server_data')
 
@@ -70,7 +75,12 @@ class NestedInlineAdminFormsetMixin(object):
             self.classes = ''
 
     def __iter__(self):
+        initial_form_count = self.formset.initial_form_count()
+        i = 0
         for inline_admin_form in super(NestedInlineAdminFormsetMixin, self).__iter__():
+            if i >= initial_form_count and not self.has_add_permission:
+                continue
+            i += 1
             if not getattr(inline_admin_form.form, 'inlines', None):
                 form = inline_admin_form.form
                 obj = form.instance if form.instance.pk else None
@@ -158,6 +168,10 @@ class NestedInlineAdminFormsetMixin(object):
                 'sortableOptions': self.opts.sortable_options,
             },
         })
+        if hasattr(self.opts, 'parent_model'):
+            data['nestedOptions'].update({
+                'inlineParentModel': get_model_id(self.opts.parent_model),
+            })
         return json.dumps(data)
 
     @property
@@ -258,15 +272,18 @@ class NestedModelAdminMixin(object):
                         form_obj = None
                     InlineFormSet = inline.get_formset(request, form_obj)
 
-                    if has_polymorphic and form_obj and hasattr(InlineFormSet, 'fk'):
-                        rel_model = compat_rel_to(InlineFormSet.fk)
-                        if not isinstance(form_obj, rel_model):
-                            continue
-
                     prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
                     prefixes[prefix] = prefixes.get(prefix, 0) + 1
                     if prefixes[prefix] != 1:
                         prefix = "%s-%s" % (prefix, prefixes[prefix])
+
+                    if has_polymorphic and form_obj:
+                        if hasattr(InlineFormSet, 'fk'):
+                            rel_model = compat_rel_to(InlineFormSet.fk)
+                            if not isinstance(form_obj, rel_model):
+                                continue
+                        if not isinstance(form_obj, inline.parent_model):
+                            continue
 
                     formset_params = {
                         'instance': form_obj,

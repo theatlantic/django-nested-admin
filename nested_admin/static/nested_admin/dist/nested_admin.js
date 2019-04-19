@@ -492,9 +492,17 @@ function () {
       $form.find('> .djn-group').each(function (i, el) {
         var fkModel = $(el).djnData('formsetFkModel');
         var compatModels = compatibleParents[ctype] || [];
-        var isPolymorphic = !!$(el).data('inlineFormset').options.childTypes;
+        var $el = $(el);
+        var parentModel = $el.djnData('inlineParentModel');
+        var isPolymorphic = !!$el.data('inlineFormset').options.childTypes;
+        var formPrefix = $el.data('inlineFormset').options.prefix;
 
-        if (isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
+        if (parentModel !== ctype || isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
+          $el.find('input[id$="_FORMS"]').each(function (i, input) {
+            input.value = 0;
+            input.setAttribute('value', '0');
+            el.parentNode.appendChild(input);
+          });
           el.parentNode.removeChild(el);
         }
       });

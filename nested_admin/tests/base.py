@@ -74,6 +74,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
                 });
             }
         """)
+        self.selenium.execute_script("window.$ = window.django.jQuery")
 
     def get_test_filename_base(self):
         """Returns a unique filename based on the current test conditions"""

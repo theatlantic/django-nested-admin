@@ -300,8 +300,16 @@ class DjangoFormset {
             $form.find('> .djn-group').each((i, el) => {
                 const fkModel = $(el).djnData('formsetFkModel');
                 const compatModels = compatibleParents[ctype] || [];
-                const isPolymorphic = !!($(el).data('inlineFormset').options.childTypes);
-                if (isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
+                const $el = $(el);
+                const parentModel = $el.djnData('inlineParentModel');
+                const isPolymorphic = !!($el.data('inlineFormset').options.childTypes);
+                const formPrefix = $el.data('inlineFormset').options.prefix;
+                if (parentModel !== ctype || (isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1)) {
+                    $el.find('input[id$="_FORMS"]').each((i, input) => {
+                        input.value = 0
+                        input.setAttribute('value', '0');
+                        el.parentNode.appendChild(input);
+                    });
                     el.parentNode.removeChild(el);
                 }
             });

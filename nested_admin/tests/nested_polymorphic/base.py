@@ -35,7 +35,11 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         return self.selenium.execute_script("""
           return (function getGroup($group) {
             $group = (typeof $group === 'undefined') ? $('.djn-group-root') : $($group);
-            var $djnItems = $group.find('> .djn-fieldset > .djn-items, > .djn-items');
+            var $djnItems = $group.find([
+              '> .djn-fieldset > .djn-items',
+              '> .djn-items',
+              '> .tabular.inline-related > .djn-fieldset > .djn-items'
+             ].join(', '));
             var $forms = $djnItems.find('> .djn-inline-form:not(.djn-empty-form)');
             return {
               model: $group.attr('data-inline-model'),
@@ -146,11 +150,14 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             base_model_cls = model_cls
         base_model_id = "%s-%s" % (
             base_model_cls._meta.app_label, base_model_cls._meta.model_name)
-        group_indexes.append(base_model_id)
-        group = self.get_group(indexes=group_indexes)
+        try:
+            group = self.get_group(indexes=group_indexes + [base_model_id])
+        except TypeError:
+            group = self.get_group(indexes=group_indexes + [model_id])
         group_id = group.get_attribute('id')
         djn_items = self.selenium.find_element_by_css_selector(
             "#%(id)s > .djn-fieldset > .djn-items, "
+            "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             "#%(id)s > .djn-items" % {'id': group_id})
         model_name, item_index = indexes[-1]
         return djn_items.find_element_by_xpath(
@@ -198,6 +205,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
         items_el = self.selenium.find_element_by_css_selector(
             '#%(id)s > .djn-fieldset > .djn-items, '
+            "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             '#%(id)s > .djn-items' % {'id': group_id})
 
         num_inlines = len(items_el.find_elements_by_xpath(
@@ -215,6 +223,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         group_id = group.get_attribute('id')
         djn_items = self.selenium.find_element_by_css_selector(
             "#%(id)s > .djn-fieldset > .djn-items, "
+            "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             "#%(id)s > .djn-items" % {'id': group_id})
         selector = "> .djn-item:not(.djn-no-drag,.djn-item-dragging,.djn-thead,.djn-empty-form)"
         return self.selenium.execute_script(

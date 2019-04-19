@@ -24,6 +24,7 @@
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
             <div class="{% if not forloop.last %}djn-item{% endif %} djn-module djn-inline-form{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} djn-empty-form empty-form{% endif %} inline-related"
+                 data-inline-model="{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
