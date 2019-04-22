@@ -11,15 +11,6 @@ class GrappelliCollapsibleTabularInlineTestCase(BaseNestedAdminTestCase):
     root_model = User
     nested_models = (Project, Document)
 
-    def wait_until_element_is(self, element, selector, timeout=None, message=None):
-        def element_matches_selector(d):
-            return d.execute_script(
-                'return !!$(arguments[0]).is(arguments[1])',
-                element, selector)
-
-        message = message or "Timeout waiting for element to match selector %s" % selector
-        self.wait_until(element_matches_selector, message=message)
-
     def expand_collapsible(self, indexes, is_group=False):
         if is_group:
             inline = self.get_group(indexes)

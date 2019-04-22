@@ -96,13 +96,19 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         if self.has_grappelli:
             selector = '#ui-datepicker-div .ui-state-highlight'
             with self.clickable_selector(selector, timeout=1) as el:
+                self.selenium.execute_script('arguments[0].scrollIntoView()', date_el)
                 self.click(el)
+                self.wait_until_element_is('#ui-datepicker-div', ':not(:visible)',
+                    'Datepicker widget did not close')
         time.sleep(0.1)
         self.click(time_el.find_element_by_xpath(now_link_xpath))
         if self.has_grappelli:
             selector = '#ui-timepicker .ui-state-active'
             with self.clickable_selector(selector, timeout=1) as el:
+                self.selenium.execute_script('arguments[0].scrollIntoView()', time_el)
                 self.click(el)
+                self.wait_until_element_is('#ui-timepicker', ':not(:visible)',
+                    'Timepicker widget did not close')
         time.sleep(0.10)
         self.assertNotEqual(date_el.get_attribute('value'), '', 'Date was not set')
         self.assertNotEqual(time_el.get_attribute('value'), '', 'Time was not set')

@@ -93,6 +93,15 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         """)
         self.selenium.execute_script("window.$ = window.django.jQuery")
 
+    def wait_until_element_is(self, element, selector, timeout=None, message=None):
+        def element_matches_selector(d):
+            return d.execute_script(
+                'return !!$(arguments[0]).is(arguments[1])',
+                element, selector)
+
+        message = message or "Timeout waiting for element to match selector %s" % selector
+        self.wait_until(element_matches_selector, message=message)
+
     def get_test_filename_base(self):
         """Returns a unique filename based on the current test conditions"""
         if self.has_grappelli:
