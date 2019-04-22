@@ -2943,6 +2943,13 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       return true;
     },
     canConnectWith: function canConnectWith(container1, container2, instance) {
+      var model1 = container1.data('inlineModel');
+      var model2 = container2.data('inlineModel');
+
+      if (model1 !== model2) {
+        return false;
+      }
+
       var instance2 = container2.data(instance.widgetName);
 
       if (!instance.options.fixedNestingDepth) {
@@ -3680,6 +3687,11 @@ function createSortable($group) {
       },
       update: function update(instance, $placeholder) {
         var $currItem = instance.currentItem;
+
+        if (!$currItem) {
+          return;
+        }
+
         var opts = instance.options; // 1. If a className is set as 'placeholder option, we
         //    don't force sizes - the class is responsible for that
         // 2. The option 'forcePlaceholderSize can be enabled to
@@ -3721,13 +3733,14 @@ function createSortable($group) {
         return false;
       }
 
-      if (isPolymorphic) {
-        var childModels = parentItem.closest('.djn-group').data('inlineFormset').nestedOptions.childModels;
-        var inlineModel = currentItem.data('inlineModel');
+      var $parentGroup = parentItem.closest('.djn-group');
+      var parentModel = $parentGroup.data('inlineModel');
+      var childModels = $parentGroup.djnData('childModels');
+      var currentModel = currentItem.data('inlineModel');
+      var isPolymorphicChild = childModels && childModels.indexOf(currentModel) !== -1;
 
-        if (childModels && childModels.indexOf(inlineModel) === -1) {
-          return false;
-        }
+      if (currentModel !== parentModel && !isPolymorphicChild) {
+        return false;
       }
 
       return true;
@@ -5060,8 +5073,8 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/fdintino/Sites/cms/src/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
-module.exports = __webpack_require__(/*! /Users/fdintino/Sites/cms/src/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
+__webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
+module.exports = __webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
 
 /***/ }),

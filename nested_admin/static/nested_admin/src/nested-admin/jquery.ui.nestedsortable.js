@@ -105,6 +105,11 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         keepInParent: false,
         isAllowed: function(item, parent) { return true; },
         canConnectWith: function(container1, container2, instance) {
+            var model1 = container1.data('inlineModel');
+            var model2 = container2.data('inlineModel');
+            if (model1 !== model2) {
+                return false;
+            }
             var instance2 = container2.data(instance.widgetName);
             if (!instance.options.fixedNestingDepth) {
                 if (!instance2 || !instance2.options.fixedNestingDepth) {

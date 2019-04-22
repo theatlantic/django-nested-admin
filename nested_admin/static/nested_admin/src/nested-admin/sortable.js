@@ -130,6 +130,9 @@ function createSortable($group) {
             },
             update: function(instance, $placeholder) {
                 var $currItem = instance.currentItem;
+                if (!$currItem) {
+                    return;
+                }
                 var opts = instance.options;
                 // 1. If a className is set as 'placeholder option, we
                 //    don't force sizes - the class is responsible for that
@@ -169,12 +172,13 @@ function createSortable($group) {
             if (parentItem && parentItem.hasClass('predelete')) {
                 return false;
             }
-            if (isPolymorphic) {
-                const childModels = parentItem.closest('.djn-group').data('inlineFormset').nestedOptions.childModels;
-                const inlineModel = currentItem.data('inlineModel');
-                if (childModels && childModels.indexOf(inlineModel) === -1) {
-                    return false;
-                }
+            const $parentGroup = parentItem.closest('.djn-group');
+            const parentModel = $parentGroup.data('inlineModel');
+            const childModels = $parentGroup.djnData('childModels');
+            const currentModel = currentItem.data('inlineModel');
+            const isPolymorphicChild = (childModels && childModels.indexOf(currentModel) !== -1);
+            if (currentModel !== parentModel && !isPolymorphicChild) {
+                return false;
             }
             return true;
         },
