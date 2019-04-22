@@ -31,7 +31,7 @@
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
-                 id="{{ inline_admin_formset.formset.prefix }}-{% if inline_admin_form.original.pk %}{{ inline_admin_form.form|form_index }}{% else %}empty-{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}{% endif %}">
+                 id="{{ inline_admin_formset.formset.prefix }}-{% if not inline_admin_form.is_empty %}{{ inline_admin_form.form|form_index }}{% else %}empty-{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}{% endif %}">
                 <h3 class="djn-collapse-handler grp-collapse-handler{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djn-drag-handler{% endif %}">
                     <div class="djn-collapse-handler-verbose-name">{{ inline_admin_form.model_admin.opts.verbose_name|capfirst }}&nbsp;&nbsp;</div>{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% endif %}
                 </h3>
