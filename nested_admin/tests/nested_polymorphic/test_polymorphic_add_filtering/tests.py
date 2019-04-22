@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import Select
 
 from django.test import TestCase
 
+from nested_admin.nested import get_model_id
 from .models import (
     FreeText, Poll, Question, MultipleChoiceGroup, Survey, Text, Textarea)
 
@@ -25,23 +26,27 @@ class PolymorphicAddFilteringTestCase(BaseNestedPolymorphicTestCase):
             raise SkipTest('django-polymorphic unavailable')
         super(PolymorphicAddFilteringTestCase, cls).setUpClass()
 
+    def add_inline(self, indexes=None, model=None, **kwargs):
+        indexes = super(PolymorphicAddFilteringTestCase, self).add_inline(
+            indexes, model, **kwargs)
+        if self.has_grappelli:
+            item = self.get_item(indexes)
+            item_id = item.get_attribute('id')
+            with self.clickable_selector("#%s > .djn-collapse-handler" % item_id) as el:
+                el.click()
+            self.wait_until_element_is(item, '.grp-open',
+                message='Collapsible #%s did not open' % item_id)
+        return indexes
+
     def get_element_by_id(self, id):
         return self.selenium.execute_script(
             "return document.getElementById(arguments[0])", id)
 
     def test_polymorphic_add_inline_filtering(self):
         survey = Survey.objects.create(title='my survey')
-        try:
-            self.load_admin(survey)
-        except:
-            pass
+        self.load_admin(survey)
 
         self.add_inline(model=FreeText)
-
-        if self.has_grappelli:
-            item_id = self.get_item([[0, 0]]).get_attribute('id')
-            with self.clickable_selector("#%s > .djn-collapse-handler" % item_id) as el:
-                el.click()
 
         self.set_field('value', 'a', indexes=[[0, 0], [0, 0]])
         self.set_field('value', 'b', indexes=[[0, 0], [1, 0]])
@@ -74,17 +79,12 @@ class PolymorphicAddFilteringTestCase(BaseNestedPolymorphicTestCase):
 
         self.add_inline(model=Poll)
 
-        if self.has_grappelli:
-            item_id = self.get_item([[0, 1]]).get_attribute('id')
-            with self.clickable_selector("#%s > .djn-collapse-handler" % item_id) as el:
-                el.click()
-
-        self.get_element_by_id('id_question_set-1-text_set-2-0-value').send_keys('f')
-        form_prefix = 'id_question_set-1-multiplechoicegroup_set-2-0'
-        self.get_element_by_id('%s-title' % form_prefix).send_keys('g')
-        self.get_element_by_id('%s-multiplechoice_set-0-label' % form_prefix).send_keys('h')
-        self.get_element_by_id('%s-multiplechoice_set-0-style_0' % form_prefix).click()
-        self.get_element_by_id('%s-multiplechoice_set-0-value' % form_prefix).send_keys('i')
+        self.set_field('value', 'f', indexes=[[0, 1], [0, 0]])
+        self.set_field('title', 'g', indexes=[[0, 1], [1, 0]])
+        form_prefix = self.get_item(indexes=[[0, 1], [1, 0], [0, 0]]).get_attribute('id')
+        self.get_element_by_id('id_%s-label' % form_prefix).send_keys('h')
+        self.get_element_by_id('id_%s-style_0' % form_prefix).click()
+        self.get_element_by_id('id_%s-value' % form_prefix).send_keys('i')
         self.save_form()
         questions = Question.objects.all()
         self.assertEqual(len(questions), 2)

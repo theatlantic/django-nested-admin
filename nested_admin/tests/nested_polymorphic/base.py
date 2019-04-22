@@ -235,7 +235,8 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         model_name = indexes.pop()
         expr_parts = []
         for parent_model, parent_item_index in indexes:
-            expr_parts += ["/*[%s][%d]" % (xpath_item(parent_model), parent_item_index + 1)]
+            expr_parts += ["/*[%s][count(preceding-sibling::*[%s]) = %d]" % (
+                xpath_item(parent_model), xpath_item(), parent_item_index)]
         expr_parts += ["/*[@data-inline-model='%s' and %s]"
             % (model_name, xpath_cls('djn-group'))]
         expr = "/%s" % ("/".join(expr_parts))
