@@ -14,6 +14,7 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 
+import six
 from selenosis import AdminSelenosisTestCase
 from .drag_drop import DragAndDropAction
 from .utils import (
@@ -55,9 +56,22 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
         cls.model_names = recursive_map_model_names(cls.models)
 
+    def setUp(self):
+        super(BaseNestedAdminTestCase, self).setUp()
+        self.server_exc_info = None
+        app = self.server_thread.httpd.application.application.application
+        if app._exception_middleware is None:
+            app.load_middleware()
+        app._exception_middleware.append(self.handle_server_error)
+
     def tearDown(self):
+        app = self.server_thread.httpd.application.application.application
+        app._exception_middleware = []
         self.dump_js_coverage()
         super(BaseNestedAdminTestCase, self).tearDown()
+
+    def handle_server_error(self, request, exception):
+        self.server_exc_info = sys.exc_info()
 
     def load_admin(self, obj=None):
         if obj is None:
@@ -65,6 +79,9 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         super(BaseNestedAdminTestCase, self).load_admin(obj)
 
     def initialize_page(self):
+        if self.server_exc_info:
+            six.reraise(*self.server_exc_info)
+
         super(BaseNestedAdminTestCase, self).initialize_page()
         # Store last mousemove event, so we can track the mouse position
         self.selenium.execute_script("""
