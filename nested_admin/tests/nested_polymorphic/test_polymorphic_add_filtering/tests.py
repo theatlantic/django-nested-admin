@@ -184,3 +184,17 @@ class PolymorphicAddFilteringTestCase(BaseNestedPolymorphicTestCase):
         self.assertEqual(poll_multi_choices[0].label, 'h')
         self.assertEqual(poll_multi_choices[0].style, 'radio')
         self.assertEqual(poll_multi_choices[0].value, 'i')
+
+    def test_polymorphic_delete(self):
+        survey = Survey.objects.create(title='my survey')
+        poll = Poll.objects.create(survey=survey, position=0)
+        Text.objects.create(question=poll, position=0, value='a')
+        Textarea.objects.create(question=poll, position=0, value='b')
+        self.load_admin(survey)
+        self.delete_inline([[0, 0]])
+        self.save_form()
+        errors = self.selenium.execute_script('return $(".errorlist").toArray()')
+        self.assertEqual(errors, [])
+        self.assertEqual(Poll.objects.count(), 0)
+        self.assertEqual(Text.objects.count(), 0)
+        self.assertEqual(Textarea.objects.count(), 0)

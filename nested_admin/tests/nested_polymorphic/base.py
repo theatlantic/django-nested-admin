@@ -163,6 +163,27 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         return djn_items.find_element_by_xpath(
             "./*[%s][%d]" % (xpath_item(), item_index + 1))
 
+    def delete_inline(self, indexes):
+        indexes = self._normalize_indexes(indexes)
+        model_id = indexes[-1][0]
+        app_label, model_name = model_id.split('-')
+        model_cls = apps.get_model(app_label, model_name)
+        if issubclass(model_cls, PolymorphicModel):
+            base_model_cls = get_base_polymorphic_model(model_cls)
+        else:
+            base_model_cls = model_cls
+        base_model_id = "%s-%s" % (
+            base_model_cls._meta.app_label, base_model_cls._meta.model_name)
+        item_id = self.get_item(indexes).get_attribute('id')
+        delete_selector = "#%s .djn-delete-handler.djn-model-%s" % (
+            item_id, base_model_id)
+        with self.clickable_selector(delete_selector) as el:
+            self.click(el)
+        if self.has_grappelli:
+            undelete_selector = "#%s.grp-predelete .grp-delete-handler.djn-model-%s" % (
+                item_id, base_model_id)
+            self.wait_until_clickable_selector(undelete_selector)
+
     def add_inline(self, indexes=None, model=None, **kwargs):
         model_name = "%s-%s" % (model._meta.app_label, model._meta.model_name)
         if issubclass(model, PolymorphicModel):

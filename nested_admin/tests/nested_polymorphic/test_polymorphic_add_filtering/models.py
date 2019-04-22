@@ -3,12 +3,16 @@ from django.db.models import ForeignKey, CASCADE
 from polymorphic.models import PolymorphicModel
 
 
+def NON_POLYMORPHIC_CASCADE(collector, field, sub_objs, using):
+    return CASCADE(collector, field, sub_objs.non_polymorphic(), using)
+
+
 class Survey(models.Model):
     title = models.CharField(max_length=255)
 
 
 class Question(PolymorphicModel):
-    survey = ForeignKey(Survey, on_delete=CASCADE)
+    survey = ForeignKey(Survey, on_delete=NON_POLYMORPHIC_CASCADE)
     position = models.PositiveSmallIntegerField(null=True)
 
     class Meta:
@@ -24,7 +28,7 @@ class Poll(Question):
 
 
 class QuestionComponent(PolymorphicModel):
-    question = ForeignKey(Question, on_delete=CASCADE)
+    question = ForeignKey(Question, on_delete=NON_POLYMORPHIC_CASCADE)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
@@ -44,7 +48,7 @@ class MultipleChoiceGroup(QuestionComponent):
 
 
 class MultipleChoice(models.Model):
-    group = ForeignKey(MultipleChoiceGroup, on_delete=CASCADE)
+    group = ForeignKey(MultipleChoiceGroup, on_delete=NON_POLYMORPHIC_CASCADE)
     label = models.CharField(max_length=255)
     style = models.CharField(max_length=255, choices=(
         ('radio', 'radio'),

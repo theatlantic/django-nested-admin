@@ -16,6 +16,12 @@ if six.PY2:
 else:
     from django.utils.encoding import force_str
 
+try:
+    from polymorphic.utils import get_base_polymorphic_model
+except ImportError:
+    def get_base_polymorphic_model(ChildModel, allow_abstract=False):
+        return None
+
 
 @contextlib.contextmanager
 def mutable_querydict(qd):
@@ -260,6 +266,12 @@ class NestedInlineFormSetMixin(object):
             self.__queryset = qs
         return self.__queryset
 
+    if django.VERSION < (1, 9):
+        def delete_existing(self, obj, commit=True):
+            """Deletes an existing model instance."""
+            if commit:
+                obj.delete()
+
     def save_existing_objects(self, initial_forms=None, commit=True):
         """
         Identical to parent class, except ``self.initial_forms`` is replaced
@@ -318,13 +330,21 @@ class NestedInlineFormSetMixin(object):
             if obj is None:
                 obj = self._existing_object(pk_value)
 
+            if obj is None or not obj.pk:
+                continue
+
             if form in forms_to_delete:
                 self.deleted_objects.append(obj)
-                if hasattr(self, 'delete_existing'):
+                model_cls = type(obj)
+                base_model_cls = get_base_polymorphic_model(type(obj))
+                if not base_model_cls:
                     self.delete_existing(obj, commit=commit)
                 else:
-                    if commit:
-                        obj.delete()
+                    # Special polymorphic delete handling
+                    try:
+                        self.delete_existing(obj, commit=commit)
+                    except base_model_cls.DoesNotExist:
+                        pass
                 continue
 
             # fk_val: The value one should find in the form's foreign key field
