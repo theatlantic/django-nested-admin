@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**master (unreleased)**
+
+* Fixed: visual inconsistencies in grappelli tabular inline styles (`#136`_)
+* Fixed: numerous issues with django-polymorphic integration (`#138`_)
+
+.. _#136: https://github.com/theatlantic/django-nested-admin/issues/136
+.. _#138: https://github.com/theatlantic/django-nested-admin/issues/138
+
 **3.2.2 (Apr 9, 2019)**
 
 * Fixed: Django 2.x ``autocomplete_fields`` support (`#118`_)
