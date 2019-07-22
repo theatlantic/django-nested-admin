@@ -350,7 +350,11 @@ function () {
     var minForms = this.mgmtVal('MIN_NUM_FORMS');
     var maxForms = this.mgmtVal('MAX_NUM_FORMS');
     var index = $form.djangoFormIndex();
-    var isInitial = $form.data('isInitial');
+    var isInitial = $form.data('isInitial'); // Clearing out the form HTML itself using DOM APIs is much faster
+    // than using jQuery to remove the element. Using jQuery is so
+    // slow that it hangs the page.
+
+    $form[0].innerHTML = "";
     $form.remove();
     totalForms -= 1;
     this.mgmtVal('TOTAL_FORMS', totalForms);
@@ -5073,8 +5077,8 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
-module.exports = __webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
+__webpack_require__(/*! /Users/fdintino/src/python/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
+module.exports = __webpack_require__(/*! /Users/fdintino/src/python/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
 
 /***/ }),

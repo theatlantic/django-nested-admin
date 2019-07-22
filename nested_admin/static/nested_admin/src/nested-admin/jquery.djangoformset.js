@@ -163,6 +163,10 @@ class DjangoFormset {
         var index = $form.djangoFormIndex();
         var isInitial = $form.data('isInitial');
 
+        // Clearing out the form HTML itself using DOM APIs is much faster
+        // than using jQuery to remove the element. Using jQuery is so
+        // slow that it hangs the page.
+        $form[0].innerHTML = "";
         $form.remove();
 
         totalForms -= 1;
