@@ -1,3 +1,4 @@
+{% load django_version_gte from nested_admin %}
 <fieldset class="module aligned djn-module {{ fieldset.classes }}{% if inline_admin_form.form.inlines %} has-inlines{% endif %}">
     {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
     {% if fieldset.description %}
@@ -20,7 +21,11 @@
                         {% endif %}
                     {% endif %}
                     {% if field.field.help_text %}
+                        {% if "3.0"|django_version_gte %}
+                        <div class="help">{{ field.field.help_text|safe }}</div>
+                        {% else %}
                         <p class="help">{{ field.field.help_text|safe }}</p>
+                        {% endif %}
                     {% endif %}
                 </div>
             {% endfor %}

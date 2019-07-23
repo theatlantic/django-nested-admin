@@ -2,7 +2,6 @@ try:
     from distutils.spawn import find_executable
 except:
     find_executable = lambda f: None
-from datetime import datetime
 import inspect
 import logging
 import os
@@ -23,8 +22,6 @@ from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
 import six
 from six.moves.urllib.parse import urlparse, urlunparse, ParseResult
-
-from selenium.webdriver.common.action_chains import ActionChains
 
 try:
     from storages.backends.s3boto3 import S3Boto3Storage
@@ -72,7 +69,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             cls.pixelmatch_bin = find_executable('pixelmatch')
         if not cls.pixelmatch_bin or not os.path.exists(cls.pixelmatch_bin):
             raise SkipTest("pixelmatch not installed")
-        cls.screenshot_output_dir = os.environ.get('SCREENSHOT_OUTPUT_DIR')
+        cls.screenshot_output_dir = os.environ.get('SCREENSHOT_OUTPUT_DIR', '/tmp/djn-tests')
         super(BaseNestedAdminTestCase, cls).setUpClass()
         cls.root_temp_dir = tempfile.mkdtemp()
 
@@ -83,15 +80,13 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             cls.path_prefix = "travis_%s" % os.environ['TRAVIS_BUILD_NUMBER']
         else:
             cls.path_prefix = "local"
-            # cls.path_prefix = "local_%s" % datetime.now().strftime('%Y%m%dT%H%M%S')
 
-        #
         cls.temp_dir = tempfile.mkdtemp(dir=cls.root_temp_dir)
         os.makedirs(os.path.join(cls.temp_dir, cls.path_prefix))
         if cls.screenshot_output_dir:
-            sceenshot_path = os.path.join(cls.screenshot_output_dir, cls.path_prefix)
-            if not os.path.exists(sceenshot_path):
-                os.makedirs(sceenshot_path)
+            screenshot_path = os.path.join(cls.screenshot_output_dir, cls.path_prefix)
+            if not os.path.exists(screenshot_path):
+                os.makedirs(screenshot_path)
 
         if all(os.environ.get(k) for k in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']):
             try:
@@ -128,16 +123,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def tearDownClass(cls):
         super(VisualComparisonTestCase, cls).tearDownClass()
         shutil.rmtree(cls.root_temp_dir)
-
-    # def setUp(self):
-    #     super(VisualComparisonTestCase, self).setUp()
-    #     self.temp_dir = tempfile.mkdtemp(dir=self.root_temp_dir)
-    #     os.makedirs(os.path.join(self.temp_dir, self.path_prefix))
-    #     if self.screenshot_output_dir:
-    #         sceenshot_path = os.path.join(self.screenshot_output_dir, self.path_prefix)
-    #         if not os.path.exists(sceenshot_path):
-    #             os.makedirs(sceenshot_path)
-    #     # self.selenium.set_window_size(780, 600)
 
     @property
     def models(self):
@@ -222,10 +207,8 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
         image_path = os.path.join(output_dir, "%s_%s_%s.png" % (prefix, name, suffix))
         # Move mouse to a consistent place, to avoid hover styles confusing things
-        body_element = self.selenium.execute_script('return document.body')
-        (ActionChains(self.selenium)
-            .move_to_element_with_offset(body_element, 0, 0)
-            .perform())
+        # body_element = self.selenium.execute_script('return document.body')
+        self.selenium.execute_script('document.body.scrollTop = 0')
         self.selenium.execute_script('$("*:focus").blur()')
         time.sleep(0.2)
         self.selenium.save_screenshot(image_path)

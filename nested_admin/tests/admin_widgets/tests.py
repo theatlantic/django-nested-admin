@@ -4,7 +4,12 @@ from unittest import SkipTest
 
 import django
 from django.conf import settings
-from django.utils.text import slugify, unescape_entities
+from django.utils.text import slugify
+
+try:
+    from html import unescape
+except ImportError:
+    from django.utils.text import unescape_entities as unescape
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -142,7 +147,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         field_id = field.get_attribute('id')
         current_val = self.selenium.execute_script(
             'return $("#%s").find("option:selected").html()' % field_id)
-        self.assertEqual(unescape_entities(current_val), name)
+        self.assertEqual(unescape(current_val), name)
 
     def check_gfk_related_lookup(self, indexes):
         ctype_field = self.get_field('content_type', indexes)

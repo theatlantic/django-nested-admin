@@ -102,6 +102,19 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         message = message or "Timeout waiting for element to match selector %s" % selector
         self.wait_until(element_matches_selector, message=message)
 
+    # @property
+    # def is_chromedriver(self):
+    #     return bool(self.selenium.capabilities.get('chrome')
+    #
+    # @property
+    # def chromedriver_version(self):
+    #     if not self.is_chromedriver:
+    #         return
+    #     version = self.selenium.capabilities['chrome'].get('chromedriverVersion')
+    #     if not version:
+    #         return
+    #     return version.partition(' ')[0]
+
     def get_test_filename_base(self):
         """Returns a unique filename based on the current test conditions"""
         if self.has_grappelli:
