@@ -26,6 +26,9 @@ class PlainTabularChildInline(InlineMixin, admin.TabularInline):
 class PlainTabularRootAdmin(admin.ModelAdmin):
     inlines = [PlainTabularChildInline]
 
+    class Media:
+        css = {'all': ['one_deep/grp-normalize.css']}
+
 
 class PlainStackedChildInline(InlineMixin, admin.StackedInline):
     model = PlainStackedChild

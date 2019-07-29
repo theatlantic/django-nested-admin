@@ -133,7 +133,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
     def check_fk(self, indexes):
         field = self.get_field('fk1', indexes)
-        parent = field.find_element_by_xpath('parent::*')
+        parent = field.get_property('parentNode').get_property('parentNode')
         add_related = parent.find_element_by_css_selector('.add-related')
         if self.has_grappelli:
             # Grappelli can be very slow to initialize fk bindings, particularly

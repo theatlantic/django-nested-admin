@@ -23,7 +23,7 @@
             {% if forloop.first %}
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
-            <div class="{% if not forloop.last %}djn-item  djn-is-polymorphic{% endif %} djn-module djn-inline-form{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if inline_admin_form.is_empty %} empty-form djn-empty-form{% endif %}{% if forloop.last %}  last-related{% endif %} inline-related  inline-{{ inline_admin_form.model_admin.opts.model_name }}"
+            <div class="{% if not forloop.last or not inline_admin_formset.has_add_permission %}djn-item  djn-is-polymorphic{% endif %} djn-module djn-inline-form{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if inline_admin_form.is_empty %} empty-form djn-empty-form{% endif %}{% if forloop.last %}  last-related{% endif %} inline-related  inline-{{ inline_admin_form.model_admin.opts.model_name }}"
                  data-inline-model="{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"

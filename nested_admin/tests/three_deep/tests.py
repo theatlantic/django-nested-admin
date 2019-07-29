@@ -1,3 +1,6 @@
+from django.contrib.auth.models import Permission, User
+from django.contrib.contenttypes.models import ContentType
+
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import TopLevel, LevelOne, LevelTwo, LevelThree
 
@@ -96,3 +99,89 @@ class TestDeepNesting(BaseNestedAdminTestCase):
 
         root_instances = self.root_model.objects.all()
         self.assertNotEqual(len(root_instances), 0, "%s did not save" % self.root_model.__name__)
+
+
+class TestNestedPermissions(BaseNestedAdminTestCase):
+    auto_login = False
+
+    root_model = TopLevel
+    nested_models = (LevelOne, LevelTwo, LevelThree)
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestNestedPermissions, cls).setUpClass()
+        cls.l1_model, cls.l2_model, cls.l3_model = cls.nested_models
+
+    def setUp(self):
+        super(TestNestedPermissions, self).setUp()
+
+        self.user = User(username='user', is_staff=True, is_active=True)
+        self.user.set_password('password')
+        self.user.save()
+
+        models = (self.root_model,) + self.nested_models
+        self.permissions = {}
+
+        for model in models:
+            app_label = model._meta.app_label
+            model_name = model._meta.model_name
+            for perm_type in ['add', 'change', 'delete']:
+                codename = "%s_%s" % (perm_type, model_name)
+                self.permissions[codename] = Permission.objects.get_by_natural_key(
+                    codename, app_label, model_name)
+
+            self.user.user_permissions.add(self.permissions["change_%s" % model_name])
+
+            try:
+                view_perm = Permission.objects.get_by_natural_key(
+                    'view_%s' % model_name, app_label, model_name)
+            except Permission.DoesNotExist:
+                pass
+            else:
+                # Give the user view permissions
+                self.user.user_permissions.add(view_perm)
+
+    def test_user_lacks_parent_permissions_can_add(self):
+        for perm_type in ['add', 'delete']:
+            self.user.user_permissions.add(
+                self.permissions['%s_levelthree' % perm_type])
+
+        toplevel = TopLevel.objects.create(name='root')
+        l1 = LevelOne.objects.create(name='a1', parent_level=toplevel, position=0)
+        l2_1 = LevelTwo.objects.create(name='b1', parent_level=l1, position=0)
+        LevelTwo.objects.create(name='b2', parent_level=l1, position=1)
+        LevelThree.objects.create(name='c1', parent_level=l2_1, position=0)
+
+        self.admin_login("user", "password")
+
+        self.load_admin(toplevel)
+
+        self.set_field('name', 'c2', [0, 1, 0])
+        self.save_form()
+
+        l3_objs = LevelThree.objects.all().order_by('name')
+        self.assertEqual(l3_objs[0].name, 'c1')
+        self.assertNotEqual(len(l3_objs), 1, "New LevelThree inline was not saved")
+        self.assertEqual(len(l3_objs), 2)
+        self.assertEqual(l3_objs[1].name, "c2")
+
+    def test_user_lacks_parent_permissions_can_delete(self):
+        for perm_type in ['add', 'delete']:
+            self.user.user_permissions.add(
+                self.permissions['%s_levelthree' % perm_type])
+
+        toplevel = TopLevel.objects.create(name='root')
+        l1 = LevelOne.objects.create(name='a1', parent_level=toplevel, position=0)
+        l2_1 = LevelTwo.objects.create(name='b1', parent_level=l1, position=0)
+        LevelTwo.objects.create(name='b2', parent_level=l1, position=1)
+        LevelThree.objects.create(name='c1', parent_level=l2_1, position=0)
+
+        self.admin_login("user", "password")
+
+        self.load_admin(toplevel)
+
+        self.delete_inline([0, 0, 0])
+        self.save_form()
+
+        l3_objs = LevelThree.objects.all().order_by('name')
+        self.assertEqual(len(l3_objs), 0, "LevelThree inline did not delete")

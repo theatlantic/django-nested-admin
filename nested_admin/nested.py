@@ -3,6 +3,7 @@ import json
 import django
 from django.conf import settings
 from django.contrib.admin import helpers
+from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 try:
     # Django 1.10
@@ -74,27 +75,25 @@ class NestedInlineAdminFormsetMixin(object):
         else:
             self.classes = ''
 
+    def _set_inline_admin_form_nested_attrs(self, inline_admin_form):
+        if not getattr(inline_admin_form.form, 'inlines', None):
+            form = inline_admin_form.form
+            obj = form.instance if form.instance.pk else None
+            formsets, inlines = [], []
+            obj_with_nesting_data = form
+            if form.prefix.endswith('__prefix__'):
+                obj_with_nesting_data = self.formset
+            formsets = getattr(obj_with_nesting_data, 'nested_formsets', None) or []
+            inlines = getattr(obj_with_nesting_data, 'nested_inlines', None) or []
+            form.inlines = self.model_admin.get_inline_formsets(self.request, formsets, inlines,
+                obj=obj, allow_nested=True)
+        for nested_inline in inline_admin_form.form.inlines:
+            for nested_form in nested_inline:
+                inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
+
     def __iter__(self):
-        initial_form_count = self.formset.initial_form_count()
-        i = 0
         for inline_admin_form in super(NestedInlineAdminFormsetMixin, self).__iter__():
-            if i >= initial_form_count and not self.has_add_permission:
-                continue
-            i += 1
-            if not getattr(inline_admin_form.form, 'inlines', None):
-                form = inline_admin_form.form
-                obj = form.instance if form.instance.pk else None
-                formsets, inlines = [], []
-                obj_with_nesting_data = form
-                if form.prefix.endswith('__prefix__'):
-                    obj_with_nesting_data = self.formset
-                formsets = getattr(obj_with_nesting_data, 'nested_formsets', None) or []
-                inlines = getattr(obj_with_nesting_data, 'nested_inlines', None) or []
-                form.inlines = self.model_admin.get_inline_formsets(self.request, formsets, inlines,
-                    obj=obj, allow_nested=True)
-            for nested_inline in inline_admin_form.form.inlines:
-                for nested_form in nested_inline:
-                    inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
+            self._set_inline_admin_form_nested_attrs(inline_admin_form)
             yield inline_admin_form
 
     @property
@@ -180,7 +179,38 @@ class NestedInlineAdminFormsetMixin(object):
         return tuple(classes | {"djn-model-%s" % self.inline_model_id})
 
 
-class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, helpers.InlineAdminFormSet):
+class NestedBaseInlineAdminFormSet(helpers.InlineAdminFormSet):
+    """
+    Normalize __iter__ so that it backports has_add_permission functionality
+    to older django versions
+    """
+    if django.VERSION < (2, 1):
+        def __iter__(self):
+            if self.has_change_permission:
+                readonly_fields_for_editing = self.readonly_fields
+            else:
+                readonly_fields_for_editing = self.readonly_fields + flatten_fieldsets(self.fieldsets)
+
+            for form, original in zip(self.formset.initial_forms, self.formset.get_queryset()):
+                view_on_site_url = self.opts.get_view_on_site_url(original)
+                yield helpers.InlineAdminForm(
+                    self.formset, form, self.fieldsets, self.prepopulated_fields,
+                    original, readonly_fields_for_editing, model_admin=self.opts,
+                    view_on_site_url=view_on_site_url)
+            for form in self.formset.extra_forms:
+                yield helpers.InlineAdminForm(
+                    self.formset, form, self.fieldsets, self.prepopulated_fields,
+                    None, self.readonly_fields, model_admin=self.opts,
+                )
+            if self.has_add_permission:
+                yield helpers.InlineAdminForm(
+                    self.formset, self.formset.empty_form,
+                    self.fieldsets, self.prepopulated_fields, None,
+                    self.readonly_fields, model_admin=self.opts,
+                )
+
+
+class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, NestedBaseInlineAdminFormSet):
     pass
 
 
@@ -261,7 +291,9 @@ class NestedModelAdminMixin(object):
             while i < len(nested_formsets_and_inline_instances):
                 formset, inline = nested_formsets_and_inline_instances[i]
                 i += 1
-                formset_forms = list(formset.forms) + [None]
+                formset_forms = list(formset.forms)
+                if request.method == 'GET':
+                    formset_forms += [None]
                 for form in formset_forms:
                     if form is not None:
                         form.parent_formset = formset
