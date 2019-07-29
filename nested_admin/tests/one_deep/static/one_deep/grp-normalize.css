@@ -1,0 +1,26 @@
+.grp-table:not(table) .grp-td > input[type="checkbox"],
+.grp-table:not(table) .grp-td > input[type="radio"],
+.grp-table:not(table) .grp-th > input[type="checkbox"],
+.grp-table:not(table) .grp-th > input[type="radio"] {
+  margin: 3px 0.5ex !important;
+  margin: revert !important;
+}
+
+.grp-table:not(table) .grp-td > input[type="file"],
+.grp-table:not(table) .grp-td > input[type="checkbox"],
+.grp-table:not(table) .grp-td > input[type="radio"],
+.grp-table:not(table) .grp-td > select,
+.grp-table:not(table) .grp-td p input[type="text"],
+.grp-table:not(table) .grp-th > input[type="file"],
+.grp-table:not(table) .grp-th > input[type="checkbox"],
+.grp-table:not(table) .grp-th > input[type="radio"],
+.grp-table:not(table) .grp-th > select,
+.grp-table:not(table) .grp-th p input[type="text"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.inline-group .grp-table:not(table) .grp-tbody > .grp-tr > .grp-td {
+  font-size: 11px;
+  line-height: 15px;
+}

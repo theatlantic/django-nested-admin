@@ -21,7 +21,7 @@
                         {% endif %}
                     {% endif %}
                     {% if field.field.help_text %}
-                        {% if "3.0"|django_version_gte %}
+                        {% if "2.2"|django_version_gte %}
                         <div class="help">{{ field.field.help_text|safe }}</div>
                         {% else %}
                         <p class="help">{{ field.field.help_text|safe }}</p>
