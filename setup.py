@@ -13,6 +13,7 @@ setup(
     version="3.2.3",
     install_requires=[
         'python-monkey-business>=1.0.0',
+        'setuptools',
         'six',
     ],
     description="Django admin classes that allow for nested inlines",
