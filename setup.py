@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import re
+import os.path
 
 try:
     from setuptools import setup, find_packages
@@ -8,9 +10,23 @@ except ImportError:
     from setuptools import setup, find_packages
 
 
+# Find the package version in __init__.py without importing it
+# (which we cannot do because it has extensive dependencies).
+init_file = os.path.join(os.path.dirname(__file__),
+                         'nested_admin', '__init__.py')
+with open(init_file, 'r') as f:
+    for line in f:
+        m = re.search(r'''^__version__ = (['"])(.+?)\1$''', line)
+        if m is not None:
+            version = m.group(2)
+            break
+    else:
+        raise LookupError('Unable to find __version__ in ' + init_file)
+
+
 setup(
     name='django-nested-admin',
-    version="3.2.3",
+    version=version,
     install_requires=[
         'python-monkey-business>=1.0.0',
         'six',

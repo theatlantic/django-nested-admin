@@ -15,10 +15,7 @@ import django
 import django.forms.formsets
 import monkeybiz
 
-try:
-    __version__ = pkg_resources.get_distribution('django-nested-admin').version
-except pkg_resources.DistributionNotFound:
-    __version__ = None
+__version__ = '3.2.3'
 
 # import mapping to objects in other modules
 all_by_module = {
