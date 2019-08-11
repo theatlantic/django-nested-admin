@@ -116,6 +116,14 @@ if (grappelli) {
   }
 }
 
+if (typeof $.fn.djangoAdminSelect2 === 'function') {
+  $.fn.djangoAdminSelect2 = function (orig) {
+    return function djangoAdminSelect2() {
+      orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+    };
+  }($.fn.djangoAdminSelect2);
+}
+
 $(document).ready(function () {
   // Remove the border on any empty fieldsets
   $('fieldset.grp-module, fieldset.module').filter(function (i, element) {
@@ -5077,8 +5085,8 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/fdintino/src/python/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
-module.exports = __webpack_require__(/*! /Users/fdintino/src/python/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
+__webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
+module.exports = __webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
 
 /***/ }),

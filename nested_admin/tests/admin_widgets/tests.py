@@ -12,6 +12,7 @@ except ImportError:
     from django.utils.text import unescape_entities as unescape
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 import six
@@ -374,6 +375,26 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline([1])
         self.add_inline([1, 0, [1]])
         self.check_gfk_related_lookup([1, 0, [1, 0]])
+
+    def test_nested_autocomplete_extra(self):
+        if self.has_grappelli:
+            raise SkipTest("Not testing autocomplete on grappelli")
+        if django.VERSION < (2, 0):
+            raise SkipTest("autocomplete_fields not available in Django before 2.0")
+        self.load_admin()
+        self.add_inline([0, [0]])
+        self.add_inline([0, 1, [0]])
+        select_field = self.get_field('fk3', indexes=[0, 1, [0, 0]])
+        select_parent = select_field.find_element_by_xpath('parent::*')
+        select_parent.click()
+        select2_is_active = self.selenium.execute_script(
+            'return $(".select2-search__field").length > 0')
+        self.assertTrue(select2_is_active)
+        select2_input = self.selenium.execute_script('return $(".select2-search__field")[0]')
+        self.assertIsNotNone(select2_input)
+        select2_input.send_keys('l')
+        select2_input.send_keys(Keys.ENTER)
+        self.assertEqual(select_field.get_attribute('value'), '2')
 
 
 class TestWidgetMediaOrder(BaseWidgetTestCase):

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+**master (unreleased)**
+
+* Fixed: Django 2.x ``autocomplete_fields`` deeply-nested initialization
+  (`#151`_)
+
 **3.2.3 (Apr 28, 2019)**
 
 * Fixed: visual inconsistencies in grappelli tabular inline styles (`#136`_)

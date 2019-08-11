@@ -22,6 +22,12 @@ if (grappelli) {
     }
 }
 
+if (typeof $.fn.djangoAdminSelect2 === 'function') {
+    $.fn.djangoAdminSelect2 = ((orig) => function djangoAdminSelect2() {
+        orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
+    })($.fn.djangoAdminSelect2);
+}
+
 $(document).ready(function() {
     // Remove the border on any empty fieldsets
     $('fieldset.grp-module, fieldset.module').filter(function(i, element) {
