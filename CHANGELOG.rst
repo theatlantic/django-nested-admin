@@ -5,6 +5,15 @@ Changelog
 
 * Fixed: Django 2.x ``autocomplete_fields`` deeply-nested initialization
   (`#151`_)
+* Fixed: Bug that prevented a user from saving edits to nested inlines if
+  they did not have add permissions to parent inlines. (`#144`_)
+* Fixed: Removed runtime dependency on setuptools (`#150`_).
+  Thanks `@tari`_!
+
+.. _#144: https://github.com/theatlantic/django-nested-admin/issues/144
+.. _#151: https://github.com/theatlantic/django-nested-admin/issues/151
+.. _#150: https://github.com/theatlantic/django-nested-admin/pull/150
+.. _@tari: https://github.com/tari
 
 **3.2.3 (Apr 28, 2019)**
 
