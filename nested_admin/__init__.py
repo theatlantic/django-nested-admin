@@ -20,7 +20,7 @@ __version__ = '3.2.3'
 # import mapping to objects in other modules
 all_by_module = {
     'nested_admin.forms': (
-        'SortableHiddenMixin'),
+        'SortableHiddenMixin',),
     'nested_admin.formsets': (
         'NestedInlineFormSet', 'NestedBaseGenericInlineFormSet'),
     'nested_admin.nested': (
