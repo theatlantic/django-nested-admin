@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**master (unreleased)**
+**3.2.4 (Aug 27, 2019)**
 
 * Fixed: Django 2.x ``autocomplete_fields`` deeply-nested initialization
   (`#151`_)
