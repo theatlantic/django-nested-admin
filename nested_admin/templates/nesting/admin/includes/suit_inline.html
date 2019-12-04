@@ -15,7 +15,7 @@
         {# write special control tags only for first multi field #}
         {% if forloop.first %}
             <div{% if not singlefield %}
-                class="field-box{% if field.field.name %} field-{{ field.field.name }}{% endif %}"{% endif %}>
+                class="field-box fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}"{% endif %}>
 
             <div class="control-label">
                 {{ field.label_tag }}

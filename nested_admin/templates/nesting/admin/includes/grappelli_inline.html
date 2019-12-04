@@ -7,7 +7,7 @@
             <div class="form-row djn-row grp-row grp-cells-{{ line.fields|length }}{% if not line.fields|length_is:"1" %} grp-cells{% else %}{% if line.errors %} grp-errors{% endif %}{% endif %}{% if not line.has_visible_field %} grp-row-hidden{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %} ">
                 {% for field in line %}
                     {# <div{% if not line.fields|length_is:"1" %} class="cell {{ field.field.name }}{% if field.errors %} error{% endif %}"{% endif %}> #}
-                    <div class="field-box l-2c-fluid l-d-4{% if line.fields|length_is:"1" %}{% else %} grp-cell{% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">
+                    <div class="field-box fieldBox l-2c-fluid l-d-4{% if line.fields|length_is:"1" %}{% else %} grp-cell{% if field.field.name %} {{ field.field.name }} field-{{ field.field.name }}{% endif %}{% if field.field.errors %} grp-errors{% endif %}{% endif %}">
                         {% if field.is_checkbox %}
                             <div class="c-1">&nbsp;</div>
                             <div class="c-2">
