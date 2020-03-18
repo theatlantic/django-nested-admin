@@ -89,23 +89,15 @@ if polymorphic is not None:
             os.path.basename(os.path.dirname(p))])
 
 
-if django.VERSION >= (1, 10):
-    MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    ]
-else:
-    MIDDLEWARE_CLASSES = (
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    )
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 LOGGING = {
     'version': 1,
@@ -133,3 +125,4 @@ TEST_RUNNER = 'selenosis.DiscoverRunner'
 
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_STORAGE_BUCKET_NAME = 'django-nested-admin-artifacts'
+AWS_DEFAULT_ACL = None

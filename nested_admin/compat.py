@@ -87,11 +87,3 @@ if MergeSafeMedia is None:
             if data:
                 new_media = self + MergeSafeMedia(css=data)
                 self._css = new_media._css
-
-
-def compat_rel(f):
-    return getattr(f, 'remote_field' if django.VERSION >= (1, 9) else 'rel')
-
-
-def compat_rel_to(f):
-    return getattr(compat_rel(f), 'model' if django.VERSION >= (1, 9) else 'to')

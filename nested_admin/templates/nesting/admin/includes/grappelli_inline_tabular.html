@@ -1,16 +1,5 @@
 {% load i18n nested_admin %}
 {% load admin_urlname admin_urlquote from admin_urls %}
-{# <td style="" class="original{% if inline_admin_formset.opts.sortable_field_name %} is-sortable{% endif %}"> #}
-{# {% spaceless %} #}
-{# {% for fieldset in inline_admin_form %} #}
-{#     {% for line in fieldset %} #}
-{#         {% for field in line %} #}
-{#             {% if field.field.is_hidden %} {{ field.field }} {% endif %} #}
-{#         {% endfor %} #}
-{#     {% endfor %} #}
-{# {% endfor %} #}
-{# {% endspaceless %} #}
-{# </td> #}
 
 {% for fieldset in inline_admin_form %}
     {% for line in fieldset %}
@@ -22,9 +11,6 @@
                     {% else %}
                         {{ field.field }}
                         {{ field.field.errors.as_ul }}
-                    {% endif %}
-                    {% if "1.11"|django_version_lt %}
-                    {% if field.field.help_text %}<p class="grp-help">{{ field.field.help_text }}</p>{% endif %}
                     {% endif %}
                 </td>
             {% endif %}

@@ -4060,11 +4060,11 @@ DJNesting.DjangoInlines = {
     if (typeof window.SelectFilter !== 'undefined') {
       $form.find('.selectfilter').each(function (index, value) {
         var namearr = value.name.split('-');
-        SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
+        SelectFilter.init(value.id, namearr[namearr.length - 1], false);
       });
       $form.find('.selectfilterstacked').each(function (index, value) {
         var namearr = value.name.split('-');
-        SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
+        SelectFilter.init(value.id, namearr[namearr.length - 1], true);
       });
     }
   }
@@ -5079,14 +5079,14 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /***/ }),
 
 /***/ 0:
-/*!***********************************************************************************************************************************!*\
-  !*** multi ./nested_admin/static/nested_admin/src/nested_admin.scss ./nested_admin/static/nested_admin/src/nested-admin/index.js ***!
-  \***********************************************************************************************************************************/
+/*!*******************************************************************************************************************************!*\
+  !*** multi nested_admin/static/nested_admin/src/nested_admin.scss nested_admin/static/nested_admin/src/nested-admin/index.js ***!
+  \*******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
-module.exports = __webpack_require__(/*! /private/tmp/django-nested-admin/nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
+__webpack_require__(/*! nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
+module.exports = __webpack_require__(/*! nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
 
 /***/ }),

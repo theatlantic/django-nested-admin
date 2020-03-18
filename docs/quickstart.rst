@@ -4,7 +4,7 @@
 Quick start guide
 =================
 
-`Django <http://www.djangoproject.com>`_ (version 1.8+) needs to be installed to use django-nested-admin.
+`Django <http://www.djangoproject.com>`_ (version 1.11+) needs to be installed to use django-nested-admin.
 
 Installation
 ============

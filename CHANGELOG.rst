@@ -3,6 +3,7 @@ Changelog
 
 **3.3.0 (unreleased)**
 
+* Dropped support for Django versions prior to 1.11
 * Dropped support for django-suit
 
 **3.2.4 (Aug 27, 2019)**

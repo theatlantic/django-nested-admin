@@ -202,11 +202,11 @@ DJNesting.DjangoInlines = {
         if (typeof window.SelectFilter !== 'undefined') {
             $form.find('.selectfilter').each(function(index, value) {
                 var namearr = value.name.split('-');
-                SelectFilter.init(value.id, namearr[namearr.length - 1], false, DJNesting.adminStaticPrefix);
+                SelectFilter.init(value.id, namearr[namearr.length - 1], false);
             });
             $form.find('.selectfilterstacked').each(function(index, value) {
                 var namearr = value.name.split('-');
-                SelectFilter.init(value.id, namearr[namearr.length - 1], true, DJNesting.adminStaticPrefix);
+                SelectFilter.init(value.id, namearr[namearr.length - 1], true);
             });
         }
     }

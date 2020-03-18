@@ -1,4 +1,3 @@
-import django
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -11,15 +10,11 @@ for app in settings.INSTALLED_APPS:
 
 urlpatterns = [
     url(r'^_nesting/', include('nested_admin.urls')),
+    url(r'^admin/', admin.site.urls),
 ]
 
-if django.VERSION < (1, 9):
-    urlpatterns += [url(r'^admin/', include(admin.site.urls))]
-else:
-    urlpatterns += [url(r'^admin/', admin.site.urls)]
-
 try:
-    import grappelli
+    import grappelli  # noqa
 except ImportError:
     pass
 else:

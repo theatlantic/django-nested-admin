@@ -1,13 +1,7 @@
 import textwrap
 import json
 
-from django.contrib.staticfiles.storage import staticfiles_storage
-try:
-    # Django 1.10
-    from django.urls import reverse, NoReverseMatch
-except ImportError:
-    # Django <= 1.9
-    from django.core.urlresolvers import reverse, NoReverseMatch
+from django.urls import reverse, NoReverseMatch
 from django.http import HttpResponse, HttpResponseForbidden
 
 
@@ -31,9 +25,7 @@ def server_data_js(request):
     server_data_js = textwrap.dedent(u"""
         var DJNesting = (typeof window.DJNesting != "undefined")
                        ? DJNesting : {};
-        DJNesting.adminStaticPrefix = %s;
         DJNesting.LOOKUP_URLS = %s;""" % (
-            json.dumps(staticfiles_storage.url("admin/")),
             json.dumps(grappelli_lookup_urls),))
 
     return HttpResponse(server_data_js.strip(),

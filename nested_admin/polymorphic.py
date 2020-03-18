@@ -5,14 +5,12 @@ from django.conf import settings
 from django.contrib.admin import ModelAdmin
 from django.utils.encoding import force_text
 from polymorphic.formsets import (
-    BasePolymorphicInlineFormSet, BasePolymorphicModelFormSet,
-    BaseGenericPolymorphicInlineFormSet)
+    BasePolymorphicInlineFormSet, BaseGenericPolymorphicInlineFormSet)
 from polymorphic.models import PolymorphicModelBase, PolymorphicModel
 from polymorphic.admin import (
     PolymorphicInlineModelAdmin, PolymorphicInlineAdminFormSet,
     PolymorphicInlineSupportMixin, GenericPolymorphicInlineModelAdmin)
 
-from .compat import compat_rel_to
 from .formsets import NestedInlineFormSetMixin, NestedBaseGenericInlineFormSetMixin
 from .nested import (
     NestedModelAdminMixin,
@@ -67,12 +65,11 @@ class NestedBasePolymorphicInlineFormSet(
 class NestedPolymorphicInlineAdminFormset(
         NestedInlineAdminFormsetMixin, PolymorphicInlineAdminFormSet):
 
-
     def inline_formset_data(self):
         json_str = super(NestedPolymorphicInlineAdminFormset, self).inline_formset_data()
         data = json.loads(json_str)
         if getattr(self.formset, 'fk', None):
-            formset_fk_model = compat_rel_to(self.formset.fk)
+            formset_fk_model = self.formset.fk.remote_field.model
             parent_models = get_base_polymorphic_models(formset_fk_model)
         else:
             formset_fk_model = ''

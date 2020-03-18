@@ -5,12 +5,7 @@ from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
-try:
-    # Django 1.10
-    from django.urls import reverse
-except ImportError:
-    # Django <= 1.9
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import capfirst
 import six
 from django.utils.functional import lazy
@@ -18,7 +13,7 @@ from six.moves import zip
 from django.utils.translation import gettext
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
-from .compat import MergeSafeMedia, compat_rel_to
+from .compat import MergeSafeMedia
 from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 
 
@@ -147,7 +142,7 @@ class NestedInlineAdminFormsetMixin(object):
 
         formset_fk_model = ''
         if getattr(self.formset, 'fk', None):
-            formset_fk_opts = compat_rel_to(self.formset.fk)._meta
+            formset_fk_opts = self.formset.fk.remote_field.model._meta
             formset_fk_model = "%s-%s" % (
                 formset_fk_opts.app_label, formset_fk_opts.model_name)
 
@@ -311,7 +306,7 @@ class NestedModelAdminMixin(object):
 
                     if has_polymorphic and form_obj:
                         if hasattr(InlineFormSet, 'fk'):
-                            rel_model = compat_rel_to(InlineFormSet.fk)
+                            rel_model = InlineFormSet.fk.remote_field.model
                             if not isinstance(form_obj, rel_model):
                                 continue
                         if not isinstance(form_obj, inline.parent_model):

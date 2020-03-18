@@ -1,4 +1,4 @@
-{% load i18n nested_admin %}
+{% load i18n nested_admin static %}
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
@@ -28,10 +28,8 @@
                   {% if not field.widget.is_hidden %}
                       <th class="grp-th djn-th {{ field.label|lower|slugify }}{% if field.required %} required{% endif %}">
                         {{ field.label|capfirst }}
-                        {% if "1.11"|django_version_gte %}
                         {% if field.help_text %}
                         &nbsp;<img src="{% static "admin/img/icon-unknown.svg" %}" class="grp-help-tooltip" width="12" height="12" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}" />
-                        {% endif %}
                         {% endif %}
                       </th>
                   {% endif %}

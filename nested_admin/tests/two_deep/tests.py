@@ -456,9 +456,6 @@ class InlineAdminTestCaseMixin(object):
             'group/b[0]/B 2[2]',
             'group/b[0]/A 2[3]'])
 
-    # This test fails with the phantomjs driver on Travis, but it passes locally
-    # and it passes with the Chrome driver, so chalking it up to a fluke
-    @skipIf(django.VERSION[:2] == (1, 9), "Skipping misbehaving test on travis")
     def test_drag_item_to_new_empty_section(self):
         group = self.root_model.objects.create(slug='group')
         section_a = self.section_cls.objects.create(slug='a', group=group, position=0)
@@ -819,8 +816,6 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
     nested_models = (StackedSection, StackedItem)
 
     def test_add_item_inline_label_update(self):
-        if django.VERSION < (1, 9):
-            raise SkipTest("Test only applies to Django 1.9+")
         if self.has_grappelli:
             raise SkipTest("Test does not apply if using django-grappelli")
         group = self.root_model.objects.create(slug='test')
