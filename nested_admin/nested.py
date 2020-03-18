@@ -106,8 +106,10 @@ class NestedInlineAdminFormsetMixin(object):
 
         js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
 
+        enable_server_data_js = 'grappelli' in settings.INSTALLED_APPS
+
         media += MergeSafeMedia(
-            js=(server_data_js_url,),
+            js=([server_data_js_url] if enable_server_data_js else []),
             css={'all': (
                 'nested_admin/dist/nested_admin%s.css' % min_ext,
             )})

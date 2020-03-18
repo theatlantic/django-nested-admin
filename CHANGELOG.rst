@@ -3,6 +3,7 @@ Changelog
 
 **3.3.0 (unreleased)**
 
+* Removed requirement to include urlpatterns for non-grappelli installs
 * Dropped support for Django versions prior to 1.11
 * Dropped support for django-suit
 

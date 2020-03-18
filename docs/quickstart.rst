@@ -27,14 +27,21 @@ Open ``settings.py`` and add ``nested_admin`` to your ``INSTALLED_APPS``
         'nested_admin',
     )
 
-Add URL-patterns:
+If you're using django-grappelli, you’ll need to add URL-patterns:
 
 .. code-block:: python
 
-    urlpatterns = patterns('',
+    # Django < 2
+    urlpatterns = [
         # ...
         url(r'^_nested_admin/', include('nested_admin.urls')),
-    )
+    ]
+
+    # Django 2+
+    urlpatterns = [
+        # ...
+        path('_nested_admin/', include('nested_admin.urls)),
+    ]
 
 Collect the static files:
 
