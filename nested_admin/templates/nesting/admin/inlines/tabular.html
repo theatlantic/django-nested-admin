@@ -3,7 +3,7 @@
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
-<div class="inline-group group djn-group djn-tabular{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}{% if inline_opts.suit_classes %} {{ inline_opts.suit_classes }}{% endif %}"
+<div class="inline-group group djn-group djn-tabular{% if is_nested %} djn-group-nested{% else %} djn-group-root{% endif %}"
     id="{{ inline_admin_formset.formset.prefix }}-group"
     data-inline-type="stacked"
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
@@ -18,7 +18,7 @@
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
 
-    <table class="djn-items inline-related djn-table{% ifsuit %} table table-bordered table-condensed table-striped{% else %} tabular{% endifsuit %}">
+    <table class="djn-items inline-related djn-table">
       <thead class="djn-module djn-thead">
           <tr>
               {% if "1.10"|django_version_gte %}<th class="original"></th>{% endif %}
@@ -44,13 +44,9 @@
 
             {% if inline_admin_form.form.non_field_errors %}
             <tr><td class="djn-td" colspan="{{ inline_admin_form|cell_count }}">
-                {% ifsuit %}
-                <div class="control-group error"><div class="help-block">{{ inline_admin_form.form.non_field_errors }}</div></div>
-                {% else %}
                 <ul class="errorlist">
                     <li>{{ inline_admin_form.form.non_field_errors }}</li>
                 </ul>
-                {% endifsuit %}
             </td></tr>
             {% endif %}
             <tr class="djn-tr form-row{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}">
@@ -58,7 +54,7 @@
                 <td class="original{% if inline_admin_formset.opts.sortable_field_name %} is-sortable{% endif %}">
                 {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
                 {% if inline_admin_form.original %}
-                {% ifnotsuit %}{{ inline_admin_form.original }}{% endifnotsuit %}
+                {{ inline_admin_form.original }}
                 {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}<a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="{% if inline_admin_formset.has_change_permission %}inlinechangelink{% else %}inlineviewlink{% endif %}">{% if inline_admin_formset.has_change_permission %}{% trans "Change" %}{% else %}{% trans "View" %}{% endif %}</a>{% endif %}
                 {% endif %}
                 {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
@@ -83,16 +79,12 @@
                     {% for line in fieldset %}
                         {% for field in line %}
                             {% if not field.field.is_hidden %}
-                                <td class="djn-td field-{{ field.field.name }}{% ifsuit %}{% if field.field.errors %} control-group error{% endif %}{% endifsuit %}">
+                                <td class="djn-td field-{{ field.field.name }}">
                                     {% if field.is_readonly %}
                                         <p>{{ field.contents }}</p>
                                     {% else %}
                                         {% if field.field.errors %}
-                                        {% ifsuit %}
-                                            <div class="help-block">{{ field.field.errors.as_ul }}</div>
-                                        {% else %}
-                                            {{ field.field.errors.as_ul }}
-                                        {% endifsuit %}
+                                          {{ field.field.errors.as_ul }}
                                         {% endif %}
                                         {{ field.field }}
                                     {% endif %}

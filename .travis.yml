@@ -4,7 +4,6 @@ matrix:
   include:
     - { python: 2.7, env: TOXENV=py27-dj18 }
     - { python: 2.7, env: TOXENV=py27-dj18-grp }
-    - { python: 2.7, env: TOXENV=py27-dj18-suit }
     - { python: 2.7, env: TOXENV=py27-dj111 }
     - { python: 2.7, env: TOXENV=py27-dj111-grp }
     - { python: 3.6, env: TOXENV=py36-dj111 }

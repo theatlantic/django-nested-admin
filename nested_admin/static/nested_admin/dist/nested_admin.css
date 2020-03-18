@@ -221,12 +221,6 @@ table.djn-table.grp-table th p > input[type="button"] {
 #content.colM fieldset.has-inlines > .djn-form-row-last {
   border-bottom: 0; }
 
-#suit-center .form-horizontal .djn-no-drag + .inline-related h3 {
-  margin-top: 0; }
-
-#suit-center .form-horizontal .inline-group .add-row a {
-  display: block; }
-
 .polymorphic-add-choice .grp-tools {
   overflow: visible; }
 

@@ -5,7 +5,7 @@ const path = require('path');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const srcDir = path.join(__dirname, 'nested_admin/static/nested_admin/src');
+const srcDir = 'nested_admin/static/nested_admin/src';
 const dstDir = path.join(
   __dirname, 'nested_admin',
   ((process.env.NODE_ENV === 'test') ? 'tests' : ''),
@@ -17,6 +17,11 @@ const baseConfig = {
       path.join(srcDir, 'nested_admin.scss'),
       path.join(srcDir, 'nested-admin/index.js'),
     ]
+  },
+  resolve: {
+    alias: {
+      'nested_admin': path.join(__dirname, 'nested_admin'),
+    },
   },
   mode: 'development',
   devtool: 'source-map',

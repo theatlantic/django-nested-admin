@@ -30,13 +30,7 @@ if django.VERSION > (2, 0):
 try:
     import grappelli  # noqa
 except ImportError:
-    try:
-        import suit  # noqa
-    except ImportError:
-        INSTALLED_APPS = tuple([])
-    else:
-        INSTALLED_APPS = tuple(['suit'])
-        SUIT_CONFIG = {'CONFIRM_UNSAVED_CHANGES': False}
+    INSTALLED_APPS = tuple([])
 else:
     INSTALLED_APPS = tuple(['grappelli'])
 
@@ -69,12 +63,6 @@ TEMPLATES = [{
         ],
     },
 }]
-
-if 'suit' in INSTALLED_APPS:
-    # django-suit has issues with string_if_invalid,
-    # so don't use this setting if testing suit.
-    TEMPLATES[0]['OPTIONS'].pop('string_if_invalid')
-
 
 INSTALLED_APPS += (
     'selenosis',

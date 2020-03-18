@@ -27,8 +27,6 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         if django.VERSION > (2, 2):
             raise SkipTest(
                 'django-polymorphic not yet compatible with Django 2.2 and 3.0')
-        if 'suit' in settings.INSTALLED_APPS:
-            raise SkipTest('Skipping for django-suit')
         super(BaseNestedPolymorphicTestCase, cls).setUpClass()
 
     def get_inline_model_names(self):

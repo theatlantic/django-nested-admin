@@ -116,8 +116,6 @@ class DragAndDropAction(object):
 
     def initialize_drag(self):
         source = self.source
-        if self.test_case.has_suit and self.test_case.browser == 'chrome' and source.tag_name == 'h3':
-            source = source.find_element_by_css_selector('b')
         try:
             source.click()
         except WebDriverException:

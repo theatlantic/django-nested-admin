@@ -429,9 +429,7 @@ class NestedInlineModelAdminMixin(object):
 
     inlines = []
 
-    if 'suit' in settings.INSTALLED_APPS:
-        fieldset_template = 'nesting/admin/includes/suit_inline.html'
-    elif 'grappelli' in settings.INSTALLED_APPS:
+    if 'grappelli' in settings.INSTALLED_APPS:
         fieldset_template = 'nesting/admin/includes/grappelli_inline.html'
     else:
         fieldset_template = 'nesting/admin/includes/inline.html'

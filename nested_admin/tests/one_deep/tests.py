@@ -29,7 +29,7 @@ except:
     S3Boto3Storage = None
 
 from nested_admin.tests.base import (
-    BaseNestedAdminTestCase, get_model_name, expected_failure_if_suit)
+    BaseNestedAdminTestCase, get_model_name)
 from .models import (
     PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot)
 
@@ -168,8 +168,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         args = [self.pixelmatch_bin, a, b, diff_output_path, 'threshold=0']
 
         exclude = exclude or []
-        if self.has_suit:
-            exclude += ['#suit-left', '#header']
         self.exclude_from_screenshots([a, b], exclude)
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -201,8 +199,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             (self.path_prefix,) + sys.version_info[:2] + django.VERSION[:2])
         if self.has_grappelli:
             prefix += "_grp"
-        elif self.has_suit:
-            prefix += "_suit"
         output_dir = self.screenshot_output_dir or self.temp_dir
         suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
         image_path = os.path.join(output_dir, "%s_%s_%s.png" % (prefix, name, suffix))
@@ -228,7 +224,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
-    @expected_failure_if_suit
     def test_tabular_empty(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -237,7 +232,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
-    @expected_failure_if_suit
     def test_tabular_one_item(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -260,7 +254,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
-    @expected_failure_if_suit
     def test_tabular_added_item(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
@@ -279,14 +272,11 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
 
-    @expected_failure_if_suit
     def test_tabular_validation_error(self):
         screenshots = []
         for model in [PlainTabularRoot, NestedTabularRoot]:
             self.root_model = model
             self.load_admin()
-            if self.has_suit:
-                self.selenium.set_window_size(1400, 800)
             self.add_inline()
             with self.clickable_selector('#id_slug') as el:
                 el.send_keys('a')
@@ -302,7 +292,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             exclude += ['#children-0 .delete']
         self.assertSameScreenshot(*screenshots, exclude=exclude)
 
-    @expected_failure_if_suit
     def test_stacked_validation_error(self):
         screenshots = []
         for model in [PlainStackedRoot, NestedStackedRoot]:

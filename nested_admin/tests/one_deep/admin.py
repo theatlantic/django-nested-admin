@@ -16,7 +16,6 @@ class InlineMixin(object):
         is_sortable = False
     inline_classes = ("collapse", "open", )
     readonly_fields = ("readonly", )
-    suit_classes = ''
 
 
 class PlainTabularChildInline(InlineMixin, admin.TabularInline):

@@ -5,8 +5,7 @@ from unittest import skipIf, SkipTest
 
 import django
 
-from nested_admin.tests.base import (
-    BaseNestedAdminTestCase, expected_failure_if_suit)
+from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import (
     StackedGroup, StackedSection, StackedItem,
     TabularGroup, TabularSection, TabularItem,
@@ -269,7 +268,6 @@ class InlineAdminTestCaseMixin(object):
             'group/b[0]/B 1[1]',
             'group/b[0]/B 2[2]'])
 
-    @expected_failure_if_suit
     def test_delete_item_undelete_section(self):
         """
         Test that, if an item is deleted, then the section is deleted, and
@@ -825,8 +823,6 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
             raise SkipTest("Test only applies to Django 1.9+")
         if self.has_grappelli:
             raise SkipTest("Test does not apply if using django-grappelli")
-        if self.has_suit:
-            raise SkipTest("Test does not apply if using django-suit")
         group = self.root_model.objects.create(slug='test')
         self.section_cls.objects.create(slug='test', group=group, position=0)
 

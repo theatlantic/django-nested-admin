@@ -119,8 +119,6 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         """Returns a unique filename based on the current test conditions"""
         if self.has_grappelli:
             admin_type = "grp"
-        elif self.has_suit:
-            admin_type = "suit"
         else:
             admin_type = "std"
 
@@ -405,12 +403,6 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
 def expected_failure_if_grappelli(func):
     if 'grappelli' in settings.INSTALLED_APPS:
-        return unittest.expectedFailure(func)
-    return func
-
-
-def expected_failure_if_suit(func):
-    if 'suit' in settings.INSTALLED_APPS:
         return unittest.expectedFailure(func)
     return func
 

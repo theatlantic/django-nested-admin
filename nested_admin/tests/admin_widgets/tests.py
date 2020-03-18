@@ -18,7 +18,7 @@ from selenium.webdriver.support.ui import Select
 import six
 
 from nested_admin.tests.base import (
-    expected_failure_if_suit, skip_if_not_grappelli, BaseNestedAdminTestCase)
+    skip_if_not_grappelli, BaseNestedAdminTestCase)
 from .models import (
     TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
     TestAdminWidgetsC0, TestAdminWidgetsC1,
@@ -194,9 +194,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         (TestAdminWidgetsC0, TestAdminWidgetsC1))
 
     def test_collapsible_inlines(self):
-        if not self.has_grappelli and django.VERSION < (1, 10):
-            raise SkipTest("Collapsible inlines not supported")
-
         with self.enable_inline_collapsing():
             self.load_admin()
             name_field = self.get_field('name', [0])
@@ -242,13 +239,11 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.check_datetime([0])
         self.check_datetime([0, 0])
 
-    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_prepopulated(self):
         self.load_admin()
         self.add_inline()
         self.check_prepopulated([1])
 
-    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_initial_extra_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -259,7 +254,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline()
         self.check_m2m([1])
 
-    @expected_failure_if_suit  # Known bug with this test, django-suit, and phantomjs
     def test_add_fk(self):
         self.load_admin()
         if self.has_grappelli:
@@ -308,7 +302,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline([1])
         self.check_fk([1, 1])
 
-    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_two_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -335,7 +328,6 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline([1, 0, [1]])
         self.check_fk([1, 0, [1, 0]])
 
-    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_three_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
@@ -422,7 +414,6 @@ class TestWidgetMediaOrder(BaseWidgetTestCase):
         self.add_inline([1, 0, [1]])
         self.check_fk([1, 0, [1, 0]])
 
-    @expected_failure_if_suit  # Known bug with prepopulated fields and django-suit
     def test_add_three_deep_prepopulated(self):
         self.load_admin()
         self.add_inline()
