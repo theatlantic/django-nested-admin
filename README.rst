@@ -30,28 +30,29 @@ Configuration
 =============
 
 To use django-nested-admin in your project, ``"nested_admin"`` must be added
-to the ``INSTALLED_APPS`` in your settings and you must include
-``nested_admin.urls`` in your django urlpatterns. `django-grappelli
-<https://github.com/sehmaschine/django-grappelli>`_ is an optional dependency
-of django-nested-admin. If using Grappelli, make sure the `appropriate version
-<http://django-grappelli.readthedocs.org/en/latest/#versions>`_ of Grappelli
-is installed for your version of Django.
+to the ``INSTALLED_APPS`` in your settings:
 
 .. code-block:: python
-
-    # settings.py
 
     INSTALLED_APPS = (
         # ...
         'nested_admin',
     )
 
-    # urls.py
+If you’re using `django-grappelli <https://github.com/sehmaschine/django-grappelli>`_,
+you will also need to add to include ``nested_admin.urls`` in your urlpatterns:
 
-    urlpatterns = patterns('',
+    # Django 2+
+    urlpatterns = [
         # ...
-        url(r'^nested_admin/', include('nested_admin.urls')),
-    )
+        path('_nested_admin/', include('nested_admin.urls)),
+    ]
+
+    # Django < 2
+    urlpatterns = [
+        # ...
+        url(r'^_nested_admin/', include('nested_admin.urls')),
+    ]
 
 Example Usage
 =============

@@ -43,12 +43,6 @@ If you're using django-grappelli, you’ll need to add URL-patterns:
         path('_nested_admin/', include('nested_admin.urls)),
     ]
 
-Collect the static files:
-
-.. code-block:: bash
-
-    $ python manage.py collectstatic
-
 Example Usage
 =============
 
