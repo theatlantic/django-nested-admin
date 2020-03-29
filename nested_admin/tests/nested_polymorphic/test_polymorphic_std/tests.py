@@ -1,10 +1,9 @@
-import time
 from unittest import SkipTest
 from django.test import TestCase
 
 from .models import (
     # ALevelTwoC, LevelTwoC, LevelTwoD, ALevelTwo, BLevelTwo, LevelTwoC,
-    LevelOneA, ALevelTwoD, TopLevel, LevelOne, LevelOneB,
+    LevelOneA, ALevelTwoC, ALevelTwoD, TopLevel, LevelOne, LevelOneB,
     LevelTwo, BLevelTwoC, BLevelTwoD, GFKX)
 
 
@@ -61,6 +60,41 @@ class PolymorphicStdTestCase(BaseNestedPolymorphicTestCase):
         self.assertIsInstance(b_children[0], BLevelTwoC)
         self.assertEqual(b_children[0].name, 'y')
         self.assertEqual(b_children[0].bc, 'bcy')
+
+    def test_add_level_two_to_empty_with_validation_error(self):
+        obj = self.root_model.objects.create(name='test')
+        self.load_admin(obj)
+
+        l1_indexes_a = self.add_inline(model=LevelOneA, name='k', a='ak')
+        l2_indexes_a = self.add_inline(l1_indexes_a, model=ALevelTwoC, name='l')
+        self.save_form()
+
+        self.remove_inline(l2_indexes_a)
+
+        l1_indexes_b = self.add_inline(model=LevelOneB, name='m', b='bm')
+        self.add_inline(l1_indexes_b, model=BLevelTwoD, name='n', bd='bdn')
+        self.save_form()
+
+        children = obj.children.all()
+        self.assertEqual(len(children), 2)
+
+        a, b = list(children)
+
+        self.assertIsInstance(a, LevelOneA)
+        self.assertIsInstance(b, LevelOneB)
+
+        self.assertEqual(a.name, 'k')
+        self.assertEqual(a.a, 'ak')
+        self.assertEqual(len(a.a_set.all()), 0)
+
+        self.assertEqual(b.name, 'm')
+        self.assertEqual(b.b, 'bm')
+
+        b_children = b.b_set.all()
+        self.assertEqual(len(b_children), 1)
+        self.assertIsInstance(b_children[0], BLevelTwoD)
+        self.assertEqual(b_children[0].name, 'n')
+        self.assertEqual(b_children[0].bd, 'bdn')
 
     def test_add_level_two_to_empty_drag_and_drop(self):
         obj = self.root_model.objects.create(name='test')

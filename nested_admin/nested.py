@@ -288,17 +288,17 @@ class NestedModelAdminMixin(object):
             while i < len(nested_formsets_and_inline_instances):
                 formset, inline = nested_formsets_and_inline_instances[i]
                 i += 1
-                formset_forms = list(formset.forms)
-                if request.method == 'GET':
-                    formset_forms += [None]
+                formset_forms = list(formset.forms) + [None]
                 for form in formset_forms:
                     if form is not None:
                         form.parent_formset = formset
                         form_prefix = form.prefix
                         form_obj = form.instance
+                        is_empty_form = False
                     else:
                         form_prefix = formset.add_prefix('empty')
                         form_obj = None
+                        is_empty_form = True
                     InlineFormSet = inline.get_formset(request, form_obj)
 
                     prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
@@ -319,7 +319,7 @@ class NestedModelAdminMixin(object):
                         'prefix': prefix,
                         'queryset': inline.get_queryset(request),
                     }
-                    if request.method == 'POST':
+                    if request.method == 'POST' and not is_empty_form:
                         formset_params.update({
                             'data': request.POST.copy(),
                             'files': request.FILES,

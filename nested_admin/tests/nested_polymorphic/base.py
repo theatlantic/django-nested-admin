@@ -24,9 +24,9 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        if django.VERSION > (2, 2):
+        if django.VERSION >= (3, 0):
             raise SkipTest(
-                'django-polymorphic not yet compatible with Django 2.2 and 3.0')
+                'django-polymorphic not yet compatible with Django 3.0')
         super(BaseNestedPolymorphicTestCase, cls).setUpClass()
 
     def get_inline_model_names(self):
@@ -236,6 +236,13 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         for field_name, val in six.iteritems(kwargs):
             self.set_field(field_name, val, indexes=indexes)
         return indexes
+
+    def remove_inline(self, indexes):
+        item = self.get_item(indexes)
+        remove_handler = self.selenium.execute_script(
+            "return $(arguments[0]).nearest('.djn-remove-handler')[0]",
+            item)
+        self.click(remove_handler)
 
     def get_num_inlines(self, indexes=None):
         group = self.get_group(indexes=indexes)
