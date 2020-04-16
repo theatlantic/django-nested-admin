@@ -45,7 +45,7 @@ you will also need to add to include ``nested_admin.urls`` in your urlpatterns:
     # Django 2+
     urlpatterns = [
         # ...
-        path('_nested_admin/', include('nested_admin.urls)),
+        path('_nested_admin/', include('nested_admin.urls')),
     ]
 
     # Django < 2
