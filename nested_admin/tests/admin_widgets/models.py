@@ -7,12 +7,12 @@ from django.db.models import ForeignKey, CASCADE
 from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-class TestAdminWidgetsRoot(models.Model):
+class WidgetsRoot(models.Model):
     name = models.CharField(max_length=200)
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsRelated1(models.Model):
+class WidgetsRelated1(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -27,7 +27,7 @@ class TestAdminWidgetsRelated1(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsRelated2(models.Model):
+class WidgetsRelated2(models.Model):
     name = models.CharField(max_length=200)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -46,7 +46,7 @@ class TestAdminWidgetsRelated2(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsM2M(models.Model):
+class WidgetsM2M(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -54,22 +54,7 @@ class TestAdminWidgetsM2M(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsM2MTwo(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-    def related_label(self):
-        return self.name
-
-    @staticmethod
-    def autocomplete_search_fields():
-        return ("name__icontains", )
-
-
-@python_2_unicode_compatible
-class TestAdminWidgetsM2MThree(models.Model):
+class WidgetsM2MTwo(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -84,24 +69,39 @@ class TestAdminWidgetsM2MThree(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsA(models.Model):
+class WidgetsM2MThree(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+    def related_label(self):
+        return self.name
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("name__icontains", )
+
+
+@python_2_unicode_compatible
+class WidgetsA(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestAdminWidgetsRoot, on_delete=CASCADE)
+    parent = ForeignKey(WidgetsRoot, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk1 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk2 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk3 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk4 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
-    m2m_two = models.ManyToManyField(TestAdminWidgetsM2MTwo, blank=True)
-    m2m_three = models.ManyToManyField(TestAdminWidgetsM2MThree, blank=True)
+    m2m = models.ManyToManyField(WidgetsM2M, blank=True)
+    m2m_two = models.ManyToManyField(WidgetsM2MTwo, blank=True)
+    m2m_three = models.ManyToManyField(WidgetsM2MThree, blank=True)
 
     content_type = ForeignKey(ContentType, null=True, blank=True, on_delete=CASCADE)
     object_id = models.PositiveIntegerField(null=True, blank=True)
@@ -120,24 +120,24 @@ class TestAdminWidgetsA(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsB(models.Model):
+class WidgetsB(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestAdminWidgetsA, on_delete=CASCADE)
+    parent = ForeignKey(WidgetsA, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk1 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk2 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk3 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk4 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
-    m2m_two = models.ManyToManyField(TestAdminWidgetsM2MTwo, blank=True)
-    m2m_three = models.ManyToManyField(TestAdminWidgetsM2MThree, blank=True)
+    m2m = models.ManyToManyField(WidgetsM2M, blank=True)
+    m2m_two = models.ManyToManyField(WidgetsM2MTwo, blank=True)
+    m2m_three = models.ManyToManyField(WidgetsM2MThree, blank=True)
 
     content_type = ForeignKey(ContentType, null=True, blank=True, on_delete=CASCADE)
     object_id = models.PositiveIntegerField(null=True, blank=True)
@@ -157,24 +157,24 @@ class TestAdminWidgetsB(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsC0(models.Model):
+class WidgetsC0(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestAdminWidgetsB, on_delete=CASCADE)
+    parent = ForeignKey(WidgetsB, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk1 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk2 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk3 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk4 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
-    m2m_two = models.ManyToManyField(TestAdminWidgetsM2MTwo, blank=True)
-    m2m_three = models.ManyToManyField(TestAdminWidgetsM2MThree, blank=True)
+    m2m = models.ManyToManyField(WidgetsM2M, blank=True)
+    m2m_two = models.ManyToManyField(WidgetsM2MTwo, blank=True)
+    m2m_three = models.ManyToManyField(WidgetsM2MThree, blank=True)
 
     content_type = ForeignKey(ContentType, null=True, blank=True, on_delete=CASCADE)
     object_id = models.PositiveIntegerField(null=True, blank=True)
@@ -194,23 +194,23 @@ class TestAdminWidgetsC0(models.Model):
 
 
 @python_2_unicode_compatible
-class TestAdminWidgetsC1(models.Model):
+class WidgetsC1(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestAdminWidgetsB, on_delete=CASCADE)
+    parent = ForeignKey(WidgetsB, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk1 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk2 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk3 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk4 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
-    m2m_two = models.ManyToManyField(TestAdminWidgetsM2MTwo, blank=True)
+    m2m = models.ManyToManyField(WidgetsM2M, blank=True)
+    m2m_two = models.ManyToManyField(WidgetsM2MTwo, blank=True)
 
     content_type = ForeignKey(ContentType, null=True, blank=True, on_delete=CASCADE)
     object_id = models.PositiveIntegerField(null=True, blank=True)
@@ -224,15 +224,15 @@ class TestAdminWidgetsC1(models.Model):
         return "%s - %s" % (parent_name, self.name)
 
 
-class TestWidgetMediaOrderRoot(models.Model):
+class WidgetMediaOrderRoot(models.Model):
     name = models.CharField(max_length=200)
 
 
 @python_2_unicode_compatible
-class TestWidgetMediaOrderA(models.Model):
+class WidgetMediaOrderA(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestWidgetMediaOrderRoot, on_delete=CASCADE)
+    parent = ForeignKey(WidgetMediaOrderRoot, on_delete=CASCADE)
     position = models.PositiveIntegerField()
 
     class Meta:
@@ -243,10 +243,10 @@ class TestWidgetMediaOrderA(models.Model):
 
 
 @python_2_unicode_compatible
-class TestWidgetMediaOrderB(models.Model):
+class WidgetMediaOrderB(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestWidgetMediaOrderA, on_delete=CASCADE)
+    parent = ForeignKey(WidgetMediaOrderA, on_delete=CASCADE)
     position = models.PositiveIntegerField()
 
     class Meta:
@@ -258,10 +258,10 @@ class TestWidgetMediaOrderB(models.Model):
 
 
 @python_2_unicode_compatible
-class TestWidgetMediaOrderC0(models.Model):
+class WidgetMediaOrderC0(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestWidgetMediaOrderB, on_delete=CASCADE)
+    parent = ForeignKey(WidgetMediaOrderB, on_delete=CASCADE)
     position = models.PositiveIntegerField()
 
     class Meta:
@@ -273,22 +273,22 @@ class TestWidgetMediaOrderC0(models.Model):
 
 
 @python_2_unicode_compatible
-class TestWidgetMediaOrderC1(models.Model):
+class WidgetMediaOrderC1(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    parent = ForeignKey(TestWidgetMediaOrderB, on_delete=CASCADE)
+    parent = ForeignKey(WidgetMediaOrderB, on_delete=CASCADE)
     position = models.PositiveIntegerField()
     date = models.DateTimeField(blank=True, null=True)
     upload = models.FileField(blank=True, null=True, upload_to='foo')
-    fk1 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk1 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk2 = models.ForeignKey(TestAdminWidgetsRelated1, blank=True, null=True,
+    fk2 = models.ForeignKey(WidgetsRelated1, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk3 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk3 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    fk4 = models.ForeignKey(TestAdminWidgetsRelated2, blank=True, null=True,
+    fk4 = models.ForeignKey(WidgetsRelated2, blank=True, null=True,
         on_delete=CASCADE, related_name='+')
-    m2m = models.ManyToManyField(TestAdminWidgetsM2M, blank=True)
+    m2m = models.ManyToManyField(WidgetsM2M, blank=True)
 
     class Meta:
         ordering = ('position', )

@@ -17,12 +17,12 @@ Running tests
 django-nested-admin has fairly extensive test coverage.
 The best way to run the tests is with `tox <https://testrun.org/tox/latest/>`_,
 which runs the tests against all supported Django installs. To run the tests
-within a virtualenv run ``python runtests.py`` from the repository directory.
-The tests require a selenium webdriver to be installed. By default the tests
-run with phantomjs, but it is also possible to run the tests with the chrome
-webdriver by passing ``--selenium=chrome`` to runtests.py or, if running with tox,
-running ``tox -- --selenium=chrome``. See ``runtests.py --help`` for a complete
-list of the options available.
+within a virtualenv run ``pytest`` from the repository directory. The tests
+require a selenium webdriver to be installed. By default the tests run with
+phantomjs, but it is also possible to run the tests with the chrome webdriver
+by passing ``--selenosis-driver=chrome`` to ``pytest`` or, if running with
+tox, running ``tox -- --selenosis-driver=chrome``. See ``pytest --help`` for
+a complete list of the options available.
 
 Pull requests are automatically run through Travis CI upon submission to
 verify that the changes do not introduce regressions.

@@ -39,9 +39,8 @@ before_script:
 before_install:
   - nvm install 11
   - nvm use 11
-  - travis_retry travis_retry npm install
-  - travis_retry travis_retry npm install codecov
-  - travis_retry travis_retry npm install pixelmatch
+  - travis_retry npm install
+  - travis_retry npm install codecov pixelmatch
   - NODE_ENV=test npm run build
 
 install:
@@ -49,10 +48,8 @@ install:
 
 script:
   - |
-    travis_retry travis_retry travis_retry tox -- \
-      --selenium=chrome-headless \
-      --verbosity=2 \
-      --failfast
+    travis_retry travis_retry tox -- \
+      --selenosis-driver=chrome-headless -v --exitfirst
   - npm run report
   - npm run codecov
   - coverage xml

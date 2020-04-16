@@ -3,15 +3,15 @@ from django.contrib import admin
 from nested_admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
 from .models import (
-    TestAdminWidgetsRoot, TestAdminWidgetsM2M, TestAdminWidgetsRelated1,
-    TestAdminWidgetsRelated2, TestAdminWidgetsA, TestAdminWidgetsB,
-    TestAdminWidgetsC0, TestAdminWidgetsC1, TestAdminWidgetsM2MTwo,
-    TestWidgetMediaOrderRoot, TestWidgetMediaOrderA, TestWidgetMediaOrderB,
-    TestWidgetMediaOrderC0, TestWidgetMediaOrderC1)
+    WidgetsRoot, WidgetsM2M, WidgetsRelated1,
+    WidgetsRelated2, WidgetsA, WidgetsB,
+    WidgetsC0, WidgetsC1, WidgetsM2MTwo,
+    WidgetMediaOrderRoot, WidgetMediaOrderA, WidgetMediaOrderB,
+    WidgetMediaOrderC0, WidgetMediaOrderC1)
 
 
-class TestAdminWidgetsC0Inline(NestedStackedInline):
-    model = TestAdminWidgetsC0
+class WidgetsC0Inline(NestedStackedInline):
+    model = WidgetsC0
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
@@ -31,8 +31,8 @@ class TestAdminWidgetsC0Inline(NestedStackedInline):
     }
 
 
-class TestAdminWidgetsC1Inline(NestedTabularInline):
-    model = TestAdminWidgetsC1
+class WidgetsC1Inline(NestedTabularInline):
+    model = WidgetsC1
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
@@ -48,9 +48,9 @@ class TestAdminWidgetsC1Inline(NestedTabularInline):
     }
 
 
-class TestAdminWidgetsBInline(NestedStackedInline):
-    model = TestAdminWidgetsB
-    inlines = [TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline]
+class WidgetsBInline(NestedStackedInline):
+    model = WidgetsB
+    inlines = [WidgetsC0Inline, WidgetsC1Inline]
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
@@ -70,9 +70,9 @@ class TestAdminWidgetsBInline(NestedStackedInline):
     }
 
 
-class TestAdminWidgetsAInline(NestedStackedInline):
-    model = TestAdminWidgetsA
-    inlines = [TestAdminWidgetsBInline]
+class WidgetsAInline(NestedStackedInline):
+    model = WidgetsA
+    inlines = [WidgetsBInline]
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     sortable_field_name = "position"
@@ -92,30 +92,30 @@ class TestAdminWidgetsAInline(NestedStackedInline):
     }
 
 
-@admin.register(TestAdminWidgetsRoot)
-class TestAdminWidgetsRootAdmin(NestedModelAdmin):
-    inlines = [TestAdminWidgetsAInline]
+@admin.register(WidgetsRoot)
+class WidgetsRootAdmin(NestedModelAdmin):
+    inlines = [WidgetsAInline]
 
 
-admin.site.register(TestAdminWidgetsRelated1, NestedModelAdmin)
-admin.site.register(TestAdminWidgetsM2M, NestedModelAdmin)
-admin.site.register(TestAdminWidgetsM2MTwo, NestedModelAdmin)
+admin.site.register(WidgetsRelated1, NestedModelAdmin)
+admin.site.register(WidgetsM2M, NestedModelAdmin)
+admin.site.register(WidgetsM2MTwo, NestedModelAdmin)
 
 
-@admin.register(TestAdminWidgetsRelated2)
-class TestAdminWidgetsRelated2Admin(NestedModelAdmin):
+@admin.register(WidgetsRelated2)
+class WidgetsRelated2Admin(NestedModelAdmin):
     ordering = ['-date_created']
     search_fields = ['name']
 
 
-class TestWidgetMediaOrderC0Inline(NestedStackedInline):
-    model = TestWidgetMediaOrderC0
+class WidgetMediaOrderC0Inline(NestedStackedInline):
+    model = WidgetMediaOrderC0
     sortable_field_name = "position"
     extra = 0
 
 
-class TestWidgetMediaOrderC1Inline(NestedTabularInline):
-    model = TestWidgetMediaOrderC1
+class WidgetMediaOrderC1Inline(NestedTabularInline):
+    model = WidgetMediaOrderC1
     prepopulated_fields = {'slug': ('name', )}
     filter_horizontal = ['m2m']
     extra = 0
@@ -125,22 +125,22 @@ class TestWidgetMediaOrderC1Inline(NestedTabularInline):
     autocomplete_fields = ['fk3']
 
 
-class TestWidgetMediaOrderBInline(NestedStackedInline):
-    model = TestWidgetMediaOrderB
-    inlines = [TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline]
+class WidgetMediaOrderBInline(NestedStackedInline):
+    model = WidgetMediaOrderB
+    inlines = [WidgetMediaOrderC0Inline, WidgetMediaOrderC1Inline]
     sortable_field_name = "position"
     extra = 1
     inline_classes = ("grp-collapse", "grp-open",)
 
 
-class TestWidgetMediaOrderAInline(NestedStackedInline):
-    model = TestWidgetMediaOrderA
-    inlines = [TestWidgetMediaOrderBInline]
+class WidgetMediaOrderAInline(NestedStackedInline):
+    model = WidgetMediaOrderA
+    inlines = [WidgetMediaOrderBInline]
     sortable_field_name = "position"
     extra = 1
     inline_classes = ("grp-collapse", "grp-open",)
 
 
-@admin.register(TestWidgetMediaOrderRoot)
-class TestWidgetMediaOrderRootAdmin(NestedModelAdmin):
-    inlines = [TestWidgetMediaOrderAInline]
+@admin.register(WidgetMediaOrderRoot)
+class WidgetMediaOrderRootAdmin(NestedModelAdmin):
+    inlines = [WidgetMediaOrderAInline]

@@ -20,15 +20,15 @@ import six
 from nested_admin.tests.base import (
     skip_if_not_grappelli, BaseNestedAdminTestCase)
 from .models import (
-    TestAdminWidgetsRoot, TestAdminWidgetsA, TestAdminWidgetsB,
-    TestAdminWidgetsC0, TestAdminWidgetsC1,
-    TestWidgetMediaOrderRoot, TestWidgetMediaOrderA, TestWidgetMediaOrderB,
-    TestWidgetMediaOrderC0, TestWidgetMediaOrderC1)
+    WidgetsRoot, WidgetsA, WidgetsB,
+    WidgetsC0, WidgetsC1,
+    WidgetMediaOrderRoot, WidgetMediaOrderA, WidgetMediaOrderB,
+    WidgetMediaOrderC0, WidgetMediaOrderC1)
 from .admin import (
-    TestAdminWidgetsAInline, TestAdminWidgetsBInline, TestAdminWidgetsM2M,
-    TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
-    TestWidgetMediaOrderAInline, TestWidgetMediaOrderBInline,
-    TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline)
+    WidgetsAInline, WidgetsBInline, WidgetsM2M,
+    WidgetsC0Inline, WidgetsC1Inline,
+    WidgetMediaOrderAInline, WidgetMediaOrderBInline,
+    WidgetMediaOrderC0Inline, WidgetMediaOrderC1Inline)
 
 
 class BaseWidgetTestCase(BaseNestedAdminTestCase):
@@ -153,7 +153,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
     def check_gfk_related_lookup(self, indexes):
         ctype_field = self.get_field('content_type', indexes)
         select = Select(ctype_field)
-        select.select_by_visible_text('test admin widgets m2m')
+        select.select_by_visible_text('widgets m2m')
         object_id_field = self.get_field('object_id', indexes)
         object_id_field_id = object_id_field.get_attribute('id')
         related_lookup_selector = (
@@ -170,7 +170,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
                 el.click()
         time.sleep(0.1)
 
-        z_pk = "%s" % TestAdminWidgetsM2M.objects.get(name='Zither').pk
+        z_pk = "%s" % WidgetsM2M.objects.get(name='Zither').pk
 
         def element_value_populated(d):
             el = d.find_element_by_css_selector("#%s" % object_id_field_id)
@@ -182,16 +182,16 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         self.assertEqual(z_pk, object_id_field.get_attribute('value'))
 
 
-class TestAdminWidgets(BaseWidgetTestCase):
+class Widgets(BaseWidgetTestCase):
 
     admin_classes = [
-        TestAdminWidgetsAInline, TestAdminWidgetsBInline,
-        TestAdminWidgetsC0Inline, TestAdminWidgetsC1Inline,
+        WidgetsAInline, WidgetsBInline,
+        WidgetsC0Inline, WidgetsC1Inline,
     ]
 
-    root_model = TestAdminWidgetsRoot
-    nested_models = (TestAdminWidgetsA, TestAdminWidgetsB,
-        (TestAdminWidgetsC0, TestAdminWidgetsC1))
+    root_model = WidgetsRoot
+    nested_models = (WidgetsA, WidgetsB,
+        (WidgetsC0, WidgetsC1))
 
     def test_collapsible_inlines(self):
         with self.enable_inline_collapsing():
@@ -348,7 +348,7 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.add_inline()
         self.add_inline([1])
         autocomplete_elements = self.selenium.find_elements_by_xpath(
-            '//*[@id="id_testadminwidgetsa_set-1-testadminwidgetsb_set-0-fk2-autocomplete"]')
+            '//*[@id="id_widgetsa_set-1-widgetsb_set-0-fk2-autocomplete"]')
         self.assertNotEqual(len(autocomplete_elements), 0,
             "Zero autocomplete fields initialized")
         self.assertEqual(len(autocomplete_elements), 1,
@@ -389,16 +389,16 @@ class TestAdminWidgets(BaseWidgetTestCase):
         self.assertEqual(select_field.get_attribute('value'), '2')
 
 
-class TestWidgetMediaOrder(BaseWidgetTestCase):
+class WidgetMediaOrder(BaseWidgetTestCase):
 
     admin_classes = [
-        TestWidgetMediaOrderAInline, TestWidgetMediaOrderBInline,
-        TestWidgetMediaOrderC0Inline, TestWidgetMediaOrderC1Inline,
+        WidgetMediaOrderAInline, WidgetMediaOrderBInline,
+        WidgetMediaOrderC0Inline, WidgetMediaOrderC1Inline,
     ]
 
-    root_model = TestWidgetMediaOrderRoot
-    nested_models = (TestWidgetMediaOrderA, TestWidgetMediaOrderB,
-        (TestWidgetMediaOrderC0, TestWidgetMediaOrderC1))
+    root_model = WidgetMediaOrderRoot
+    nested_models = (WidgetMediaOrderA, WidgetMediaOrderB,
+        (WidgetMediaOrderC0, WidgetMediaOrderC1))
 
     def test_add_three_deep_m2m(self):
         self.load_admin()

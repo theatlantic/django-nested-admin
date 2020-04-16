@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <django-objects version="1.0">
-    <object pk="1" model="admin_widgets.testadminwidgetsrelated1">
+    <object pk="1" model="admin_widgets.widgetsrelated1">
         <field type="CharField" name="name">Iguana</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsrelated1">
+    <object pk="2" model="admin_widgets.widgetsrelated1">
         <field type="CharField" name="name">Jaguar</field>
     </object>
-    <object pk="1" model="admin_widgets.testadminwidgetsrelated2">
+    <object pk="1" model="admin_widgets.widgetsrelated2">
         <field type="CharField" name="name">Kangaroo</field>
         <field type="DateTimeField" name="date_created">2019-01-01T00:00:00</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsrelated2">
+    <object pk="2" model="admin_widgets.widgetsrelated2">
         <field type="CharField" name="name">Llama</field>
                 <field type="DateTimeField" name="date_created">2019-01-01T00:00:00</field>
     </object>
-    <object pk="1" model="admin_widgets.testadminwidgetsm2m">
+    <object pk="1" model="admin_widgets.widgetsm2m">
         <field type="CharField" name="name">Xylophone</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsm2m">
+    <object pk="2" model="admin_widgets.widgetsm2m">
         <field type="CharField" name="name">Yukelele</field>
     </object>
-    <object pk="3" model="admin_widgets.testadminwidgetsm2m">
+    <object pk="3" model="admin_widgets.widgetsm2m">
         <field type="CharField" name="name">Zither</field>
     </object>
-    <object pk="1" model="admin_widgets.testadminwidgetsm2mtwo">
+    <object pk="1" model="admin_widgets.widgetsm2mtwo">
         <field type="CharField" name="name">Banana</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsm2mtwo">
+    <object pk="2" model="admin_widgets.widgetsm2mtwo">
         <field type="CharField" name="name">Apple</field>
     </object>
-    <object pk="3" model="admin_widgets.testadminwidgetsm2mtwo">
+    <object pk="3" model="admin_widgets.widgetsm2mtwo">
         <field type="CharField" name="name">Pear</field>
     </object>
-    <object pk="1" model="admin_widgets.testadminwidgetsm2mthree">
+    <object pk="1" model="admin_widgets.widgetsm2mthree">
         <field type="CharField" name="name">Asparagus</field>
     </object>
-    <object pk="2" model="admin_widgets.testadminwidgetsm2mthree">
+    <object pk="2" model="admin_widgets.widgetsm2mthree">
         <field type="CharField" name="name">Broccoli</field>
     </object>
-    <object pk="3" model="admin_widgets.testadminwidgetsm2mthree">
+    <object pk="3" model="admin_widgets.widgetsm2mthree">
         <field type="CharField" name="name">Cauliflower</field>
     </object>
 </django-objects>
