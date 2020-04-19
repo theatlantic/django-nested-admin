@@ -1,12 +1,20 @@
 Changelog
 =========
 
-**3.3.0 (unreleased)**
+**3.3.0 (Apr 19, 2020)**
 
+* Fixed: Possible ``ManagementFormError`` when adding inlines to a formset
+  that had a ``ValidationError`` on a prior save. (`#164`_)
+* Fixed: ``nested_admin.SortableHiddenMixin`` convenience import. (`#165`_)
 * Official support for Django 3.0
 * Removed requirement to include urlpatterns for non-grappelli installs
 * Dropped support for Django versions prior to 1.11
 * Dropped support for django-suit
+* Switch test runner to pytest
+
+.. _#164: https://github.com/theatlantic/django-nested-admin/issues/164
+.. _#165: https://github.com/theatlantic/django-nested-admin/issues/165
+
 
 **3.2.4 (Aug 27, 2019)**
 
