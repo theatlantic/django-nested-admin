@@ -42,6 +42,8 @@ to the ``INSTALLED_APPS`` in your settings:
 If you’re using `django-grappelli <https://github.com/sehmaschine/django-grappelli>`_,
 you will also need to add to include ``nested_admin.urls`` in your urlpatterns:
 
+.. code-block:: python
+
     # Django 2+
     urlpatterns = [
         # ...
