@@ -1,4 +1,5 @@
 {% load i18n nested_admin %}
+{% load admin_urlname admin_urlquote from admin_urls %}
 {% with inline_admin_formset.formset.is_nested as is_nested %}
 
 {% with inline_admin_formset.opts as inline_opts %}
@@ -36,6 +37,11 @@
                     <div class="djn-collapse-handler-verbose-name">{{ inline_admin_formset.opts.verbose_name }}&nbsp;&nbsp;</div>{% if inline_admin_form.original %}{{ inline_admin_form.original|striptags|safe }}{% endif %}
                 </h3>
                 <ul class="djn-tools grp-tools">
+                    {% if inline_admin_form.original %}
+                        {% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %}
+                            <li><a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="grp-icon grp-edit-link" title="{% trans 'Change' %}"></a></li>
+                        {% endif %}
+                    {% endif %}
                     {% if inline_admin_form.show_url %}
                         <li class="grp-viewsite-link-container"><a href="{% if inline_admin_form.absolute_url %}{{ inline_admin_form.absolute_url }}{% else %}../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/{% endif %}" class="grp-icon grp-viewsite-link" title="{% trans 'View on site' %}" target="_blank"></a></li>
                     {% endif %}
