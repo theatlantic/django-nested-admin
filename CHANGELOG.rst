@@ -1,6 +1,16 @@
 Changelog
 =========
 
+**3.3.1 (unreleased)**
+
+* Fixed: ``show_change_link`` support in django-grappelli. Fixes `#173`_,
+  merge of `#174`_. Thanks `@Safrone`_!
+
+.. _#173: https://github.com/theatlantic/django-nested-admin/issues/173
+.. _#174: https://github.com/theatlantic/django-nested-admin/pull/174
+.. _@Safrone: https://github.com/Safrone
+
+
 **3.3.0 (Apr 19, 2020)**
 
 * Fixed: Possible ``ManagementFormError`` when adding inlines to a formset
