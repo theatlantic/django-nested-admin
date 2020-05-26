@@ -72,6 +72,47 @@ window["DJNesting"] =
 /************************************************************************/
 /******/ ({
 
+/***/ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js":
+/*!*******************************************************************!*\
+  !*** ./nested_admin/static/nested_admin/src/nested-admin/grp$.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/**
+ * For grappelli 2.14, converts a django.jQuery instance to a grp.jQuery
+ * instance. Otherwise (if grappelli is not present, or for grappelli <= 2.13,
+ * where the grappelli jQuery instance is the same as django's), returns the
+ * object that was passed in, unchanged.
+ */
+
+
+function grp$($sel) {
+  if (typeof window.grp === 'undefined') {
+    return $($sel);
+  }
+
+  if (window.grp.jQuery.fn.init === $.fn.init) {
+    return $($sel);
+  }
+
+  var $grpSel = window.grp.jQuery($sel);
+
+  if ($sel.prevObject) {
+    $grpSel.prevObject = grp$($sel.prevObject);
+  }
+
+  return $grpSel;
+}
+
+module.exports = grp$;
+
+/***/ }),
+
 /***/ "./nested_admin/static/nested_admin/src/nested-admin/index.js":
 /*!********************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/index.js ***!
@@ -91,39 +132,6 @@ var grappelli = __webpack_require__(/*! grappelli */ "grappelli");
 var DJNesting = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
 
 DJNesting.DjangoFormset = __webpack_require__(/*! ./jquery.djangoformset */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djangoformset.js");
-
-if (grappelli) {
-  // grappelli initializes the jQuery UI datePicker and timePicker widgets
-  // on nested inlines of empty inline formsets. This later prevents proper
-  // initialization of these elements when they are added. Here, we wrap and
-  // override these methods, excluding template forms (i.e., those with
-  // '-empty' and '__prefix__' in their names/ids) from the calls to the
-  // widget initialization.
-  if (typeof $.fn.datepicker === 'function') {
-    $.fn.datepicker = function (orig) {
-      return function datepicker() {
-        orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
-      };
-    }($.fn.datepicker);
-  }
-
-  if (typeof $.fn.grp_timepicker === 'function') {
-    $.fn.grp_timepicker = function (orig) {
-      return function grp_timepicker() {
-        orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
-      };
-    }($.fn.grp_timepicker);
-  }
-}
-
-if (typeof $.fn.djangoAdminSelect2 === 'function') {
-  $.fn.djangoAdminSelect2 = function (orig) {
-    return function djangoAdminSelect2() {
-      orig.apply(this.not('[id*="-empty"]').not('[id*="__prefix__"]'), arguments);
-    };
-  }($.fn.djangoAdminSelect2);
-}
-
 $(document).ready(function () {
   // Remove the border on any empty fieldsets
   $('fieldset.grp-module, fieldset.module').filter(function (i, element) {
@@ -182,6 +190,10 @@ var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/
 var DJNesting = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
 
 var grappelli = __webpack_require__(/*! grappelli */ "grappelli");
+
+var grp = __webpack_require__(/*! grp */ "grp");
+
+var grp$ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
 
 var pluginName = 'djangoFormset';
 
@@ -479,7 +491,15 @@ function () {
   _proto.add = function add(spliceIndex, ctype) {
     var self = this;
     var $template = ctype ? $("#" + this.prefix + "-empty-" + ctype) : this._$template;
-    var $form = $template.clone(true);
+    var $form = $template.clone(true); // For django-grappelli >= 2.14, where the grp.jQuery instance is not
+    // the same as django.jQuery, we must copy any prepopulated_field
+    // dependency data from grp.jQuery to the cloned nodes.
+
+    grp$($template).find(':data(dependency_ids)').each(function () {
+      var id = $(this).attr('id');
+      var $el = $form.find("#" + id);
+      grp$($el).data($.extend({}, $el.data(), grp$(this).data()));
+    });
     var index = this.mgmtVal('TOTAL_FORMS');
     var maxForms = this.mgmtVal('MAX_NUM_FORMS');
     var isNested = this.$inline.hasClass('djn-group-nested');
@@ -536,7 +556,7 @@ function () {
     }
 
     if (grappelli) {
-      grappelli.reinitDateTimeFields($form);
+      grappelli.reinitDateTimeFields(grp$($form));
     }
 
     DJNesting.DjangoInlines.initPrepopulatedFields($form);
@@ -545,9 +565,9 @@ function () {
     DJNesting.initRelatedFields(this.prefix);
     DJNesting.initAutocompleteFields(this.prefix);
 
-    if ($.fn.grp_collapsible) {
-      var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
-      $form.find('.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])')[addBackMethod]().grp_collapsible({
+    if (grp && grp.jQuery.fn.grp_collapsible) {
+      var addBackMethod = grp.jQuery.fn.addBack ? 'addBack' : 'andSelf';
+      grp$($form).find('.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])')[addBackMethod]().grp_collapsible({
         toggle_handler_slctr: '.grp-collapse-handler:first',
         closed_css: 'closed grp-closed',
         open_css: 'open grp-open',
@@ -3848,6 +3868,8 @@ var _require = __webpack_require__(/*! ./sortable */ "./nested_admin/static/nest
 
 var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
 
+var grp$ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
+
 var DJNesting = typeof window.DJNesting != 'undefined' ? window.DJNesting : {};
 DJNesting.regexQuote = regexQuote;
 DJNesting.createSortable = createSortable;
@@ -3879,7 +3901,7 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   }); // update prepopulate ids for function initPrepopulatedFields
 
   $elem.find('.prepopulated_field').each(function () {
-    var $node = $(this);
+    var $node = grp$(this);
     var dependencyIds = $.makeArray($node.data('dependency_ids') || []);
     $node.data('dependency_ids', $.map(dependencyIds, function (id) {
       return id.replace(search, replace);
@@ -3919,14 +3941,14 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
   $inline.djangoFormsetForms().each(function (i, form) {
     $.each(lookupFields.fk || [], function (i, fk) {
       $(form).djangoFormField(fk).each(function () {
-        $(this).grp_related_fk({
+        grp$(this).grp_related_fk({
           lookup_url: lookupUrls.related
         });
       });
     });
     $.each(lookupFields.m2m || [], function (i, m2m) {
       $(form).djangoFormField(m2m).each(function () {
-        $(this).grp_related_m2m({
+        grp$(this).grp_related_m2m({
           lookup_url: lookupUrls.m2m
         });
       });
@@ -3945,7 +3967,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
           $this.parent().find('.grp-placeholder-related-generic').remove();
         }
 
-        $this.grp_related_generic({
+        grp$($this).grp_related_generic({
           content_type: "#id_" + prefix + "-" + index + "-" + contentType,
           object_id: "#id_" + prefix + "-" + index + "-" + objectId,
           lookup_url: lookupUrls.related
@@ -3978,7 +4000,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
           return;
         }
 
-        $this.grp_autocomplete_fk({
+        grp$($this).grp_autocomplete_fk({
           lookup_url: lookupUrls.related,
           autocomplete_lookup_url: lookupUrls.autocomplete
         });
@@ -3993,7 +4015,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
           return;
         }
 
-        $this.grp_autocomplete_m2m({
+        grp$($this).grp_autocomplete_m2m({
           lookup_url: lookupUrls.m2m,
           autocomplete_lookup_url: lookupUrls.autocomplete
         });
@@ -4012,7 +4034,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
           return;
         }
 
-        $this.grp_autocomplete_generic({
+        grp$($this).grp_autocomplete_generic({
           content_type: "#id_" + prefix + "-" + index + "-" + contentType,
           object_id: "#id_" + prefix + "-" + index + "-" + objectId,
           lookup_url: lookupUrls.related,
@@ -4030,7 +4052,8 @@ DJNesting.DjangoInlines = {
     row.find('.prepopulated_field').each(function () {
       var field = $(this),
           input = field.is(':input') ? field : field.find(':input'),
-          dependencyList = input.data('dependency_list') || [],
+          $input = grp$(input),
+          dependencyList = $input.data('dependency_list') || [],
           formPrefix = input.djangoFormPrefix(),
           dependencies = [];
 
@@ -4043,7 +4066,7 @@ DJNesting.DjangoInlines = {
       });
 
       if (dependencies.length) {
-        input.prepopulate(dependencies, input.attr('maxlength'));
+        $input.prepopulate(dependencies, input.attr('maxlength'));
       }
     });
   },
@@ -4092,24 +4115,44 @@ if (typeof window.SelectFilter !== 'undefined') {
   }, 12);
 }
 
-var grpFuncs = ['grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m', 'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk', 'grp_related_generic', 'grp_related_m2m', 'grp_timepicker'];
+var djangoFuncs = ['prepopulate', 'djangoAdminSelect2'];
+djangoFuncs.forEach(function (funcName) {
+  (function patchDjangoFunction(callCount) {
+    if (callCount > 2) {
+      return;
+    }
+
+    if (typeof $.fn[funcName] === 'undefined') {
+      return setTimeout(function () {
+        return patchDjangoFunction(callCount++);
+      }, 12);
+    }
+
+    $.fn[funcName] = function (oldFn) {
+      return function django_fn_patch() {
+        return oldFn.apply(this.filter(':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'), arguments);
+      };
+    }($.fn[funcName]);
+  })(0);
+});
+var grpFuncs = ['grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m', 'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk', 'grp_related_generic', 'grp_related_m2m', 'grp_timepicker', 'datepicker', 'prepopulate', 'djangoAdminSelect2'];
 grpFuncs.forEach(function (funcName) {
   (function patchGrpFunction(callCount) {
     if (callCount > 2) {
       return;
     }
 
-    if (typeof $ === 'undefined' || typeof $.fn[funcName] === 'undefined') {
+    if (typeof window.grp === 'undefined' || typeof window.grp.jQuery.fn[funcName] === 'undefined') {
       return setTimeout(function () {
         return patchGrpFunction(callCount++);
       }, 12);
     }
 
-    $.fn[funcName] = function (oldFn) {
+    window.grp.jQuery.fn[funcName] = function (oldFn) {
       return function grp_fn_patch() {
         return oldFn.apply(this.filter(':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'), arguments);
       };
-    }($.fn[funcName]);
+    }(window.grp.jQuery.fn[funcName]);
   })(0);
 });
 module.exports = DJNesting;
@@ -5099,6 +5142,17 @@ module.exports = __webpack_require__(/*! nested_admin/static/nested_admin/src/ne
 /***/ (function(module, exports) {
 
 (function() { module.exports = window["grappelli"]; }());
+
+/***/ }),
+
+/***/ "grp":
+/*!**********************!*\
+  !*** external "grp" ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+(function() { module.exports = window["grp"]; }());
 
 /***/ })
 

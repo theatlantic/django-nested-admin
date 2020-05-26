@@ -4,6 +4,8 @@ const $ = require('jquery');
 const regexQuote = require('./regexquote');
 const DJNesting = require('./utils');
 const grappelli = require('grappelli');
+const grp = require('grp');
+const grp$ = require('./grp$');
 
 var pluginName = 'djangoFormset';
 
@@ -276,6 +278,16 @@ class DjangoFormset {
         var self = this;
         const $template = (ctype) ? $(`#${this.prefix}-empty-${ctype}`) : this._$template;
         var $form = $template.clone(true);
+
+        // For django-grappelli >= 2.14, where the grp.jQuery instance is not
+        // the same as django.jQuery, we must copy any prepopulated_field
+        // dependency data from grp.jQuery to the cloned nodes.
+        grp$($template).find(':data(dependency_ids)').each(function() {
+          const id = $(this).attr('id');
+          const $el = $form.find(`#${id}`);
+          grp$($el).data($.extend({}, $el.data(), grp$(this).data()));
+        });
+
         var index = this.mgmtVal('TOTAL_FORMS');
         var maxForms = this.mgmtVal('MAX_NUM_FORMS');
         var isNested = this.$inline.hasClass('djn-group-nested');
@@ -335,16 +347,16 @@ class DjangoFormset {
         }
 
         if (grappelli) {
-            grappelli.reinitDateTimeFields($form);
+            grappelli.reinitDateTimeFields(grp$($form));
         }
         DJNesting.DjangoInlines.initPrepopulatedFields($form);
         DJNesting.DjangoInlines.reinitDateTimeShortCuts();
         DJNesting.DjangoInlines.updateSelectFilter($form);
         DJNesting.initRelatedFields(this.prefix);
         DJNesting.initAutocompleteFields(this.prefix);
-        if ($.fn.grp_collapsible) {
-            var addBackMethod = ($.fn.addBack) ? 'addBack' : 'andSelf';
-            $form.find(
+        if (grp && grp.jQuery.fn.grp_collapsible) {
+            var addBackMethod = (grp.jQuery.fn.addBack) ? 'addBack' : 'andSelf';
+            grp$($form).find(
                 '.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])'
             )[addBackMethod]().grp_collapsible({
                 toggle_handler_slctr: '.grp-collapse-handler:first',

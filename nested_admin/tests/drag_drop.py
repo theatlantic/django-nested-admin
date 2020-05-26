@@ -116,18 +116,15 @@ class DragAndDropAction(object):
 
     def initialize_drag(self):
         source = self.source
-        try:
-            source.click()
-        except WebDriverException:
-            self.selenium.execute_script("""
-                var el = arguments[0],
-                    top = el.getBoundingClientRect().top;
-                if (top <= 15) {
-                    document.documentElement.scrollTop += (top - 16);
-                } else {
-                    el.scrollIntoView();
-                }
-            """, source)
+        self.selenium.execute_script("""
+            var el = arguments[0],
+                top = el.getBoundingClientRect().top;
+            if (top <= 15) {
+                document.documentElement.scrollTop += (top - 16);
+            } else {
+                el.scrollIntoView();
+            }
+        """, source)
         source.click()
 
         (ActionChains(self.selenium)

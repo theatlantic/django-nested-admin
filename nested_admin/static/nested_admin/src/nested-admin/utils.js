@@ -6,6 +6,7 @@ const $ = require('jquery');
 require('./jquery.djnutils.js');
 const {createSortable, updatePositions} = require('./sortable');
 const regexQuote = require('./regexquote');
+const grp$ = require('./grp$');
 
 var DJNesting = (typeof window.DJNesting != 'undefined')
                ? window.DJNesting : {};
@@ -41,7 +42,7 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
     });
     // update prepopulate ids for function initPrepopulatedFields
     $elem.find('.prepopulated_field').each(function() {
-        var $node = $(this);
+        var $node = grp$(this);
         var dependencyIds = $.makeArray($node.data('dependency_ids') || []);
         $node.data('dependency_ids', $.map(dependencyIds, function(id) {
             return id.replace(search, replace);
@@ -81,12 +82,12 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
     $inline.djangoFormsetForms().each(function(i, form) {
         $.each(lookupFields.fk || [], function(i, fk) {
             $(form).djangoFormField(fk).each(function() {
-                $(this).grp_related_fk({lookup_url: lookupUrls.related});
+                grp$(this).grp_related_fk({lookup_url: lookupUrls.related});
             });
         });
         $.each(lookupFields.m2m || [], function(i, m2m) {
             $(form).djangoFormField(m2m).each(function() {
-                $(this).grp_related_m2m({lookup_url: lookupUrls.m2m});
+                grp$(this).grp_related_m2m({lookup_url: lookupUrls.m2m});
             });
         });
         $.each(lookupFields.generic || [], function() {
@@ -98,7 +99,7 @@ DJNesting.initRelatedFields = function(prefix, groupData) {
                     $this.parent().find('a.related-lookup').remove();
                     $this.parent().find('.grp-placeholder-related-generic').remove();
                 }
-                $this.grp_related_generic({
+                grp$($this).grp_related_generic({
                     content_type: `#id_${prefix}-${index}-${contentType}`,
                     object_id: `#id_${prefix}-${index}-${objectId}`,
                     lookup_url: lookupUrls.related
@@ -129,7 +130,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                 if ($('#' + id + '-autocomplete').length) {
                     return;
                 }
-                $this.grp_autocomplete_fk({
+                grp$($this).grp_autocomplete_fk({
                     lookup_url: lookupUrls.related,
                     autocomplete_lookup_url: lookupUrls.autocomplete
                 });
@@ -142,7 +143,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                 if ($('#' + id + '-autocomplete').length) {
                     return;
                 }
-                $this.grp_autocomplete_m2m({
+                grp$($this).grp_autocomplete_m2m({
                     lookup_url: lookupUrls.m2m,
                     autocomplete_lookup_url: lookupUrls.autocomplete
                 });
@@ -157,7 +158,7 @@ DJNesting.initAutocompleteFields = function(prefix, groupData) {
                 if ($('#' + $this.attr('id') + '-autocomplete').length) {
                     return;
                 }
-                $this.grp_autocomplete_generic({
+                grp$($this).grp_autocomplete_generic({
                     content_type: `#id_${prefix}-${index}-${contentType}`,
                     object_id: `#id_${prefix}-${index}-${objectId}`,
                     lookup_url: lookupUrls.related,
@@ -175,7 +176,8 @@ DJNesting.DjangoInlines = {
         row.find('.prepopulated_field').each(function() {
             var field = $(this),
                 input = (field.is(':input') ? field : field.find(':input')),
-                dependencyList = input.data('dependency_list') || [],
+                $input = grp$(input),
+                dependencyList = $input.data('dependency_list') || [],
                 formPrefix = input.djangoFormPrefix(),
                 dependencies = [];
             if (!formPrefix || formPrefix.match(/__prefix__/)) {
@@ -185,7 +187,7 @@ DJNesting.DjangoInlines = {
                 dependencies.push('#id_' + formPrefix + fieldName);
             });
             if (dependencies.length) {
-                input.prepopulate(dependencies, input.attr('maxlength'));
+                $input.prepopulate(dependencies, input.attr('maxlength'));
             }
         });
     },
@@ -234,27 +236,49 @@ if (typeof window.SelectFilter !== 'undefined') {
     }, 12);
 }
 
-const grpFuncs = [
-    'grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m',
-    'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk',
-    'grp_related_generic', 'grp_related_m2m', 'grp_timepicker'];
+const djangoFuncs = ['prepopulate', 'djangoAdminSelect2'];
 
-grpFuncs.forEach((funcName) => {
-    (function patchGrpFunction(callCount) {
+djangoFuncs.forEach((funcName) => {
+    (function patchDjangoFunction(callCount) {
         if (callCount > 2) {
             return;
         }
-        if (typeof $ === 'undefined' || typeof $.fn[funcName] === 'undefined') {
-            return setTimeout(() => patchGrpFunction(callCount++), 12);
+        if (typeof $.fn[funcName] === 'undefined') {
+            return setTimeout(() => patchDjangoFunction(callCount++), 12);
         }
         $.fn[funcName] = (function(oldFn) {
-            return function grp_fn_patch()  {
+            return function django_fn_patch()  {
                 return oldFn.apply(
                     this.filter(
                         ':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'),
                         arguments);
             }
         }($.fn[funcName]));
+    }(0));
+});
+
+const grpFuncs = [
+    'grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m',
+    'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk',
+    'grp_related_generic', 'grp_related_m2m', 'grp_timepicker', 'datepicker',
+    'prepopulate', 'djangoAdminSelect2'];
+
+grpFuncs.forEach((funcName) => {
+    (function patchGrpFunction(callCount) {
+        if (callCount > 2) {
+            return;
+        }
+        if (typeof window.grp === 'undefined' || typeof window.grp.jQuery.fn[funcName] === 'undefined') {
+            return setTimeout(() => patchGrpFunction(callCount++), 12);
+        }
+        window.grp.jQuery.fn[funcName] = (function(oldFn) {
+            return function grp_fn_patch()  {
+                return oldFn.apply(
+                    this.filter(
+                        ':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'),
+                        arguments);
+            }
+        }(window.grp.jQuery.fn[funcName]));
     }(0));
 });
 

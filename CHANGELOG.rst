@@ -5,11 +5,13 @@ Changelog
 
 * Fixed: ``show_change_link`` support in django-grappelli. Fixes `#173`_,
   merge of `#174`_. Thanks `@Safrone`_!
+* Fixed: support for Grappelli with Django 3.0 (django-grappelli 2.14). Fixes
+  `#178`_.
 
 .. _#173: https://github.com/theatlantic/django-nested-admin/issues/173
 .. _#174: https://github.com/theatlantic/django-nested-admin/pull/174
 .. _@Safrone: https://github.com/Safrone
-
+.. _#178: https://github.com/theatlantic/django-nested-admin/issues/178
 
 **3.3.0 (Apr 19, 2020)**
 

@@ -3,6 +3,7 @@ import time
 from unittest import SkipTest
 
 import django
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.text import slugify
 
@@ -153,7 +154,8 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
     def check_gfk_related_lookup(self, indexes):
         ctype_field = self.get_field('content_type', indexes)
         select = Select(ctype_field)
-        select.select_by_visible_text('widgets m2m')
+        m2m_ctype_id = ContentType.objects.get_for_model(WidgetsM2M).pk
+        select.select_by_value(str(m2m_ctype_id))
         object_id_field = self.get_field('object_id', indexes)
         object_id_field_id = object_id_field.get_attribute('id')
         related_lookup_selector = (

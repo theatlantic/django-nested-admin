@@ -9,6 +9,7 @@ matrix:
     - { python: 3.6, env: TOXENV=py36-dj21-grp }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj22 }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj30 }
+    - { python: 3.6, dist: xenial, env: TOXENV=py36-dj30-grp }
 
 cache:
   pip: true
