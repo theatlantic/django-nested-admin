@@ -7,11 +7,14 @@ Changelog
   merge of `#174`_. Thanks `@Safrone`_!
 * Fixed: support for Grappelli with Django 3.0 (django-grappelli 2.14). Fixes
   `#178`_.
+* Fixed: issue with ``field-box`` class name rename to ``fieldBox`` in
+  Django 2.1+. Closes `#157`_.
 
 .. _#173: https://github.com/theatlantic/django-nested-admin/issues/173
 .. _#174: https://github.com/theatlantic/django-nested-admin/pull/174
 .. _@Safrone: https://github.com/Safrone
 .. _#178: https://github.com/theatlantic/django-nested-admin/issues/178
+.. _#157: https://github.com/theatlantic/django-nested-admin/pull/157
 
 **3.3.0 (Apr 19, 2020)**
 
