@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**3.3.1 (unreleased)**
+**3.3.1 (Jun 1, 2020)**
 
 * Fixed: ``show_change_link`` support in django-grappelli. Fixes `#173`_,
   merge of `#174`_. Thanks `@Safrone`_!
