@@ -11,6 +11,8 @@ from django.forms.models import BaseInlineFormSet
 import six
 from six.moves import range
 
+from .compat import ensure_merge_safe_media
+
 if six.PY2:
     from django.utils.encoding import force_text as force_str
 else:
@@ -68,6 +70,11 @@ class NestedInlineFormSetMixin(object):
                 self.form.__name__, (FixDjango2MultipartFormMixin, self.form), {
                     'parent_formset': self,
                 })
+
+    @property
+    def media(self):
+        media = super(NestedInlineFormSetMixin, self).media
+        return ensure_merge_safe_media(media)
 
     def _construct_form(self, i, **kwargs):
         defaults = {}

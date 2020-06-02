@@ -13,7 +13,7 @@ from six.moves import zip
 from django.utils.translation import gettext
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
-from .compat import MergeSafeMedia
+from .compat import ensure_merge_safe_media, MergeSafeMedia
 from .formsets import NestedInlineFormSet, NestedBaseGenericInlineFormSet
 
 
@@ -40,7 +40,40 @@ lazy_reverse = lazy(reverse, str)
 server_data_js_url = lazy_reverse('nesting_server_data')
 
 
-class NestedInlineAdminFormsetMixin(object):
+class NestedAdminMixin(object):
+    @property
+    def _djn_js_deps(self):
+        """
+        Returns a set of js files that, if present, ought to precede
+        nested_admin.js in the media load order
+        """
+        extra = '' if settings.DEBUG else '.min'
+
+        return {
+            'admin/js/core.js',
+            'admin/js/vendor/jquery/jquery%s.js' % extra,
+            'admin/js/jquery.init.js',
+            'admin/js/prepopulate%s.js' % extra,
+            'admin/js/SelectFilter2.js',
+            'admin/js/autocomplete.js',
+            'jquery.grp.autocomplete_fk.js',
+            'grappelli/js/grappelli.js',
+            'grappelli/js/grappelli.min.js',
+            'grappelli/js/jquery.grp_autocomplete_fk.js',
+            'grappelli/js/jquery.grp_autocomplete_generic.js',
+            'grappelli/js/jquery.grp_autocomplete_m2m.js',
+            'grappelli/js/jquery.grp_collapsible.js',
+            'grappelli/js/jquery.grp_collapsible_group.js',
+            'grappelli/js/jquery.grp_related_fk.js',
+            'grappelli/js/jquery.grp_related_generic.js',
+            'grappelli/js/jquery.grp_related_m2m.js',
+            'grappelli/js/jquery.grp_timepicker.js',
+            'grappelli/jquery/ui/jquery-ui.js',
+            'grappelli/jquery/ui/jquery-ui.min.js',
+        }
+
+
+class NestedInlineAdminFormsetMixin(NestedAdminMixin):
 
     classes = None
 
@@ -93,31 +126,27 @@ class NestedInlineAdminFormsetMixin(object):
 
     @property
     def media(self):
-        media = self.opts.media
-        if not isinstance(media, MergeSafeMedia):
-            media = MergeSafeMedia(media)
-        media = media + self.formset.media
+        media = ensure_merge_safe_media(self.opts.media)
+
+        media += ensure_merge_safe_media(self.formset.media)
+
         for fs in self:
-            media = media + fs.media
+            media += ensure_merge_safe_media(fs.media)
             for inline in (getattr(fs.form, 'inlines', None) or []):
-                media = media + inline.media
+                media += ensure_merge_safe_media(inline.media)
 
         min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
+        nested_admin_js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
 
-        js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
+        media += MergeSafeMedia(js=[nested_admin_js_file])
 
-        enable_server_data_js = 'grappelli' in settings.INSTALLED_APPS
+        # Check for override js files, and if present ensure that nested_admin.js
+        # will follow them when ordered through a topological sort
+        for js_file in media._js:
+            if js_file in self._djn_js_deps:
+                media += MergeSafeMedia(js=[js_file, nested_admin_js_file])
 
-        media += MergeSafeMedia(
-            js=([server_data_js_url] if enable_server_data_js else []),
-            css={'all': (
-                'nested_admin/dist/nested_admin%s.css' % min_ext,
-            )})
-
-        media_js = media._js
-        if js_file not in media_js:
-            media_js += [js_file]
-        return MergeSafeMedia(js=media_js, css=media._css)
+        return media
 
     @property
     def inline_model_id(self):
@@ -211,9 +240,33 @@ class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, NestedBaseInlineAd
     pass
 
 
-class NestedModelAdminMixin(object):
+class NestedModelAdminMixin(NestedAdminMixin):
 
     inline_admin_formset_helper_cls = NestedInlineAdminFormset
+
+    @property
+    def media(self):
+        media = ensure_merge_safe_media(super(NestedModelAdminMixin, self).media)
+
+        min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
+        nested_admin_js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
+
+        media_js = []
+        if 'grappelli' in settings.INSTALLED_APPS:
+            media_js.append(server_data_js_url)
+        media_js.append(nested_admin_js_file)
+
+        media += MergeSafeMedia(
+            js=media_js,
+            css={'all': (
+                'nested_admin/dist/nested_admin%s.css' % min_ext,
+            )})
+
+        for js_file in media._js:
+            if js_file in self._djn_js_deps:
+                media += MergeSafeMedia(js=[js_file, nested_admin_js_file])
+
+        return media
 
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):

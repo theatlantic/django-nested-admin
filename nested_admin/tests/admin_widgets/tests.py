@@ -24,7 +24,8 @@ from .models import (
     WidgetsRoot, WidgetsA, WidgetsB,
     WidgetsC0, WidgetsC1,
     WidgetMediaOrderRoot, WidgetMediaOrderA, WidgetMediaOrderB,
-    WidgetMediaOrderC0, WidgetMediaOrderC1)
+    WidgetMediaOrderC0, WidgetMediaOrderC1,
+    WidgetMediaOrderRootWithDateWidget)
 from .admin import (
     WidgetsAInline, WidgetsBInline, WidgetsM2M,
     WidgetsC0Inline, WidgetsC1Inline,
@@ -107,7 +108,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
                 self.click(el)
                 self.wait_until_element_is('#ui-datepicker-div', ':not(:visible)',
                     'Datepicker widget did not close')
-        time.sleep(0.1)
+        time.sleep(0.2)
         self.click(time_el.find_element_by_xpath(now_link_xpath))
         if self.has_grappelli:
             selector = '#ui-timepicker .ui-state-active'
@@ -116,7 +117,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
                 self.click(el)
                 self.wait_until_element_is('#ui-timepicker', ':not(:visible)',
                     'Timepicker widget did not close')
-        time.sleep(0.10)
+        time.sleep(0.2)
         self.assertNotEqual(date_el.get_attribute('value'), '', 'Date was not set')
         self.assertNotEqual(time_el.get_attribute('value'), '', 'Time was not set')
 
@@ -325,9 +326,13 @@ class Widgets(BaseWidgetTestCase):
 
     def test_add_three_deep_fk(self):
         self.load_admin()
+        time.sleep(0.2)
         self.add_inline()
+        time.sleep(0.2)
         self.add_inline([1])
+        time.sleep(0.2)
         self.add_inline([1, 0, [1]])
+        time.sleep(0.5)
         self.check_fk([1, 0, [1, 0]])
 
     def test_add_three_deep_prepopulated(self):
@@ -411,9 +416,13 @@ class WidgetMediaOrder(BaseWidgetTestCase):
 
     def test_add_three_deep_fk(self):
         self.load_admin()
+        time.sleep(0.2)
         self.add_inline()
+        time.sleep(0.2)
         self.add_inline([1])
+        time.sleep(0.2)
         self.add_inline([1, 0, [1]])
+        time.sleep(0.5)
         self.check_fk([1, 0, [1, 0]])
 
     def test_add_three_deep_prepopulated(self):
@@ -424,6 +433,17 @@ class WidgetMediaOrder(BaseWidgetTestCase):
         self.check_prepopulated([1, 0, [1, 0]])
 
     def test_add_three_deep_datetime(self):
+        self.load_admin()
+        self.add_inline()
+        self.add_inline([1])
+        self.add_inline([1, 0, [1]])
+        self.check_datetime([1, 0, [1, 0]])
+
+
+class WidgetMediaOrderWithDateWidget(WidgetMediaOrder):
+    root_model = WidgetMediaOrderRootWithDateWidget
+
+    def test_root_date_widget_add_three_deep_datetime(self):
         self.load_admin()
         self.add_inline()
         self.add_inline([1])

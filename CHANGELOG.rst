@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**3.3.2 (unreleased)**
+
+* Fixed: Resolved sporadic MediaOrderConflictWarning issues on Django 2.2
+  Fixes `#141`_.
+* Fixed: Improved media dependency ordering of widgets and nested_admin.js
+
+.. _#141: https://github.com/theatlantic/django-nested-admin/issues/141
+
 **3.3.1 (Jun 1, 2020)**
 
 * Fixed: ``show_change_link`` support in django-grappelli. Fixes `#173`_,

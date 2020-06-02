@@ -7,7 +7,8 @@ from .models import (
     WidgetsRelated2, WidgetsA, WidgetsB,
     WidgetsC0, WidgetsC1, WidgetsM2MTwo,
     WidgetMediaOrderRoot, WidgetMediaOrderA, WidgetMediaOrderB,
-    WidgetMediaOrderC0, WidgetMediaOrderC1)
+    WidgetMediaOrderC0, WidgetMediaOrderC1,
+    WidgetMediaOrderRootWithDateWidget)
 
 
 class WidgetsC0Inline(NestedStackedInline):
@@ -143,4 +144,9 @@ class WidgetMediaOrderAInline(NestedStackedInline):
 
 @admin.register(WidgetMediaOrderRoot)
 class WidgetMediaOrderRootAdmin(NestedModelAdmin):
+    inlines = [WidgetMediaOrderAInline]
+
+
+@admin.register(WidgetMediaOrderRootWithDateWidget)
+class WidgetMediaOrderRootAdminWithDateWidget(NestedModelAdmin):
     inlines = [WidgetMediaOrderAInline]

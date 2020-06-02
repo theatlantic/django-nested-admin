@@ -296,3 +296,7 @@ class WidgetMediaOrderC1(models.Model):
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
         return "%s - %s" % (parent_name, self.name)
+
+
+class WidgetMediaOrderRootWithDateWidget(WidgetMediaOrderRoot):
+    date = models.DateTimeField(blank=True, null=True)
