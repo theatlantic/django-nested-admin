@@ -5,11 +5,13 @@ matrix:
     - { python: 2.7, env: TOXENV=py27-dj111 }
     - { python: 2.7, env: TOXENV=py27-dj111-grp }
     - { python: 3.6, env: TOXENV=py36-dj111 }
-    - { python: 3.6, env: TOXENV=py36-dj21 }
-    - { python: 3.6, env: TOXENV=py36-dj21-grp }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj22 }
+    - { python: 3.6, dist: xenial, env: TOXENV=py36-dj22-grp }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj30 }
     - { python: 3.6, dist: xenial, env: TOXENV=py36-dj30-grp }
+    - { python: 3.6, dist: xenial, env: TOXENV=py36-dj31 }
+  allow_failures:
+    - env: TOXENV=py36-dj31
 
 cache:
   pip: true

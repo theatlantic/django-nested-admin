@@ -6,6 +6,8 @@ Changelog
 * Fixed: Resolved sporadic MediaOrderConflictWarning issues on Django 2.2
   Fixes `#141`_.
 * Fixed: Improved media dependency ordering of widgets and nested_admin.js
+* Fixed: Provisional support for Django 3.1 alpha
+* Dropped support for Django 2.1 (official EOL December 2019)
 
 .. _#141: https://github.com/theatlantic/django-nested-admin/issues/141
 
