@@ -83,6 +83,12 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             six.reraise(*self.server_exc_info)
 
         super(BaseNestedAdminTestCase, self).initialize_page()
+
+        browser_errors = [e for e in self.selenium.get_log('browser')
+                          if 'favicon' not in e['message']]
+        if len(browser_errors) > 0:
+            logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
+
         # Store last mousemove event, so we can track the mouse position
         self.selenium.execute_script("""
             if (window.DJNesting) {
