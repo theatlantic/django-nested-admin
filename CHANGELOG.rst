@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**3.3.2 (unreleased)**
+**3.3.2 (Jun 11, 2020)**
 
 * Fixed: Resolved sporadic MediaOrderConflictWarning issues on Django 2.2
   Fixes `#141`_.
