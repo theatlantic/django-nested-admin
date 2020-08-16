@@ -1,4 +1,8 @@
-import collections
+from collections import namedtuple
+try:
+    from collections.abc import Sequence
+except ImportError:
+    from collections import Sequence
 
 import six
 from nested_admin.tests.compat import python_2_unicode_compatible
@@ -18,7 +22,7 @@ def xpath_item(model_name=None):
 
 
 def is_sequence(o):
-    return isinstance(o, collections.Sequence)
+    return isinstance(o, Sequence)
 
 
 def is_integer(o):
@@ -29,15 +33,15 @@ def is_str(o):
     return isinstance(o, six.string_types)
 
 
-Position = collections.namedtuple('Position', ['x', 'y'])
+Position = namedtuple('Position', ['x', 'y'])
 
 
-class Size(collections.namedtuple('Size', ['width', 'height'])):
+class Size(namedtuple('Size', ['width', 'height'])):
     w = property(lambda self: self.width)
     h = property(lambda self: self.height)
 
 
-class Rect(collections.namedtuple('Rect', [
+class Rect(namedtuple('Rect', [
         'left', 'top', 'right', 'bottom', 'width', 'height', 'visible'])):
     x = property(lambda self: self.left)
     y = property(lambda self: self.top)
