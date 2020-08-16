@@ -10,8 +10,8 @@ from nested_admin.tests.compat import python_2_unicode_compatible
 try:
     from polymorphic.models import PolymorphicModel
 except:
-    # Temporary until django-polymorphic supports django 3.0
-    if django.VERSION < (3, 0):
+    # Temporary until django-polymorphic supports django 3.1
+    if django.VERSION < (3, 1):
         raise
     else:
         PolymorphicModel = models.Model

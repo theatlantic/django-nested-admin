@@ -36,7 +36,7 @@ else:
 
 polymorphic = None
 
-if django.VERSION < (3, 0):
+if django.VERSION < (3, 1):
     try:
         import polymorphic
     except ImportError:

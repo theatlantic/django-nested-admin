@@ -12,8 +12,8 @@ from nested_admin.tests.utils import xpath_item, xpath_cls, is_sequence, is_inte
 try:
     from polymorphic.models import PolymorphicModel
 except:
-    # Temporary until django-polymorphic supports django 3.0
-    if django.VERSION < (3, 0):
+    # Temporary until django-polymorphic supports django 3.1
+    if django.VERSION < (3, 1):
         raise
     else:
         class PolymorphicModel(object):
@@ -24,9 +24,9 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        if django.VERSION >= (3, 0):
+        if django.VERSION >= (3, 1):
             raise SkipTest(
-                'django-polymorphic not yet compatible with Django 3.0')
+                'django-polymorphic not yet compatible with Django 3.1')
         super(BaseNestedPolymorphicTestCase, cls).setUpClass()
 
     def get_inline_model_names(self):

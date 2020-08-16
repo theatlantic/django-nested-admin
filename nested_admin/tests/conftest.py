@@ -14,3 +14,6 @@ def suppress_warnings():
         "ignore",
         "name used for saved screenshot does not match file type",
         UserWarning)
+    # These deprecation warnings were thrown in django-polymorphic as of 2.1.2
+    warnings.filterwarnings("ignore", "django.utils.translation.ugettext", Warning)
+    warnings.filterwarnings("ignore", "force_text", Warning)
