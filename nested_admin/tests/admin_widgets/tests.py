@@ -391,8 +391,11 @@ class Widgets(BaseWidgetTestCase):
         self.assertTrue(select2_is_active)
         select2_input = self.selenium.execute_script('return $(".select2-search__field")[0]')
         self.assertIsNotNone(select2_input)
+        time.sleep(0.2)
         select2_input.send_keys('l')
+        time.sleep(0.5)
         select2_input.send_keys(Keys.ENTER)
+        time.sleep(0.2)
         self.assertEqual(select_field.get_attribute('value'), '2')
 
 
