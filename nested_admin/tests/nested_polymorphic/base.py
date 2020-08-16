@@ -193,17 +193,17 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
         if indexes:
             item = self.get_item(indexes)
+            ctx_id = item.get_attribute("id")
             group_el = self.selenium.execute_script(
                 'return $(arguments[0]).closest(".djn-group")[0]', item)
         else:
             group_el = self.get_group([base_model_identifier])
-
-        group_id = group_el.get_attribute('id')
+            ctx_id = group_el.get_attribute('id')
 
         error_desc = "%s in inline %s" % (model, indexes)
 
         add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
-            group_id, base_model_identifier)
+            ctx_id, base_model_identifier)
         add_els = self.selenium.find_elements_by_css_selector(add_selector)
         self.assertNotEqual(len(add_els), 0,
             "No inline add handlers found for %s" % (error_desc))
