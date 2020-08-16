@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**3.3.3 (unreleased)**
+
+* Fixed: polymorphic inlines don't work if nested inside non-polymorphic
+  inlines. Fixes `#183`_.
+
+.. _#183: https://github.com/theatlantic/django-nested-admin/issues/183
+
 **3.3.2 (Jun 11, 2020)**
 
 * Fixed: Resolved sporadic MediaOrderConflictWarning issues on Django 2.2

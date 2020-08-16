@@ -313,7 +313,6 @@ class NestedModelAdminMixin(NestedAdminMixin):
         formsets = []
         inline_instances = []
         prefixes = {}
-        has_polymorphic = False
 
         for orig_formset, orig_inline in zip(orig_formsets, orig_inline_instances):
             if not hasattr(orig_formset, 'nesting_depth'):
@@ -324,7 +323,6 @@ class NestedModelAdminMixin(NestedAdminMixin):
 
             nested_formsets_and_inline_instances = []
             if hasattr(orig_inline, 'child_inline_instances'):
-                has_polymorphic = True
                 for child_inline in orig_inline.child_inline_instances:
                     nested_formsets_and_inline_instances += [
                         (orig_formset, inline)
@@ -359,7 +357,9 @@ class NestedModelAdminMixin(NestedAdminMixin):
                     if prefixes[prefix] != 1:
                         prefix = "%s-%s" % (prefix, prefixes[prefix])
 
-                    if has_polymorphic and form_obj:
+                    # Check if we're dealing with a polymorphic instance, and if
+                    # so, skip inlines for other child models
+                    if hasattr(form_obj, 'get_real_instance'):
                         if hasattr(InlineFormSet, 'fk'):
                             rel_model = InlineFormSet.fk.remote_field.model
                             if not isinstance(form_obj, rel_model):

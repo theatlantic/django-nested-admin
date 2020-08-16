@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import json
 
 from django.conf import settings
-from django.contrib.admin import ModelAdmin
 from django.utils.encoding import force_text
 from polymorphic.formsets import (
     BasePolymorphicInlineFormSet, BaseGenericPolymorphicInlineFormSet)
@@ -13,7 +12,7 @@ from polymorphic.admin import (
 
 from .formsets import NestedInlineFormSetMixin, NestedBaseGenericInlineFormSetMixin
 from .nested import (
-    NestedModelAdminMixin,
+    NestedModelAdmin,
     NestedInlineModelAdminMixin, NestedGenericInlineModelAdminMixin,
     NestedInlineAdminFormsetMixin, NestedInlineAdminFormset)
 
@@ -174,14 +173,16 @@ class NestedGenericStackedPolymorphicInline(NestedGenericPolymorphicInlineModelA
         template = 'nesting/admin/inlines/polymorphic_stacked.html'
 
 
+# django-polymorphic expects the parent admin to extend PolymorphicInlineSupportMixin,
+# but we don't need the downcast method of that mixin, so we skip it by calling
+# its super
 class NestedPolymorphicInlineSupportMixin(
-        NestedPolymorphicAdminFormsetHelperMixin, PolymorphicInlineSupportMixin,
-        NestedModelAdminMixin):
+        NestedPolymorphicAdminFormsetHelperMixin, PolymorphicInlineSupportMixin):
 
     def get_inline_formsets(self, request, formsets, inline_instances, obj=None, *args, **kwargs):
         return super(PolymorphicInlineSupportMixin, self).get_inline_formsets(
             request, formsets, inline_instances, obj, *args, **kwargs)
 
 
-class NestedPolymorphicModelAdmin(NestedPolymorphicInlineSupportMixin, ModelAdmin):
+class NestedPolymorphicModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
     pass
