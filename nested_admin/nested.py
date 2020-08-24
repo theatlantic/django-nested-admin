@@ -1,6 +1,5 @@
 import json
 
-import django
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.admin.utils import flatten_fieldsets
@@ -86,13 +85,12 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
         self.has_delete_permission = kwargs.pop('has_delete_permission', True)
         self.has_view_permission = kwargs.pop('has_view_permission', True)
 
-        if django.VERSION > (2, 1):
-            kwargs.update({
-                'has_add_permission': self.has_add_permission,
-                'has_change_permission': self.has_change_permission,
-                'has_delete_permission': self.has_delete_permission,
-                'has_view_permission': self.has_view_permission,
-            })
+        kwargs.update({
+            'has_add_permission': self.has_add_permission,
+            'has_change_permission': self.has_change_permission,
+            'has_delete_permission': self.has_delete_permission,
+            'has_view_permission': self.has_view_permission,
+        })
 
         super(NestedInlineAdminFormsetMixin, self).__init__(inline, *args, **kwargs)
         self.request = request
@@ -206,34 +204,7 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
 
 
 class NestedBaseInlineAdminFormSet(helpers.InlineAdminFormSet):
-    """
-    Normalize __iter__ so that it backports has_add_permission functionality
-    to older django versions
-    """
-    if django.VERSION < (2, 1):
-        def __iter__(self):
-            if self.has_change_permission:
-                readonly_fields_for_editing = self.readonly_fields
-            else:
-                readonly_fields_for_editing = self.readonly_fields + flatten_fieldsets(self.fieldsets)
-
-            for form, original in zip(self.formset.initial_forms, self.formset.get_queryset()):
-                view_on_site_url = self.opts.get_view_on_site_url(original)
-                yield helpers.InlineAdminForm(
-                    self.formset, form, self.fieldsets, self.prepopulated_fields,
-                    original, readonly_fields_for_editing, model_admin=self.opts,
-                    view_on_site_url=view_on_site_url)
-            for form in self.formset.extra_forms:
-                yield helpers.InlineAdminForm(
-                    self.formset, form, self.fieldsets, self.prepopulated_fields,
-                    None, self.readonly_fields, model_admin=self.opts,
-                )
-            if self.has_add_permission:
-                yield helpers.InlineAdminForm(
-                    self.formset, self.formset.empty_form,
-                    self.fieldsets, self.prepopulated_fields, None,
-                    self.readonly_fields, model_admin=self.opts,
-                )
+    pass
 
 
 class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, NestedBaseInlineAdminFormSet):

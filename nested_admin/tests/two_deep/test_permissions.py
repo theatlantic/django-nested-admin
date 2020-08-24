@@ -24,9 +24,6 @@ class SeleniumTestInlinePermissions(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        if django.VERSION < (2, 1):
-            raise SkipTest("View permissions not available before django 2.1")
-
         super(SeleniumTestInlinePermissions, cls).setUpClass()
         cls.section_cls, cls.item_cls = cls.nested_models
 

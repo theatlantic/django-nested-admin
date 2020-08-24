@@ -2,7 +2,6 @@ from contextlib import contextmanager
 import time
 from unittest import SkipTest
 
-import django
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.text import slugify
@@ -378,8 +377,6 @@ class Widgets(BaseWidgetTestCase):
     def test_nested_autocomplete_extra(self):
         if self.has_grappelli:
             raise SkipTest("Not testing autocomplete on grappelli")
-        if django.VERSION < (2, 0):
-            raise SkipTest("autocomplete_fields not available in Django before 2.0")
         self.load_admin()
         self.add_inline([0, [0]])
         self.add_inline([0, 1, [0]])

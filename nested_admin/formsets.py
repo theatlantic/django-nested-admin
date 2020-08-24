@@ -36,7 +36,7 @@ def mutable_querydict(qd):
         qd._mutable = orig_mutable
 
 
-PATCH_FORM_IS_MULTIPART = (2, 1) < django.VERSION < (3, 0)
+PATCH_FORM_IS_MULTIPART = django.VERSION < (3, 0)
 
 
 class FixDjango2MultipartFormMixin(object):
