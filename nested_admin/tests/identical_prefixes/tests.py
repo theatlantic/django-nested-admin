@@ -1,5 +1,3 @@
-import six
-
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import Root, AX, AY, BX, BY
 
@@ -47,5 +45,5 @@ class TestIdenticalPrefixes(BaseNestedAdminTestCase):
         self.save_form()
 
         moved_item = BY.objects.get(bar='ay0by0')
-        self.assertEqual(six.text_type(moved_item), 'Root(group)/AX[0](x0)/BY[0](ay0by0)',
+        self.assertEqual(str(moved_item), 'Root(group)/AX[0](x0)/BY[0](ay0by0)',
             "Item was not moved to the correct position")

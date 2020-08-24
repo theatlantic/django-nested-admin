@@ -4,7 +4,6 @@ try:
 except ImportError:
     from collections import Sequence
 
-import six
 from nested_admin.tests.compat import python_2_unicode_compatible
 
 
@@ -26,11 +25,11 @@ def is_sequence(o):
 
 
 def is_integer(o):
-    return isinstance(o, six.integer_types)
+    return isinstance(o, int)
 
 
 def is_str(o):
-    return isinstance(o, six.string_types)
+    return isinstance(o, str)
 
 
 Position = namedtuple('Position', ['x', 'y'])
@@ -67,7 +66,7 @@ class ElementRect(object):
         }
         aliases = dict(default_aliases, **(aliases or {}))
         self.alias_map = {}
-        for k, v in six.iteritems(aliases):
+        for k, v in aliases.items():
             self.alias_map.setdefault(v, [])
             self.alias_map[v].append(k)
 
@@ -95,7 +94,7 @@ class ElementRect(object):
             })(arguments[0], window, document.documentElement)
             """, self._element))
         self.rect = Rect(**rect_dict)
-        for k, v in six.iteritems(rect_dict):
+        for k, v in rect_dict.items():
             setattr(self, k, v)
             for alias in (self.alias_map.get(k) or []):
                 setattr(self, alias, v)

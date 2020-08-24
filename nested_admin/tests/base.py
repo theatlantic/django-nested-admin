@@ -14,7 +14,6 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 
-import six
 from selenosis import AdminSelenosisTestCase
 from .drag_drop import DragAndDropAction
 from .utils import (
@@ -80,7 +79,8 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
     def initialize_page(self):
         if self.server_exc_info:
-            six.reraise(*self.server_exc_info)
+            exc_type, exc_value, exc_traceback = self.server_exc_info
+            raise exc_valuex
 
         super(BaseNestedAdminTestCase, self).initialize_page()
 

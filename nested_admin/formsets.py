@@ -8,15 +8,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import BaseInlineFormSet
-import six
-from six.moves import range
+from django.utils.encoding import force_str
 
 from .compat import ensure_merge_safe_media
-
-if six.PY2:
-    from django.utils.encoding import force_text as force_str
-else:
-    from django.utils.encoding import force_str
 
 try:
     from polymorphic.utils import get_base_polymorphic_model
@@ -206,7 +200,7 @@ class NestedInlineFormSetMixin(object):
                     # Set the sort field on the instance and in the form data
                     setattr(form.instance, sort_field, i)
                     with mutable_querydict(form.data):
-                        form.data[form.add_prefix(sort_field)] = six.text_type(i)
+                        form.data[form.add_prefix(sort_field)] = str(i)
 
                     # Force recalculation of changed_data
                     form.__dict__.pop('changed_data', None)

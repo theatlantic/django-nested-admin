@@ -1,4 +1,3 @@
-import six
 from unittest import SkipTest
 
 import django
@@ -217,7 +216,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         new_index = num_inlines - 1
 
         indexes.append([model_name, new_index])
-        for field_name, val in six.iteritems(kwargs):
+        for field_name, val in kwargs.items():
             self.set_field(field_name, val, indexes=indexes)
         return indexes
 

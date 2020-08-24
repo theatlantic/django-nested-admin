@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from unittest import SkipTest
+from urllib.parse import urlparse, urlunparse, ParseResult
 
 import PIL.Image
 import PIL.ImageDraw
@@ -20,8 +21,6 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
-import six
-from six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
 try:
     from storages.backends.s3boto3 import S3Boto3Storage
@@ -62,8 +61,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        if six.PY2:
-            raise SkipTest("Skipping redundant test")
         cls.pixelmatch_bin = os.environ.get('PIXELMATCH_BIN')
         if not cls.pixelmatch_bin:
             cls.pixelmatch_bin = find_executable('pixelmatch')

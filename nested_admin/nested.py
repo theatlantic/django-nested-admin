@@ -6,9 +6,7 @@ from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from django.urls import reverse
 from django.template.defaultfilters import capfirst
-import six
 from django.utils.functional import lazy
-from six.moves import zip
 from django.utils.translation import gettext
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
@@ -24,10 +22,6 @@ __all__ = (
     'NestedGenericStackedInline', 'NestedGenericTabularInline',
     'NestedGenericStackedInlineMixin', 'NestedGenericTabularInlineMixin',
     'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin')
-
-
-def get_method_function(fn):
-    return fn.im_func if six.PY2 else fn
 
 
 def get_model_id(model_cls):
@@ -478,15 +472,15 @@ class NestedInlineModelAdminMixin(object):
         super(NestedInlineModelAdminMixin, self).__init__(*args, **kwargs)
 
     # Copy methods from ModelAdmin
-    get_inline_instances = get_method_function(ModelAdmin.get_inline_instances)
+    get_inline_instances = ModelAdmin.get_inline_instances
 
-    get_formsets_with_inlines = get_method_function(ModelAdmin.get_formsets_with_inlines)
+    get_formsets_with_inlines = ModelAdmin.get_formsets_with_inlines
 
     if hasattr(ModelAdmin, 'get_formsets'):
-        get_formsets = get_method_function(ModelAdmin.get_formsets)
+        get_formsets = ModelAdmin.get_formsets
 
     if hasattr(ModelAdmin, '_get_formsets'):
-        _get_formsets = get_method_function(ModelAdmin._get_formsets)
+        _get_formsets = ModelAdmin._get_formsets
 
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = BaseFormSet = kwargs.pop('formset', self.formset)

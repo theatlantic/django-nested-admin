@@ -15,7 +15,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
-import six
 
 from nested_admin.tests.base import (
     skip_if_not_grappelli, BaseNestedAdminTestCase)
@@ -79,7 +78,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
     def check_prepopulated(self, indexes):
         name = self.get_name_for_indexes(indexes)
-        expected_slug = slugify(six.text_type(name))
+        expected_slug = slugify(name)
 
         slug_sel = self.get_form_field_selector('slug', indexes)
 
