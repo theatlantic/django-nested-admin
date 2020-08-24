@@ -1,8 +1,5 @@
 from collections import namedtuple
-try:
-    from collections.abc import Sequence
-except ImportError:
-    from collections import Sequence
+from collections.abc import Sequence
 
 
 def xpath_cls(classname):

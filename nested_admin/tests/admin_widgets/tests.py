@@ -1,16 +1,11 @@
 from contextlib import contextmanager
+from html import unescape
 import time
 from unittest import SkipTest
 
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.text import slugify
-
-try:
-    from html import unescape
-except ImportError:
-    from django.utils.text import unescape_entities as unescape
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
