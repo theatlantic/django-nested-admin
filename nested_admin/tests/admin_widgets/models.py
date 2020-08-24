@@ -2,14 +2,12 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
 class WidgetsRoot(models.Model):
     name = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
 class WidgetsRelated1(models.Model):
     name = models.CharField(max_length=200)
 
@@ -24,7 +22,6 @@ class WidgetsRelated1(models.Model):
         return ("name__icontains", )
 
 
-@python_2_unicode_compatible
 class WidgetsRelated2(models.Model):
     name = models.CharField(max_length=200)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -43,7 +40,6 @@ class WidgetsRelated2(models.Model):
         return ("name__icontains", )
 
 
-@python_2_unicode_compatible
 class WidgetsM2M(models.Model):
     name = models.CharField(max_length=200)
 
@@ -51,7 +47,6 @@ class WidgetsM2M(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class WidgetsM2MTwo(models.Model):
     name = models.CharField(max_length=200)
 
@@ -66,7 +61,6 @@ class WidgetsM2MTwo(models.Model):
         return ("name__icontains", )
 
 
-@python_2_unicode_compatible
 class WidgetsM2MThree(models.Model):
     name = models.CharField(max_length=200)
 
@@ -81,7 +75,6 @@ class WidgetsM2MThree(models.Model):
         return ("name__icontains", )
 
 
-@python_2_unicode_compatible
 class WidgetsA(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -117,7 +110,6 @@ class WidgetsA(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class WidgetsB(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -154,7 +146,6 @@ class WidgetsB(models.Model):
         return "{} - {}".format(parent_name, self.name)
 
 
-@python_2_unicode_compatible
 class WidgetsC0(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -191,7 +182,6 @@ class WidgetsC0(models.Model):
         return "{} - {}".format(parent_name, self.name)
 
 
-@python_2_unicode_compatible
 class WidgetsC1(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -226,7 +216,6 @@ class WidgetMediaOrderRoot(models.Model):
     name = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
 class WidgetMediaOrderA(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -240,7 +229,6 @@ class WidgetMediaOrderA(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class WidgetMediaOrderB(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -255,7 +243,6 @@ class WidgetMediaOrderB(models.Model):
         return "{} - {}".format(parent_name, self.name)
 
 
-@python_2_unicode_compatible
 class WidgetMediaOrderC0(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -270,7 +257,6 @@ class WidgetMediaOrderC0(models.Model):
         return "{} - {}".format(parent_name, self.name)
 
 
-@python_2_unicode_compatible
 class WidgetMediaOrderC1(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()

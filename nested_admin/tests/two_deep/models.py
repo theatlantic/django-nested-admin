@@ -1,9 +1,7 @@
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class GroupAbstract(models.Model):
 
     slug = models.CharField(max_length=128)
@@ -15,7 +13,6 @@ class GroupAbstract(models.Model):
         return self.slug
 
 
-@python_2_unicode_compatible
 class SectionAbstract(models.Model):
 
     slug = models.CharField(max_length=128)
@@ -31,7 +28,6 @@ class SectionAbstract(models.Model):
         return "/".join(parts)
 
 
-@python_2_unicode_compatible
 class ItemAbstract(models.Model):
 
     name = models.CharField(max_length=128)

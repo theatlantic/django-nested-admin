@@ -4,8 +4,6 @@ try:
 except ImportError:
     from collections import Sequence
 
-from nested_admin.tests.compat import python_2_unicode_compatible
-
 
 def xpath_cls(classname):
     return 'contains(concat(" ", @class, " "), " %s ")' % classname
@@ -50,7 +48,6 @@ class Rect(namedtuple('Rect', [
     h = property(lambda self: self.height)
 
 
-@python_2_unicode_compatible
 class ElementRect:
 
     def __init__(self, element, aliases=None):

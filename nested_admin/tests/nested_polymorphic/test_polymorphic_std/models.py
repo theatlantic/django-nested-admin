@@ -3,7 +3,6 @@ from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKe
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 try:
     from polymorphic.models import PolymorphicModel
@@ -15,7 +14,6 @@ except:
         PolymorphicModel = models.Model
 
 
-@python_2_unicode_compatible
 class TopLevel(models.Model):
 
     name = models.CharField(max_length=200)
@@ -24,7 +22,6 @@ class TopLevel(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class LevelOne(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
@@ -52,7 +49,6 @@ class LevelOneB(LevelOne):
     b = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
 class LevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
@@ -80,7 +76,6 @@ class LevelTwoD(LevelTwo):
     d = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
 class ALevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
@@ -104,7 +99,6 @@ class ALevelTwoC(ALevelTwo):
     ac = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
 class GFKX(models.Model):
     name = models.CharField(max_length=255)
     position = models.PositiveIntegerField()
@@ -127,7 +121,6 @@ class ALevelTwoD(ALevelTwo):
     x_set = GenericRelation(GFKX)
 
 
-@python_2_unicode_compatible
 class BLevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)

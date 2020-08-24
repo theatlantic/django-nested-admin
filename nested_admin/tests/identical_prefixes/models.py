@@ -1,8 +1,6 @@
 from django.db import models
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Root(models.Model):
     slug = models.SlugField(max_length=10, blank=True, null=True)
 
@@ -10,7 +8,6 @@ class Root(models.Model):
         return "{}({})".format(type(self).__name__, self.slug)
 
 
-@python_2_unicode_compatible
 class A(models.Model):
     root = models.ForeignKey(Root, related_name="a_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
@@ -58,7 +55,6 @@ class AY(A):
         proxy = True
 
 
-@python_2_unicode_compatible
 class B(models.Model):
     a = models.ForeignKey(A, related_name="b_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()

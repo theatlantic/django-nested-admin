@@ -1,9 +1,7 @@
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class RootAbstract(models.Model):
 
     slug = models.CharField(max_length=128)
@@ -15,7 +13,6 @@ class RootAbstract(models.Model):
         return self.slug
 
 
-@python_2_unicode_compatible
 class ChildAbstract(models.Model):
 
     slug = models.CharField(max_length=128, help_text="Halp")
