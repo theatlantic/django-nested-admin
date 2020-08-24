@@ -4,7 +4,7 @@
 Quick start guide
 =================
 
-`Django <http://www.djangoproject.com>`_ (version 1.11+) needs to be installed to use django-nested-admin.
+`Django <http://www.djangoproject.com>`_ (version 2.2+) needs to be installed to use django-nested-admin.
 
 Installation
 ============
@@ -31,13 +31,6 @@ If you're using django-grappelli, you’ll need to add URL-patterns:
 
 .. code-block:: python
 
-    # Django < 2
-    urlpatterns = [
-        # ...
-        url(r'^_nested_admin/', include('nested_admin.urls')),
-    ]
-
-    # Django 2+
     urlpatterns = [
         # ...
         path('_nested_admin/', include('nested_admin.urls)),
