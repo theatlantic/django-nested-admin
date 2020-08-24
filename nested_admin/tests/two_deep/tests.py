@@ -12,11 +12,11 @@ from .models import (
     SortableWithExtraRoot, SortableWithExtraChild)
 
 
-class InlineAdminTestCaseMixin(object):
+class InlineAdminTestCaseMixin:
 
     @classmethod
     def setUpClass(cls):
-        super(InlineAdminTestCaseMixin, cls).setUpClass()
+        super().setUpClass()
         cls.section_cls, cls.item_cls = cls.nested_models
 
     def test_add_section_to_empty(self):

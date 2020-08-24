@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -153,7 +151,7 @@ class WidgetsB(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 @python_2_unicode_compatible
@@ -190,7 +188,7 @@ class WidgetsC0(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 @python_2_unicode_compatible
@@ -221,7 +219,7 @@ class WidgetsC1(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 class WidgetMediaOrderRoot(models.Model):
@@ -254,7 +252,7 @@ class WidgetMediaOrderB(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 @python_2_unicode_compatible
@@ -269,7 +267,7 @@ class WidgetMediaOrderC0(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 @python_2_unicode_compatible
@@ -295,7 +293,7 @@ class WidgetMediaOrderC1(models.Model):
 
     def __str__(self):
         parent_name = self.parent.name if self.parent else '?'
-        return "%s - %s" % (parent_name, self.name)
+        return "{} - {}".format(parent_name, self.name)
 
 
 class WidgetMediaOrderRootWithDateWidget(WidgetMediaOrderRoot):

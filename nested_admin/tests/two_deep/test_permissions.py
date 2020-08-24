@@ -24,11 +24,11 @@ class SeleniumTestInlinePermissions(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(SeleniumTestInlinePermissions, cls).setUpClass()
+        super().setUpClass()
         cls.section_cls, cls.item_cls = cls.nested_models
 
     def setUp(self):
-        super(SeleniumTestInlinePermissions, self).setUp()
+        super().setUp()
         self.group = StackedGroup.objects.create(pk=1, slug='group')
         self.section_a = StackedSection.objects.create(
             pk=1, slug='a', group=self.group, position=0)

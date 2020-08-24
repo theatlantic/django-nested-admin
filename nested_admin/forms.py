@@ -1,7 +1,7 @@
 from django.forms.widgets import HiddenInput
 
 
-class SortableHiddenMixin(object):
+class SortableHiddenMixin:
     """
     Enables inline sorting and hides the sortable field.
 
@@ -14,5 +14,5 @@ class SortableHiddenMixin(object):
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == self.sortable_field_name:
             kwargs["widget"] = HiddenInput()
-        return super(SortableHiddenMixin, self).formfield_for_dbfield(
+        return super().formfield_for_dbfield(
             db_field, **kwargs)

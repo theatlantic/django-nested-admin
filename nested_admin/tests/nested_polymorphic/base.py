@@ -129,7 +129,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             base_model_cls = get_base_polymorphic_model(model_cls)
         else:
             base_model_cls = model_cls
-        base_model_id = "%s-%s" % (
+        base_model_id = "{}-{}".format(
             base_model_cls._meta.app_label, base_model_cls._meta.model_name)
         try:
             group = self.get_group(indexes=group_indexes + [base_model_id])
@@ -153,25 +153,25 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             base_model_cls = get_base_polymorphic_model(model_cls)
         else:
             base_model_cls = model_cls
-        base_model_id = "%s-%s" % (
+        base_model_id = "{}-{}".format(
             base_model_cls._meta.app_label, base_model_cls._meta.model_name)
         item_id = self.get_item(indexes).get_attribute('id')
-        delete_selector = "#%s .djn-delete-handler.djn-model-%s" % (
+        delete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
             item_id, base_model_id)
         with self.clickable_selector(delete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            undelete_selector = "#%s.grp-predelete .grp-delete-handler.djn-model-%s" % (
+            undelete_selector = "#{}.grp-predelete .grp-delete-handler.djn-model-{}".format(
                 item_id, base_model_id)
             self.wait_until_clickable_selector(undelete_selector)
 
     def add_inline(self, indexes=None, model=None, **kwargs):
-        model_name = "%s-%s" % (model._meta.app_label, model._meta.model_name)
+        model_name = "{}-{}".format(model._meta.app_label, model._meta.model_name)
         if issubclass(model, PolymorphicModel):
             base_model = get_base_polymorphic_model(model)
         else:
             base_model = model
-        base_model_identifier = "%s-%s" % (
+        base_model_identifier = "{}-{}".format(
             base_model._meta.app_label, base_model._meta.model_name)
 
         if indexes:
@@ -183,9 +183,9 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             group_el = self.get_group([base_model_identifier])
             ctx_id = group_el.get_attribute('id')
 
-        error_desc = "%s in inline %s" % (model, indexes)
+        error_desc = "{} in inline {}".format(model, indexes)
 
-        add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
+        add_selector = "#{} .djn-add-item a.djn-add-handler.djn-model-{}".format(
             ctx_id, base_model_identifier)
         add_els = self.selenium.find_elements_by_css_selector(add_selector)
         self.assertNotEqual(len(add_els), 0,
@@ -211,7 +211,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             '#%(id)s > .djn-items' % {'id': group_id})
 
         num_inlines = len(items_el.find_elements_by_xpath(
-            './*[%s and not(%s)]' % (xpath_item(), xpath_cls('djn-empty-form'))))
+            './*[{} and not({})]'.format(xpath_item(), xpath_cls('djn-empty-form'))))
 
         new_index = num_inlines - 1
 

@@ -24,10 +24,10 @@ class PolymorphicAddFilteringTestCase(BaseNestedPolymorphicTestCase):
     def setUpClass(cls):
         if not has_polymorphic:
             raise SkipTest('django-polymorphic unavailable')
-        super(PolymorphicAddFilteringTestCase, cls).setUpClass()
+        super().setUpClass()
 
     def add_inline(self, indexes=None, model=None, **kwargs):
-        indexes = super(PolymorphicAddFilteringTestCase, self).add_inline(
+        indexes = super().add_inline(
             indexes, model, **kwargs)
         if self.has_grappelli:
             item = self.get_item(indexes)

@@ -42,7 +42,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BaseWidgetTestCase, cls).setUpClass()
+        super().setUpClass()
         if cls.nested_models:
             cls.a_model, cls.b_model, (cls.c0_model, cls.c1_model) = cls.nested_models
 

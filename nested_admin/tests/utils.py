@@ -13,7 +13,7 @@ def xpath_cls(classname):
 
 def xpath_item(model_name=None):
     xpath_item_predicate = 'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
-    expr = "%s and %s" % (xpath_cls('djn-item'), xpath_item_predicate)
+    expr = "{} and {}".format(xpath_cls('djn-item'), xpath_item_predicate)
     if model_name:
         expr += (' and (@data-inline-model="%s" or %s)'
             % (model_name, xpath_cls("djn-dynamic-form-%s" % model_name)))
@@ -51,7 +51,7 @@ class Rect(namedtuple('Rect', [
 
 
 @python_2_unicode_compatible
-class ElementRect(object):
+class ElementRect:
 
     def __init__(self, element, aliases=None):
         default_aliases = {

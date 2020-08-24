@@ -14,7 +14,7 @@ except ImportError:
 # (which we cannot do because it has extensive dependencies).
 init_file = os.path.join(os.path.dirname(__file__),
                          'nested_admin', '__init__.py')
-with open(init_file, 'r') as f:
+with open(init_file) as f:
     for line in f:
         m = re.search(r'''^__version__ = (['"])(.+?)\1$''', line)
         if m is not None:

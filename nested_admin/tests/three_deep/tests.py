@@ -12,7 +12,7 @@ class TestDeepNesting(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestDeepNesting, cls).setUpClass()
+        super().setUpClass()
         cls.l1_model, cls.l2_model, cls.l3_model = cls.nested_models
 
     def test_validationerror_on_empty_extra_parent_form(self):
@@ -109,11 +109,11 @@ class TestNestedPermissions(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestNestedPermissions, cls).setUpClass()
+        super().setUpClass()
         cls.l1_model, cls.l2_model, cls.l3_model = cls.nested_models
 
     def setUp(self):
-        super(TestNestedPermissions, self).setUp()
+        super().setUp()
 
         self.user = User(username='user', is_staff=True, is_active=True)
         self.user.set_password('password')
@@ -126,7 +126,7 @@ class TestNestedPermissions(BaseNestedAdminTestCase):
             app_label = model._meta.app_label
             model_name = model._meta.model_name
             for perm_type in ['add', 'change', 'delete']:
-                codename = "%s_%s" % (perm_type, model_name)
+                codename = "{}_{}".format(perm_type, model_name)
                 self.permissions[codename] = Permission.objects.get_by_natural_key(
                     codename, app_label, model_name)
 

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from datetime import datetime
 import functools
 import inspect
@@ -35,7 +33,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BaseNestedAdminTestCase, cls).setUpClass()
+        super().setUpClass()
 
         root_admin = admin_site._registry[cls.root_model]
 
@@ -56,7 +54,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         cls.model_names = recursive_map_model_names(cls.models)
 
     def setUp(self):
-        super(BaseNestedAdminTestCase, self).setUp()
+        super().setUp()
         self.server_exc_info = None
         app = self.server_thread.httpd.application.application.application
         if app._exception_middleware is None:
@@ -67,7 +65,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         app = self.server_thread.httpd.application.application.application
         app._exception_middleware = []
         self.dump_js_coverage()
-        super(BaseNestedAdminTestCase, self).tearDown()
+        super().tearDown()
 
     def handle_server_error(self, request, exception):
         self.server_exc_info = sys.exc_info()
@@ -75,14 +73,14 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def load_admin(self, obj=None):
         if obj is None:
             obj = self.root_model
-        super(BaseNestedAdminTestCase, self).load_admin(obj)
+        super().load_admin(obj)
 
     def initialize_page(self):
         if self.server_exc_info:
             exc_type, exc_value, exc_traceback = self.server_exc_info
             raise exc_valuex
 
-        super(BaseNestedAdminTestCase, self).initialize_page()
+        super().initialize_page()
 
         browser_errors = [e for e in self.selenium.get_log('browser')
                           if 'favicon' not in e['message']]
@@ -128,15 +126,15 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         else:
             admin_type = "std"
 
-        return "py%(pyver)s_dj%(djver)s_%(type)s.%(cls)s.%(fn)s.%(ts)s%(usec)s" % {
-            'pyver': "%s%s" % sys.version_info[:2],
-            'djver': "%s%s" % django.VERSION[:2],
-            'type': admin_type,
-            'cls': type(self).__name__,
-            'fn': self._testMethodName,
-            'ts': datetime.now().strftime('%Y%m%d%H%M%S'),
-            'usec': ("%.6f" % time.time()).split('.')[1],
-        }
+        return "py{pyver}_dj{djver}_{type}.{cls}.{fn}.{ts}{usec}".format(
+            pyver="%s%s" % sys.version_info[:2],
+            djver="%s%s" % django.VERSION[:2],
+            type=admin_type,
+            cls=type(self).__name__,
+            fn=self._testMethodName,
+            ts=datetime.now().strftime('%Y%m%d%H%M%S'),
+            usec=("%.6f" % time.time()).split('.')[1],
+        )
 
     def dump_js_coverage(self):
         try:
@@ -319,7 +317,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         model_name = indexes[-1]
         group = self.get_group(indexes=indexes)
         group_id = group.get_attribute('id')
-        selector = "#%s .djn-dynamic-form-%s" % (group_id, model_name)
+        selector = "#{} .djn-dynamic-form-{}".format(group_id, model_name)
         return self.selenium.execute_script("return $('%s').length" % selector)
 
     def get_group(self, indexes=None):
@@ -343,7 +341,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes, is_group=True)
         new_index = self.get_num_inlines(indexes)
         model_name = indexes[-1]
-        add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
+        add_selector = "#{} .djn-add-item a.djn-add-handler.djn-model-{}".format(
             self.get_group(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(add_selector) as el:
             self.click(el)
@@ -357,7 +355,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def remove_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        remove_selector = "#%s .djn-remove-handler.djn-model-%s" % (
+        remove_selector = "#{} .djn-remove-handler.djn-model-{}".format(
             self.get_item(indexes).get_attribute('id'), model_name)
         with self.clickable_selector(remove_selector) as el:
             self.click(el)
@@ -366,12 +364,12 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        delete_selector = "#%s .djn-delete-handler.djn-model-%s" % (
+        delete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
             item_id, model_name)
         with self.clickable_selector(delete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            undelete_selector = "#%s.grp-predelete .grp-delete-handler.djn-model-%s" % (
+            undelete_selector = "#{}.grp-predelete .grp-delete-handler.djn-model-{}".format(
                 item_id, model_name)
             self.wait_until_clickable_selector(undelete_selector)
 
@@ -379,11 +377,11 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute('id')
-        undelete_selector = "#%s .djn-delete-handler.djn-model-%s" % (item_id, model_name)
+        undelete_selector = "#{} .djn-delete-handler.djn-model-{}".format(item_id, model_name)
         with self.clickable_selector(undelete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            delete_selector = "#%s:not(.grp-predelete) .grp-delete-handler.djn-model-%s" % (
+            delete_selector = "#{}:not(.grp-predelete) .grp-delete-handler.djn-model-{}".format(
                 item_id, model_name)
             self.wait_until_clickable_selector(delete_selector)
 
@@ -392,7 +390,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         if not indexes:
             return "#id_%s" % attname
         field_prefix = self.get_item(indexes=indexes).get_attribute('id')
-        return "#id_%s-%s" % (field_prefix, attname)
+        return "#id_{}-{}".format(field_prefix, attname)
 
     def get_field(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)

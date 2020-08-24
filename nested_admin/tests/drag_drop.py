@@ -17,7 +17,7 @@ def sign(x):
     return x and (1, -1)[x < 0]
 
 
-class DragAndDropAction(object):
+class DragAndDropAction:
 
     def __init__(self, test_case, from_indexes, to_indexes):
         self.test_case = test_case

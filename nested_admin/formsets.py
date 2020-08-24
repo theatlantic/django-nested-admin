@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import contextlib
 
 import django
@@ -33,7 +31,7 @@ def mutable_querydict(qd):
 PATCH_FORM_IS_MULTIPART = django.VERSION < (3, 0)
 
 
-class FixDjango2MultipartFormMixin(object):
+class FixDjango2MultipartFormMixin:
     def is_multipart(self, check_formset=True):
         """
         Overridden is_multipart for Django 2.1 and 2.2 that returns the
@@ -50,15 +48,15 @@ class FixDjango2MultipartFormMixin(object):
         if check_formset and parent_formset:
             return parent_formset.is_multipart()
         else:
-            return super(FixDjango2MultipartFormMixin, self).is_multipart()
+            return super().is_multipart()
 
 
-class NestedInlineFormSetMixin(object):
+class NestedInlineFormSetMixin:
 
     is_nested = False
 
     def __init__(self, *args, **kwargs):
-        super(NestedInlineFormSetMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if PATCH_FORM_IS_MULTIPART:
             self.form = type(
                 self.form.__name__, (FixDjango2MultipartFormMixin, self.form), {
@@ -67,7 +65,7 @@ class NestedInlineFormSetMixin(object):
 
     @property
     def media(self):
-        media = super(NestedInlineFormSetMixin, self).media
+        media = super().media
         return ensure_merge_safe_media(media)
 
     def _construct_form(self, i, **kwargs):
@@ -75,11 +73,11 @@ class NestedInlineFormSetMixin(object):
         if '-empty-' in self.prefix:
             defaults['empty_permitted'] = True
         defaults.update(kwargs)
-        return super(NestedInlineFormSetMixin, self)._construct_form(i, **defaults)
+        return super()._construct_form(i, **defaults)
 
     def is_multipart(self):
         if not PATCH_FORM_IS_MULTIPART:
-            if super(NestedInlineFormSetMixin, self).is_multipart():
+            if super().is_multipart():
                 return True
         else:
             try:
@@ -245,10 +243,10 @@ class NestedInlineFormSetMixin(object):
         TODO: document this extended method
         """
         if not self.data:
-            return super(NestedInlineFormSetMixin, self).get_queryset()
+            return super().get_queryset()
 
         if not hasattr(self, '__queryset'):
-            pk_keys = ["%s-%s" % (self.add_prefix(i), self.model._meta.pk.name)
+            pk_keys = ["{}-{}".format(self.add_prefix(i), self.model._meta.pk.name)
                        for i in range(0, self.initial_form_count())]
             pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
 
