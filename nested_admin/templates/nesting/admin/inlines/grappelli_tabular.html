@@ -76,6 +76,7 @@
 
     </table>
 
+    {% if inline_admin_formset.has_add_permission %}
     <div class="grp-module grp-transparent">
         <div class="grp-row djn-add-item">
             <a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_admin_formset.handler_classes|join:" " }}"><strong>{% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}</strong></a>
@@ -84,6 +85,7 @@
             </ul>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
 

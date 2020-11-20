@@ -29,7 +29,7 @@
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                  {% endif %}
                  id="{{ inline_admin_formset.formset.prefix }}-{% if not inline_admin_form.is_empty %}{{ inline_admin_form.form|form_index }}{% else %}empty-{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}{% endif %}">
-                 
+
                 <h3 class="{% if not inline_opts.sortable_options or not inline_opts.sortable_options.disabled %} djn-drag-handler{% endif %}">
                     <b>{{ inline_admin_form.model_admin.opts.verbose_name|capfirst }}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %} <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}
                     {% else %}#{{ forloop.counter }}{% endif %}</span>
@@ -69,11 +69,13 @@
         {% endfor %}
         {% endwith %}
     </div>
+    {% if inline_admin_formset.has_add_permission %}
     <div class="djn-module djn-add-item add-item add-row polymorphic-add-choice">
         <a href="javascript://" class="add-handler djn-add-handler {{ inline_admin_formset.handler_classes|join:" " }}">
             {% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}
         </a>
     </div>
+    {% endif %}
     {% ifinlineclasses %}</fieldset>{% endifinlineclasses %}
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}

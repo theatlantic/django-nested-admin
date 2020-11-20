@@ -86,6 +86,7 @@
         {% endfor %}
         {% endwith %}
     </div>
+    {% if inline_admin_formset.has_add_permission %}
     <div class="grp-module djn-module djn-add-item grp-transparent">
         <div class="grp-row">
         <a href="javascript://" class="djn-add-handler grp-add-handler {{ inline_admin_formset.handler_classes|join:" " }}">
@@ -98,6 +99,7 @@
         </ul>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
 
