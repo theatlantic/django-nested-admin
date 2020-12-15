@@ -325,21 +325,32 @@ class NestedModelAdminMixin(NestedAdminMixin):
             if hasattr(orig_inline, 'child_inline_instances'):
                 for child_inline in orig_inline.child_inline_instances:
                     nested_formsets_and_inline_instances += [
-                        (orig_formset, inline)
+                        (orig_formset, inline, orig_inline)
                         for inline
                         in child_inline.get_inline_instances(request, obj)]
 
             if getattr(orig_inline, 'inlines', []):
                 nested_formsets_and_inline_instances += [
-                    (orig_formset, inline)
+                    (orig_formset, inline, orig_inline)
                     for inline
                     in orig_inline.get_inline_instances(request, obj)]
 
             i = 0
             while i < len(nested_formsets_and_inline_instances):
-                formset, inline = nested_formsets_and_inline_instances[i]
+                formset, inline, parent_inline = nested_formsets_and_inline_instances[i]
                 i += 1
-                formset_forms = list(formset.forms) + [None]
+
+                try:
+                    has_add_permission = parent_inline.has_add_permission(request, obj)
+                except TypeError:
+                    # Django before 2.2 didn't require obj kwarg
+                    has_add_permission = parent_inline.has_add_permission(request)
+
+                formset_forms = list(formset.forms)
+
+                if has_add_permission:
+                    formset_forms.append(None)
+
                 for form in formset_forms:
                     if form is not None:
                         form.parent_formset = formset
@@ -426,13 +437,13 @@ class NestedModelAdminMixin(NestedAdminMixin):
 
                     if hasattr(inline, 'get_inline_instances'):
                         nested_formsets_and_inline_instances += [
-                            (nested_formset, nested_inline)
+                            (nested_formset, nested_inline, inline)
                             for nested_inline
                             in inline.get_inline_instances(request, form_obj)]
                     if hasattr(inline, 'child_inline_instances'):
                         for nested_child in inline.child_inline_instances:
                             nested_formsets_and_inline_instances += [
-                                (nested_formset, nested_inline)
+                                (nested_formset, nested_inline, nested_child)
                                 for nested_inline
                                 in nested_child.get_inline_instances(request, form_obj)]
         return formsets, inline_instances

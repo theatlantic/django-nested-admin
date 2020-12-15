@@ -45,7 +45,7 @@
                 {% if inline_admin_form.pk_field.field %}
                 data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"
                 {% endif %}
-                id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% elif not forloop.last %}{%if is_nested %}{% endif %}{{ inline_admin_form.form|form_index }}{% endif %}">
+                id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% else %}{{ inline_admin_form.form|form_index }}{% endif %}">
 
             {% if inline_admin_form.form.non_field_errors %}
             <tr class="grp-tr"><td class="grp-td djn-td" colspan="{{ inline_admin_form|cell_count }}">
