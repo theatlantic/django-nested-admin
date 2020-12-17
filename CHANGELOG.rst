@@ -1,11 +1,15 @@
 Changelog
 =========
 
-**3.3.3 (unreleased)**
+**3.3.3 (Dec 17, 2020)**
 
 * Fixed: polymorphic inlines don't work if nested inside non-polymorphic
   inlines. Fixes `#183`_.
 * Officially support Django 3.1
+* Fixed: No longer has a ``collections.abc`` DeprecationWarning in python 3.8
+* Fixed: ManagementForm validation error bug when parent inlines have a
+  ``min_num`` defined and the user does not have add permissions on that
+  model.
 
 .. _#183: https://github.com/theatlantic/django-nested-admin/issues/183
 
