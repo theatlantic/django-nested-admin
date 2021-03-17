@@ -23,7 +23,7 @@ DJNesting.updateFormAttributes = function($elem, search, replace, selector) {
         selector = [
             ':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p',
             'img', '.djn-group', '.djn-inline-form', '.cropduster-form',
-            '.dal-forward-conf'].join(',');
+            '.dal-forward-conf', '[role=tabpanel]'].join(',');
     }
     var addBackMethod = ($.fn.addBack) ? 'addBack' : 'andSelf';
     $elem.find(selector)[addBackMethod]().each(function() {

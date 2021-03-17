@@ -3880,7 +3880,7 @@ DJNesting.updatePositions = updatePositions;
 
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   if (!selector) {
-    selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
+    selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf', '[role=tabpanel]'].join(',');
   }
 
   var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
