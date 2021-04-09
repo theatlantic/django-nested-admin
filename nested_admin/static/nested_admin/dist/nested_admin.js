@@ -3886,7 +3886,7 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
   $elem.find(selector)[addBackMethod]().each(function () {
     var $node = $(this),
-        attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset'];
+        attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset', 'data-django-super-image-for', 'data-django-super-image-crop-for'];
     $.each(attrs, function (i, attrName) {
       var attrVal = $node.attr(attrName);
 
