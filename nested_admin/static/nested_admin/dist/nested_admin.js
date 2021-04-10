@@ -3880,13 +3880,13 @@ DJNesting.updatePositions = updatePositions;
 
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   if (!selector) {
-    selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
+    selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf', '[role=tabpanel]'].join(',');
   }
 
   var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
   $elem.find(selector)[addBackMethod]().each(function () {
     var $node = $(this),
-        attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset'];
+        attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset', 'data-django-super-image-for', 'data-django-super-image-crop-for'];
     $.each(attrs, function (i, attrName) {
       var attrVal = $node.attr(attrName);
 
