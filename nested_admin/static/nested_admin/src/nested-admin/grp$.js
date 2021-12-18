@@ -1,4 +1,4 @@
-const $ = require('jquery');
+import $ from 'jquery';
 
 /**
  * For grappelli 2.14, converts a django.jQuery instance to a grp.jQuery
@@ -20,4 +20,4 @@ function grp$($sel) {
   return $grpSel;
 }
 
-module.exports = grp$;
+export default grp$;

@@ -1,12 +1,9 @@
-'use strict';
-
 /* globals SelectFilter, DateTimeShortcuts */
-
-const $ = require('jquery');
-require('./jquery.djnutils.js');
-const {createSortable, updatePositions} = require('./sortable');
-const regexQuote = require('./regexquote');
-const grp$ = require('./grp$');
+import $ from 'jquery';
+import './jquery.djnutils';
+import { createSortable, updatePositions } from "./sortable";
+import regexQuote from "./regexquote";
+import grp$ from "./grp$";
 
 var DJNesting = (typeof window.DJNesting != 'undefined')
                ? window.DJNesting : {};
@@ -282,4 +279,4 @@ grpFuncs.forEach((funcName) => {
     }(0));
 });
 
-module.exports = DJNesting;
+export default DJNesting;

@@ -1,8 +1,6 @@
-'use strict';
-
-const $ = require('jquery');
-const regexQuote = require('./regexquote');
-require('./jquery.ui.nestedsortable');
+import $ from 'jquery';
+import regexQuote from './regexquote';
+import './jquery.ui.nestedsortable';
 
 function updatePositions(prefix) {
     var position = 0,  // the value of the position formfield
@@ -230,4 +228,4 @@ function createSortable($group) {
     });
 }
 
-module.exports = {updatePositions, createSortable};
+export {updatePositions, createSortable};

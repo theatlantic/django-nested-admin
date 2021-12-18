@@ -1,8 +1,11 @@
 {
+  "sourceType": "unambiguous",
+  "plugins": ["@babel/plugin-transform-runtime"],
   "presets": [
     ["@babel/env", {
       "loose": true,
       "useBuiltIns": "usage",
+      "corejs": 2,
       "targets": {
         "browsers": ["last 2 versions", "safari >= 7", "ie 9"],
         "node": "8"

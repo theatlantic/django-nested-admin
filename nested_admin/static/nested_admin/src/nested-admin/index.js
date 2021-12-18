@@ -1,7 +1,9 @@
-const $ = require('jquery');
-const grappelli = require('grappelli');
-const DJNesting = require('./utils');
-DJNesting.DjangoFormset = require('./jquery.djangoformset');
+import $ from 'jquery';
+import * as grappelli from 'grappelli';
+import DJNesting from './utils';
+import DjangoFormset from './jquery.djangoformset';
+
+DJNesting.DjangoFormset = DjangoFormset;
 
 $(document).ready(function() {
     // Remove the border on any empty fieldsets
@@ -37,4 +39,4 @@ $(document).ready(function() {
     });
 });
 
-module.exports = DJNesting;
+export default DJNesting;

@@ -1,1 +1,1 @@
-module.exports = window.django.jQuery;
+export default window.django.jQuery;

@@ -1,6 +1,4 @@
-'use strict';
-
-const $ = require('jquery');
+import $ from "jquery";
 /*!
  * jQuery UI Sortable @VERSION
  * http://jqueryui.com

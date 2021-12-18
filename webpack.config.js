@@ -1,9 +1,8 @@
 'use strict';
 
-const autoprefixer = require('autoprefixer');
 const path = require('path');
-const merge = require('webpack-merge');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { merge } = require('webpack-merge');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const srcDir = 'nested_admin/static/nested_admin/src';
 const dstDir = path.join(
@@ -20,7 +19,7 @@ const baseConfig = {
   },
   resolve: {
     alias: {
-      'nested_admin': path.join(__dirname, 'nested_admin'),
+      nested_admin: path.join(__dirname, 'nested_admin'),
     },
   },
   mode: 'development',
@@ -55,25 +54,27 @@ module.exports = [
     module: {
       rules: [{
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            { loader: 'css-loader', options: { minimize: false, sourceMap: true } },
-            {
-              loader: 'postcss-loader',
-              options: {
-                sourceMap: true,
-                plugins: () => [autoprefixer]
-              }
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+              postcssOptions: {
+                plugins: [
+                  ['postcss-preset-env', {}],
+                ],
+              },
             },
-            { loader: 'sass-loader', options: { sourceMap: true } }
-          ]
-        })
-      }]
+          },
+          'sass-loader',
+        ],
+      }],
     },
     plugins: [
-      new ExtractTextPlugin('[name].css')
-    ]
+      new MiniCssExtractPlugin({ filename: '[name].css' })
+    ],
   }),
   ...((process.env.NODE_ENV === 'test') ? [] : [
     merge(baseConfig, {
@@ -82,24 +83,26 @@ module.exports = [
       module: {
         rules: [{
           test: /\.scss$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [
-              { loader: 'css-loader', options: { minimize: true, sourceMap: true } },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  sourceMap: true,
-                  plugins: () => [autoprefixer]
-                }
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                sourceMap: true,
+                postcssOptions: {
+                  plugins: [
+                    ['postcss-preset-env', {}],
+                  ],
+                },
               },
-              { loader: 'sass-loader', options: { sourceMap: true } }
-            ]
-          })
+            },
+            'sass-loader',
+          ],
         }]
       },
       plugins: [
-        new ExtractTextPlugin('[name].min.css')
+        new MiniCssExtractPlugin({ filename: '[name].min.css' })
       ]
     })
   ])
