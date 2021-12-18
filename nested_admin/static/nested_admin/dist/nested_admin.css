@@ -1,3 +1,6 @@
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/sass-loader/dist/cjs.js!./nested_admin/static/nested_admin/src/nested_admin.scss ***!
+  \***********************************************************************************************************************************************************************************************************************/
 .djn-group .djn-group-nested {
   float: none;
   width: auto;
@@ -193,7 +196,7 @@ table.djn-table.grp-table th p > input[type="button"] {
   height: 20px;
   margin: 5px;
   cursor: move;
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAyCAYAAABcfPsmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAE5JREFUeNrs0zEKACAMBEEDST6X9+Z92lpYHNgI7naBK9KMdfcch6rK9lvdeWYOJXXnESEN1d2HH9J9hhSkEFKQQkhBClKQghSkPNYSYADFZiuygfao+AAAAABJRU5ErkJggg==") no-repeat top left;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAyCAYAAABcfPsmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAE5JREFUeNrs0zEKACAMBEEDST6X9+Z92lpYHNgI7naBK9KMdfcch6rK9lvdeWYOJXXnESEN1d2HH9J9hhSkEFKQQkhBClKQghSkPNYSYADFZiuygfao+AAAAABJRU5ErkJggg==) no-repeat top left;
   background-size: 10px 25px;
   cursor: -webkit-grab;
   cursor: grab;
@@ -325,5 +328,6 @@ table.grp-table.djn-table th.djn-th > select,
 table.grp-table.djn-table th.djn-th p input[type="text"] {
   margin-top: 0 !important;
   margin-bottom: 0 !important; }
+
 
 /*# sourceMappingURL=nested_admin.css.map*/

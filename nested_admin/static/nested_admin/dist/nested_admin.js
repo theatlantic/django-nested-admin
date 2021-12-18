@@ -1,88 +1,16 @@
-window["DJNesting"] =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ({
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
 
 /***/ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js":
 /*!*******************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/grp$.js ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
-
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 /**
  * For grappelli 2.14, converts a django.jQuery instance to a grp.jQuery
  * instance. Otherwise (if grappelli is not present, or for grappelli <= 2.13,
@@ -90,14 +18,13 @@ var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/neste
  * object that was passed in, unchanged.
  */
 
-
 function grp$($sel) {
   if (typeof window.grp === 'undefined') {
-    return $($sel);
+    return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_0__["default"])($sel);
   }
 
-  if (window.grp.jQuery.fn.init === $.fn.init) {
-    return $($sel);
+  if (window.grp.jQuery.fn.init === _jquery_shim_js__WEBPACK_IMPORTED_MODULE_0__["default"].fn.init) {
+    return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_0__["default"])($sel);
   }
 
   var $grpSel = window.grp.jQuery($sel);
@@ -109,59 +36,7 @@ function grp$($sel) {
   return $grpSel;
 }
 
-module.exports = grp$;
-
-/***/ }),
-
-/***/ "./nested_admin/static/nested_admin/src/nested-admin/index.js":
-/*!********************************************************************!*\
-  !*** ./nested_admin/static/nested_admin/src/nested-admin/index.js ***!
-  \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
-
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
-
-var grappelli = __webpack_require__(/*! grappelli */ "grappelli");
-
-var DJNesting = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
-
-DJNesting.DjangoFormset = __webpack_require__(/*! ./jquery.djangoformset */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djangoformset.js");
-$(document).ready(function () {
-  // Remove the border on any empty fieldsets
-  $('fieldset.grp-module, fieldset.module').filter(function (i, element) {
-    return element.childNodes.length == 0;
-  }).css('border-width', '0'); // Set predelete class on any form elements with the DELETE input checked.
-  // These can occur on forms rendered after a validation error.
-
-  $('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('grp-predelete');
-  $(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
-    var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
-    var $rows = $items.children('.djn-tbody');
-    $rows.removeClass('row1 row2');
-    $rows.each(function (i, row) {
-      var n = 1 + i % 2;
-      $(row).addClass('row' + n);
-    });
-  }); // Register the nested formset on top level djnesting-stacked elements.
-  // It will handle recursing down the nested inlines.
-
-  $('.djn-group-root').each(function (i, rootGroup) {
-    $(rootGroup).djangoFormset();
-  });
-  $('form').on('submit.djnesting', function (e) {
-    $('.djn-group').each(function () {
-      DJNesting.updatePositions($(this).djangoFormsetPrefix());
-      $(document).trigger('djnesting:mutate', [$(this).djangoFormset().$inline]);
-    });
-  });
-});
-module.exports = DJNesting;
+/* harmony default export */ __webpack_exports__["default"] = (grp$);
 
 /***/ }),
 
@@ -169,51 +44,64 @@ module.exports = DJNesting;
 /*!***********************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/jquery.djangoformset.js ***!
   \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.function.name.js */ "./node_modules/core-js/modules/es6.function.name.js");
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.array.filter.js */ "./node_modules/core-js/modules/es6.array.filter.js");
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.regexp.replace.js */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es6.regexp.constructor.js */ "./node_modules/core-js/modules/es6.regexp.constructor.js");
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es6.array.sort.js */ "./node_modules/core-js/modules/es6.array.sort.js");
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core-js/modules/es6.array.slice.js */ "./node_modules/core-js/modules/es6.array.slice.js");
+/* harmony import */ var core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/* harmony import */ var _regexquote__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
+/* harmony import */ var grappelli__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! grappelli */ "grappelli");
+/* harmony import */ var grappelli__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(grappelli__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var grp__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! grp */ "grp");
+/* harmony import */ var grp__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(grp__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _grp$__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
 
 
-__webpack_require__(/*! core-js/modules/es6.array.sort */ "./node_modules/core-js/modules/es6.array.sort.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
 
-__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
 
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
-var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
 
-var DJNesting = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
 
-var grappelli = __webpack_require__(/*! grappelli */ "grappelli");
 
-var grp = __webpack_require__(/*! grp */ "grp");
 
-var grp$ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
+
+ // const grp = require('grp');
+// const grp$ = require('./grp$');
 
 var pluginName = 'djangoFormset';
 
-var DjangoFormset =
-/*#__PURE__*/
-function () {
+var DjangoFormset = /*#__PURE__*/function () {
   function DjangoFormset(inline) {
     this.opts = {
       emptyClass: 'empty-form grp-empty-form djn-empty-form',
       predeleteClass: 'grp-predelete'
     };
-    this.$inline = $(inline);
+    this.$inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(inline);
     this.prefix = this.$inline.djangoFormsetPrefix();
     this._$totalForms = this.$inline.find('#id_' + this.prefix + '-TOTAL_FORMS');
 
     this._$totalForms.attr('autocomplete', 'off');
 
-    this._$template = $('#' + this.prefix + '-empty');
+    this._$template = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + this.prefix + '-empty');
     var inlineModelClassName = this.$inline.djnData('inlineModel');
-    this.opts = $.extend({}, this.opts, {
+    this.opts = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].extend({}, this.opts, {
       childTypes: this.$inline.data('inlineFormset').options.childTypes,
       formsetFkModel: this.$inline.djnData('formsetFkModel'),
       addButtonSelector: '.djn-add-handler.djn-model-' + inlineModelClassName,
@@ -222,8 +110,8 @@ function () {
       formClass: 'dynamic-form grp-dynamic-form djn-dynamic-form-' + inlineModelClassName,
       formClassSelector: '.djn-dynamic-form-' + inlineModelClassName
     });
-    DJNesting.initRelatedFields(this.prefix, this.$inline.djnData());
-    DJNesting.initAutocompleteFields(this.prefix, this.$inline.djnData());
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initRelatedFields(this.prefix, this.$inline.djnData());
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initAutocompleteFields(this.prefix, this.$inline.djnData());
 
     if (this.opts.childTypes) {
       this._setupPolymorphic();
@@ -236,14 +124,14 @@ function () {
     this.$inline.find('.djn-items:not([id*="-empty"])').trigger('djnesting:init'); // initialize nested formsets
 
     this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
-      $(this)[pluginName]();
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this)[pluginName]();
     });
 
     if (this.$inline.is('.djn-group-root')) {
-      DJNesting.createSortable(this.$inline);
+      _utils__WEBPACK_IMPORTED_MODULE_9__["default"].createSortable(this.$inline);
     }
 
-    $(document).trigger('djnesting:initialized', [this.$inline, this]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:initialized', [this.$inline, this]);
   }
 
   var _proto = DjangoFormset.prototype;
@@ -259,7 +147,7 @@ function () {
     });
     menu += '</ul></div>';
     var $addButton = this.$inline.find(this.opts.addButtonSelector);
-    var $menu = $(menu);
+    var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(menu);
     $addButton.after($menu);
   };
 
@@ -277,12 +165,12 @@ function () {
   };
 
   _proto._initializeForm = function _initializeForm(form) {
-    var $form = $(form);
+    var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form);
     var formPrefix = $form.djangoFormPrefix();
     $form.addClass(this.opts.formClass);
 
     if ($form.hasClass('has_original')) {
-      $('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
     }
 
     var minForms = this.mgmtVal('MIN_NUM_FORMS');
@@ -291,7 +179,7 @@ function () {
     var hideRemoveButton = totalForms <= minForms;
     this.$inline.djangoFormsetForms().each(function () {
       var showHideMethod = hideRemoveButton ? 'hide' : 'show';
-      $(this).find(self.opts.removeButtonSelector)[showHideMethod]();
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).find(self.opts.removeButtonSelector)[showHideMethod]();
     });
   };
 
@@ -306,7 +194,7 @@ function () {
     $addButton.off('click.djnesting').on('click.djnesting', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var $menu = $(this).next('.polymorphic-type-menu');
+      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).next('.polymorphic-type-menu');
 
       if (!$menu.length) {
         self.add();
@@ -314,10 +202,10 @@ function () {
         if (!$menu.is(':visible')) {
           var hideMenu = function hideMenu() {
             $menu.hide();
-            $(document).off('click', hideMenu);
+            (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).off('click', hideMenu);
           };
 
-          $(document).on('click', hideMenu);
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).on('click', hideMenu);
         }
 
         $menu.show();
@@ -327,28 +215,28 @@ function () {
     $menuButtons.off('click.djnesting').on('click.djnesting', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var polymorphicType = $(this).attr('data-type');
+      var polymorphicType = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr('data-type');
       self.add(null, polymorphicType);
-      var $menu = $(e.target).closest('.polymorphic-type-menu');
+      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(e.target).closest('.polymorphic-type-menu');
 
       if ($menu.is(':visible')) {
         $menu.hide();
       }
     });
     $el.find(this.opts.removeButtonSelector).filter(function () {
-      return !$(this).closest('.djn-empty-form').length;
+      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest('.djn-empty-form').length;
     }).off('click.djnesting').on('click.djnesting', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var $form = $(this).closest(self.opts.formClassSelector);
+      var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(self.opts.formClassSelector);
       self.remove($form);
     });
 
     var deleteClickHandler = function deleteClickHandler(e) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      var $form = $(this).closest(self.opts.formClassSelector);
-      var $deleteInput = $('#id_' + $form.djangoFormPrefix() + 'DELETE');
+      var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(self.opts.formClassSelector);
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + $form.djangoFormPrefix() + 'DELETE');
 
       if (!$deleteInput.is(':checked')) {
         self['delete']($form);
@@ -358,14 +246,14 @@ function () {
     };
 
     var $deleteButton = $el.find(this.opts.deleteButtonSelector).filter(function () {
-      return !$(this).closest('.djn-empty-form').length;
+      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest('.djn-empty-form').length;
     });
     $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
     $deleteButton.find('[id$="-DELETE"]').on('mousedown.djnesting', deleteClickHandler);
   };
 
   _proto.remove = function remove(form) {
-    var $form = $(form);
+    var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form);
     var totalForms = this.mgmtVal('TOTAL_FORMS');
     var minForms = this.mgmtVal('MIN_NUM_FORMS');
     var maxForms = this.mgmtVal('MAX_NUM_FORMS');
@@ -389,19 +277,19 @@ function () {
     var hideRemoveButton = totalForms <= minForms;
     this.$inline.djangoFormsetForms().each(function () {
       var showHideMethod = hideRemoveButton ? 'hide' : 'show';
-      $(this).find(self.opts.removeButtonSelector)[showHideMethod]();
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).find(self.opts.removeButtonSelector)[showHideMethod]();
     });
-    DJNesting.updatePositions(this.prefix);
-    $(document).trigger('djnesting:mutate', [this.$inline]); // Also fire using the events that were added in Django 1.9
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]); // Also fire using the events that were added in Django 1.9
 
-    $(document).trigger('formset:removed', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:removed', [$form, this.prefix]);
   };
 
   _proto.delete = function _delete(form) {
     var self = this,
-        $form = $(form),
+        $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form),
         formPrefix = $form.djangoFormPrefix(),
-        $deleteInput = $('#id_' + formPrefix + 'DELETE');
+        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
 
     if ($form.hasClass(this.opts.predeleteClass)) {
       return;
@@ -419,34 +307,34 @@ function () {
 
     $form.addClass(this.opts.predeleteClass);
     $form.find('.djn-group').each(function () {
-      var $childInline = $(this);
+      var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       $childInline.djangoFormsetForms().each(function () {
-        if ($(this).hasClass(self.opts.predeleteClass)) {
-          $(this).data('alreadyDeleted', true);
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).hasClass(self.opts.predeleteClass)) {
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted', true);
         } else {
           childFormset.delete(this);
         }
       });
     });
     $form.find('.cropduster-form').each(function () {
-      var formPrefix = $(this).djangoFormsetPrefix() + '-0-';
-      var $deleteInput = $('#id_' + formPrefix + 'DELETE');
+      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + '-0-';
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
       $deleteInput.attr('checked', 'checked');
 
       if ($deleteInput.length) {
         $deleteInput[0].checked = true;
       }
     });
-    DJNesting.updatePositions(this.prefix);
-    $(document).trigger('djnesting:mutate', [this.$inline]);
-    $(document).trigger('formset:deleted', [$form, this.prefix]);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:deleted', [$form, this.prefix]);
   };
 
   _proto.undelete = function undelete(form) {
-    var $form = $(form),
+    var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form),
         formPrefix = $form.djangoFormPrefix(),
-        $deleteInput = $('#id_' + formPrefix + 'DELETE');
+        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
 
     if ($form.parent().closest('.' + this.opts.predeleteClass).length) {
       return;
@@ -464,55 +352,55 @@ function () {
 
     $form.data('alreadyDeleted', false);
     $form.find('.djn-group').each(function () {
-      var $childInline = $(this);
+      var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       $childInline.djangoFormsetForms().each(function () {
-        if ($(this).data('alreadyDeleted')) {
-          $(this).data('alreadyDeleted', false);
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted')) {
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted', false);
         } else {
           childFormset.undelete(this);
         }
       });
     });
     $form.find('.cropduster-form').each(function () {
-      var formPrefix = $(this).djangoFormsetPrefix() + '-0-';
-      var $deleteInput = $('#id_' + formPrefix + 'DELETE');
+      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + '-0-';
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
       $deleteInput.removeAttr('checked');
 
       if ($deleteInput.length) {
         $deleteInput[0].checked = false;
       }
     });
-    DJNesting.updatePositions(this.prefix);
-    $(document).trigger('djnesting:mutate', [this.$inline]);
-    $(document).trigger('formset:undeleted', [$form, this.prefix]);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:undeleted', [$form, this.prefix]);
   };
 
   _proto.add = function add(spliceIndex, ctype) {
     var self = this;
-    var $template = ctype ? $("#" + this.prefix + "-empty-" + ctype) : this._$template;
+    var $template = ctype ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + this.prefix + "-empty-" + ctype) : this._$template;
     var $form = $template.clone(true); // For django-grappelli >= 2.14, where the grp.jQuery instance is not
     // the same as django.jQuery, we must copy any prepopulated_field
     // dependency data from grp.jQuery to the cloned nodes.
 
-    grp$($template).find(':data(dependency_ids)').each(function () {
-      var id = $(this).attr('id');
+    (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($template).find(':data(dependency_ids)').each(function () {
+      var id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr('id');
       var $el = $form.find("#" + id);
-      grp$($el).data($.extend({}, $el.data(), grp$(this).data()));
+      (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($el).data(_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].extend({}, $el.data(), (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])(this).data()));
     });
     var index = this.mgmtVal('TOTAL_FORMS');
     var maxForms = this.mgmtVal('MAX_NUM_FORMS');
     var isNested = this.$inline.hasClass('djn-group-nested');
-    $(document).trigger('djnesting:beforeadded', [this.$inline, $form]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:beforeadded', [this.$inline, $form]);
     $form.removeClass(this.opts.emptyClass);
     $form.addClass('djn-item');
     $form.attr('id', $form.attr('id').replace(/\-empty.*?$/, '-' + index));
 
     if (isNested) {
-      $form.append(DJNesting.createContainerElement());
+      $form.append(_utils__WEBPACK_IMPORTED_MODULE_9__["default"].createContainerElement());
     }
 
-    DJNesting.updateFormAttributes($form, new RegExp('([#_]id_|[\\#]|^id_|\"|^)' + regexQuote(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, new RegExp('([#_]id_|[\\#]|^id_|\"|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
     var $firstTemplate = this._$template;
 
     if (this.opts.childTypes) {
@@ -522,9 +410,9 @@ function () {
     if (this.opts.childTypes) {
       var compatibleParents = this.$inline.djnData('compatibleParents') || {};
       $form.find('> .djn-group').each(function (i, el) {
-        var fkModel = $(el).djnData('formsetFkModel');
+        var fkModel = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(el).djnData('formsetFkModel');
         var compatModels = compatibleParents[ctype] || [];
-        var $el = $(el);
+        var $el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(el);
         var parentModel = $el.djnData('inlineParentModel');
         var isPolymorphic = !!$el.data('inlineFormset').options.childTypes;
         var formPrefix = $el.data('inlineFormset').options.prefix;
@@ -547,39 +435,39 @@ function () {
       this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
     }
 
-    DJNesting.updatePositions(this.prefix);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
 
-    if ($.isNumeric(spliceIndex)) {
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].isNumeric(spliceIndex)) {
       this.spliceInto($form, spliceIndex, true);
     } else {
-      $(document).trigger('djnesting:mutate', [this.$inline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
     }
 
-    if (grappelli) {
-      grappelli.reinitDateTimeFields(grp$($form));
+    if (grappelli__WEBPACK_IMPORTED_MODULE_10__) {
+      grappelli__WEBPACK_IMPORTED_MODULE_10__.reinitDateTimeFields((0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($form));
     }
 
-    DJNesting.DjangoInlines.initPrepopulatedFields($form);
-    DJNesting.DjangoInlines.reinitDateTimeShortCuts();
-    DJNesting.DjangoInlines.updateSelectFilter($form);
-    DJNesting.initRelatedFields(this.prefix);
-    DJNesting.initAutocompleteFields(this.prefix);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].DjangoInlines.initPrepopulatedFields($form);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].DjangoInlines.reinitDateTimeShortCuts();
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].DjangoInlines.updateSelectFilter($form);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initRelatedFields(this.prefix);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initAutocompleteFields(this.prefix);
 
-    if (grp && grp.jQuery.fn.grp_collapsible) {
-      var addBackMethod = grp.jQuery.fn.addBack ? 'addBack' : 'andSelf';
-      grp$($form).find('.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])')[addBackMethod]().grp_collapsible({
+    if ((grp__WEBPACK_IMPORTED_MODULE_11___default()) && (grp__WEBPACK_IMPORTED_MODULE_11___default().jQuery.fn.grp_collapsible)) {
+      var addBackMethod = (grp__WEBPACK_IMPORTED_MODULE_11___default().jQuery.fn.addBack) ? 'addBack' : 'andSelf';
+      (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($form).find('.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])')[addBackMethod]().grp_collapsible({
         toggle_handler_slctr: '.grp-collapse-handler:first',
         closed_css: 'closed grp-closed',
         open_css: 'open grp-open',
         on_toggle: function on_toggle() {
-          $(document).trigger('djnesting:toggle', [self.$inline]);
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:toggle', [self.$inline]);
         }
       });
     }
 
-    if (typeof $.fn.curated_content_type == 'function') {
+    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.curated_content_type == 'function') {
       $form.find('.curated-content-type-select').each(function () {
-        $(this).curated_content_type();
+        (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).curated_content_type();
       });
     }
 
@@ -597,13 +485,13 @@ function () {
 
 
     $form.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
-      $(this)[pluginName]();
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this)[pluginName]();
     }); // Fire an event on the document so other javascript applications
     // can be alerted to the newly inserted inline
 
-    $(document).trigger('djnesting:added', [this.$inline, $form]); // Also fire using the events that were added in Django 1.9
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:added', [this.$inline, $form]); // Also fire using the events that were added in Django 1.9
 
-    $(document).trigger('formset:added', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:added', [$form, this.prefix]);
     return $form;
   };
 
@@ -612,10 +500,10 @@ function () {
     var formsets = this.$inline.djangoFormsetForms().toArray(); // Sort formsets in index order, so that we get the last indexed form for the swap.
 
     formsets.sort(function (a, b) {
-      return $(a).djangoFormIndex() - $(b).djangoFormIndex();
+      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(a).djangoFormIndex() - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(b).djangoFormIndex();
     });
     formsets.forEach(function (form) {
-      var $form = $(form);
+      var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form);
       var i = $form.djangoFormIndex();
 
       if (i <= index) {
@@ -635,16 +523,16 @@ function () {
     }
 
     var oldIndex = $form.djangoFormIndex();
-    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + regexQuote(this.prefix + '-' + oldIndex) + '(?!\\-\\d)');
+    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix + '-' + oldIndex) + '(?!\\-\\d)');
     $form.attr('id', this.prefix + '-' + index);
-    DJNesting.updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index); // Update prefixes on nested DjangoFormset objects
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index); // Update prefixes on nested DjangoFormset objects
 
     $form.find('.djn-group').each(function () {
-      var $childInline = $(this);
+      var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       childFormset.prefix = $childInline.djangoFormsetPrefix();
     });
-    $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
     if (isInitial && $initialForm && $newForm) {
       this._fillGap(oldIndex, false);
@@ -655,27 +543,27 @@ function () {
     var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
         totalFormCount = this.mgmtVal('TOTAL_FORMS'),
         gapIndex = initialFormCount,
-        $existingForm = $('#' + this.prefix + '-' + gapIndex);
+        $existingForm = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + this.prefix + '-' + gapIndex);
 
     if (!$existingForm.length) {
       return;
     }
 
-    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + regexQuote(this.prefix) + '-' + gapIndex + '(?!\\-\\d)');
+    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + '-' + gapIndex + '(?!\\-\\d)');
     $existingForm.attr('id', this.prefix + '-' + totalFormCount);
-    DJNesting.updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount); // Update prefixes on nested DjangoFormset objects
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount); // Update prefixes on nested DjangoFormset objects
 
     $existingForm.find('.djn-group').each(function () {
-      var $childInline = $(this);
+      var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       childFormset.prefix = $childInline.djangoFormsetPrefix();
     });
-    $(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
-  };
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
+  }
   /**
    * Splice a form into the current formset at new position `index`.
    */
-
+  ;
 
   _proto.spliceInto = function spliceInto($form, index, isNewAddition) {
     var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
@@ -690,14 +578,14 @@ function () {
       var currentPosition = $form.prevAll('.djn-item:not(.djn-no-drag,.djn-thead)').length;
 
       if (currentPosition === index || typeof index == 'undefined') {
-        DJNesting.updatePositions(newFormsetPrefix);
+        _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(newFormsetPrefix);
         return;
       }
 
       $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item:not(#' + $form.attr('id') + ')').eq(index);
       $before.after($form);
     } else {
-      var $oldInline = $('#' + oldFormsetPrefix + '-group');
+      var $oldInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + oldFormsetPrefix + '-group');
       var $currentFormInline = $form.closest('.djn-group');
 
       if ($currentFormInline.djangoFormsetPrefix() != newFormsetPrefix) {
@@ -736,31 +624,31 @@ function () {
       } // Replace the ids for the splice form
 
 
-      var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + regexQuote($form.attr('id')) + '(?!\\-\\d)');
+      var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])($form.attr('id')) + '(?!\\-\\d)');
       newIndex = isInitial ? initialFormCount : totalFormCount;
       $form.attr('id', newFormsetPrefix + '-' + newIndex);
-      DJNesting.updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex); // Update prefixes on nested DjangoFormset objects
+      _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex); // Update prefixes on nested DjangoFormset objects
 
       $form.find('.djn-group').each(function () {
-        var $childInline = $(this);
+        var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var childFormset = $childInline.djangoFormset();
         childFormset.prefix = $childInline.djangoFormsetPrefix();
       });
-      $(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $form]);
 
       if (isInitial) {
         this.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
       }
 
       this.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
-      DJNesting.updatePositions(oldFormsetPrefix);
-      $(document).trigger('djnesting:mutate', [$oldInline]);
+      _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(oldFormsetPrefix);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [$oldInline]);
     }
 
-    DJNesting.updatePositions(newFormsetPrefix);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(newFormsetPrefix);
 
     if (!isNewAddition) {
-      $(document).trigger('djnesting:mutate', [this.$inline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
     }
   };
 
@@ -777,11 +665,11 @@ function () {
   return DjangoFormset;
 }();
 
-$.fn[pluginName] = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[pluginName] = function () {
   var options, fn, args;
   var $el = this.eq(0);
 
-  if (arguments.length === 0 || arguments.length === 1 && $.type(arguments[0]) != 'string') {
+  if (arguments.length === 0 || arguments.length === 1 && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].type(arguments[0]) != 'string') {
     options = arguments[0];
     var djangoFormset = $el.data(pluginName);
 
@@ -794,7 +682,7 @@ $.fn[pluginName] = function () {
   }
 
   fn = arguments[0];
-  args = $.makeArray(arguments).slice(1);
+  args = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].makeArray(arguments).slice(1);
 
   if (fn in DjangoFormset.prototype) {
     return $el.data(pluginName)[fn](args);
@@ -803,7 +691,7 @@ $.fn[pluginName] = function () {
   }
 };
 
-module.exports = DjangoFormset;
+/* harmony default export */ __webpack_exports__["default"] = (DjangoFormset);
 
 /***/ }),
 
@@ -811,26 +699,31 @@ module.exports = DjangoFormset;
 /*!******************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/jquery.djnutils.js ***!
   \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.regexp.match.js */ "./node_modules/core-js/modules/es6.regexp.match.js");
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.array.filter.js */ "./node_modules/core-js/modules/es6.array.filter.js");
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.array.sort.js */ "./node_modules/core-js/modules/es6.array.sort.js");
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es6.regexp.constructor.js */ "./node_modules/core-js/modules/es6.regexp.constructor.js");
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
 
-__webpack_require__(/*! core-js/modules/es6.array.sort */ "./node_modules/core-js/modules/es6.array.sort.js");
 
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.match */ "./node_modules/core-js/modules/es6.regexp.match.js");
 
-__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
-
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
 var prefixCache = {};
 
-$.fn.djnData = function (name) {
-  var inlineFormsetData = $(this).data('inlineFormset') || {},
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djnData = function (name) {
+  var inlineFormsetData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).data('inlineFormset') || {},
       nestedOptions = inlineFormsetData.nestedOptions || {};
 
   if (!name) {
@@ -840,7 +733,7 @@ $.fn.djnData = function (name) {
   }
 };
 
-$.fn.djangoPrefixIndex = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoPrefixIndex = function () {
   var $this = this.length > 1 ? this.first() : this;
   var id = $this.attr('id'),
       name = $this.attr('name'),
@@ -905,7 +798,7 @@ $.fn.djangoPrefixIndex = function () {
   return [prefix, index];
 };
 
-$.fn.djangoFormPrefix = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormPrefix = function () {
   var prefixIndex = this.djangoPrefixIndex();
 
   if (!prefixIndex || !prefixIndex[1]) {
@@ -915,12 +808,12 @@ $.fn.djangoFormPrefix = function () {
   return prefixIndex[0] + '-' + prefixIndex[1] + '-';
 };
 
-$.fn.djangoFormIndex = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormIndex = function () {
   var prefixIndex = this.djangoPrefixIndex();
   return !prefixIndex || !prefixIndex[1] ? null : parseInt(prefixIndex[1], 10);
 };
 
-$.fn.djangoFormsetPrefix = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormsetPrefix = function () {
   var prefixIndex = this.djangoPrefixIndex();
   return !prefixIndex ? null : prefixIndex[0];
 };
@@ -938,28 +831,28 @@ var filterDjangoFormsetForms = function filterDjangoFormsetForms(form, $group, f
 // element the method is being called on.
 
 
-$.fn.djangoFormsetForms = function () {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormsetForms = function () {
   var forms = [];
   this.each(function () {
-    var $this = $(this),
+    var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this),
         formsetPrefix = $this.djangoFormsetPrefix(),
-        $group = formsetPrefix ? $('#' + formsetPrefix + '-group') : null,
+        $group = formsetPrefix ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + formsetPrefix + '-group') : null,
         $forms;
     if (!formsetPrefix || !$group.length) return;
     $forms = $group.find('.djn-inline-form').filter(function () {
       return filterDjangoFormsetForms(this, $group, formsetPrefix);
     });
     var sortedForms = $forms.toArray().sort(function (a, b) {
-      return $(a).djangoFormIndex() - $(b).djangoFormIndex;
+      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(a).djangoFormIndex() - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(b).djangoFormIndex;
     });
     Array.prototype.push.apply(forms, sortedForms);
   });
   return this.pushStack(forms);
 };
 
-if (typeof $.djangoFormField != 'function') {
-  $.djangoFormField = function (fieldName, prefix, index) {
-    var $empty = $([]),
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField != 'function') {
+  _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField = function (fieldName, prefix, index) {
+    var $empty = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])([]),
         matches;
 
     if (matches = prefix.match(/^(.+)\-(\d+)\-$/)) {
@@ -976,16 +869,16 @@ if (typeof $.djangoFormField != 'function') {
     var namePrefix = prefix + '-' + index + '-';
 
     if (fieldName == '*') {
-      return $('*[name^="' + namePrefix + '"]').filter(function () {
-        var fieldPart = $(this).attr('name').substring(namePrefix.length);
+      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('*[name^="' + namePrefix + '"]').filter(function () {
+        var fieldPart = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).attr('name').substring(namePrefix.length);
         return fieldPart.indexOf('-') === -1;
       });
     }
 
-    var $field = $('#id_' + namePrefix + fieldName);
+    var $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#id_' + namePrefix + fieldName);
 
     if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-      var $group = $('#' + prefix + '-group'),
+      var $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + prefix + '-group'),
           fieldNameData = $group.djnData('fieldNames') || {};
       fieldName = fieldNameData[fieldName];
 
@@ -993,14 +886,14 @@ if (typeof $.djangoFormField != 'function') {
         return $empty;
       }
 
-      $field = $('#id_' + namePrefix + fieldName);
+      $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#id_' + namePrefix + fieldName);
     }
 
     return $field;
   };
 }
 
-if (typeof $.fn.djangoFormField != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormField != 'function') {
   /**
    * Given a django model's field name, and the forms index in the
    * formset, returns the field's input element, or an empty jQuery
@@ -1012,9 +905,9 @@ if (typeof $.fn.djangoFormField != 'function') {
    * @return jQuery object containing the field's input element, or
    *         an empty jQuery object on failure
    */
-  $.fn.djangoFormField = function (fieldName, index) {
+  _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormField = function (fieldName, index) {
     var prefixAndIndex = this.djangoPrefixIndex();
-    var $empty = $([]);
+    var $empty = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])([]);
 
     if (!prefixAndIndex) {
       return $empty;
@@ -1030,14 +923,14 @@ if (typeof $.fn.djangoFormField != 'function') {
       }
     }
 
-    return $.djangoFormField(fieldName, prefix, index);
+    return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField(fieldName, prefix, index);
   };
 }
 
-if (typeof $.fn.filterDjangoField != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.filterDjangoField != 'function') {
   var djRegexCache = {};
 
-  $.fn.filterDjangoField = function (prefix, fieldName, index) {
+  _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.filterDjangoField = function (prefix, fieldName, index) {
     var $field, fieldNameData;
 
     if (typeof index != 'undefined') {
@@ -1047,7 +940,7 @@ if (typeof $.fn.filterDjangoField != 'function') {
 
       if (typeof index == 'number' && !isNaN(index)) {
         var fieldId = 'id_' + prefix + '-' + index + '-' + fieldName;
-        $field = $('#' + fieldId);
+        $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + fieldId);
       }
     } else {
       if (typeof djRegexCache[prefix] != 'object') {
@@ -1064,10 +957,10 @@ if (typeof $.fn.filterDjangoField != 'function') {
     }
 
     if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-      fieldNameData = $('#' + prefix + '-group').djnData('fieldNames') || {};
+      fieldNameData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + prefix + '-group').djnData('fieldNames') || {};
 
       if (typeof fieldNameData[fieldName] && fieldNameData[fieldName] != fieldName) {
-        $field = $(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
+        $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
       }
     }
 
@@ -1081,13 +974,11 @@ if (typeof $.fn.filterDjangoField != 'function') {
 /*!**************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js ***!
   \**************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-module.exports = window.django.jQuery;
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (window.django.jQuery);
 
 /***/ }),
 
@@ -1095,21 +986,30 @@ module.exports = window.django.jQuery;
 /*!************************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.djnsortable.js ***!
   \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.function.name.js */ "./node_modules/core-js/modules/es6.function.name.js");
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.array.filter.js */ "./node_modules/core-js/modules/es6.array.filter.js");
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.array.slice.js */ "./node_modules/core-js/modules/es6.array.slice.js");
+/* harmony import */ var core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_slice_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.regexp.split.js */ "./node_modules/core-js/modules/es6.regexp.split.js");
+/* harmony import */ var core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es6.regexp.match.js */ "./node_modules/core-js/modules/es6.regexp.match.js");
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
 
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.match */ "./node_modules/core-js/modules/es6.regexp.match.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.split */ "./node_modules/core-js/modules/es6.regexp.split.js");
 
-__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
 
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+
 /*!
  * jQuery UI Sortable @VERSION
  * http://jqueryui.com
@@ -1126,9 +1026,8 @@ var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/neste
  *	jquery.ui.widget.js
  */
 
-
-if ($.ui === undefined) {
-  var jQuery = $;
+if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui === undefined) {
+  var jQuery = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"];
 
   (function (e, t) {
     function i(t, i) {
@@ -1823,7 +1722,7 @@ if ($.ui === undefined) {
   })(jQuery);
 }
 
-$.widget("ui.djnsortable", $.ui.mouse, {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable", _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.mouse, {
   version: "@VERSION",
   widgetEventPrefix: "sort",
   ready: false,
@@ -1887,7 +1786,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       this.widget().toggleClass("ui-sortable-disabled", !!value);
     } else {
       // Don't call widget base _setOption for disable as it adds ui-state-disabled class
-      $.Widget.prototype._setOption.apply(this, arguments);
+      _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].Widget.prototype._setOption.apply(this, arguments);
     }
   },
   _mouseCapture: function _mouseCapture(event, overrideHandle) {
@@ -1903,19 +1802,19 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
 
     var currentItem = null,
-        nodes = $(event.target).parents().each(function () {
-      if ($.data(this, that.widgetName + '-item') == that) {
-        currentItem = $(this);
+        nodes = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(event.target).parents().each(function () {
+      if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(this, that.widgetName + '-item') == that) {
+        currentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this);
         return false;
       }
     });
-    if ($.data(event.target, that.widgetName + '-item') == that) currentItem = $(event.target);
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(event.target, that.widgetName + '-item') == that) currentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(event.target);
     if (!currentItem) return false;
 
     if (this.options.handle && !overrideHandle) {
       var validHandle = false;
-      var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
-      $(this.options.handle, currentItem).find("*")[addBackMethod]().each(function () {
+      var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].fn.addBack ? 'addBack' : 'andSelf';
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.handle, currentItem).find("*")[addBackMethod]().each(function () {
         if (this == event.target) validHandle = true;
       });
       if (!validHandle) return false;
@@ -1953,7 +1852,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       top: this.offset.top - this.margins.top,
       left: this.offset.left - this.margins.left
     };
-    $.extend(this.offset, {
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].extend(this.offset, {
       click: {
         //Where the click happened, relative to the element
         left: event.pageX - this.offset.left,
@@ -1991,8 +1890,8 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
     if (o.cursor) {
       // cursor option
-      if ($('body').css("cursor")) this._storedCursor = $('body').css("cursor");
-      $('body').css("cursor", o.cursor);
+      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor")) this._storedCursor = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor");
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor", o.cursor);
     }
 
     if (o.opacity) {
@@ -2022,8 +1921,8 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     } //Prepare possible droppables
 
 
-    if ($.ui.ddmanager) $.ui.ddmanager.current = this;
-    if ($.ui.ddmanager && !o.dropBehaviour) $.ui.ddmanager.prepareOffsets(this, event);
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.current = this;
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager && !o.dropBehaviour) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.prepareOffsets(this, event);
     this.dragging = true;
     this.helper.addClass("ui-sortable-helper");
 
@@ -2050,11 +1949,11 @@ $.widget("ui.djnsortable", $.ui.mouse, {
         if (this.overflowOffset.top + this.scrollParent[0].offsetHeight - event.pageY < o.scrollSensitivity) this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop + o.scrollSpeed;else if (event.pageY - this.overflowOffset.top < o.scrollSensitivity) this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop - o.scrollSpeed;
         if (this.overflowOffset.left + this.scrollParent[0].offsetWidth - event.pageX < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft + o.scrollSpeed;else if (event.pageX - this.overflowOffset.left < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft - o.scrollSpeed;
       } else {
-        if (event.pageY - $(document).scrollTop() < o.scrollSensitivity) scrolled = $(document).scrollTop($(document).scrollTop() - o.scrollSpeed);else if ($(window).height() - (event.pageY - $(document).scrollTop()) < o.scrollSensitivity) scrolled = $(document).scrollTop($(document).scrollTop() + o.scrollSpeed);
-        if (event.pageX - $(document).scrollLeft() < o.scrollSensitivity) scrolled = $(document).scrollLeft($(document).scrollLeft() - o.scrollSpeed);else if ($(window).width() - (event.pageX - $(document).scrollLeft()) < o.scrollSensitivity) scrolled = $(document).scrollLeft($(document).scrollLeft() + o.scrollSpeed);
+        if (event.pageY - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop() < o.scrollSensitivity) scrolled = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop() - o.scrollSpeed);else if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(window).height() - (event.pageY - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop()) < o.scrollSensitivity) scrolled = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollTop() + o.scrollSpeed);
+        if (event.pageX - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft() < o.scrollSensitivity) scrolled = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft() - o.scrollSpeed);else if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(window).width() - (event.pageX - (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft()) < o.scrollSensitivity) scrolled = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document).scrollLeft() + o.scrollSpeed);
       }
 
-      if (scrolled !== false && $.ui.ddmanager && !o.dropBehaviour) $.ui.ddmanager.prepareOffsets(this, event);
+      if (scrolled !== false && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager && !o.dropBehaviour) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.prepareOffsets(this, event);
     } //Regenerate the absolute position used for position checks
 
 
@@ -2081,28 +1980,28 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
       if (itemElement != this.currentItem[0] //cannot intersect with itself
       && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-      && !$.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-      && (this.options.type == 'semi-dynamic' ? !$.contains(this.element[0], itemElement) : true) //&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
+      && !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+      && (this.options.type == 'semi-dynamic' ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.element[0], itemElement) : true) //&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
       ) {
-          this.direction = intersection == 1 ? "down" : "up";
+        this.direction = intersection == 1 ? "down" : "up";
 
-          if (this.options.tolerance == "pointer" || this._intersectsWithSides(item)) {
-            this._rearrange(event, item);
-          } else {
-            break;
-          }
-
-          this._trigger("change", event, this._uiHash());
-
+        if (this.options.tolerance == "pointer" || this._intersectsWithSides(item)) {
+          this._rearrange(event, item);
+        } else {
           break;
         }
+
+        this._trigger("change", event, this._uiHash());
+
+        break;
+      }
     } //Post events to containers
 
 
     this._contactContainers(event); //Interconnect with droppables
 
 
-    if ($.ui.ddmanager) $.ui.ddmanager.drag(this, event); //Call callbacks
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.drag(this, event); //Call callbacks
 
     this._trigger('sort', event, this._uiHash());
 
@@ -2112,13 +2011,13 @@ $.widget("ui.djnsortable", $.ui.mouse, {
   _mouseStop: function _mouseStop(event, noPropagation) {
     if (!event) return; //If we are using droppables, inform the manager about the drop
 
-    if ($.ui.ddmanager && !this.options.dropBehaviour) $.ui.ddmanager.drop(this, event);
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager && !this.options.dropBehaviour) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.drop(this, event);
 
     if (this.options.revert) {
       var that = this;
       var cur = this.placeholder.offset();
       this.reverting = true;
-      $(this.helper).animate({
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.helper).animate({
         left: cur.left - this.offset.parent.left - this.margins.left + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollLeft),
         top: cur.top - this.offset.parent.top - this.margins.top + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollTop)
       }, parseInt(this.options.revert, 10) || 500, function () {
@@ -2153,7 +2052,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       //$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
       if (this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
       if (this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
-      $.extend(this, {
+      _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].extend(this, {
         helper: null,
         dragging: false,
         reverting: false,
@@ -2161,9 +2060,9 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       });
 
       if (this.domPosition.prev) {
-        $(this.domPosition.prev).after(this.currentItem);
+        (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.domPosition.prev).after(this.currentItem);
       } else {
-        $(this.domPosition.parent).prepend(this.currentItem);
+        (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.domPosition.parent).prepend(this.currentItem);
       }
     }
 
@@ -2174,8 +2073,8 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
     var str = [];
     o = o || {};
-    $(items).each(function () {
-      var res = ($(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || /(.+)[-=_](.+)/);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(items).each(function () {
+      var res = ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || /(.+)[-=_](.+)/);
       if (res) str.push((o.key || res[1] + '[]') + '=' + (o.key && o.expression ? res[1] : res[2]));
     });
 
@@ -2191,7 +2090,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     var ret = [];
     o = o || {};
     items.each(function () {
-      ret.push($(o.item || this).attr(o.attribute || 'id') || '');
+      ret.push((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || 'id') || '');
     });
     return ret;
   },
@@ -2267,13 +2166,13 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
     if (connectWith && connected) {
       for (var i = connectWith.length - 1; i >= 0; i--) {
-        var cur = $(connectWith[i]);
+        var cur = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(connectWith[i]);
 
         for (var j = cur.length - 1; j >= 0; j--) {
-          var inst = $.data(cur[j], this.widgetName);
+          var inst = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(cur[j], this.widgetName);
 
           if (inst && inst != this && !inst.options.disabled) {
-            queries.push([$.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : $(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
+            queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(inst.options.items) ? inst.options.items.call(inst.element) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
           }
         }
 
@@ -2283,10 +2182,10 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       ;
     }
 
-    queries.push([$.isFunction(this.options.items) ? this.options.items.call(this.element, null, {
+    queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(this.options.items) ? this.options.items.call(this.element, null, {
       options: this.options,
       item: this.currentItem
-    }) : $(this.options.items, this.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), this]);
+    }) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.items, this.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), this]);
 
     for (var i = queries.length - 1; i >= 0; i--) {
       queries[i][0].each(function () {
@@ -2295,11 +2194,11 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     }
 
     ;
-    return $(items);
+    return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(items);
   },
   _removeCurrentsFromItems: function _removeCurrentsFromItems() {
     var list = this.currentItem.find(":data(" + this.widgetName + "-item)");
-    this.items = $.grep(this.items, function (item) {
+    this.items = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].grep(this.items, function (item) {
       for (var j = 0; j < list.length; j++) {
         if (list[j] == item.item[0]) return false;
       }
@@ -2312,24 +2211,24 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     this.items = [];
     this.containers = [this];
     var items = this.items;
-    var queries = [[$.isFunction(this.options.items) ? this.options.items.call(this.element[0], event, {
+    var queries = [[_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(this.options.items) ? this.options.items.call(this.element[0], event, {
       item: this.currentItem
-    }) : $(this.options.items, this.element), this]];
+    }) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.items, this.element), this]];
 
     var connectWith = this._connectWith();
 
     if (connectWith && this.ready) {
       //Shouldn't be run the first time through due to massive slow-down
       for (var i = connectWith.length - 1; i >= 0; i--) {
-        var cur = $(connectWith[i]);
+        var cur = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(connectWith[i]);
 
         for (var j = cur.length - 1; j >= 0; j--) {
-          var inst = $.data(cur[j], this.widgetName);
+          var inst = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(cur[j], this.widgetName);
 
           if (inst && inst != this && !inst.options.disabled) {
-            queries.push([$.isFunction(inst.options.items) ? inst.options.items.call(inst.element[0], event, {
+            queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(inst.options.items) ? inst.options.items.call(inst.element[0], event, {
               item: this.currentItem
-            }) : $(inst.options.items, inst.element), inst]);
+            }) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(inst.options.items, inst.element), inst]);
             this.containers.push(inst);
           }
         }
@@ -2345,7 +2244,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       var _queries = queries[i][0];
 
       for (var j = 0, queriesLength = _queries.length; j < queriesLength; j++) {
-        var item = $(_queries[j]);
+        var item = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(_queries[j]);
         item.data(this.widgetName + '-item', targetData); // Data for target checking (mouse manager)
 
         items.push({
@@ -2373,7 +2272,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       var item = this.items[i]; //We ignore calculating positions of all connected containers when we're not over them
 
       if (item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0]) continue;
-      var t = this.options.toleranceElement ? $(this.options.toleranceElement, item.item) : item.item;
+      var t = this.options.toleranceElement ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.toleranceElement, item.item) : item.item;
 
       if (!fast) {
         item.width = t.outerWidth();
@@ -2411,7 +2310,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       var className = o.placeholder;
       o.placeholder = {
         element: function element() {
-          var el = $(document.createElement(that.currentItem[0].nodeName)).addClass(className || that.currentItem[0].className + " ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];
+          var el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(document.createElement(that.currentItem[0].nodeName)).addClass(className || that.currentItem[0].className + " ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];
           if (!className) el.style.visibility = "hidden";
           return el;
         },
@@ -2436,7 +2335,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     } //Create the placeholder
 
 
-    that.placeholder = $(o.placeholder.element.call(that.element, that.currentItem)); //Append it after the actual current item
+    that.placeholder = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.placeholder.element.call(that.element, that.currentItem)); //Append it after the actual current item
 
     that.currentItem.after(that.placeholder); //Update the size of the placeholder (TODO: Logic to fuzzy, see line 316/317)
 
@@ -2449,11 +2348,11 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 
     for (var i = this.containers.length - 1; i >= 0; i--) {
       // never consider a container that's located within the item itself
-      if ($.contains(this.currentItem[0], this.containers[i].element[0])) continue;
+      if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.currentItem[0], this.containers[i].element[0])) continue;
 
       if (this._intersectsWith(this.containers[i].containerCache)) {
         // if we've already found a container and it's more "inner" than this, then continue
-        if (innermostContainer && $.contains(this.containers[i].element[0], innermostContainer.element[0])) continue;
+        if (innermostContainer && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.containers[i].element[0], innermostContainer.element[0])) continue;
         innermostContainer = this.containers[i];
         innermostIndex = i;
       } else {
@@ -2482,7 +2381,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       var base = this.positionAbs[posProperty] + this.offset.click[posProperty];
 
       for (var j = this.items.length - 1; j >= 0; j--) {
-        if (!$.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+        if (!_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
         if (this.items[j].item[0] == this.currentItem[0]) continue;
         var cur = this.items[j].item.offset()[posProperty];
         var nearBottom = false;
@@ -2518,9 +2417,9 @@ $.widget("ui.djnsortable", $.ui.mouse, {
   },
   _createHelper: function _createHelper(event) {
     var o = this.options;
-    var helper = $.isFunction(o.helper) ? $(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == 'clone' ? this.currentItem.clone() : this.currentItem;
+    var helper = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(o.helper) ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == 'clone' ? this.currentItem.clone() : this.currentItem;
     if (!helper.parents('body').length) //Add the helper to the DOM if that didn't happen already
-      $(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
     if (helper[0] == this.currentItem[0]) this._storedCSS = {
       width: this.currentItem[0].style.width,
       height: this.currentItem[0].style.height,
@@ -2537,7 +2436,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
       obj = obj.split(' ');
     }
 
-    if ($.isArray(obj)) {
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isArray(obj)) {
       obj = {
         left: +obj[0],
         top: +obj[1] || 0
@@ -2568,13 +2467,13 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     // 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't the document, which means that
     //    the scroll is included in the initial calculation of the offset of the parent, and never recalculated upon drag
 
-    if (this.cssPosition == 'absolute' && this.scrollParent[0] != document && $.contains(this.scrollParent[0], this.offsetParent[0])) {
+    if (this.cssPosition == 'absolute' && this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) {
       po.left += this.scrollParent.scrollLeft();
       po.top += this.scrollParent.scrollTop();
     }
 
-    if (this.offsetParent[0] == document.body || //This needs to be actually done for all browsers, since pageX/pageY includes this information
-    this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && $.ui.ie) //Ugly IE fix
+    if (this.offsetParent[0] == document.body //This needs to be actually done for all browsers, since pageX/pageY includes this information
+    || this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ie) //Ugly IE fix
       po = {
         top: 0,
         left: 0
@@ -2613,20 +2512,20 @@ $.widget("ui.djnsortable", $.ui.mouse, {
   _setContainment: function _setContainment() {
     var o = this.options;
     if (o.containment == 'parent') o.containment = this.helper[0].parentNode;
-    if (o.containment == 'document' || o.containment == 'window') this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, $(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left, ($(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
+    if (o.containment == 'document' || o.containment == 'window') this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left, ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
 
     if (!/^(document|window|parent)$/.test(o.containment)) {
-      var ce = $(o.containment)[0];
-      var co = $(o.containment).offset();
-      var over = $(ce).css("overflow") != 'hidden';
-      this.containment = [co.left + (parseInt($(ce).css("borderLeftWidth"), 10) || 0) + (parseInt($(ce).css("paddingLeft"), 10) || 0) - this.margins.left, co.top + (parseInt($(ce).css("borderTopWidth"), 10) || 0) + (parseInt($(ce).css("paddingTop"), 10) || 0) - this.margins.top, co.left + (over ? Math.max(ce.scrollWidth, ce.offsetWidth) : ce.offsetWidth) - (parseInt($(ce).css("borderLeftWidth"), 10) || 0) - (parseInt($(ce).css("paddingRight"), 10) || 0) - this.helperProportions.width - this.margins.left, co.top + (over ? Math.max(ce.scrollHeight, ce.offsetHeight) : ce.offsetHeight) - (parseInt($(ce).css("borderTopWidth"), 10) || 0) - (parseInt($(ce).css("paddingBottom"), 10) || 0) - this.helperProportions.height - this.margins.top];
+      var ce = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment)[0];
+      var co = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment).offset();
+      var over = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("overflow") != 'hidden';
+      this.containment = [co.left + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderLeftWidth"), 10) || 0) + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingLeft"), 10) || 0) - this.margins.left, co.top + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderTopWidth"), 10) || 0) + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingTop"), 10) || 0) - this.margins.top, co.left + (over ? Math.max(ce.scrollWidth, ce.offsetWidth) : ce.offsetWidth) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderLeftWidth"), 10) || 0) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingRight"), 10) || 0) - this.helperProportions.width - this.margins.left, co.top + (over ? Math.max(ce.scrollHeight, ce.offsetHeight) : ce.offsetHeight) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderTopWidth"), 10) || 0) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingBottom"), 10) || 0) - this.helperProportions.height - this.margins.top];
     }
   },
   _convertPositionTo: function _convertPositionTo(d, pos) {
     if (!pos) pos = this.position;
     var mod = d == "absolute" ? 1 : -1;
     var o = this.options,
-        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && $.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
         scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName);
     return {
       top: pos.top // The absolute mouse position
@@ -2641,7 +2540,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
   },
   _generatePosition: function _generatePosition(event) {
     var o = this.options,
-        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && $.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
         scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName); // This is another very weird special case that only happens for relative elements:
     // 1. If the css position is relative
     // 2. and the scroll parent is the document or similar to the offset parent
@@ -2768,7 +2667,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     } //Do what was originally in plugins
 
 
-    if (this._storedCursor) $('body').css("cursor", this._storedCursor); //Reset cursor
+    if (this._storedCursor) (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor", this._storedCursor); //Reset cursor
 
     if (this._storedOpacity) this.helper.css("opacity", this._storedOpacity); //Reset opacity
 
@@ -2813,7 +2712,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     return true;
   },
   _trigger: function _trigger() {
-    if ($.Widget.prototype._trigger.apply(this, arguments) === false) {
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].Widget.prototype._trigger.apply(this, arguments) === false) {
       this.cancel();
     }
   },
@@ -2829,7 +2728,7 @@ $.widget("ui.djnsortable", $.ui.mouse, {
     var inst = _inst || this;
     return {
       helper: inst.helper,
-      placeholder: inst.placeholder || $([]),
+      placeholder: inst.placeholder || (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])([]),
       position: inst.position,
       originalPosition: inst.originalPosition,
       offset: inst.positionAbs,
@@ -2845,23 +2744,26 @@ $.widget("ui.djnsortable", $.ui.mouse, {
 /*!***************************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.nestedsortable.js ***!
   \***************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.regexp.replace.js */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.regexp.match.js */ "./node_modules/core-js/modules/es6.regexp.match.js");
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.array.sort.js */ "./node_modules/core-js/modules/es6.array.sort.js");
+/* harmony import */ var core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_sort_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/* harmony import */ var _jquery_ui_djnsortable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./jquery.ui.djnsortable */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.djnsortable.js");
 
 
-__webpack_require__(/*! core-js/modules/es6.array.sort */ "./node_modules/core-js/modules/es6.array.sort.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.match */ "./node_modules/core-js/modules/es6.regexp.match.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
 
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
-
-__webpack_require__(/*! ./jquery.ui.djnsortable */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.djnsortable.js");
 /*
  * jQuery UI Nested Sortable
  * v 1.3.4 / 28 apr 2011
@@ -2874,19 +2776,18 @@ __webpack_require__(/*! ./jquery.ui.djnsortable */ "./nested_admin/static/nested
  * Copyright 2010-2011, Manuele J Sarfatti
  */
 
-
-if (typeof $.fn.nearest != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].fn.nearest != 'function') {
   /**
    * Returns the descendant(s) matching a given selector which are the
    * shortest distance from the search context element (in otherwords,
    * $.fn.closest(), in reverse).
    */
-  $.fn.nearest = function (selector) {
+  _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].fn.nearest = function (selector) {
     var nearest = [],
         node = this,
         distance = 10000;
     node.find(selector).each(function () {
-      var d = $(this).parentsUntil(node).length;
+      var d = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this).parentsUntil(node).length;
 
       if (d < distance) {
         distance = d;
@@ -2908,8 +2809,8 @@ var createChildNestedSortable = function createChildNestedSortable(parent, child
     return;
   }
 
-  var $childContainer = $(childContainer),
-      options = $.extend({}, parent.options);
+  var $childContainer = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(childContainer),
+      options = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].extend({}, parent.options);
   options.connectWith = [parent.element];
 
   if ($childContainer.data(parent.widgetName)) {
@@ -2934,7 +2835,7 @@ var createChildNestedSortable = function createChildNestedSortable(parent, child
   return newInstance;
 };
 
-$.widget("ui.nestedSortable", $.ui.djnsortable, {
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortable", _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable, {
   options: {
     tabSize: 20,
     disableNesting: 'ui-nestedSortable-no-nesting',
@@ -2952,7 +2853,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
      * @return DOMElement - The new element.
      */
     createContainerElement: function createContainerElement(parent) {
-      return $(document.createElement('ol'));
+      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement('ol'));
     },
     // Selector which matches all container elements in the nestedSortable
     containerElementSelector: 'ol',
@@ -2998,15 +2899,15 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     }
   },
   _createWidget: function _createWidget(options, element) {
-    var $element = $(element || this.defaultElement || this),
+    var $element = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element || this.defaultElement || this),
         dataOptions = $element.data('djnsortableOptions');
     element = $element[0];
 
     if (dataOptions) {
-      options = $.extend({}, options, dataOptions);
+      options = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].extend({}, options, dataOptions);
     }
 
-    return $.ui.djnsortable.prototype._createWidget.call(this, options, element);
+    return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._createWidget.call(this, options, element);
   },
   _create: function _create() {
     if (this.element.data('uiNestedSortable')) {
@@ -3028,12 +2929,12 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     //             }
 
 
-    $.ui.djnsortable.prototype._create.apply(this, arguments);
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._create.apply(this, arguments);
 
     this._connectWithMap = {};
     var self = this,
         o = this.options,
-        $document = $(document);
+        $document = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document);
     var originalConnectWith = o.connectWith;
 
     if (!originalConnectWith || typeof originalConnectWith == 'string') {
@@ -3043,7 +2944,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         var connected = this._connectWith();
 
         for (var i = 0; i < connected.length; i++) {
-          this.addToConnectWith($(connected[i]));
+          this.addToConnectWith((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(connected[i]));
         }
       } // HACK!! FIX!! (django-specific logic)
 
@@ -3052,7 +2953,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         createChildNestedSortable(self, this);
       });
       this.element.find(o.containerElementSelector + ':not(.subarticle-wrapper)').each(function (i, el) {
-        if ($(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
           return;
         }
 
@@ -3068,12 +2969,12 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
   },
   addToConnectWith: function addToConnectWith(element) {
     var self = this,
-        $element = typeof element.selector != 'undefined' ? element : $(element),
+        $element = typeof element.selector != 'undefined' ? element : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element),
         uniqueId;
 
     if ($element.length > 1) {
       $element.each(function (i, el) {
-        self.addToConnectWith($(el));
+        self.addToConnectWith((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(el));
       });
       return;
     }
@@ -3097,8 +2998,8 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
   },
   _destroy: function _destroy() {
     this.element.removeData("nestedSortable").unbind(".nestedSortable");
-    $(document).unbind('.nestedSortable');
-    return $.ui.djnsortable.prototype.destroy.apply(this, arguments);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).unbind('.nestedSortable');
+    return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype.destroy.apply(this, arguments);
   },
 
   /**
@@ -3108,7 +3009,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
   _intersectsWithPointer: function _intersectsWithPointer(item) {
     var itemElement = item.item[0],
         o = this.options,
-        intersection = $.ui.djnsortable.prototype._intersectsWithPointer.apply(this, arguments);
+        intersection = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._intersectsWithPointer.apply(this, arguments);
 
     this.lastItemElement = null;
 
@@ -3127,7 +3028,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       return false;
     }
 
-    var $itemElement = $(itemElement);
+    var $itemElement = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(itemElement);
 
     if (o.fixedNestingDepth && this._getLevel(this.currentItem) === 1 + this._getLevel($itemElement)) {
       $itemElement = function () {
@@ -3153,7 +3054,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
           return $itemElement;
         }
 
-        return $($childItems[0]);
+        return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])($childItems[0]);
       }();
 
       itemElement = $itemElement[0];
@@ -3161,8 +3062,8 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
 
     if (itemElement != this.currentItem[0] //cannot intersect with itself
     && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-    && !$.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-    && (this.options.type == 'semi-dynamic' ? !$.contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
+    && !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+    && (this.options.type == 'semi-dynamic' ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
     && (!o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) //maintain the nesting level of node
     && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
       this.lastItemElement = itemElement;
@@ -3204,12 +3105,12 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     } // To find the previous sibling in the list, keep backtracking until we hit a valid list item.
 
 
-    var previousItem = this.placeholder[0].previousSibling ? $(this.placeholder[0].previousSibling) : null;
+    var previousItem = this.placeholder[0].previousSibling ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.placeholder[0].previousSibling) : null;
 
     if (previousItem != null) {
       while (!previousItem.is(this.options.listItemSelector) || previousItem[0] == this.currentItem[0] || previousItem[0] == this.helper[0]) {
         if (previousItem[0].previousSibling) {
-          previousItem = $(previousItem[0].previousSibling);
+          previousItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(previousItem[0].previousSibling);
         } else {
           previousItem = null;
           break;
@@ -3218,12 +3119,12 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     } // To find the next sibling in the list, keep stepping forward until we hit a valid list item.
 
 
-    var nextItem = this.placeholder[0].nextSibling ? $(this.placeholder[0].nextSibling) : null;
+    var nextItem = this.placeholder[0].nextSibling ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.placeholder[0].nextSibling) : null;
 
     if (nextItem != null) {
       while (!nextItem.is(this.options.listItemSelector) || nextItem[0] == this.currentItem[0] || nextItem[0] == this.helper[0]) {
         if (nextItem[0].nextSibling) {
-          nextItem = $(nextItem[0].nextSibling);
+          nextItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(nextItem[0].nextSibling);
         } else {
           nextItem = null;
           break;
@@ -3249,37 +3150,37 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       this._trigger("change", event, this._uiHash());
     } // If the item is below a sibling and is moved to the right, make it a child of that sibling.
     else if (!o.fixedNestingDepth && previousItem != null && !previousItem.is('.djn-no-drag,.djn-thead') && (o.rtl && this.positionAbs.left + this.helper.outerWidth() < previousItem.offset().left + previousItem.outerWidth() - o.tabSize || !o.rtl && this.positionAbs.left > previousItem.offset().left + o.tabSize)) {
-        this._isAllowed(previousItem, level, level + childLevels);
+      this._isAllowed(previousItem, level, level + childLevels);
 
-        if (this.beyondMaxLevels > 0) {
-          return $.ui.djnsortable.prototype._contactContainers.apply(this, arguments);
-        }
-
-        var $previousItemChildContainer;
-        $previousItemChildContainer = previousItem.nearest(o.containerElementSelector).first();
-
-        if (!$previousItemChildContainer.length && !previousItem.closest(o.nestedContainerSelector).length) {
-          $previousItemChildContainer = this.options.createContainerElement(previousItem[0]);
-          previousItem.append($previousItemChildContainer);
-        }
-
-        if ($previousItemChildContainer.length) {
-          $previousItemChildContainer.append(this.placeholder);
-          containerInstance = $previousItemChildContainer.data(this.widgetName);
-
-          if (!containerInstance) {
-            containerInstance = createChildNestedSortable(this, $previousItemChildContainer[0]);
-          }
-
-          this.refreshPositions();
-        }
-
-        this._trigger("change", event, this._uiHash());
-      } else {
-        this._isAllowed(parentItem, level, level + childLevels);
+      if (this.beyondMaxLevels > 0) {
+        return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._contactContainers.apply(this, arguments);
       }
 
-    $.ui.djnsortable.prototype._contactContainers.call(this, event);
+      var $previousItemChildContainer;
+      $previousItemChildContainer = previousItem.nearest(o.containerElementSelector).first();
+
+      if (!$previousItemChildContainer.length && !previousItem.closest(o.nestedContainerSelector).length) {
+        $previousItemChildContainer = this.options.createContainerElement(previousItem[0]);
+        previousItem.append($previousItemChildContainer);
+      }
+
+      if ($previousItemChildContainer.length) {
+        $previousItemChildContainer.append(this.placeholder);
+        containerInstance = $previousItemChildContainer.data(this.widgetName);
+
+        if (!containerInstance) {
+          containerInstance = createChildNestedSortable(this, $previousItemChildContainer[0]);
+        }
+
+        this.refreshPositions();
+      }
+
+      this._trigger("change", event, this._uiHash());
+    } else {
+      this._isAllowed(parentItem, level, level + childLevels);
+    }
+
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._contactContainers.call(this, event);
   },
   _rearrange: function _rearrange(event, item, a, hardRefresh) {
     // Cache the rearranged element for the call to _clear()
@@ -3314,15 +3215,15 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       }
     }
 
-    $.ui.djnsortable.prototype._rearrange.apply(this, arguments);
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._rearrange.apply(this, arguments);
   },
   _convertPositionTo: function _convertPositionTo(d, pos) {
     // Cache the top offset before rearrangement
     this.previousTopOffset = this.placeholder.offset().top;
-    return $.ui.djnsortable.prototype._convertPositionTo.apply(this, arguments);
+    return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._convertPositionTo.apply(this, arguments);
   },
   _clear: function _clear() {
-    $.ui.djnsortable.prototype._clear.apply(this, arguments); // If lastRearrangedElement exists and is still attached to the document
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._clear.apply(this, arguments); // If lastRearrangedElement exists and is still attached to the document
     // (i.e., hasn't been removed)
 
 
@@ -3336,9 +3237,9 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       this.placeholder.removeClass(this.options.errorClass);
 
       if (this.domPosition.prev) {
-        $(this.domPosition.prev).after(this.placeholder);
+        (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.domPosition.prev).after(this.placeholder);
       } else {
-        $(this.domPosition.parent).prepend(this.placeholder);
+        (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.domPosition.parent).prepend(this.placeholder);
       }
 
       this._trigger("revert", event, this._uiHash());
@@ -3351,10 +3252,10 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       this._clearEmpty(item);
     }
 
-    $.ui.djnsortable.prototype._mouseStop.apply(this, arguments);
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._mouseStop.apply(this, arguments);
   },
   toArray: function toArray(o) {
-    o = $.extend(true, {}, this.options, o || {});
+    o = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].extend(true, {}, this.options, o || {});
     var sDepth = o.startDepthCount || 0,
         ret = [],
         left = 2;
@@ -3363,29 +3264,29 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       "parent_id": 'none',
       "depth": sDepth,
       "left": '1',
-      "right": ($(o.listItemSelector, this.element).length + 1) * 2
+      "right": ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(o.listItemSelector, this.element).length + 1) * 2
     });
 
     var _recursiveArray = function _recursiveArray(item, depth, left) {
       var right = left + 1,
           id,
           pid;
-      var $childItems = $(item).children(o.containerElementSelector).find(o.items);
+      var $childItems = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).children(o.containerElementSelector).find(o.items);
 
       if ($childItems.length > 0) {
         depth++;
         $childItems.each(function () {
-          right = _recursiveArray($(this), depth, right);
+          right = _recursiveArray((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this), depth, right);
         });
         depth--;
       }
 
-      id = $(item).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+      id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
 
       if (depth === sDepth + 1) {
         pid = o.rootID;
       } else {
-        var parentItem = $(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+        var parentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
         pid = parentItem[2];
       }
 
@@ -3403,7 +3304,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       return left;
     };
 
-    $(this.element).children(o.listItemSelector).each(function () {
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.element).children(o.listItemSelector).each(function () {
       left = _recursiveArray(this, sDepth + 1, left);
     });
     ret = ret.sort(function (a, b) {
@@ -3416,10 +3317,10 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
       return;
     }
 
-    var $item = $(item);
+    var $item = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item);
     var childContainers = $item.nearest(this.options.containerElementSelector);
     childContainers.each(function (i, childContainer) {
-      var $childContainer = $(childContainer);
+      var $childContainer = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(childContainer);
 
       if (!$childContainer.children().length) {
         var instance = $childContainer.data(this.widgetName);
@@ -3459,8 +3360,8 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
         o = this.options,
         result = 0;
     depth = depth || 0;
-    $(parent).nearest(o.containerElementSelector).first().find(o.items).each(function (index, child) {
-      if ($(child).is('.djn-no-drag,.djn-thead')) {
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(parent).nearest(o.containerElementSelector).first().find(o.items).each(function (index, child) {
+      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(child).is('.djn-no-drag,.djn-thead')) {
         return;
       }
 
@@ -3470,7 +3371,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
   },
   _isAllowed: function _isAllowed(parentItem, level, levels) {
     var o = this.options,
-        isRoot = $(this.domPosition.parent).hasClass('ui-sortable') ? true : false; // this takes into account the maxLevels set to the recipient list
+        isRoot = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.domPosition.parent).hasClass('ui-sortable') ? true : false; // this takes into account the maxLevels set to the recipient list
     // var maxLevels = this.placeholder.closest('.ui-sortable').nestedSortable('option', 'maxLevels');
 
     var maxLevels = o.maxLevels; // Is the root protected?
@@ -3478,7 +3379,7 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     // Are we nesting too deep?
 
     if (parentItem && typeof parentItem == 'object' && typeof parentItem.selector == 'undefined') {
-      parentItem = $(parentItem);
+      parentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(parentItem);
     }
 
     if (!o.isAllowed.call(this, this.currentItem, parentItem, this.placeholder) || parentItem && parentItem.hasClass(o.disableNesting) || o.protectRoot && (parentItem == null && !isRoot || isRoot && level > 1)) {
@@ -3500,19 +3401,19 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
     }
   },
   _connectWith: function _connectWith() {
-    var origConnectWith = $.ui.djnsortable.prototype._connectWith.apply(this, arguments),
+    var origConnectWith = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._connectWith.apply(this, arguments),
         connectWith = [];
 
     var self = this;
 
     for (var i = 0; i < origConnectWith.length; i++) {
-      var $elements = $(origConnectWith[i]);
+      var $elements = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(origConnectWith[i]);
       $elements.each(function (j, el) {
         if (el == self.element[0]) {
           return;
         }
 
-        if (!self.options.canConnectWith(self.element, $(el), self)) {
+        if (!self.options.canConnectWith(self.element, (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(el), self)) {
           return;
         }
 
@@ -3544,10 +3445,10 @@ $.widget("ui.nestedSortable", $.ui.djnsortable, {
 
     var newContainer = this.options.createContainerElement.apply(this, arguments);
     parent.appendChild(newContainer[0]);
-    return $(newContainer);
+    return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(newContainer);
   }
 });
-$.ui.nestedSortable.prototype.options = $.extend({}, $.ui.djnsortable.prototype.options, $.ui.nestedSortable.prototype.options);
+_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.nestedSortable.prototype.options = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].extend({}, _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype.options, _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.nestedSortable.prototype.options);
 
 /***/ }),
 
@@ -3555,17 +3456,19 @@ $.ui.nestedSortable.prototype.options = $.extend({}, $.ui.djnsortable.prototype.
 /*!*************************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/regexquote.js ***!
   \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.regexp.replace.js */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_0__);
 
 
-__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
-
-module.exports = function regexQuote(str) {
+function regexQuote(str) {
   return (str + '').replace(/([\.\?\*\+\^\$\[\]\\\(\)\{\}\|\-])/g, '\\$1');
-};
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (regexQuote);
 
 /***/ }),
 
@@ -3573,28 +3476,37 @@ module.exports = function regexQuote(str) {
 /*!***********************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/sortable.js ***!
   \***********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "updatePositions": function() { return /* binding */ updatePositions; },
+/* harmony export */   "createSortable": function() { return /* binding */ createSortable; }
+/* harmony export */ });
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.regexp.match.js */ "./node_modules/core-js/modules/es6.regexp.match.js");
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.regexp.constructor.js */ "./node_modules/core-js/modules/es6.regexp.constructor.js");
+/* harmony import */ var core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_constructor_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.regexp.replace.js */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/* harmony import */ var _regexquote__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
+/* harmony import */ var _jquery_ui_nestedsortable__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./jquery.ui.nestedsortable */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.nestedsortable.js");
 
 
-__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
 
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.match */ "./node_modules/core-js/modules/es6.regexp.match.js");
 
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
 
-var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
 
-__webpack_require__(/*! ./jquery.ui.nestedsortable */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.ui.nestedsortable.js");
 
 function updatePositions(prefix) {
   var position = 0,
       count = 1,
-      $group = $('#' + prefix + '-group'),
+      $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + prefix + '-group'),
       groupData = $group.djnData(),
       fieldNames = groupData.fieldNames,
       groupFkName = groupData.formsetFkName,
@@ -3608,7 +3520,7 @@ function updatePositions(prefix) {
   sortableExcludes.push(groupFkName);
 
   if (parentPrefix) {
-    var $parentGroup = $('#' + parentPrefix + '-group');
+    var $parentGroup = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + parentPrefix + '-group');
     var parentFieldNames = $parentGroup.djnData('fieldNames');
     var parentPkFieldName = parentFieldNames.pk;
     var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
@@ -3624,14 +3536,14 @@ function updatePositions(prefix) {
       return true; // Same as continue
     }
 
-    var regex = new RegExp('^(?:id_)?' + regexQuote(prefix) + '\\-\\d+$');
+    var regex = new RegExp('^(?:id_)?' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_5__["default"])(prefix) + '\\-\\d+$');
 
     if (!this.id.match(regex)) {
       return true;
     } // Cache jQuery object
 
 
-    var $this = $(this),
+    var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this),
         _ref2 = $this.djangoPrefixIndex() || [null, null],
         formPrefix = _ref2[0],
         index = _ref2[1],
@@ -3656,7 +3568,7 @@ function updatePositions(prefix) {
     // b) if the field is not exluded with sortable_excludes (e.g. with default values)
 
     $fields.each(function () {
-      var $field = $(this);
+      var $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this);
 
       if (!$field.is(':input[type!=radio][type!=checkbox],input:checked')) {
         return;
@@ -3669,7 +3581,7 @@ function updatePositions(prefix) {
         $positionField = $field;
       }
 
-      if (hasValue && $.inArray(fieldName, sortableExcludes) === -1) {
+      if (hasValue && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].inArray(fieldName, sortableExcludes) === -1) {
         setPosition = true;
       }
     });
@@ -3698,20 +3610,20 @@ function createSortable($group) {
     forcePlaceholderSize: true,
     placeholder: {
       element: function element($currentItem) {
-        var el = $(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
+        var el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
 
         if ($currentItem.is('.djn-tbody')) {
           var $originalTr = $currentItem.children('.djn-tr').eq(0);
           var trTagName = $originalTr.prop('tagName').toLowerCase();
-          var $tr = $("<" + trTagName + "></" + trTagName + ">");
+          var $tr = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("<" + trTagName + "></" + trTagName + ">");
           $tr.addClass($originalTr.attr('class'));
           var $originalTd = $originalTr.children('.djn-td').eq(0);
           var tdTagName = $originalTd.prop('tagName').toLowerCase();
           var numColumns = 0;
           $originalTr.children('.djn-td').each(function (i, td) {
-            numColumns += parseInt($(td).attr('colspan'), 10) || 1;
+            numColumns += parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(td).attr('colspan'), 10) || 1;
           });
-          $tr.append($("<" + tdTagName + " colspan=\"" + numColumns + "\" class=\"djn-td grp-td\"></" + tdTagName + ">"));
+          $tr.append((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("<" + tdTagName + " colspan=\"" + numColumns + "\" class=\"djn-td grp-td\"></" + tdTagName + ">"));
           el.appendChild($tr[0]);
         }
 
@@ -3796,7 +3708,7 @@ function createSortable($group) {
      * Triggered when a sortable is dropped into a container
      */
     receive: function receive(event, ui) {
-      var $inline = $(this).closest('.djn-group');
+      var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this).closest('.djn-group');
       $inline.djangoFormset().spliceInto(ui.item);
       updatePositions(ui.item.djangoFormsetPrefix());
     },
@@ -3814,7 +3726,7 @@ function createSortable($group) {
         parent.insertBefore(nextItem, parent.firstChild);
       }
 
-      var groupId = $(event.target).closest('.djn-group').attr('id'),
+      var groupId = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(event.target).closest('.djn-group').attr('id'),
           $form = ui.item,
           $parentGroup = $form.closest('#' + groupId);
 
@@ -3825,15 +3737,12 @@ function createSortable($group) {
       }
 
       updatePositions($form.djangoFormsetPrefix());
-      $(document).trigger('djnesting:mutate', [$('#' + $form.djangoFormsetPrefix() + '-group')]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).trigger('djnesting:mutate', [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + $form.djangoFormsetPrefix() + '-group')]);
     }
   });
 }
 
-module.exports = {
-  updatePositions: updatePositions,
-  createSortable: createSortable
-};
+
 
 /***/ }),
 
@@ -3841,39 +3750,47 @@ module.exports = {
 /*!********************************************************************!*\
   !*** ./nested_admin/static/nested_admin/src/nested-admin/utils.js ***!
   \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.regexp.replace.js */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+/* harmony import */ var core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_replace_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es6_array_map_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es6.array.map.js */ "./node_modules/core-js/modules/es6.array.map.js");
+/* harmony import */ var core_js_modules_es6_array_map_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_map_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es6.regexp.match.js */ "./node_modules/core-js/modules/es6.regexp.match.js");
+/* harmony import */ var core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_match_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es6.regexp.split.js */ "./node_modules/core-js/modules/es6.regexp.split.js");
+/* harmony import */ var core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_regexp_split_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es6.function.name.js */ "./node_modules/core-js/modules/es6.function.name.js");
+/* harmony import */ var core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_function_name_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core-js/modules/es6.array.filter.js */ "./node_modules/core-js/modules/es6.array.filter.js");
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/* harmony import */ var _jquery_djnutils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./jquery.djnutils */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djnutils.js");
+/* harmony import */ var _sortable__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./sortable */ "./nested_admin/static/nested_admin/src/nested-admin/sortable.js");
+/* harmony import */ var _regexquote__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
+/* harmony import */ var _grp$__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
+
+
+
+
+
+
+
 
 /* globals SelectFilter, DateTimeShortcuts */
 
-__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.split */ "./node_modules/core-js/modules/es6.regexp.split.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.match */ "./node_modules/core-js/modules/es6.regexp.match.js");
 
-__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
-
-__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
-
-var $ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
-
-__webpack_require__(/*! ./jquery.djnutils.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djnutils.js");
-
-var _require = __webpack_require__(/*! ./sortable */ "./nested_admin/static/nested_admin/src/nested-admin/sortable.js"),
-    createSortable = _require.createSortable,
-    updatePositions = _require.updatePositions;
-
-var regexQuote = __webpack_require__(/*! ./regexquote */ "./nested_admin/static/nested_admin/src/nested-admin/regexquote.js");
-
-var grp$ = __webpack_require__(/*! ./grp$ */ "./nested_admin/static/nested_admin/src/nested-admin/grp$.js");
 
 var DJNesting = typeof window.DJNesting != 'undefined' ? window.DJNesting : {};
-DJNesting.regexQuote = regexQuote;
-DJNesting.createSortable = createSortable;
-DJNesting.updatePositions = updatePositions;
+DJNesting.regexQuote = _regexquote__WEBPACK_IMPORTED_MODULE_10__["default"];
+DJNesting.createSortable = _sortable__WEBPACK_IMPORTED_MODULE_9__.createSortable;
+DJNesting.updatePositions = _sortable__WEBPACK_IMPORTED_MODULE_9__.updatePositions;
 /**
  * Update attributes based on a regular expression
  */
@@ -3883,11 +3800,11 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
     selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
   }
 
-  var addBackMethod = $.fn.addBack ? 'addBack' : 'andSelf';
+  var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.addBack ? 'addBack' : 'andSelf';
   $elem.find(selector)[addBackMethod]().each(function () {
-    var $node = $(this),
+    var $node = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
         attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset'];
-    $.each(attrs, function (i, attrName) {
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(attrs, function (i, attrName) {
       var attrVal = $node.attr(attrName);
 
       if (attrVal) {
@@ -3901,9 +3818,9 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   }); // update prepopulate ids for function initPrepopulatedFields
 
   $elem.find('.prepopulated_field').each(function () {
-    var $node = grp$(this);
-    var dependencyIds = $.makeArray($node.data('dependency_ids') || []);
-    $node.data('dependency_ids', $.map(dependencyIds, function (id) {
+    var $node = (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(this);
+    var dependencyIds = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].makeArray($node.data('dependency_ids') || []);
+    $node.data('dependency_ids', _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].map(dependencyIds, function (id) {
       return id.replace(search, replace);
     }));
   });
@@ -3931,7 +3848,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
   }
 
   var lookupUrls = DJNesting.LOOKUP_URLS;
-  var $inline = $('#' + prefix + '-group');
+  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + prefix + '-group');
 
   if (!groupData) {
     groupData = $inline.djnData();
@@ -3939,27 +3856,27 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
 
   var lookupFields = groupData.lookupRelated;
   $inline.djangoFormsetForms().each(function (i, form) {
-    $.each(lookupFields.fk || [], function (i, fk) {
-      $(form).djangoFormField(fk).each(function () {
-        grp$(this).grp_related_fk({
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.fk || [], function (i, fk) {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(fk).each(function () {
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(this).grp_related_fk({
           lookup_url: lookupUrls.related
         });
       });
     });
-    $.each(lookupFields.m2m || [], function (i, m2m) {
-      $(form).djangoFormField(m2m).each(function () {
-        grp$(this).grp_related_m2m({
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.m2m || [], function (i, m2m) {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(m2m).each(function () {
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(this).grp_related_m2m({
           lookup_url: lookupUrls.m2m
         });
       });
     });
-    $.each(lookupFields.generic || [], function () {
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.generic || [], function () {
       var _this = this,
           contentType = _this[0],
           objectId = _this[1];
 
-      $(form).djangoFormField(objectId).each(function () {
-        var $this = $(this);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(objectId).each(function () {
+        var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var index = $this.djangoFormIndex();
 
         if ($this.hasClass('grp-has-related-lookup')) {
@@ -3967,7 +3884,7 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
           $this.parent().find('.grp-placeholder-related-generic').remove();
         }
 
-        grp$($this).grp_related_generic({
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])($this).grp_related_generic({
           content_type: "#id_" + prefix + "-" + index + "-" + contentType,
           object_id: "#id_" + prefix + "-" + index + "-" + objectId,
           lookup_url: lookupUrls.related
@@ -3983,7 +3900,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
   }
 
   var lookupUrls = DJNesting.LOOKUP_URLS;
-  var $inline = $('#' + prefix + '-group');
+  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + prefix + '-group');
 
   if (!groupData) {
     groupData = $inline.djnData();
@@ -3991,50 +3908,50 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
 
   var lookupFields = groupData.lookupAutocomplete;
   $inline.djangoFormsetForms().each(function (i, form) {
-    $.each(lookupFields.fk || [], function (i, fk) {
-      $(form).djangoFormField(fk).each(function () {
-        var $this = $(this),
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.fk || [], function (i, fk) {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(fk).each(function () {
+        var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
             id = $this.attr('id'); // An autocomplete widget has already been initialized, return
 
-        if ($('#' + id + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + id + '-autocomplete').length) {
           return;
         }
 
-        grp$($this).grp_autocomplete_fk({
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])($this).grp_autocomplete_fk({
           lookup_url: lookupUrls.related,
           autocomplete_lookup_url: lookupUrls.autocomplete
         });
       });
     });
-    $.each(lookupFields.m2m || [], function (i, m2m) {
-      $(form).djangoFormField(m2m).each(function () {
-        var $this = $(this),
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.m2m || [], function (i, m2m) {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(m2m).each(function () {
+        var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
             id = $this.attr('id'); // An autocomplete widget has already been initialized, return
 
-        if ($('#' + id + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + id + '-autocomplete').length) {
           return;
         }
 
-        grp$($this).grp_autocomplete_m2m({
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])($this).grp_autocomplete_m2m({
           lookup_url: lookupUrls.m2m,
           autocomplete_lookup_url: lookupUrls.autocomplete
         });
       });
     });
-    $.each(lookupFields.generic || [], function () {
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.generic || [], function () {
       var _this2 = this,
           contentType = _this2[0],
           objectId = _this2[1];
 
-      $(form).djangoFormField(objectId).each(function () {
-        var $this = $(this);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(objectId).each(function () {
+        var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var index = $this.djangoFormIndex(); // An autocomplete widget has already been initialized, return
 
-        if ($('#' + $this.attr('id') + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + $this.attr('id') + '-autocomplete').length) {
           return;
         }
 
-        grp$($this).grp_autocomplete_generic({
+        (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])($this).grp_autocomplete_generic({
           content_type: "#id_" + prefix + "-" + index + "-" + contentType,
           object_id: "#id_" + prefix + "-" + index + "-" + objectId,
           lookup_url: lookupUrls.related,
@@ -4050,9 +3967,9 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
 DJNesting.DjangoInlines = {
   initPrepopulatedFields: function initPrepopulatedFields(row) {
     row.find('.prepopulated_field').each(function () {
-      var field = $(this),
+      var field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
           input = field.is(':input') ? field : field.find(':input'),
-          $input = grp$(input),
+          $input = (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(input),
           dependencyList = $input.data('dependency_list') || [],
           formPrefix = input.djangoFormPrefix(),
           dependencies = [];
@@ -4061,7 +3978,7 @@ DJNesting.DjangoInlines = {
         return;
       }
 
-      $.each(dependencyList, function (i, fieldName) {
+      _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(dependencyList, function (i, fieldName) {
         dependencies.push('#id_' + formPrefix + fieldName);
       });
 
@@ -4073,7 +3990,7 @@ DJNesting.DjangoInlines = {
   reinitDateTimeShortCuts: function reinitDateTimeShortCuts() {
     // Reinitialize the calendar and clock widgets by force
     if (typeof window.DateTimeShortcuts !== 'undefined') {
-      $('.datetimeshortcuts').remove();
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('.datetimeshortcuts').remove();
       DateTimeShortcuts.init();
     }
   },
@@ -4122,17 +4039,17 @@ djangoFuncs.forEach(function (funcName) {
       return;
     }
 
-    if (typeof $.fn[funcName] === 'undefined') {
+    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName] === 'undefined') {
       return setTimeout(function () {
         return patchDjangoFunction(callCount++);
       }, 12);
     }
 
-    $.fn[funcName] = function (oldFn) {
+    _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName] = function (oldFn) {
       return function django_fn_patch() {
         return oldFn.apply(this.filter(':not([id*="-empty-"]):not([id$="-empty"]):not([id*="__prefix__"])'), arguments);
       };
-    }($.fn[funcName]);
+    }(_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName]);
   })(0);
 });
 var grpFuncs = ['grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m', 'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk', 'grp_related_generic', 'grp_related_m2m', 'grp_timepicker', 'datepicker', 'prepopulate', 'djangoAdminSelect2'];
@@ -4155,18 +4072,7 @@ grpFuncs.forEach(function (funcName) {
     }(window.grp.jQuery.fn[funcName]);
   })(0);
 });
-module.exports = DJNesting;
-
-/***/ }),
-
-/***/ "./nested_admin/static/nested_admin/src/nested_admin.scss":
-/*!****************************************************************!*\
-  !*** ./nested_admin/static/nested_admin/src/nested_admin.scss ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
+/* harmony default export */ __webpack_exports__["default"] = (DJNesting);
 
 /***/ }),
 
@@ -4174,8 +4080,7 @@ module.exports = DJNesting;
 /*!*****************************************************!*\
   !*** ./node_modules/core-js/modules/_a-function.js ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 module.exports = function (it) {
   if (typeof it != 'function') throw TypeError(it + ' is not a function!');
@@ -4189,8 +4094,7 @@ module.exports = function (it) {
 /*!*************************************************************!*\
   !*** ./node_modules/core-js/modules/_add-to-unscopables.js ***!
   \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 22.1.3.31 Array.prototype[@@unscopables]
 var UNSCOPABLES = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('unscopables');
@@ -4203,12 +4107,30 @@ module.exports = function (key) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_advance-string-index.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/core-js/modules/_advance-string-index.js ***!
+  \***************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var at = __webpack_require__(/*! ./_string-at */ "./node_modules/core-js/modules/_string-at.js")(true);
+
+ // `AdvanceStringIndex` abstract operation
+// https://tc39.github.io/ecma262/#sec-advancestringindex
+module.exports = function (S, index, unicode) {
+  return index + (unicode ? at(S, index).length : 1);
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_an-object.js":
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_an-object.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
 module.exports = function (it) {
@@ -4219,12 +4141,44 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_array-includes.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/_array-includes.js ***!
+  \*********************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = __webpack_require__(/*! ./_to-iobject */ "./node_modules/core-js/modules/_to-iobject.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var toAbsoluteIndex = __webpack_require__(/*! ./_to-absolute-index */ "./node_modules/core-js/modules/_to-absolute-index.js");
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_array-methods.js":
 /*!********************************************************!*\
   !*** ./node_modules/core-js/modules/_array-methods.js ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 0 -> Array#forEach
 // 1 -> Array#map
@@ -4278,8 +4232,7 @@ module.exports = function (TYPE, $create) {
 /*!********************************************************************!*\
   !*** ./node_modules/core-js/modules/_array-species-constructor.js ***!
   \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
 var isArray = __webpack_require__(/*! ./_is-array */ "./node_modules/core-js/modules/_is-array.js");
@@ -4305,8 +4258,7 @@ module.exports = function (original) {
 /*!***************************************************************!*\
   !*** ./node_modules/core-js/modules/_array-species-create.js ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
 var speciesConstructor = __webpack_require__(/*! ./_array-species-constructor */ "./node_modules/core-js/modules/_array-species-constructor.js");
@@ -4318,12 +4270,44 @@ module.exports = function (original, length) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_classof.js":
+/*!**************************************************!*\
+  !*** ./node_modules/core-js/modules/_classof.js ***!
+  \**************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// getting tag from 19.1.3.6 Object.prototype.toString()
+var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
+var TAG = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('toStringTag');
+// ES3 wrong here
+var ARG = cof(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (e) { /* empty */ }
+};
+
+module.exports = function (it) {
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
+    // builtinTag case
+    : ARG ? cof(O)
+    // ES3 arguments fallback
+    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_cof.js":
 /*!**********************************************!*\
   !*** ./node_modules/core-js/modules/_cof.js ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 var toString = {}.toString;
 
@@ -4338,10 +4322,9 @@ module.exports = function (it) {
 /*!***********************************************!*\
   !*** ./node_modules/core-js/modules/_core.js ***!
   \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
-var core = module.exports = { version: '2.5.5' };
+var core = module.exports = { version: '2.6.12' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -4351,8 +4334,7 @@ if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 /*!**********************************************!*\
   !*** ./node_modules/core-js/modules/_ctx.js ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // optional / simple context binding
 var aFunction = __webpack_require__(/*! ./_a-function */ "./node_modules/core-js/modules/_a-function.js");
@@ -4382,8 +4364,7 @@ module.exports = function (fn, that, length) {
 /*!**************************************************!*\
   !*** ./node_modules/core-js/modules/_defined.js ***!
   \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function (it) {
@@ -4398,8 +4379,7 @@ module.exports = function (it) {
 /*!******************************************************!*\
   !*** ./node_modules/core-js/modules/_descriptors.js ***!
   \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
 module.exports = !__webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
@@ -4413,11 +4393,10 @@ module.exports = !__webpack_require__(/*! ./_fails */ "./node_modules/core-js/mo
 /*!*****************************************************!*\
   !*** ./node_modules/core-js/modules/_dom-create.js ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
-var document = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").document;
+var document = (__webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").document);
 // typeof document.createElement is 'object' in old IE
 var is = isObject(document) && isObject(document.createElement);
 module.exports = function (it) {
@@ -4427,12 +4406,25 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_enum-bug-keys.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/_enum-bug-keys.js ***!
+  \********************************************************/
+/***/ (function(module) {
+
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_export.js":
 /*!*************************************************!*\
   !*** ./node_modules/core-js/modules/_export.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
 var core = __webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js");
@@ -4485,8 +4477,7 @@ module.exports = $export;
 /*!************************************************!*\
   !*** ./node_modules/core-js/modules/_fails.js ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 module.exports = function (exec) {
   try {
@@ -4503,27 +4494,94 @@ module.exports = function (exec) {
 /*!*****************************************************!*\
   !*** ./node_modules/core-js/modules/_fix-re-wks.js ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
-var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
+__webpack_require__(/*! ./es6.regexp.exec */ "./node_modules/core-js/modules/es6.regexp.exec.js");
 var redefine = __webpack_require__(/*! ./_redefine */ "./node_modules/core-js/modules/_redefine.js");
+var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
 var fails = __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js");
 var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
 var wks = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js");
+var regexpExec = __webpack_require__(/*! ./_regexp-exec */ "./node_modules/core-js/modules/_regexp-exec.js");
+
+var SPECIES = wks('species');
+
+var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
+  // #replace needs built-in support for named groups.
+  // #match works fine because it just return the exec results, even if it has
+  // a "grops" property.
+  var re = /./;
+  re.exec = function () {
+    var result = [];
+    result.groups = { a: '7' };
+    return result;
+  };
+  return ''.replace(re, '$<a>') !== '7';
+});
+
+var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = (function () {
+  // Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
+  var re = /(?:)/;
+  var originalExec = re.exec;
+  re.exec = function () { return originalExec.apply(this, arguments); };
+  var result = 'ab'.split(re);
+  return result.length === 2 && result[0] === 'a' && result[1] === 'b';
+})();
 
 module.exports = function (KEY, length, exec) {
   var SYMBOL = wks(KEY);
-  var fns = exec(defined, SYMBOL, ''[KEY]);
-  var strfn = fns[0];
-  var rxfn = fns[1];
-  if (fails(function () {
+
+  var DELEGATES_TO_SYMBOL = !fails(function () {
+    // String methods call symbol-named RegEp methods
     var O = {};
     O[SYMBOL] = function () { return 7; };
     return ''[KEY](O) != 7;
-  })) {
+  });
+
+  var DELEGATES_TO_EXEC = DELEGATES_TO_SYMBOL ? !fails(function () {
+    // Symbol-named RegExp methods call .exec
+    var execCalled = false;
+    var re = /a/;
+    re.exec = function () { execCalled = true; return null; };
+    if (KEY === 'split') {
+      // RegExp[@@split] doesn't call the regex's exec method, but first creates
+      // a new one. We need to return the patched regex when creating the new one.
+      re.constructor = {};
+      re.constructor[SPECIES] = function () { return re; };
+    }
+    re[SYMBOL]('');
+    return !execCalled;
+  }) : undefined;
+
+  if (
+    !DELEGATES_TO_SYMBOL ||
+    !DELEGATES_TO_EXEC ||
+    (KEY === 'replace' && !REPLACE_SUPPORTS_NAMED_GROUPS) ||
+    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
+  ) {
+    var nativeRegExpMethod = /./[SYMBOL];
+    var fns = exec(
+      defined,
+      SYMBOL,
+      ''[KEY],
+      function maybeCallNative(nativeMethod, regexp, str, arg2, forceStringMethod) {
+        if (regexp.exec === regexpExec) {
+          if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
+            // The native String method already delegates to @@method (this
+            // polyfilled function), leasing to infinite recursion.
+            // We avoid it by directly calling the native @@method method.
+            return { done: true, value: nativeRegExpMethod.call(regexp, str, arg2) };
+          }
+          return { done: true, value: nativeMethod.call(str, regexp, arg2) };
+        }
+        return { done: false };
+      }
+    );
+    var strfn = fns[0];
+    var rxfn = fns[1];
+
     redefine(String.prototype, KEY, strfn);
     hide(RegExp.prototype, SYMBOL, length == 2
       // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
@@ -4539,12 +4597,46 @@ module.exports = function (KEY, length, exec) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_flags.js":
+/*!************************************************!*\
+  !*** ./node_modules/core-js/modules/_flags.js ***!
+  \************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+// 21.2.5.3 get RegExp.prototype.flags
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+module.exports = function () {
+  var that = anObject(this);
+  var result = '';
+  if (that.global) result += 'g';
+  if (that.ignoreCase) result += 'i';
+  if (that.multiline) result += 'm';
+  if (that.unicode) result += 'u';
+  if (that.sticky) result += 'y';
+  return result;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_function-to-string.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/core-js/modules/_function-to-string.js ***!
+  \*************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! ./_shared */ "./node_modules/core-js/modules/_shared.js")('native-function-to-string', Function.toString);
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_global.js":
 /*!*************************************************!*\
   !*** ./node_modules/core-js/modules/_global.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
@@ -4560,8 +4652,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 /*!**********************************************!*\
   !*** ./node_modules/core-js/modules/_has.js ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function (it, key) {
@@ -4575,8 +4666,7 @@ module.exports = function (it, key) {
 /*!***********************************************!*\
   !*** ./node_modules/core-js/modules/_hide.js ***!
   \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var dP = __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js");
 var createDesc = __webpack_require__(/*! ./_property-desc */ "./node_modules/core-js/modules/_property-desc.js");
@@ -4590,12 +4680,23 @@ module.exports = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_html.js":
+/*!***********************************************!*\
+  !*** ./node_modules/core-js/modules/_html.js ***!
+  \***********************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var document = (__webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").document);
+module.exports = document && document.documentElement;
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_ie8-dom-define.js":
 /*!*********************************************************!*\
   !*** ./node_modules/core-js/modules/_ie8-dom-define.js ***!
   \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = !__webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") && !__webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
   return Object.defineProperty(__webpack_require__(/*! ./_dom-create */ "./node_modules/core-js/modules/_dom-create.js")('div'), 'a', { get: function () { return 7; } }).a != 7;
@@ -4604,12 +4705,30 @@ module.exports = !__webpack_require__(/*! ./_descriptors */ "./node_modules/core
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_inherit-if-required.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/core-js/modules/_inherit-if-required.js ***!
+  \**************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+var setPrototypeOf = (__webpack_require__(/*! ./_set-proto */ "./node_modules/core-js/modules/_set-proto.js").set);
+module.exports = function (that, target, C) {
+  var S = target.constructor;
+  var P;
+  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf) {
+    setPrototypeOf(that, P);
+  } return that;
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_iobject.js":
 /*!**************************************************!*\
   !*** ./node_modules/core-js/modules/_iobject.js ***!
   \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
@@ -4625,8 +4744,7 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 /*!***************************************************!*\
   !*** ./node_modules/core-js/modules/_is-array.js ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 7.2.2 IsArray(argument)
 var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
@@ -4641,8 +4759,7 @@ module.exports = Array.isArray || function isArray(arg) {
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_is-object.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 module.exports = function (it) {
   return typeof it === 'object' ? it !== null : typeof it === 'function';
@@ -4655,8 +4772,7 @@ module.exports = function (it) {
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_is-regexp.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 7.2.8 IsRegExp(argument)
 var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
@@ -4670,12 +4786,22 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_library.js":
+/*!**************************************************!*\
+  !*** ./node_modules/core-js/modules/_library.js ***!
+  \**************************************************/
+/***/ (function(module) {
+
+module.exports = false;
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_object-dp.js":
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_object-dp.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
 var IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ "./node_modules/core-js/modules/_ie8-dom-define.js");
@@ -4697,12 +4823,92 @@ exports.f = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/mo
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_object-gopd.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-gopd.js ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var pIE = __webpack_require__(/*! ./_object-pie */ "./node_modules/core-js/modules/_object-pie.js");
+var createDesc = __webpack_require__(/*! ./_property-desc */ "./node_modules/core-js/modules/_property-desc.js");
+var toIObject = __webpack_require__(/*! ./_to-iobject */ "./node_modules/core-js/modules/_to-iobject.js");
+var toPrimitive = __webpack_require__(/*! ./_to-primitive */ "./node_modules/core-js/modules/_to-primitive.js");
+var has = __webpack_require__(/*! ./_has */ "./node_modules/core-js/modules/_has.js");
+var IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ "./node_modules/core-js/modules/_ie8-dom-define.js");
+var gOPD = Object.getOwnPropertyDescriptor;
+
+exports.f = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if (IE8_DOM_DEFINE) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-gopn.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-gopn.js ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys = __webpack_require__(/*! ./_object-keys-internal */ "./node_modules/core-js/modules/_object-keys-internal.js");
+var hiddenKeys = (__webpack_require__(/*! ./_enum-bug-keys */ "./node_modules/core-js/modules/_enum-bug-keys.js").concat)('length', 'prototype');
+
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return $keys(O, hiddenKeys);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-keys-internal.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-keys-internal.js ***!
+  \***************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var has = __webpack_require__(/*! ./_has */ "./node_modules/core-js/modules/_has.js");
+var toIObject = __webpack_require__(/*! ./_to-iobject */ "./node_modules/core-js/modules/_to-iobject.js");
+var arrayIndexOf = __webpack_require__(/*! ./_array-includes */ "./node_modules/core-js/modules/_array-includes.js")(false);
+var IE_PROTO = __webpack_require__(/*! ./_shared-key */ "./node_modules/core-js/modules/_shared-key.js")('IE_PROTO');
+
+module.exports = function (object, names) {
+  var O = toIObject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while (names.length > i) if (has(O, key = names[i++])) {
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-pie.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-pie.js ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_property-desc.js":
 /*!********************************************************!*\
   !*** ./node_modules/core-js/modules/_property-desc.js ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 module.exports = function (bitmap, value) {
   return {
@@ -4720,18 +4926,17 @@ module.exports = function (bitmap, value) {
 /*!***************************************************!*\
   !*** ./node_modules/core-js/modules/_redefine.js ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
 var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
 var has = __webpack_require__(/*! ./_has */ "./node_modules/core-js/modules/_has.js");
 var SRC = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js")('src');
+var $toString = __webpack_require__(/*! ./_function-to-string */ "./node_modules/core-js/modules/_function-to-string.js");
 var TO_STRING = 'toString';
-var $toString = Function[TO_STRING];
 var TPL = ('' + $toString).split(TO_STRING);
 
-__webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js").inspectSource = function (it) {
+(__webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js").inspectSource) = function (it) {
   return $toString.call(it);
 };
 
@@ -4758,18 +4963,217 @@ __webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js").in
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_regexp-exec-abstract.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/core-js/modules/_regexp-exec-abstract.js ***!
+  \***************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var classof = __webpack_require__(/*! ./_classof */ "./node_modules/core-js/modules/_classof.js");
+var builtinExec = RegExp.prototype.exec;
+
+ // `RegExpExec` abstract operation
+// https://tc39.github.io/ecma262/#sec-regexpexec
+module.exports = function (R, S) {
+  var exec = R.exec;
+  if (typeof exec === 'function') {
+    var result = exec.call(R, S);
+    if (typeof result !== 'object') {
+      throw new TypeError('RegExp exec method returned something other than an Object or null');
+    }
+    return result;
+  }
+  if (classof(R) !== 'RegExp') {
+    throw new TypeError('RegExp#exec called on incompatible receiver');
+  }
+  return builtinExec.call(R, S);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_regexp-exec.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_regexp-exec.js ***!
+  \******************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var regexpFlags = __webpack_require__(/*! ./_flags */ "./node_modules/core-js/modules/_flags.js");
+
+var nativeExec = RegExp.prototype.exec;
+// This always refers to the native implementation, because the
+// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
+// which loads this file before patching the method.
+var nativeReplace = String.prototype.replace;
+
+var patchedExec = nativeExec;
+
+var LAST_INDEX = 'lastIndex';
+
+var UPDATES_LAST_INDEX_WRONG = (function () {
+  var re1 = /a/,
+      re2 = /b*/g;
+  nativeExec.call(re1, 'a');
+  nativeExec.call(re2, 'a');
+  return re1[LAST_INDEX] !== 0 || re2[LAST_INDEX] !== 0;
+})();
+
+// nonparticipating capturing group, copied from es5-shim's String#split patch.
+var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
+
+var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED;
+
+if (PATCH) {
+  patchedExec = function exec(str) {
+    var re = this;
+    var lastIndex, reCopy, match, i;
+
+    if (NPCG_INCLUDED) {
+      reCopy = new RegExp('^' + re.source + '$(?!\\s)', regexpFlags.call(re));
+    }
+    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re[LAST_INDEX];
+
+    match = nativeExec.call(re, str);
+
+    if (UPDATES_LAST_INDEX_WRONG && match) {
+      re[LAST_INDEX] = re.global ? match.index + match[0].length : lastIndex;
+    }
+    if (NPCG_INCLUDED && match && match.length > 1) {
+      // Fix browsers whose `exec` methods don't consistently return `undefined`
+      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+      // eslint-disable-next-line no-loop-func
+      nativeReplace.call(match[0], reCopy, function () {
+        for (i = 1; i < arguments.length - 2; i++) {
+          if (arguments[i] === undefined) match[i] = undefined;
+        }
+      });
+    }
+
+    return match;
+  };
+}
+
+module.exports = patchedExec;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_set-proto.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_set-proto.js ***!
+  \****************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// Works with __proto__ only. Old v8 can't work with null proto objects.
+/* eslint-disable no-proto */
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var check = function (O, proto) {
+  anObject(O);
+  if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
+};
+module.exports = {
+  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+    function (test, buggy, set) {
+      try {
+        set = __webpack_require__(/*! ./_ctx */ "./node_modules/core-js/modules/_ctx.js")(Function.call, (__webpack_require__(/*! ./_object-gopd */ "./node_modules/core-js/modules/_object-gopd.js").f)(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch (e) { buggy = true; }
+      return function setPrototypeOf(O, proto) {
+        check(O, proto);
+        if (buggy) O.__proto__ = proto;
+        else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+  check: check
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_set-species.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_set-species.js ***!
+  \******************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
+var dP = __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js");
+var DESCRIPTORS = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js");
+var SPECIES = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('species');
+
+module.exports = function (KEY) {
+  var C = global[KEY];
+  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
+    configurable: true,
+    get: function () { return this; }
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_shared-key.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_shared-key.js ***!
+  \*****************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var shared = __webpack_require__(/*! ./_shared */ "./node_modules/core-js/modules/_shared.js")('keys');
+var uid = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js");
+module.exports = function (key) {
+  return shared[key] || (shared[key] = uid(key));
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_shared.js":
 /*!*************************************************!*\
   !*** ./node_modules/core-js/modules/_shared.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
+var core = __webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js");
 var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
 var SHARED = '__core-js_shared__';
 var store = global[SHARED] || (global[SHARED] = {});
-module.exports = function (key) {
-  return store[key] || (store[key] = {});
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: core.version,
+  mode: __webpack_require__(/*! ./_library */ "./node_modules/core-js/modules/_library.js") ? 'pure' : 'global',
+  copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_species-constructor.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/core-js/modules/_species-constructor.js ***!
+  \**************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// 7.3.20 SpeciesConstructor(O, defaultConstructor)
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var aFunction = __webpack_require__(/*! ./_a-function */ "./node_modules/core-js/modules/_a-function.js");
+var SPECIES = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('species');
+module.exports = function (O, D) {
+  var C = anObject(O).constructor;
+  var S;
+  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
 };
 
 
@@ -4779,8 +5183,7 @@ module.exports = function (key) {
 /*!********************************************************!*\
   !*** ./node_modules/core-js/modules/_strict-method.js ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -4796,12 +5199,55 @@ module.exports = function (method, arg) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_string-at.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_string-at.js ***!
+  \****************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+// true  -> String#at
+// false -> String#codePointAt
+module.exports = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(defined(that));
+    var i = toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-absolute-index.js":
+/*!************************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-absolute-index.js ***!
+  \************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_to-integer.js":
 /*!*****************************************************!*\
   !*** ./node_modules/core-js/modules/_to-integer.js ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 // 7.1.4 ToInteger
 var ceil = Math.ceil;
@@ -4813,12 +5259,27 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/_to-iobject.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-iobject.js ***!
+  \*****************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(/*! ./_iobject */ "./node_modules/core-js/modules/_iobject.js");
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+module.exports = function (it) {
+  return IObject(defined(it));
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/_to-length.js":
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_to-length.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 7.1.15 ToLength
 var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
@@ -4834,8 +5295,7 @@ module.exports = function (it) {
 /*!****************************************************!*\
   !*** ./node_modules/core-js/modules/_to-object.js ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
 var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
@@ -4850,8 +5310,7 @@ module.exports = function (it) {
 /*!*******************************************************!*\
   !*** ./node_modules/core-js/modules/_to-primitive.js ***!
   \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
@@ -4873,8 +5332,7 @@ module.exports = function (it, S) {
 /*!**********************************************!*\
   !*** ./node_modules/core-js/modules/_uid.js ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
 var id = 0;
 var px = Math.random();
@@ -4889,12 +5347,11 @@ module.exports = function (key) {
 /*!**********************************************!*\
   !*** ./node_modules/core-js/modules/_wks.js ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var store = __webpack_require__(/*! ./_shared */ "./node_modules/core-js/modules/_shared.js")('wks');
 var uid = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js");
-var Symbol = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").Symbol;
+var Symbol = (__webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").Symbol);
 var USE_SYMBOL = typeof Symbol == 'function';
 
 var $exports = module.exports = function (name) {
@@ -4907,12 +5364,32 @@ $exports.store = store;
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es6.array.filter.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.array.filter.js ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var $filter = __webpack_require__(/*! ./_array-methods */ "./node_modules/core-js/modules/_array-methods.js")(2);
+
+$export($export.P + $export.F * !__webpack_require__(/*! ./_strict-method */ "./node_modules/core-js/modules/_strict-method.js")([].filter, true), 'Array', {
+  // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
+  filter: function filter(callbackfn /* , thisArg */) {
+    return $filter(this, callbackfn, arguments[1]);
+  }
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es6.array.find.js":
 /*!********************************************************!*\
   !*** ./node_modules/core-js/modules/es6.array.find.js ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -4933,12 +5410,71 @@ __webpack_require__(/*! ./_add-to-unscopables */ "./node_modules/core-js/modules
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es6.array.map.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.array.map.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var $map = __webpack_require__(/*! ./_array-methods */ "./node_modules/core-js/modules/_array-methods.js")(1);
+
+$export($export.P + $export.F * !__webpack_require__(/*! ./_strict-method */ "./node_modules/core-js/modules/_strict-method.js")([].map, true), 'Array', {
+  // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
+  map: function map(callbackfn /* , thisArg */) {
+    return $map(this, callbackfn, arguments[1]);
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.array.slice.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.array.slice.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var html = __webpack_require__(/*! ./_html */ "./node_modules/core-js/modules/_html.js");
+var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
+var toAbsoluteIndex = __webpack_require__(/*! ./_to-absolute-index */ "./node_modules/core-js/modules/_to-absolute-index.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var arraySlice = [].slice;
+
+// fallback for not array-like ES3 strings and DOM objects
+$export($export.P + $export.F * __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
+  if (html) arraySlice.call(html);
+}), 'Array', {
+  slice: function slice(begin, end) {
+    var len = toLength(this.length);
+    var klass = cof(this);
+    end = end === undefined ? len : end;
+    if (klass == 'Array') return arraySlice.call(this, begin, end);
+    var start = toAbsoluteIndex(begin, len);
+    var upTo = toAbsoluteIndex(end, len);
+    var size = toLength(upTo - start);
+    var cloned = new Array(size);
+    var i = 0;
+    for (; i < size; i++) cloned[i] = klass == 'String'
+      ? this.charAt(start + i)
+      : this[start + i];
+    return cloned;
+  }
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es6.array.sort.js":
 /*!********************************************************!*\
   !*** ./node_modules/core-js/modules/es6.array.sort.js ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -4972,10 +5508,9 @@ $export($export.P + $export.F * (fails(function () {
 /*!***********************************************************!*\
   !*** ./node_modules/core-js/modules/es6.function.name.js ***!
   \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
-var dP = __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js").f;
+var dP = (__webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js").f);
 var FProto = Function.prototype;
 var nameRE = /^\s*function ([^ (]*)/;
 var NAME = 'name';
@@ -4995,22 +5530,125 @@ NAME in FProto || __webpack_require__(/*! ./_descriptors */ "./node_modules/core
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es6.regexp.constructor.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.constructor.js ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
+var inheritIfRequired = __webpack_require__(/*! ./_inherit-if-required */ "./node_modules/core-js/modules/_inherit-if-required.js");
+var dP = (__webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js").f);
+var gOPN = (__webpack_require__(/*! ./_object-gopn */ "./node_modules/core-js/modules/_object-gopn.js").f);
+var isRegExp = __webpack_require__(/*! ./_is-regexp */ "./node_modules/core-js/modules/_is-regexp.js");
+var $flags = __webpack_require__(/*! ./_flags */ "./node_modules/core-js/modules/_flags.js");
+var $RegExp = global.RegExp;
+var Base = $RegExp;
+var proto = $RegExp.prototype;
+var re1 = /a/g;
+var re2 = /a/g;
+// "new" creates a new object, old webkit buggy here
+var CORRECT_NEW = new $RegExp(re1) !== re1;
+
+if (__webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") && (!CORRECT_NEW || __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
+  re2[__webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('match')] = false;
+  // RegExp constructor can alter flags and IsRegExp works correct with @@match
+  return $RegExp(re1) != re1 || $RegExp(re2) == re2 || $RegExp(re1, 'i') != '/a/i';
+}))) {
+  $RegExp = function RegExp(p, f) {
+    var tiRE = this instanceof $RegExp;
+    var piRE = isRegExp(p);
+    var fiU = f === undefined;
+    return !tiRE && piRE && p.constructor === $RegExp && fiU ? p
+      : inheritIfRequired(CORRECT_NEW
+        ? new Base(piRE && !fiU ? p.source : p, f)
+        : Base((piRE = p instanceof $RegExp) ? p.source : p, piRE && fiU ? $flags.call(p) : f)
+      , tiRE ? this : proto, $RegExp);
+  };
+  var proxy = function (key) {
+    key in $RegExp || dP($RegExp, key, {
+      configurable: true,
+      get: function () { return Base[key]; },
+      set: function (it) { Base[key] = it; }
+    });
+  };
+  for (var keys = gOPN(Base), i = 0; keys.length > i;) proxy(keys[i++]);
+  proto.constructor = $RegExp;
+  $RegExp.prototype = proto;
+  __webpack_require__(/*! ./_redefine */ "./node_modules/core-js/modules/_redefine.js")(global, 'RegExp', $RegExp);
+}
+
+__webpack_require__(/*! ./_set-species */ "./node_modules/core-js/modules/_set-species.js")('RegExp');
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.regexp.exec.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.exec.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var regexpExec = __webpack_require__(/*! ./_regexp-exec */ "./node_modules/core-js/modules/_regexp-exec.js");
+__webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js")({
+  target: 'RegExp',
+  proto: true,
+  forced: regexpExec !== /./.exec
+}, {
+  exec: regexpExec
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es6.regexp.match.js":
 /*!**********************************************************!*\
   !*** ./node_modules/core-js/modules/es6.regexp.match.js ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var advanceStringIndex = __webpack_require__(/*! ./_advance-string-index */ "./node_modules/core-js/modules/_advance-string-index.js");
+var regExpExec = __webpack_require__(/*! ./_regexp-exec-abstract */ "./node_modules/core-js/modules/_regexp-exec-abstract.js");
 
 // @@match logic
-__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('match', 1, function (defined, MATCH, $match) {
-  // 21.1.3.11 String.prototype.match(regexp)
-  return [function match(regexp) {
-    'use strict';
-    var O = defined(this);
-    var fn = regexp == undefined ? undefined : regexp[MATCH];
-    return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[MATCH](String(O));
-  }, $match];
+__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('match', 1, function (defined, MATCH, $match, maybeCallNative) {
+  return [
+    // `String.prototype.match` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.match
+    function match(regexp) {
+      var O = defined(this);
+      var fn = regexp == undefined ? undefined : regexp[MATCH];
+      return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[MATCH](String(O));
+    },
+    // `RegExp.prototype[@@match]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@match
+    function (regexp) {
+      var res = maybeCallNative($match, regexp, this);
+      if (res.done) return res.value;
+      var rx = anObject(regexp);
+      var S = String(this);
+      if (!rx.global) return regExpExec(rx, S);
+      var fullUnicode = rx.unicode;
+      rx.lastIndex = 0;
+      var A = [];
+      var n = 0;
+      var result;
+      while ((result = regExpExec(rx, S)) !== null) {
+        var matchStr = String(result[0]);
+        A[n] = matchStr;
+        if (matchStr === '') rx.lastIndex = advanceStringIndex(S, toLength(rx.lastIndex), fullUnicode);
+        n++;
+      }
+      return n === 0 ? null : A;
+    }
+  ];
 });
 
 
@@ -5020,20 +5658,126 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /*!************************************************************!*\
   !*** ./node_modules/core-js/modules/es6.regexp.replace.js ***!
   \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var toObject = __webpack_require__(/*! ./_to-object */ "./node_modules/core-js/modules/_to-object.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
+var advanceStringIndex = __webpack_require__(/*! ./_advance-string-index */ "./node_modules/core-js/modules/_advance-string-index.js");
+var regExpExec = __webpack_require__(/*! ./_regexp-exec-abstract */ "./node_modules/core-js/modules/_regexp-exec-abstract.js");
+var max = Math.max;
+var min = Math.min;
+var floor = Math.floor;
+var SUBSTITUTION_SYMBOLS = /\$([$&`']|\d\d?|<[^>]*>)/g;
+var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&`']|\d\d?)/g;
+
+var maybeToString = function (it) {
+  return it === undefined ? it : String(it);
+};
 
 // @@replace logic
-__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('replace', 2, function (defined, REPLACE, $replace) {
-  // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
-  return [function replace(searchValue, replaceValue) {
-    'use strict';
-    var O = defined(this);
-    var fn = searchValue == undefined ? undefined : searchValue[REPLACE];
-    return fn !== undefined
-      ? fn.call(searchValue, O, replaceValue)
-      : $replace.call(String(O), searchValue, replaceValue);
-  }, $replace];
+__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('replace', 2, function (defined, REPLACE, $replace, maybeCallNative) {
+  return [
+    // `String.prototype.replace` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
+    function replace(searchValue, replaceValue) {
+      var O = defined(this);
+      var fn = searchValue == undefined ? undefined : searchValue[REPLACE];
+      return fn !== undefined
+        ? fn.call(searchValue, O, replaceValue)
+        : $replace.call(String(O), searchValue, replaceValue);
+    },
+    // `RegExp.prototype[@@replace]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
+    function (regexp, replaceValue) {
+      var res = maybeCallNative($replace, regexp, this, replaceValue);
+      if (res.done) return res.value;
+
+      var rx = anObject(regexp);
+      var S = String(this);
+      var functionalReplace = typeof replaceValue === 'function';
+      if (!functionalReplace) replaceValue = String(replaceValue);
+      var global = rx.global;
+      if (global) {
+        var fullUnicode = rx.unicode;
+        rx.lastIndex = 0;
+      }
+      var results = [];
+      while (true) {
+        var result = regExpExec(rx, S);
+        if (result === null) break;
+        results.push(result);
+        if (!global) break;
+        var matchStr = String(result[0]);
+        if (matchStr === '') rx.lastIndex = advanceStringIndex(S, toLength(rx.lastIndex), fullUnicode);
+      }
+      var accumulatedResult = '';
+      var nextSourcePosition = 0;
+      for (var i = 0; i < results.length; i++) {
+        result = results[i];
+        var matched = String(result[0]);
+        var position = max(min(toInteger(result.index), S.length), 0);
+        var captures = [];
+        // NOTE: This is equivalent to
+        //   captures = result.slice(1).map(maybeToString)
+        // but for some reason `nativeSlice.call(result, 1, result.length)` (called in
+        // the slice polyfill when slicing native arrays) "doesn't work" in safari 9 and
+        // causes a crash (https://pastebin.com/N21QzeQA) when trying to debug it.
+        for (var j = 1; j < result.length; j++) captures.push(maybeToString(result[j]));
+        var namedCaptures = result.groups;
+        if (functionalReplace) {
+          var replacerArgs = [matched].concat(captures, position, S);
+          if (namedCaptures !== undefined) replacerArgs.push(namedCaptures);
+          var replacement = String(replaceValue.apply(undefined, replacerArgs));
+        } else {
+          replacement = getSubstitution(matched, S, position, captures, namedCaptures, replaceValue);
+        }
+        if (position >= nextSourcePosition) {
+          accumulatedResult += S.slice(nextSourcePosition, position) + replacement;
+          nextSourcePosition = position + matched.length;
+        }
+      }
+      return accumulatedResult + S.slice(nextSourcePosition);
+    }
+  ];
+
+    // https://tc39.github.io/ecma262/#sec-getsubstitution
+  function getSubstitution(matched, str, position, captures, namedCaptures, replacement) {
+    var tailPos = position + matched.length;
+    var m = captures.length;
+    var symbols = SUBSTITUTION_SYMBOLS_NO_NAMED;
+    if (namedCaptures !== undefined) {
+      namedCaptures = toObject(namedCaptures);
+      symbols = SUBSTITUTION_SYMBOLS;
+    }
+    return $replace.call(replacement, symbols, function (match, ch) {
+      var capture;
+      switch (ch.charAt(0)) {
+        case '$': return '$';
+        case '&': return matched;
+        case '`': return str.slice(0, position);
+        case "'": return str.slice(tailPos);
+        case '<':
+          capture = namedCaptures[ch.slice(1, -1)];
+          break;
+        default: // \d\d?
+          var n = +ch;
+          if (n === 0) return match;
+          if (n > m) {
+            var f = floor(n / 10);
+            if (f === 0) return match;
+            if (f <= m) return captures[f - 1] === undefined ? ch.charAt(1) : captures[f - 1] + ch.charAt(1);
+            return match;
+          }
+          capture = captures[n - 1];
+      }
+      return capture === undefined ? '' : capture;
+    });
+  }
 });
 
 
@@ -5043,18 +5787,32 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
 /*!**********************************************************!*\
   !*** ./node_modules/core-js/modules/es6.regexp.split.js ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isRegExp = __webpack_require__(/*! ./_is-regexp */ "./node_modules/core-js/modules/_is-regexp.js");
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var speciesConstructor = __webpack_require__(/*! ./_species-constructor */ "./node_modules/core-js/modules/_species-constructor.js");
+var advanceStringIndex = __webpack_require__(/*! ./_advance-string-index */ "./node_modules/core-js/modules/_advance-string-index.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var callRegExpExec = __webpack_require__(/*! ./_regexp-exec-abstract */ "./node_modules/core-js/modules/_regexp-exec-abstract.js");
+var regexpExec = __webpack_require__(/*! ./_regexp-exec */ "./node_modules/core-js/modules/_regexp-exec.js");
+var fails = __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js");
+var $min = Math.min;
+var $push = [].push;
+var $SPLIT = 'split';
+var LENGTH = 'length';
+var LAST_INDEX = 'lastIndex';
+var MAX_UINT32 = 0xffffffff;
+
+// babel-minify transpiles RegExp('x', 'y') -> /x/y and it causes SyntaxError
+var SUPPORTS_Y = !fails(function () { RegExp(MAX_UINT32, 'y'); });
 
 // @@split logic
-__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('split', 2, function (defined, SPLIT, $split) {
-  'use strict';
-  var isRegExp = __webpack_require__(/*! ./_is-regexp */ "./node_modules/core-js/modules/_is-regexp.js");
-  var _split = $split;
-  var $push = [].push;
-  var $SPLIT = 'split';
-  var LENGTH = 'length';
-  var LAST_INDEX = 'lastIndex';
+__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('split', 2, function (defined, SPLIT, $split, maybeCallNative) {
+  var internalSplit;
   if (
     'abbc'[$SPLIT](/(b)*/)[1] == 'c' ||
     'test'[$SPLIT](/(?:)/, -1)[LENGTH] != 4 ||
@@ -5063,35 +5821,26 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
     '.'[$SPLIT](/()()/)[LENGTH] > 1 ||
     ''[$SPLIT](/.?/)[LENGTH]
   ) {
-    var NPCG = /()??/.exec('')[1] === undefined; // nonparticipating capturing group
     // based on es5-shim implementation, need to rework it
-    $split = function (separator, limit) {
+    internalSplit = function (separator, limit) {
       var string = String(this);
       if (separator === undefined && limit === 0) return [];
       // If `separator` is not a regex, use native split
-      if (!isRegExp(separator)) return _split.call(string, separator, limit);
+      if (!isRegExp(separator)) return $split.call(string, separator, limit);
       var output = [];
       var flags = (separator.ignoreCase ? 'i' : '') +
                   (separator.multiline ? 'm' : '') +
                   (separator.unicode ? 'u' : '') +
                   (separator.sticky ? 'y' : '');
       var lastLastIndex = 0;
-      var splitLimit = limit === undefined ? 4294967295 : limit >>> 0;
+      var splitLimit = limit === undefined ? MAX_UINT32 : limit >>> 0;
       // Make `global` and avoid `lastIndex` issues by working with a copy
       var separatorCopy = new RegExp(separator.source, flags + 'g');
-      var separator2, match, lastIndex, lastLength, i;
-      // Doesn't need flags gy, but they don't hurt
-      if (!NPCG) separator2 = new RegExp('^' + separatorCopy.source + '$(?!\\s)', flags);
-      while (match = separatorCopy.exec(string)) {
-        // `separatorCopy.lastIndex` is not reliable cross-browser
-        lastIndex = match.index + match[0][LENGTH];
+      var match, lastIndex, lastLength;
+      while (match = regexpExec.call(separatorCopy, string)) {
+        lastIndex = separatorCopy[LAST_INDEX];
         if (lastIndex > lastLastIndex) {
           output.push(string.slice(lastLastIndex, match.index));
-          // Fix browsers whose `exec` methods don't consistently return `undefined` for NPCG
-          // eslint-disable-next-line no-loop-func
-          if (!NPCG && match[LENGTH] > 1) match[0].replace(separator2, function () {
-            for (i = 1; i < arguments[LENGTH] - 2; i++) if (arguments[i] === undefined) match[i] = undefined;
-          });
           if (match[LENGTH] > 1 && match.index < string[LENGTH]) $push.apply(output, match.slice(1));
           lastLength = match[0][LENGTH];
           lastLastIndex = lastIndex;
@@ -5106,30 +5855,75 @@ __webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re
     };
   // Chakra, V8
   } else if ('0'[$SPLIT](undefined, 0)[LENGTH]) {
-    $split = function (separator, limit) {
-      return separator === undefined && limit === 0 ? [] : _split.call(this, separator, limit);
+    internalSplit = function (separator, limit) {
+      return separator === undefined && limit === 0 ? [] : $split.call(this, separator, limit);
     };
+  } else {
+    internalSplit = $split;
   }
-  // 21.1.3.17 String.prototype.split(separator, limit)
-  return [function split(separator, limit) {
-    var O = defined(this);
-    var fn = separator == undefined ? undefined : separator[SPLIT];
-    return fn !== undefined ? fn.call(separator, O, limit) : $split.call(String(O), separator, limit);
-  }, $split];
+
+  return [
+    // `String.prototype.split` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.split
+    function split(separator, limit) {
+      var O = defined(this);
+      var splitter = separator == undefined ? undefined : separator[SPLIT];
+      return splitter !== undefined
+        ? splitter.call(separator, O, limit)
+        : internalSplit.call(String(O), separator, limit);
+    },
+    // `RegExp.prototype[@@split]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@split
+    //
+    // NOTE: This cannot be properly polyfilled in engines that don't support
+    // the 'y' flag.
+    function (regexp, limit) {
+      var res = maybeCallNative(internalSplit, regexp, this, limit, internalSplit !== $split);
+      if (res.done) return res.value;
+
+      var rx = anObject(regexp);
+      var S = String(this);
+      var C = speciesConstructor(rx, RegExp);
+
+      var unicodeMatching = rx.unicode;
+      var flags = (rx.ignoreCase ? 'i' : '') +
+                  (rx.multiline ? 'm' : '') +
+                  (rx.unicode ? 'u' : '') +
+                  (SUPPORTS_Y ? 'y' : 'g');
+
+      // ^(? + rx + ) is needed, in combination with some S slicing, to
+      // simulate the 'y' flag.
+      var splitter = new C(SUPPORTS_Y ? rx : '^(?:' + rx.source + ')', flags);
+      var lim = limit === undefined ? MAX_UINT32 : limit >>> 0;
+      if (lim === 0) return [];
+      if (S.length === 0) return callRegExpExec(splitter, S) === null ? [S] : [];
+      var p = 0;
+      var q = 0;
+      var A = [];
+      while (q < S.length) {
+        splitter.lastIndex = SUPPORTS_Y ? q : 0;
+        var z = callRegExpExec(splitter, SUPPORTS_Y ? S : S.slice(q));
+        var e;
+        if (
+          z === null ||
+          (e = $min(toLength(splitter.lastIndex + (SUPPORTS_Y ? 0 : q)), S.length)) === p
+        ) {
+          q = advanceStringIndex(S, q, unicodeMatching);
+        } else {
+          A.push(S.slice(p, q));
+          if (A.length === lim) return A;
+          for (var i = 1; i <= z.length - 1; i++) {
+            A.push(z[i]);
+            if (A.length === lim) return A;
+          }
+          q = p = e;
+        }
+      }
+      A.push(S.slice(p));
+      return A;
+    }
+  ];
 });
-
-
-/***/ }),
-
-/***/ 0:
-/*!*******************************************************************************************************************************!*\
-  !*** multi nested_admin/static/nested_admin/src/nested_admin.scss nested_admin/static/nested_admin/src/nested-admin/index.js ***!
-  \*******************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(/*! nested_admin/static/nested_admin/src/nested_admin.scss */"./nested_admin/static/nested_admin/src/nested_admin.scss");
-module.exports = __webpack_require__(/*! nested_admin/static/nested_admin/src/nested-admin/index.js */"./nested_admin/static/nested_admin/src/nested-admin/index.js");
 
 
 /***/ }),
@@ -5138,10 +5932,10 @@ module.exports = __webpack_require__(/*! nested_admin/static/nested_admin/src/ne
 /*!****************************!*\
   !*** external "grappelli" ***!
   \****************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
-(function() { module.exports = window["grappelli"]; }());
+"use strict";
+module.exports = window["grappelli"];
 
 /***/ }),
 
@@ -5149,12 +5943,148 @@ module.exports = __webpack_require__(/*! nested_admin/static/nested_admin/src/ne
 /*!**********************!*\
   !*** external "grp" ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module) {
 
-(function() { module.exports = window["grp"]; }());
+"use strict";
+module.exports = window["grp"];
 
 /***/ })
 
-/******/ });
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+!function() {
+"use strict";
+var __webpack_exports__ = {};
+/*!****************************************************************!*\
+  !*** ./nested_admin/static/nested_admin/src/nested_admin.scss ***!
+  \****************************************************************/
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+}();
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+!function() {
+"use strict";
+/*!********************************************************************!*\
+  !*** ./nested_admin/static/nested_admin/src/nested-admin/index.js ***!
+  \********************************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es6.array.filter.js */ "./node_modules/core-js/modules/es6.array.filter.js");
+/* harmony import */ var core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_filter_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es6.array.find.js */ "./node_modules/core-js/modules/es6.array.find.js");
+/* harmony import */ var core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es6_array_find_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./jquery.shim.js */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.shim.js");
+/* harmony import */ var grappelli__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! grappelli */ "grappelli");
+/* harmony import */ var grappelli__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(grappelli__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./nested_admin/static/nested_admin/src/nested-admin/utils.js");
+/* harmony import */ var _jquery_djangoformset__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./jquery.djangoformset */ "./nested_admin/static/nested_admin/src/nested-admin/jquery.djangoformset.js");
+
+
+
+
+
+
+_utils__WEBPACK_IMPORTED_MODULE_4__["default"].DjangoFormset = _jquery_djangoformset__WEBPACK_IMPORTED_MODULE_5__["default"];
+(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).ready(function () {
+  // Remove the border on any empty fieldsets
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('fieldset.grp-module, fieldset.module').filter(function (i, element) {
+    return element.childNodes.length == 0;
+  }).css('border-width', '0'); // Set predelete class on any form elements with the DELETE input checked.
+  // These can occur on forms rendered after a validation error.
+
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('grp-predelete');
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
+    var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
+    var $rows = $items.children('.djn-tbody');
+    $rows.removeClass('row1 row2');
+    $rows.each(function (i, row) {
+      var n = 1 + i % 2;
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(row).addClass('row' + n);
+    });
+  }); // Register the nested formset on top level djnesting-stacked elements.
+  // It will handle recursing down the nested inlines.
+
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.djn-group-root').each(function (i, rootGroup) {
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(rootGroup).djangoFormset();
+  });
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('form').on('submit.djnesting', function (e) {
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.djn-group').each(function () {
+      _utils__WEBPACK_IMPORTED_MODULE_4__["default"].updatePositions((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this).djangoFormsetPrefix());
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).trigger('djnesting:mutate', [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this).djangoFormset().$inline]);
+    });
+  });
+});
+/* harmony default export */ __webpack_exports__["default"] = (_utils__WEBPACK_IMPORTED_MODULE_4__["default"]);
+}();
+window.DJNesting = __webpack_exports__;
+/******/ })()
+;
 //# sourceMappingURL=nested_admin.js.map
