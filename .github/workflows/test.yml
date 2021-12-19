@@ -1,0 +1,143 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        django-version: ["2.2", "3.2", "4.0"]
+        grappelli: ["0"]
+        exclude:
+          - python-version: "3.7"
+            django-version: "4.0"
+          - python-version: "3.10"
+            django-version: "2.2"
+          # Exclude some version combos that don't need to be tested (since
+          # the combination of python and django versions is unlikely to
+          # be germane to django-nested-admin)
+          - python-version: "3.8"
+            django-version: "3.2"
+          - python-version: "3.9"
+            django-version: "4.0"
+        include:
+          - grappelli: "0"
+            name-suffix: ""
+          - grappelli: "1"
+            name-suffix: " + grappelli"
+            python-version: "3.7"
+            django-version: "2.2"
+          - grappelli: "1"
+            name-suffix: " + grappelli"
+            python-version: "3.10"
+            django-version: "3.2"
+
+    runs-on: ubuntu-latest
+    name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.name-suffix }}
+
+    env:
+      DJANGO: ${{ matrix.django-version }}
+      GRAPPELLI: ${{ matrix.grappelli }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NODE_ENV: test
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Setup chromedriver
+      uses: nanasess/setup-chromedriver@v1.0.5
+
+    - name: Install tox
+      run: |
+       python3 -m pip install tox tox-gh-actions
+
+    - name: Cache instrumented static files
+      id: cache-test-dist
+      uses: actions/cache@v2
+      with:
+        path: nested_admin/tests/static
+        key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'frontend/**') }}
+
+    - name: Cache node_modules
+      id: cache-node_modules
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: node_modules-${{ hashFiles('package-lock.json') }}
+
+    - name: Setup nodejs 12
+      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+
+    - name: npm ci
+      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci || npm ci || npm ci
+
+    - name: Build instrumented static files
+      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      run: |
+        npm run build
+
+    - name: Run tests
+      run: |
+        tox -- -vvv --selenosis-driver=chrome-headless --numprocesses=4 --exitfirst || \
+        tox -- -vvv --selenosis-driver=chrome-headless
+      env:
+        PIXELMATCH_BIN: ${{ env.GITHUB_WORKSPACE }}/node_modules/.bin/pixelmatch
+
+    - name: Upload junit xml
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: junit-reports
+        path: reports/*.xml
+
+    - name: Upload python coverage
+      run: |
+        tox -e coverage-report
+        tox -e codecov
+      env:
+        CODECOV_NAME: ${{ github.workflow }}
+
+    - name: Upload js coverage
+      run: npm run report && npm run codecov
+      env:
+        CODECOV_NAME: ${{ github.workflow }}
+
+  report:
+    if: always()
+    needs: build
+    runs-on: ubuntu-latest
+    name: "Report Test Results"
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: junit-reports
+
+      - name: Publish tests report
+        uses: mikepenz/action-junit-report@5703ba1461f35871cde0208140d737d3e1eef38f
+        with:
+          report_paths: ./*.xml
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          require_tests: true
+          fail_on_failure: true
+          check_name: Test Report
+
+  success:
+    needs: report
+    runs-on: ubuntu-latest
+    name: Test Successful
+    steps:
+      - name: Success
+        run: echo Test Successful

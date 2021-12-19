@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 import json
+import six
 
 from django.conf import settings
-from django.utils.encoding import force_text
 from polymorphic.formsets import (
     BasePolymorphicInlineFormSet, BaseGenericPolymorphicInlineFormSet)
 from polymorphic.models import PolymorphicModelBase, PolymorphicModel
@@ -15,6 +15,11 @@ from .nested import (
     NestedModelAdmin,
     NestedInlineModelAdminMixin, NestedGenericInlineModelAdminMixin,
     NestedInlineAdminFormsetMixin, NestedInlineAdminFormset)
+
+if six.PY2:
+    from django.utils.encoding import force_text as force_str
+else:
+    from django.utils.encoding import force_str
 
 
 def get_base_polymorphic_models(child_model):
@@ -88,7 +93,7 @@ class NestedPolymorphicInlineAdminFormset(
                 'childTypes': [
                     {
                         'type': get_model_id(model),
-                        'name': force_text(model._meta.verbose_name),
+                        'name': force_str(model._meta.verbose_name),
                     } for model in self.formset.child_forms.keys()
                 ],
             })

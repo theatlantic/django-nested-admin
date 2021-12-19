@@ -2,8 +2,6 @@ import glob
 import os
 import tempfile
 
-import django
-
 import selenosis.settings
 import dj_database_url
 
@@ -20,12 +18,11 @@ DATABASES['default']['TEST'] = dict(DATABASES['default'])
 
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
 
-if django.VERSION > (2, 0):
-    MIGRATION_MODULES = {
-        'auth': None,
-        'contenttypes': None,
-        'sessions': None,
-    }
+MIGRATION_MODULES = {
+    'auth': None,
+    'contenttypes': None,
+    'sessions': None,
+}
 
 try:
     import grappelli  # noqa
@@ -33,16 +30,6 @@ except ImportError:
     INSTALLED_APPS = tuple([])
 else:
     INSTALLED_APPS = tuple(['grappelli'])
-
-polymorphic = None
-
-if django.VERSION < (3, 1):
-    try:
-        import polymorphic
-    except ImportError:
-        pass
-    else:
-        INSTALLED_APPS += ('polymorphic',)
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -65,6 +52,7 @@ TEMPLATES = [{
 }]
 
 INSTALLED_APPS += (
+    'polymorphic',
     'selenosis',
     'nested_admin.tests',
     'nested_admin',
@@ -83,10 +71,9 @@ for p in glob.glob(os.path.join(current_dir, '*', 'models.py')):
         os.path.basename(os.path.dirname(p))])
 
 
-if polymorphic is not None:
-    for p in glob.glob(os.path.join(current_dir, 'nested_polymorphic/*/models.py')):
-        INSTALLED_APPS += tuple(["nested_admin.tests.nested_polymorphic.%s" %
-            os.path.basename(os.path.dirname(p))])
+for p in glob.glob(os.path.join(current_dir, 'nested_polymorphic/*/models.py')):
+    INSTALLED_APPS += tuple(["nested_admin.tests.nested_polymorphic.%s" %
+        os.path.basename(os.path.dirname(p))])
 
 
 MIDDLEWARE = [
@@ -121,6 +108,7 @@ MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
+USE_TZ = True
 TEST_RUNNER = 'selenosis.DiscoverRunner'
 
 AWS_S3_REGION_NAME = "us-east-1"

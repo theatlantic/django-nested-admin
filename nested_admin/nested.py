@@ -47,13 +47,13 @@ class NestedAdminMixin(object):
         Returns a set of js files that, if present, ought to precede
         nested_admin.js in the media load order
         """
-        extra = '' if settings.DEBUG else '.min'
-
         return {
             'admin/js/core.js',
-            'admin/js/vendor/jquery/jquery%s.js' % extra,
+            'admin/js/vendor/jquery/jquery.js',
+            'admin/js/vendor/jquery/jquery.min.js',
             'admin/js/jquery.init.js',
-            'admin/js/prepopulate%s.js' % extra,
+            'admin/js/prepopulate.js',
+            'admin/js/prepopulate.min.js',
             'admin/js/SelectFilter2.js',
             'admin/js/autocomplete.js',
             'jquery.grp.autocomplete_fk.js',

@@ -17,3 +17,5 @@ node_modules
 /.nyc_output
 /coverage/
 /nested_admin/tests/static
+.coverage
+/reports/*.xml

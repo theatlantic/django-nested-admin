@@ -8,26 +8,10 @@ from polymorphic.utils import get_base_polymorphic_model
 
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from nested_admin.tests.utils import xpath_item, xpath_cls, is_sequence, is_integer, is_str
-
-try:
-    from polymorphic.models import PolymorphicModel
-except:
-    # Temporary until django-polymorphic supports django 3.1
-    if django.VERSION < (3, 1):
-        raise
-    else:
-        class PolymorphicModel(object):
-            pass
+from polymorphic.models import PolymorphicModel
 
 
 class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        if django.VERSION >= (3, 1):
-            raise SkipTest(
-                'django-polymorphic not yet compatible with Django 3.1')
-        super(BaseNestedPolymorphicTestCase, cls).setUpClass()
 
     def get_inline_model_names(self):
         return self.selenium.execute_script("""
