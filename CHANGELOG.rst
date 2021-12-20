@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**3.4.0 (Dec 20, 2021)**
+
+* Added support for Django 3.2 and 4.0
+* Dropped official support for Python 2.7 and Django 1.11. The 3.4.0 release
+  will still work with python 2.7 and Django 1.11, but it will be the last
+  release that does so.
+
 **3.3.3 (Dec 17, 2020)**
 
 * Fixed: polymorphic inlines don't work if nested inside non-polymorphic
