@@ -66,11 +66,13 @@
         {% endfor %}
         {% endwith %}
     </div>
+    % if inline_admin_formset.has_add_permission %}
     <div class="djn-module djn-add-item add-item add-row">
         <a href="javascript://" class="add-handler djn-add-handler {{ inline_admin_formset.handler_classes|join:" " }}">
             {% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}
         </a>
     </div>
+    {% endif %}
     {% ifinlineclasses %}</fieldset>{% endifinlineclasses %}
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}
