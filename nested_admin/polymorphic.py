@@ -32,14 +32,52 @@ def get_base_polymorphic_models(child_model):
     return models
 
 
-def get_child_polymorphic_models(model):
-    models = []
-    for m in model.__subclasses__():
-        if (isinstance(model, PolymorphicModelBase)
-                and model is not PolymorphicModel
-                and not model._meta.abstract):
-            models.append(model)
-    return models
+def get_all_subclasses(python_class):
+    """
+    Helper function to get all the subclasses of a class.
+
+    Taken from: https://gist.github.com/pzrq/460424c9382dd50d02b8
+    :param python_class: Any Python class that implements __subclasses__()
+    """
+    python_class.__subclasses__()
+    subclasses = set()
+    check_these = [python_class]
+    while check_these:
+        parent = check_these.pop()
+        for child in parent.__subclasses__():
+            if child not in subclasses:
+                subclasses.add(child)
+                check_these.append(child)
+    return subclasses
+
+
+def get_child_concrete_polymorphic_models(base_model):
+    """
+    Helper function to get all concrete models
+    that are subclasses of base_model
+    in sorted order by name.
+
+    Taken and modified from: https://gist.github.com/pzrq/460424c9382dd50d02b8
+
+    :param base_model: A Django models.Model instance.
+    """
+    found = get_all_subclasses(base_model)
+    def filter_func(model):
+        meta = getattr(model, '_meta', '')
+        if getattr(meta, 'abstract', True):
+            # Skip meta classes
+            return False
+        if not isinstance(model, PolymorphicModelBase):
+            return False
+        if model is PolymorphicModel:
+            return False
+        if '_Deferred_' in model.__name__:
+            # See deferred_class_factory() in django.db.models.query_utils
+            # Catches when you do .only('attr') on a queryset
+            return False
+        return True
+    subclasses = list(filter(filter_func, found))
+    return subclasses
 
 
 def get_polymorphic_related_models(model):
@@ -79,7 +117,7 @@ class NestedPolymorphicInlineAdminFormset(
             formset_fk_model = ''
             parent_models = []
         compatible_parents = get_compatible_parents(self.formset.model)
-        sub_models = get_child_polymorphic_models(self.formset.model)
+        sub_models = get_child_concrete_polymorphic_models(self.formset.model)
         data['nestedOptions'].update({
             'parentModel': get_model_id(formset_fk_model),
             'childModels': [get_model_id(m) for m in sub_models],
