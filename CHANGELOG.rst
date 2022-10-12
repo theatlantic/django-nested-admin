@@ -1,6 +1,11 @@
 Changelog
 =========
 
+**4.0.0 (unreleased)**
+
+* Remove python 2.x compatibility, drop support for EOL Django versions
+  (all versions before 3.2)
+
 **3.4.0 (Dec 20, 2021)**
 
 * Added support for Django 3.2 and 4.0
