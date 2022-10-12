@@ -1,7 +1,6 @@
 import django
 from django.db import models
 
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 try:
     from polymorphic.models import PolymorphicModel
@@ -71,7 +70,6 @@ class BlockRadioButton(models.Model):
         return self.label
 
 
-@python_2_unicode_compatible
 class Questionnaire(models.Model):
     title = models.CharField(max_length=255)
 

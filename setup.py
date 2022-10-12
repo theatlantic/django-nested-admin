@@ -14,7 +14,7 @@ except ImportError:
 # (which we cannot do because it has extensive dependencies).
 init_file = os.path.join(os.path.dirname(__file__),
                          'nested_admin', '__init__.py')
-with open(init_file, 'r') as f:
+with open(init_file) as f:
     for line in f:
         m = re.search(r'''^__version__ = (['"])(.+?)\1$''', line)
         if m is not None:
@@ -27,9 +27,9 @@ with open(init_file, 'r') as f:
 setup(
     name='django-nested-admin',
     version=version,
+    python_requires=">=3.6",
     install_requires=[
         'python-monkey-business>=1.0.0',
-        'six',
     ],
     description="Django admin classes that allow for nested inlines",
     author='The Atlantic',
@@ -44,18 +44,14 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.2',
         'Framework :: Django :: 4.0',

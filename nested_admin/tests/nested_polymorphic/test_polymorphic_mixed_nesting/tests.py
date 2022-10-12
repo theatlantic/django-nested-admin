@@ -25,7 +25,7 @@ class PolymorphicMixedNestingTestCase(BaseNestedPolymorphicTestCase):
     def setUpClass(cls):
         if not has_polymorphic:
             raise SkipTest('django-polymorphic unavailable')
-        super(PolymorphicMixedNestingTestCase, cls).setUpClass()
+        super().setUpClass()
 
     def test_polymorphic_child_formset_rendering(self):
         """The admin should only display one child inline for polymorphic instances"""

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 import os
 import pkg_resources
@@ -20,9 +19,9 @@ if settings.configured:
     django.setup()
 
 
-project = u'django-nested-admin'
-copyright = u'%d, The Atlantic' % datetime.now().year
-author = u'The Atlantic'
+project = 'django-nested-admin'
+copyright = '%d, The Atlantic' % datetime.now().year
+author = 'The Atlantic'
 
 release = pkg_resources.get_distribution(project).version
 version = '.'.join(release.split('.')[:2])
@@ -44,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 language = None
 
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 add_function_parentheses = True
 add_module_names = False
 pygments_style = 'trac'
@@ -59,17 +58,17 @@ htmlhelp_basename = 'django-nested-admindoc'
 
 latex_elements = {}
 latex_documents = [
-    (master_doc, 'django-nested-admin.tex', u'django-nested-admin Documentation',
-     u'The Atlantic', 'manual'),
+    (master_doc, 'django-nested-admin.tex', 'django-nested-admin Documentation',
+     'The Atlantic', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'django-nested-admin', u'django-nested-admin Documentation',
+    (master_doc, 'django-nested-admin', 'django-nested-admin Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-    (master_doc, 'django-nested-admin', u'django-nested-admin Documentation',
+    (master_doc, 'django-nested-admin', 'django-nested-admin Documentation',
      author, 'django-nested-admin', 'One line description of project.',
      'Miscellaneous'),
 ]

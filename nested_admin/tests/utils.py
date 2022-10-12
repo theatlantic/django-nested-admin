@@ -1,11 +1,5 @@
 from collections import namedtuple
-try:
-    from collections.abc import Sequence
-except ImportError:
-    from collections import Sequence
-
-import six
-from nested_admin.tests.compat import python_2_unicode_compatible
+from collections.abc import Sequence
 
 
 def xpath_cls(classname):
@@ -14,7 +8,7 @@ def xpath_cls(classname):
 
 def xpath_item(model_name=None):
     xpath_item_predicate = 'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
-    expr = "%s and %s" % (xpath_cls('djn-item'), xpath_item_predicate)
+    expr = "{} and {}".format(xpath_cls('djn-item'), xpath_item_predicate)
     if model_name:
         expr += (' and (@data-inline-model="%s" or %s)'
             % (model_name, xpath_cls("djn-dynamic-form-%s" % model_name)))
@@ -26,11 +20,11 @@ def is_sequence(o):
 
 
 def is_integer(o):
-    return isinstance(o, six.integer_types)
+    return isinstance(o, int)
 
 
 def is_str(o):
-    return isinstance(o, six.string_types)
+    return isinstance(o, str)
 
 
 Position = namedtuple('Position', ['x', 'y'])
@@ -51,8 +45,7 @@ class Rect(namedtuple('Rect', [
     h = property(lambda self: self.height)
 
 
-@python_2_unicode_compatible
-class ElementRect(object):
+class ElementRect:
 
     def __init__(self, element, aliases=None):
         default_aliases = {
@@ -67,7 +60,7 @@ class ElementRect(object):
         }
         aliases = dict(default_aliases, **(aliases or {}))
         self.alias_map = {}
-        for k, v in six.iteritems(aliases):
+        for k, v in aliases.items():
             self.alias_map.setdefault(v, [])
             self.alias_map[v].append(k)
 
@@ -95,7 +88,7 @@ class ElementRect(object):
             })(arguments[0], window, document.documentElement)
             """, self._element))
         self.rect = Rect(**rect_dict)
-        for k, v in six.iteritems(rect_dict):
+        for k, v in rect_dict.items():
             setattr(self, k, v)
             for alias in (self.alias_map.get(k) or []):
                 setattr(self, alias, v)

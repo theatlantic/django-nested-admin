@@ -8,7 +8,7 @@ from .models import (
     NestedStackedRoot, NestedStackedChild, NestedTabularRoot, NestedTabularChild)
 
 
-class InlineMixin(object):
+class InlineMixin:
     extra = 0
     if 'grappelli' in settings.INSTALLED_APPS:
         sortable_field_name = "position"

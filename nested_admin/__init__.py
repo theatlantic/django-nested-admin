@@ -96,15 +96,13 @@ if admin_module:
 
 def descend_form(form):
     for formset in getattr(form, 'nested_formsets', None) or []:
-        for child_formset, child_form in descend_formset(formset):
-            yield (child_formset, child_form)
+        yield from descend_formset(formset)
 
 
 def descend_formset(formset):
     for form in formset:
         yield (formset, form)
-        for child_formset, child_form in descend_form(form):
-            yield child_formset, child_form
+        yield from descend_form(form)
 
 
 def patch_delete_children_empty_permitted(formsets):

@@ -1,16 +1,13 @@
 from django.db import models
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Root(models.Model):
     slug = models.SlugField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return "%s(%s)" % (type(self).__name__, self.slug)
+        return "{}({})".format(type(self).__name__, self.slug)
 
 
-@python_2_unicode_compatible
 class A(models.Model):
     root = models.ForeignKey(Root, related_name="a_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
@@ -30,16 +27,16 @@ class A(models.Model):
 
     def save(self, **kwargs):
         self.a_type = self.default_a_type
-        super(A, self).save(**kwargs)
+        super().save(**kwargs)
 
 
 class AManager(models.Manager):
     def __init__(self, a_type):
         self.a_type = a_type
-        super(AManager, self).__init__()
+        super().__init__()
 
     def get_queryset(self):
-        return super(AManager, self).get_queryset().filter(a_type=self.a_type)
+        return super().get_queryset().filter(a_type=self.a_type)
 
 
 class AX(A):
@@ -58,7 +55,6 @@ class AY(A):
         proxy = True
 
 
-@python_2_unicode_compatible
 class B(models.Model):
     a = models.ForeignKey(A, related_name="b_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
@@ -78,16 +74,16 @@ class B(models.Model):
 
     def save(self, **kwargs):
         self.b_type = self.default_b_type
-        super(B, self).save(**kwargs)
+        super().save(**kwargs)
 
 
 class BManager(models.Manager):
     def __init__(self, b_type):
         self.b_type = b_type
-        super(BManager, self).__init__()
+        super().__init__()
 
     def get_queryset(self):
-        return super(BManager, self).get_queryset().filter(b_type=self.b_type)
+        return super().get_queryset().filter(b_type=self.b_type)
 
 
 class BX(B):

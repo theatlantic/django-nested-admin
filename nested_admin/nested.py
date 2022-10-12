@@ -1,15 +1,12 @@
 import json
 
-import django
 from django.conf import settings
 from django.contrib.admin import helpers
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from django.urls import reverse
 from django.template.defaultfilters import capfirst
-import six
 from django.utils.functional import lazy
-from six.moves import zip
 from django.utils.translation import gettext
 from django.contrib.admin.options import ModelAdmin, InlineModelAdmin
 
@@ -27,20 +24,16 @@ __all__ = (
     'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin')
 
 
-def get_method_function(fn):
-    return fn.im_func if six.PY2 else fn
-
-
 def get_model_id(model_cls):
     opts = model_cls._meta
-    return "%s-%s" % (opts.app_label, opts.model_name)
+    return "{}-{}".format(opts.app_label, opts.model_name)
 
 
 lazy_reverse = lazy(reverse, str)
 server_data_js_url = lazy_reverse('nesting_server_data')
 
 
-class NestedAdminMixin(object):
+class NestedAdminMixin:
     @property
     def _djn_js_deps(self):
         """
@@ -86,15 +79,14 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
         self.has_delete_permission = kwargs.pop('has_delete_permission', True)
         self.has_view_permission = kwargs.pop('has_view_permission', True)
 
-        if django.VERSION > (2, 1):
-            kwargs.update({
-                'has_add_permission': self.has_add_permission,
-                'has_change_permission': self.has_change_permission,
-                'has_delete_permission': self.has_delete_permission,
-                'has_view_permission': self.has_view_permission,
-            })
+        kwargs.update({
+            'has_add_permission': self.has_add_permission,
+            'has_change_permission': self.has_change_permission,
+            'has_delete_permission': self.has_delete_permission,
+            'has_view_permission': self.has_view_permission,
+        })
 
-        super(NestedInlineAdminFormsetMixin, self).__init__(inline, *args, **kwargs)
+        super().__init__(inline, *args, **kwargs)
         self.request = request
         self.obj = obj
 
@@ -120,7 +112,7 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
                 inline_admin_form.prepopulated_fields += nested_form.prepopulated_fields
 
     def __iter__(self):
-        for inline_admin_form in super(NestedInlineAdminFormsetMixin, self).__iter__():
+        for inline_admin_form in super().__iter__():
             self._set_inline_admin_form_nested_attrs(inline_admin_form)
             yield inline_admin_form
 
@@ -153,7 +145,7 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
         return "-".join([self.opts.opts.app_label, self.opts.opts.model_name])
 
     def inline_formset_data(self):
-        super_cls = super(NestedInlineAdminFormsetMixin, self)
+        super_cls = super()
 
         # Django 1.8 conditional
         if hasattr(super_cls, 'inline_formset_data'):
@@ -174,7 +166,7 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
         formset_fk_model = ''
         if getattr(self.formset, 'fk', None):
             formset_fk_opts = self.formset.fk.remote_field.model._meta
-            formset_fk_model = "%s-%s" % (
+            formset_fk_model = "{}-{}".format(
                 formset_fk_opts.app_label, formset_fk_opts.model_name)
 
         data.update({
@@ -206,34 +198,7 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
 
 
 class NestedBaseInlineAdminFormSet(helpers.InlineAdminFormSet):
-    """
-    Normalize __iter__ so that it backports has_add_permission functionality
-    to older django versions
-    """
-    if django.VERSION < (2, 1):
-        def __iter__(self):
-            if self.has_change_permission:
-                readonly_fields_for_editing = self.readonly_fields
-            else:
-                readonly_fields_for_editing = self.readonly_fields + flatten_fieldsets(self.fieldsets)
-
-            for form, original in zip(self.formset.initial_forms, self.formset.get_queryset()):
-                view_on_site_url = self.opts.get_view_on_site_url(original)
-                yield helpers.InlineAdminForm(
-                    self.formset, form, self.fieldsets, self.prepopulated_fields,
-                    original, readonly_fields_for_editing, model_admin=self.opts,
-                    view_on_site_url=view_on_site_url)
-            for form in self.formset.extra_forms:
-                yield helpers.InlineAdminForm(
-                    self.formset, form, self.fieldsets, self.prepopulated_fields,
-                    None, self.readonly_fields, model_admin=self.opts,
-                )
-            if self.has_add_permission:
-                yield helpers.InlineAdminForm(
-                    self.formset, self.formset.empty_form,
-                    self.fieldsets, self.prepopulated_fields, None,
-                    self.readonly_fields, model_admin=self.opts,
-                )
+    pass
 
 
 class NestedInlineAdminFormset(NestedInlineAdminFormsetMixin, NestedBaseInlineAdminFormSet):
@@ -246,7 +211,7 @@ class NestedModelAdminMixin(NestedAdminMixin):
 
     @property
     def media(self):
-        media = ensure_merge_safe_media(super(NestedModelAdminMixin, self).media)
+        media = ensure_merge_safe_media(super().media)
 
         min_ext = '' if getattr(settings, 'NESTED_ADMIN_DEBUG', False) else '.min'
         nested_admin_js_file = 'nested_admin/dist/nested_admin%s.js' % min_ext
@@ -307,7 +272,7 @@ class NestedModelAdminMixin(NestedAdminMixin):
 
     def _create_formsets(self, request, obj, change):
         orig_formsets, orig_inline_instances = (
-            super(NestedModelAdminMixin, self)._create_formsets(
+            super()._create_formsets(
                 request, obj, change))
 
         formsets = []
@@ -363,10 +328,10 @@ class NestedModelAdminMixin(NestedAdminMixin):
                         is_empty_form = True
                     InlineFormSet = inline.get_formset(request, form_obj)
 
-                    prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
+                    prefix = '{}-{}'.format(form_prefix, InlineFormSet.get_default_prefix())
                     prefixes[prefix] = prefixes.get(prefix, 0) + 1
                     if prefixes[prefix] != 1:
-                        prefix = "%s-%s" % (prefix, prefixes[prefix])
+                        prefix = "{}-{}".format(prefix, prefixes[prefix])
 
                     # Check if we're dealing with a polymorphic instance, and if
                     # so, skip inlines for other child models
@@ -449,7 +414,7 @@ class NestedModelAdminMixin(NestedAdminMixin):
         return formsets, inline_instances
 
     def render_change_form(self, request, context, obj=None, *args, **kwargs):
-        response = super(NestedModelAdminMixin, self).render_change_form(
+        response = super().render_change_form(
             request, context, obj=obj, *args, **kwargs)
 
         has_editable_inline_admin_formsets = response.context_data.get(
@@ -481,7 +446,7 @@ class NestedModelAdminMixin(NestedAdminMixin):
         return response
 
 
-class NestedInlineModelAdminMixin(object):
+class NestedInlineModelAdminMixin:
 
     is_sortable = True
     sortable_field_name = None
@@ -504,18 +469,18 @@ class NestedInlineModelAdminMixin(object):
         if hasattr(self, 'sortable_options'):
             sortable_options.update(self.sortable_options)
         self.sortable_options = sortable_options
-        super(NestedInlineModelAdminMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     # Copy methods from ModelAdmin
-    get_inline_instances = get_method_function(ModelAdmin.get_inline_instances)
+    get_inline_instances = ModelAdmin.get_inline_instances
 
-    get_formsets_with_inlines = get_method_function(ModelAdmin.get_formsets_with_inlines)
+    get_formsets_with_inlines = ModelAdmin.get_formsets_with_inlines
 
     if hasattr(ModelAdmin, 'get_formsets'):
-        get_formsets = get_method_function(ModelAdmin.get_formsets)
+        get_formsets = ModelAdmin.get_formsets
 
     if hasattr(ModelAdmin, '_get_formsets'):
-        _get_formsets = get_method_function(ModelAdmin._get_formsets)
+        _get_formsets = ModelAdmin._get_formsets
 
     def get_formset(self, request, obj=None, **kwargs):
         FormSet = BaseFormSet = kwargs.pop('formset', self.formset)
@@ -525,7 +490,7 @@ class NestedInlineModelAdminMixin(object):
                 sortable_field_name = self.sortable_field_name
 
         kwargs['formset'] = FormSet
-        return super(NestedInlineModelAdminMixin, self).get_formset(request, obj, **kwargs)
+        return super().get_formset(request, obj, **kwargs)
 
 
 class NestedModelAdmin(NestedModelAdminMixin, ModelAdmin):

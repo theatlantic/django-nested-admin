@@ -1,8 +1,6 @@
 from django.db import models
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class CuratedGroupCollection(models.Model):
     slug = models.SlugField()
     name = models.CharField(max_length=64)
@@ -11,7 +9,6 @@ class CuratedGroupCollection(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class CuratedGroup(models.Model):
     slug = models.SlugField()
     name = models.CharField(max_length=64)
@@ -34,7 +31,6 @@ class CuratedList(models.Model):
         ordering = ['position']
 
 
-@python_2_unicode_compatible
 class CuratedItem(models.Model):
 
     parent = models.ForeignKey(CuratedList, on_delete=models.CASCADE)

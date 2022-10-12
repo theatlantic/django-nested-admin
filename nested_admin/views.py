@@ -22,11 +22,11 @@ def server_data_js(request):
         except NoReverseMatch:
             pass
 
-    server_data_js = textwrap.dedent(u"""
+    server_data_js = textwrap.dedent("""
         var DJNesting = (typeof window.DJNesting != "undefined")
-                       ? DJNesting : {};
-        DJNesting.LOOKUP_URLS = %s;""" % (
-            json.dumps(grappelli_lookup_urls),))
+                       ? DJNesting : {{}};
+        DJNesting.LOOKUP_URLS = {};""".format(
+            json.dumps(grappelli_lookup_urls)))
 
     return HttpResponse(server_data_js.strip(),
         content_type='application/javascript')

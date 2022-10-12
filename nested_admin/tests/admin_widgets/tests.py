@@ -1,22 +1,15 @@
 from contextlib import contextmanager
+from html import unescape
 import time
 from unittest import SkipTest
 
-import django
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.text import slugify
-
-try:
-    from html import unescape
-except ImportError:
-    from django.utils.text import unescape_entities as unescape
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
-import six
 
 from nested_admin.tests.base import (
     skip_if_not_grappelli, BaseNestedAdminTestCase)
@@ -44,7 +37,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BaseWidgetTestCase, cls).setUpClass()
+        super().setUpClass()
         if cls.nested_models:
             cls.a_model, cls.b_model, (cls.c0_model, cls.c1_model) = cls.nested_models
 
@@ -80,7 +73,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
 
     def check_prepopulated(self, indexes):
         name = self.get_name_for_indexes(indexes)
-        expected_slug = slugify(six.text_type(name))
+        expected_slug = slugify(name)
 
         slug_sel = self.get_form_field_selector('slug', indexes)
 
@@ -378,8 +371,6 @@ class Widgets(BaseWidgetTestCase):
     def test_nested_autocomplete_extra(self):
         if self.has_grappelli:
             raise SkipTest("Not testing autocomplete on grappelli")
-        if django.VERSION < (2, 0):
-            raise SkipTest("autocomplete_fields not available in Django before 2.0")
         self.load_admin()
         self.add_inline([0, [0]])
         self.add_inline([0, 1, [0]])

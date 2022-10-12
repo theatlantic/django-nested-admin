@@ -24,7 +24,7 @@ class BInline(nested_admin.NestedStackedInline):
     inline_classes = ("collapse", "open", )
 
     def get_queryset(self, request):
-        qset = super(BInline, self).get_queryset(request)
+        qset = super().get_queryset(request)
         return qset.filter(b_type=self.model.default_b_type)
 
 
@@ -59,7 +59,7 @@ class AInline(nested_admin.NestedStackedInline):
     inline_classes = ("collapse", "open", )
 
     def get_queryset(self, request):
-        qset = super(AInline, self).get_queryset(request)
+        qset = super().get_queryset(request)
         return qset.filter(a_type=self.model.default_a_type)
 
 

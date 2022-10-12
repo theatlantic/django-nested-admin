@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from unittest import SkipTest
+from urllib.parse import urlparse, urlunparse, ParseResult
 
 import PIL.Image
 import PIL.ImageDraw
@@ -20,8 +21,6 @@ import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 from django.test import override_settings
-import six
-from six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
 try:
     from storages.backends.s3boto3 import S3Boto3Storage
@@ -62,8 +61,6 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def setUpClass(cls):
-        if six.PY2:
-            raise SkipTest("Skipping redundant test")
         cls.pixelmatch_bin = os.environ.get('PIXELMATCH_BIN')
         if not cls.pixelmatch_bin:
             cls.pixelmatch_bin = find_executable('pixelmatch')
@@ -75,9 +72,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
         if os.environ.get('TRAVIS_BUILD_NUMBER'):
             # For some reason these tests fail on travis when Django > 1.11
-            if django.VERSION > (1, 11):
-                raise SkipTest("Issue with travis and Django >= 1.11")
-            cls.path_prefix = "travis_%s" % os.environ['TRAVIS_BUILD_NUMBER']
+            raise SkipTest("Issue with travis and Django >= 1.11")
         else:
             cls.path_prefix = "local"
 
@@ -121,7 +116,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        super(VisualComparisonTestCase, cls).tearDownClass()
+        super().tearDownClass()
         shutil.rmtree(cls.root_temp_dir)
 
     @property
@@ -138,12 +133,12 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         an element from the diff
         """
         el = self.selenium.find_element_by_css_selector(selector)
-        return ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
-            'x': el.location['x'],
-            'y': el.location['y'],
-            'w': el.size['width'],
-            'h': el.size['height'],
-        }]
+        return ['--block-out', "{x},{y},{w},{h}".format(
+            x=el.location['x'],
+            y=el.location['y'],
+            w=el.size['width'],
+            h=el.size['height'],
+        )]
 
     def exclude_from_screenshots(self, imgs, exclude=None):
         pixel_density = self.selenium.execute_script('return window.devicePixelRatio') or 1
@@ -184,13 +179,13 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         else:
             msg = "Screenshots do not match (%d pixels differ)" % diff_pixels
             if self.storage:
-                s3_name = "%s/%s" % (self.path_prefix, os.path.basename(diff_output_path))
+                s3_name = "{}/{}".format(self.path_prefix, os.path.basename(diff_output_path))
                 with open(diff_output_path, 'rb') as f:
                     s3_name = self.storage.save(s3_name, f)
                 s3_url = strip_query_from_url(self.storage.url(s3_name))
-                msg = "%s (See <%s>)" % (msg, s3_url)
+                msg = "{} (See <{}>)".format(msg, s3_url)
             elif self.screenshot_output_dir:
-                msg = "%s (See %s)" % (msg, diff_output_path)
+                msg = "{} (See {})".format(msg, diff_output_path)
             raise AssertionError(msg)
 
     def get_admin_screenshot(self):
@@ -201,7 +196,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             prefix += "_grp"
         output_dir = self.screenshot_output_dir or self.temp_dir
         suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
-        image_path = os.path.join(output_dir, "%s_%s_%s.png" % (prefix, name, suffix))
+        image_path = os.path.join(output_dir, "{}_{}_{}.png".format(prefix, name, suffix))
         # Move mouse to a consistent place, to avoid hover styles confusing things
         # body_element = self.selenium.execute_script('return document.body')
         self.selenium.execute_script('document.body.scrollTop = 0')

@@ -24,7 +24,7 @@ class PolymorphicStdTestCase(BaseNestedPolymorphicTestCase):
     def setUpClass(cls):
         if not has_polymorphic:
             raise SkipTest('django-polymorphic unavailable')
-        super(PolymorphicStdTestCase, cls).setUpClass()
+        super().setUpClass()
 
     def test_add_level_one_to_empty(self):
         obj = self.root_model.objects.create(name='test')
