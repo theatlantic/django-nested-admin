@@ -5,7 +5,15 @@ from django import forms
 import nested_admin
 
 from .models import (
-    FreeText, Poll, Question, MultipleChoiceGroup, MultipleChoice, Survey, Text, Textarea)
+    FreeText,
+    Poll,
+    Question,
+    MultipleChoiceGroup,
+    MultipleChoice,
+    Survey,
+    Text,
+    Textarea,
+)
 
 
 class TextInline(nested_admin.NestedTabularInline):
@@ -15,7 +23,7 @@ class TextInline(nested_admin.NestedTabularInline):
     max_num = 1
     sortable_field_name = "position"
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -26,7 +34,7 @@ class TextareaInline(nested_admin.NestedTabularInline):
     max_num = 1
     sortable_field_name = "position"
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -36,9 +44,9 @@ class RadioInline(nested_admin.NestedTabularInline):
     extra = 0
     min_num = 1
     max_num = 8
-    radio_fields = {'style': admin.HORIZONTAL}
+    radio_fields = {"style": admin.HORIZONTAL}
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -50,7 +58,7 @@ class RadioGroupInline(nested_admin.NestedTabularInline):
     max_num = 1
     sortable_field_name = "position"
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -61,7 +69,7 @@ class DropDownInline(nested_admin.NestedTabularInline):
     min_num = 1
     max_num = 8
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -73,7 +81,7 @@ class DropDownGroupInline(nested_admin.NestedTabularInline):
     max_num = 1
     sortable_field_name = "position"
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 
@@ -83,23 +91,29 @@ class QuestionInline(nested_admin.NestedStackedPolymorphicInline):
         inlines = (TextInline, TextareaInline, DropDownGroupInline)
         sortable_field_name = "position"
         formfield_overrides = {
-            models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+            models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
         }
 
     class PollInline(nested_admin.NestedStackedPolymorphicInline.Child):
         model = Poll
-        inlines = (TextInline, RadioGroupInline,)
+        inlines = (
+            TextInline,
+            RadioGroupInline,
+        )
         sortable_field_name = "position"
         formfield_overrides = {
-            models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+            models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
         }
 
     model = Question
     extra = 0
     sortable_field_name = "position"
-    child_inlines = (FreeTextInline, PollInline,)
+    child_inlines = (
+        FreeTextInline,
+        PollInline,
+    )
     formfield_overrides = {
-        models.PositiveSmallIntegerField: {'widget': forms.HiddenInput},
+        models.PositiveSmallIntegerField: {"widget": forms.HiddenInput},
     }
 
 

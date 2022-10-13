@@ -14,7 +14,11 @@ def server_data_js(request):
 
     grappelli_lookup_urls = {}
     # Reverse names are "grp_%(key)s_lookup"
-    grappelli_lookup_keys = ("related", "m2m", "autocomplete",)
+    grappelli_lookup_keys = (
+        "related",
+        "m2m",
+        "autocomplete",
+    )
 
     for k in grappelli_lookup_keys:
         try:
@@ -22,11 +26,13 @@ def server_data_js(request):
         except NoReverseMatch:
             pass
 
-    server_data_js = textwrap.dedent("""
+    server_data_js = textwrap.dedent(
+        """
         var DJNesting = (typeof window.DJNesting != "undefined")
                        ? DJNesting : {{}};
         DJNesting.LOOKUP_URLS = {};""".format(
-            json.dumps(grappelli_lookup_urls)))
+            json.dumps(grappelli_lookup_urls)
+        )
+    )
 
-    return HttpResponse(server_data_js.strip(),
-        content_type='application/javascript')
+    return HttpResponse(server_data_js.strip(), content_type="application/javascript")

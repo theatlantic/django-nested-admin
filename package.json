@@ -3,6 +3,7 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.5",
+    "@babel/eslint-parser": "^7.19.1",
     "@babel/plugin-transform-runtime": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@babel/register": "^7.16.5",
@@ -14,15 +15,23 @@
     "css-loader": "^6.5.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.2.1",
     "mini-css-extract-plugin": "^2.4.5",
     "node-sass": "^7.0.0",
     "nyc": "^15.1.0",
     "pixelmatch": "^5.2.1",
     "postcss-loader": "^6.2.1",
     "postcss-preset-env": "^7.0.2",
+    "postcss-scss": "^4.0.5",
+    "prettier": "^2.7.1",
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
+    "stylelint": "^14.13.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recommended-scss": "^7.0.0",
+    "stylelint-prettier": "^2.0.0",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1",
     "webpack-merge": "^5.8.0"
@@ -30,7 +39,11 @@
   "scripts": {
     "report": "nyc report -r lcovonly",
     "build": "webpack",
-    "codecov": "codecov -f coverage/lcov.info -F javascript"
+    "codecov": "codecov -f coverage/lcov.info -F javascript",
+    "lint": "npm run lint:stylelint; npm run lint:eslint",
+    "lint:fix": "npm run lint:stylelint -- --fix; npm run lint:eslint -- --fix",
+    "lint:stylelint": "node_modules/.bin/stylelint 'nested_admin/**/*.scss'",
+    "lint:eslint": "node_modules/.bin/eslint nested_admin/static/nested_admin/src --ext .js"
   },
   "engines": {
     "node": ">=14"

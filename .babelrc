@@ -1,6 +1,5 @@
 {
   "sourceType": "unambiguous",
-  "plugins": ["@babel/plugin-transform-runtime"],
   "presets": [
     ["@babel/env", {
       "loose": true,

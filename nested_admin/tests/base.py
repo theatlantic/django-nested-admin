@@ -1,6 +1,5 @@
 from datetime import datetime
 import functools
-import inspect
 import json
 import logging
 import os
@@ -14,14 +13,14 @@ from django.contrib.admin.sites import site as admin_site
 
 from selenosis import AdminSelenosisTestCase
 from .drag_drop import DragAndDropAction
-from .utils import (
-    xpath_item, is_sequence, is_integer, is_str, ElementRect)
+from .utils import xpath_item, is_sequence, is_integer, is_str, ElementRect
 
 
 logger = logging.getLogger(__name__)
 
 
-get_model_name = lambda m: "-".join([m._meta.app_label, m._meta.model_name])
+def get_model_name(m):
+    return "-".join([m._meta.app_label, m._meta.model_name])
 
 
 class BaseNestedAdminTestCase(AdminSelenosisTestCase):
@@ -39,7 +38,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
         def descend_admin_inlines(admin):
             data = [admin.model, []]
-            for inline in (getattr(admin, 'inlines', None) or []):
+            for inline in getattr(admin, "inlines", None) or []:
                 data[1].append(descend_admin_inlines(inline))
             return data
 
@@ -78,32 +77,39 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def initialize_page(self):
         if self.server_exc_info:
             exc_type, exc_value, exc_traceback = self.server_exc_info
-            raise exc_valuex
+            raise exc_value
 
         super().initialize_page()
 
-        browser_errors = [e for e in self.selenium.get_log('browser')
-                          if 'favicon' not in e['message']]
+        browser_errors = [
+            e for e in self.selenium.get_log("browser") if "favicon" not in e["message"]
+        ]
         if len(browser_errors) > 0:
-            logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
+            logger.error(
+                "Found browser errors: %s" % json.dumps(browser_errors, indent=4)
+            )
 
         # Store last mousemove event, so we can track the mouse position
-        self.selenium.execute_script("""
+        self.selenium.execute_script(
+            """
             if (window.DJNesting) {
                 document.body.addEventListener('mousemove', function(event) {
                     DJNesting.lastMouseMove = event;
                 });
             }
-        """)
+        """
+        )
         self.selenium.execute_script("window.$ = window.django.jQuery")
 
     def wait_until_element_is(self, element, selector, timeout=None, message=None):
         def element_matches_selector(d):
             return d.execute_script(
-                'return !!$(arguments[0]).is(arguments[1])',
-                element, selector)
+                "return !!$(arguments[0]).is(arguments[1])", element, selector
+            )
 
-        message = message or "Timeout waiting for element to match selector %s" % selector
+        message = (
+            message or "Timeout waiting for element to match selector %s" % selector
+        )
         self.wait_until(element_matches_selector, message=message)
 
     # @property
@@ -132,38 +138,47 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             type=admin_type,
             cls=type(self).__name__,
             fn=self._testMethodName,
-            ts=datetime.now().strftime('%Y%m%d%H%M%S'),
-            usec=("%.6f" % time.time()).split('.')[1],
+            ts=datetime.now().strftime("%Y%m%d%H%M%S"),
+            usec=("%.6f" % time.time()).split(".")[1],
         )
 
     def dump_js_coverage(self):
         try:
-            coverage_dumped = self.selenium.execute_script('return window._coverage_dumped')
+            coverage_dumped = self.selenium.execute_script(
+                "return window._coverage_dumped"
+            )
             if coverage_dumped:
                 return
             else:
-                json = self.selenium.execute_script('return JSON.stringify(__coverage__)')
-                self.selenium.execute_script('window._coverage_dumped = true')
+                json = self.selenium.execute_script(
+                    "return JSON.stringify(__coverage__)"
+                )
+                self.selenium.execute_script("window._coverage_dumped = true")
         except:
             return
-        nyc_output_dir = os.path.join(os.getcwd(), '.nyc_output')
+        nyc_output_dir = os.path.join(os.getcwd(), ".nyc_output")
         if not os.path.exists(nyc_output_dir):
             os.makedirs(nyc_output_dir)
         filename = "%s.json" % self.get_test_filename_base()
-        with open(os.path.join(nyc_output_dir, filename), mode='w') as f:
+        with open(os.path.join(nyc_output_dir, filename), mode="w") as f:
             f.write(json)
 
     def save_form(self):
-        browser_errors = [e for e in self.selenium.get_log('browser')
-                          if 'favicon' not in e['message']]
+        browser_errors = [
+            e for e in self.selenium.get_log("browser") if "favicon" not in e["message"]
+        ]
         if len(browser_errors) > 0:
-            logger.error("Found browser errors: %s" % json.dumps(browser_errors, indent=4))
+            logger.error(
+                "Found browser errors: %s" % json.dumps(browser_errors, indent=4)
+            )
 
         self.dump_js_coverage()
 
         has_continue = bool(
             self.selenium.execute_script(
-                'return django.jQuery("[name=_continue]").length'))
+                'return django.jQuery("[name=_continue]").length'
+            )
+        )
         name_attr = "_continue" if has_continue else "_save"
         self.click(self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr))
         if has_continue:
@@ -229,7 +244,12 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         if is_group:
             if len(indexes) and inline_type_check(indexes[-1]):
                 try:
-                    if all([inline_type_check(a) and is_integer(b) for a, b in indexes[:-1]]):
+                    if all(
+                        [
+                            inline_type_check(a) and is_integer(b)
+                            for a, b in indexes[:-1]
+                        ]
+                    ):
                         return indexes
                 except:
                     pass
@@ -258,25 +278,34 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
                 if len(inline_model_names) > 1:
                     raise ValueError(
                         "Terminal index to inline class omitted in group-level "
-                        "operation, but parent has more than one inline")
+                        "operation, but parent has more than one inline"
+                    )
                 if named_models:
                     norm_indexes.append(inline_model_names[0][0])
                 else:
                     norm_indexes.append(0)
                 break
             if not is_sequence(level_indexes) and not is_integer(level_indexes):
-                raise ValueError("Unexpected type %s in list of indexes" % (
-                    type(level_indexes).__name__))
+                raise ValueError(
+                    "Unexpected type %s in list of indexes"
+                    % (type(level_indexes).__name__)
+                )
             if is_integer(level_indexes):
                 if len(inline_model_names) > 1:
-                    raise ValueError((
-                        "indexes[%d] using shorthand integer value, but more "
-                        "than one inline to choose from") % (level))
+                    raise ValueError(
+                        (
+                            "indexes[%d] using shorthand integer value, but more "
+                            "than one inline to choose from"
+                        )
+                        % (level)
+                    )
                 level_indexes = [0, level_indexes]
             if is_sequence(level_indexes):
                 if len(level_indexes) != 2:
-                    raise ValueError("Expected indexes[%d] to have len 2, got %d" % (
-                        level, len(level_indexes)))
+                    raise ValueError(
+                        "Expected indexes[%d] to have len 2, got %d"
+                        % (level, len(level_indexes))
+                    )
                 if not all([is_integer(i) for i in level_indexes]):
                     raise ValueError("indexes[%d] must have only integers" % level)
                 inline_index, inline_item = level_indexes
@@ -302,21 +331,24 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             rect = ElementRect(element)
             if rect.top < 0:
                 self.selenium.execute_script(
-                    'document.documentElement.scrollTop += arguments[0]', rect.top)
+                    "document.documentElement.scrollTop += arguments[0]", rect.top
+                )
             else:
-                self.selenium.execute_script('arguments[0].scrollIntoView()', element)
+                self.selenium.execute_script("arguments[0].scrollIntoView()", element)
 
             element.click()
 
     def drag_and_drop_item(self, from_indexes, to_indexes, screenshot_hack=False):
-        action = DragAndDropAction(self, from_indexes=from_indexes, to_indexes=to_indexes)
+        action = DragAndDropAction(
+            self, from_indexes=from_indexes, to_indexes=to_indexes
+        )
         action.move_to_target(screenshot_hack=screenshot_hack)
 
     def get_num_inlines(self, indexes=None):
         indexes = self._normalize_indexes(indexes, is_group=True)
         model_name = indexes[-1]
         group = self.get_group(indexes=indexes)
-        group_id = group.get_attribute('id')
+        group_id = group.get_attribute("id")
         selector = "#{} .djn-dynamic-form-{}".format(group_id, model_name)
         return self.selenium.execute_script("return $('%s').length" % selector)
 
@@ -325,7 +357,9 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         model_name = indexes.pop()
         expr_parts = []
         for parent_model, parent_item_index in indexes:
-            expr_parts += ["/*[%s][%d]" % (xpath_item(parent_model), parent_item_index + 1)]
+            expr_parts += [
+                "/*[%s][%d]" % (xpath_item(parent_model), parent_item_index + 1)
+            ]
         expr_parts += ["/*[@data-inline-model='%s']" % model_name]
         expr = "/%s" % ("/".join(expr_parts))
         return self.selenium.find_element_by_xpath(expr)
@@ -335,14 +369,17 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         model_name, item_index = indexes.pop()
         indexes.append(model_name)
         group = self.get_group(indexes=indexes)
-        return group.find_element_by_xpath(".//*[%s][%d]" % (xpath_item(model_name), item_index + 1))
+        return group.find_element_by_xpath(
+            ".//*[%s][%d]" % (xpath_item(model_name), item_index + 1)
+        )
 
     def add_inline(self, indexes=None, name=None, slug=None):
         indexes = self._normalize_indexes(indexes, is_group=True)
         new_index = self.get_num_inlines(indexes)
         model_name = indexes[-1]
         add_selector = "#{} .djn-add-item a.djn-add-handler.djn-model-{}".format(
-            self.get_group(indexes).get_attribute('id'), model_name)
+            self.get_group(indexes).get_attribute("id"), model_name
+        )
         with self.clickable_selector(add_selector) as el:
             self.click(el)
         indexes[-1] = [model_name, new_index]
@@ -356,40 +393,50 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         remove_selector = "#{} .djn-remove-handler.djn-model-{}".format(
-            self.get_item(indexes).get_attribute('id'), model_name)
+            self.get_item(indexes).get_attribute("id"), model_name
+        )
         with self.clickable_selector(remove_selector) as el:
             self.click(el)
 
     def delete_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        item_id = self.get_item(indexes).get_attribute('id')
+        item_id = self.get_item(indexes).get_attribute("id")
         delete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
-            item_id, model_name)
+            item_id, model_name
+        )
         with self.clickable_selector(delete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            undelete_selector = "#{}.grp-predelete .grp-delete-handler.djn-model-{}".format(
-                item_id, model_name)
+            undelete_selector = (
+                "#{}.grp-predelete .grp-delete-handler.djn-model-{}".format(
+                    item_id, model_name
+                )
+            )
             self.wait_until_clickable_selector(undelete_selector)
 
     def undelete_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        item_id = self.get_item(indexes).get_attribute('id')
-        undelete_selector = "#{} .djn-delete-handler.djn-model-{}".format(item_id, model_name)
+        item_id = self.get_item(indexes).get_attribute("id")
+        undelete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
+            item_id, model_name
+        )
         with self.clickable_selector(undelete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            delete_selector = "#{}:not(.grp-predelete) .grp-delete-handler.djn-model-{}".format(
-                item_id, model_name)
+            delete_selector = (
+                "#{}:not(.grp-predelete) .grp-delete-handler.djn-model-{}".format(
+                    item_id, model_name
+                )
+            )
             self.wait_until_clickable_selector(delete_selector)
 
     def get_form_field_selector(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)
         if not indexes:
             return "#id_%s" % attname
-        field_prefix = self.get_item(indexes=indexes).get_attribute('id')
+        field_prefix = self.get_item(indexes=indexes).get_attribute("id")
         return "#id_{}-{}".format(field_prefix, attname)
 
     def get_field(self, attname, indexes=None):
@@ -406,7 +453,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
 
 
 def expected_failure_if_grappelli(func):
-    if 'grappelli' in settings.INSTALLED_APPS:
+    if "grappelli" in settings.INSTALLED_APPS:
         return unittest.expectedFailure(func)
     return func
 
@@ -414,7 +461,8 @@ def expected_failure_if_grappelli(func):
 def skip_if_not_grappelli(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        if 'grappelli' not in settings.INSTALLED_APPS:
+        if "grappelli" not in settings.INSTALLED_APPS:
             raise unittest.SkipTest("Skipping (grappelli required)")
         return func(*args, **kwargs)
+
     return wrapper

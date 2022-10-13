@@ -59,13 +59,16 @@ class MultipleChoiceGroup(QuestionComponent):
 class MultipleChoice(models.Model):
     group = ForeignKey(MultipleChoiceGroup, on_delete=NON_POLYMORPHIC_CASCADE)
     label = models.CharField(max_length=255)
-    style = models.CharField(max_length=255, choices=(
-        ('radio', 'radio'),
-        ('dropdown', 'dropdown'),
-        ('checkboxes', 'checkboxes'),
-    ))
+    style = models.CharField(
+        max_length=255,
+        choices=(
+            ("radio", "radio"),
+            ("dropdown", "dropdown"),
+            ("checkboxes", "checkboxes"),
+        ),
+    )
     value = models.CharField(max_length=255)
     position = models.PositiveSmallIntegerField(null=True)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]

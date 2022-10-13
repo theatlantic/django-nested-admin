@@ -8,26 +8,26 @@ class TopLevel(models.Model):
 
 class LevelOne(models.Model):
     name = models.CharField(max_length=200)
-    parent_level = ForeignKey(TopLevel, related_name='children', on_delete=CASCADE)
+    parent_level = ForeignKey(TopLevel, related_name="children", on_delete=CASCADE)
     position = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ('position', )
+        ordering = ("position",)
 
 
 class LevelTwo(models.Model):
     name = models.CharField(max_length=200, blank=True)
-    parent_level = ForeignKey(LevelOne, related_name='children', on_delete=CASCADE)
+    parent_level = ForeignKey(LevelOne, related_name="children", on_delete=CASCADE)
     position = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ('position', )
+        ordering = ("position",)
 
 
 class LevelThree(models.Model):
     name = models.CharField(max_length=200)
-    parent_level = ForeignKey(LevelTwo, related_name='children', on_delete=CASCADE)
+    parent_level = ForeignKey(LevelTwo, related_name="children", on_delete=CASCADE)
     position = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ('position', )
+        ordering = ("position",)

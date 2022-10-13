@@ -14,6 +14,7 @@ from django.utils.datastructures import OrderedSet as _OrderedSet
 try:
     from django.forms.widgets import MediaOrderConflictWarning
 except ImportError:
+
     class MediaOrderConflictWarning(RuntimeWarning):
         pass
 
@@ -23,8 +24,11 @@ else:
 
 try:
     from django.utils.topological_sort import (
-        CyclicDependencyError, stable_topological_sort)
+        CyclicDependencyError,
+        stable_topological_sort,
+    )
 except ImportError:
+
     class CyclicDependencyError(ValueError):
         pass
 
@@ -43,6 +47,7 @@ class OrderedSet(_OrderedSet):
 
 
 if MergeSafeMedia is None or stable_topological_sort is None:
+
     def linearize_as_needed(l, dependency_graph):
         # Algorithm: DFS Topological sort
         # https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
@@ -58,7 +63,7 @@ if MergeSafeMedia is None or stable_topological_sort is None:
                 if vertex in permanent:
                     pass
                 elif vertex in temporary:
-                    raise CyclicDependencyError('Cyclic dependency in graph')
+                    raise CyclicDependencyError("Cyclic dependency in graph")
                 else:
                     temporary.add(vertex)
 
@@ -75,8 +80,8 @@ if MergeSafeMedia is None or stable_topological_sort is None:
     class MergeSafeMedia(django.forms.Media):
         def __init__(self, media=None, css=None, js=None):
             if media is not None:
-                css = getattr(media, '_css', {})
-                js = getattr(media, '_js', [])
+                css = getattr(media, "_css", {})
+                js = getattr(media, "_js", [])
             else:
                 if css is None:
                     css = {}
@@ -136,21 +141,24 @@ if MergeSafeMedia is None or stable_topological_sort is None:
                 return linearize_as_needed(all_items, dependency_graph)
             except CyclicDependencyError:
                 warnings.warn(
-                    'Detected duplicate Media files in an opposite order: {}'.format(
-                        ', '.join(repr(l) for l in lists)
-                    ), MediaOrderConflictWarning,
+                    "Detected duplicate Media files in an opposite order: {}".format(
+                        ", ".join(repr(l) for l in lists)
+                    ),
+                    MediaOrderConflictWarning,
                 )
                 return list(all_items)
 
         def __add__(self, other):
             combined = MergeSafeMedia()
-            other_css_lists = getattr(other, '_css_lists', None)
+            other_css_lists = getattr(other, "_css_lists", None)
             if other_css_lists is None:
                 other_css_lists = []
                 for medium, css_list in other._css.items():
                     for css_file in css_list:
                         other_css_lists.append({medium: [css_file]})
-            other_js_lists = getattr(other, '_js_lists', None) or [[js] for js in other._js]
+            other_js_lists = getattr(other, "_js_lists", None) or [
+                [js] for js in other._js
+            ]
             combined._css_lists = self._css_lists + other_css_lists
             combined._js_lists = self._js_lists + other_js_lists
             return combined
@@ -185,6 +193,7 @@ try:
 except ImportError:
     pass
 else:
+
     def add_media(dest, media):
         return dest + media
 

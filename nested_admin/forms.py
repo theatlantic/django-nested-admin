@@ -9,10 +9,10 @@ class SortableHiddenMixin:
     overridden by setting the ``sortable_field_name`` attribute to a
     different value.
     """
+
     sortable_field_name = "position"
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == self.sortable_field_name:
             kwargs["widget"] = HiddenInput()
-        return super().formfield_for_dbfield(
-            db_field, **kwargs)
+        return super().formfield_for_dbfield(db_field, **kwargs)

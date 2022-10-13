@@ -1,6 +1,3 @@
-from unittest import SkipTest
-
-import django
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
@@ -29,25 +26,33 @@ class SeleniumTestInlinePermissions(BaseNestedAdminTestCase):
 
     def setUp(self):
         super().setUp()
-        self.group = StackedGroup.objects.create(pk=1, slug='group')
+        self.group = StackedGroup.objects.create(pk=1, slug="group")
         self.section_a = StackedSection.objects.create(
-            pk=1, slug='a', group=self.group, position=0)
+            pk=1, slug="a", group=self.group, position=0
+        )
         self.section_b = StackedSection.objects.create(
-            pk=2, slug='b', group=self.group, position=1)
+            pk=2, slug="b", group=self.group, position=1
+        )
         self.item_a0 = StackedItem.objects.create(
-            pk=1, name='A 0', section=self.section_a, position=0)
+            pk=1, name="A 0", section=self.section_a, position=0
+        )
         self.item_b0 = StackedItem.objects.create(
-            pk=2, name='B 0', section=self.section_b, position=0)
+            pk=2, name="B 0", section=self.section_b, position=0
+        )
 
         self.user = User.objects.create_user(
-            username='permissionuser', password='secret',
-            email='vuser@example.com', is_staff=True)
+            username="permissionuser",
+            password="secret",
+            email="vuser@example.com",
+            is_staff=True,
+        )
 
         for model_cls in [StackedGroup, StackedSection, StackedItem]:
             self.user.user_permissions.add(
-                get_perm(model_cls, get_permission_codename('view', model_cls._meta)))
+                get_perm(model_cls, get_permission_codename("view", model_cls._meta))
+            )
 
-        self.admin_login('permissionuser', 'secret')
+        self.admin_login("permissionuser", "secret")
 
     def test_view_permissions_readonly_fields(self):
         self.load_admin(self.group)
@@ -62,7 +67,10 @@ class SeleniumTestInlinePermissions(BaseNestedAdminTestCase):
             return d.execute_script(
                 """return !!document.evaluate(
                     'count(' + arguments[0] + ')', document).numberValue""",
-                xpath)
+                xpath,
+            )
 
-        self.wait_until(element_is_present,
-            message="Timeout waiting for element with xpath %s" % xpath)
+        self.wait_until(
+            element_is_present,
+            message="Timeout waiting for element with xpath %s" % xpath,
+        )

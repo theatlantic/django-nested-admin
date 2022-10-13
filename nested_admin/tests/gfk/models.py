@@ -12,7 +12,7 @@ class GFKB(models.Model):
     content_object = GenericForeignKey()
 
     class Meta:
-        ordering = ['object_id', 'position']
+        ordering = ["object_id", "position"]
 
     def __str__(self):
         parts = ["%s[%d]" % (self.name, self.position)]
@@ -30,7 +30,7 @@ class GFKA(models.Model):
     b_set = GenericRelation(GFKB)
 
     class Meta:
-        ordering = ['object_id', 'position']
+        ordering = ["object_id", "position"]
 
     def __str__(self):
         parts = ["%s[%d]" % (self.slug, self.position)]

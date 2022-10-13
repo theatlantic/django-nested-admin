@@ -7,11 +7,15 @@ def xpath_cls(classname):
 
 
 def xpath_item(model_name=None):
-    xpath_item_predicate = 'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
-    expr = "{} and {}".format(xpath_cls('djn-item'), xpath_item_predicate)
+    xpath_item_predicate = (
+        'not(contains(@class, "-drag")) and not(contains(@class, "thead"))'
+    )
+    expr = "{} and {}".format(xpath_cls("djn-item"), xpath_item_predicate)
     if model_name:
-        expr += (' and (@data-inline-model="%s" or %s)'
-            % (model_name, xpath_cls("djn-dynamic-form-%s" % model_name)))
+        expr += ' and (@data-inline-model="%s" or %s)' % (
+            model_name,
+            xpath_cls("djn-dynamic-form-%s" % model_name),
+        )
     return expr
 
 
@@ -27,16 +31,17 @@ def is_str(o):
     return isinstance(o, str)
 
 
-Position = namedtuple('Position', ['x', 'y'])
+Position = namedtuple("Position", ["x", "y"])
 
 
-class Size(namedtuple('Size', ['width', 'height'])):
+class Size(namedtuple("Size", ["width", "height"])):
     w = property(lambda self: self.width)
     h = property(lambda self: self.height)
 
 
-class Rect(namedtuple('Rect', [
-        'left', 'top', 'right', 'bottom', 'width', 'height', 'visible'])):
+class Rect(
+    namedtuple("Rect", ["left", "top", "right", "bottom", "width", "height", "visible"])
+):
     x = property(lambda self: self.left)
     y = property(lambda self: self.top)
     r = property(lambda self: self.right)
@@ -46,17 +51,16 @@ class Rect(namedtuple('Rect', [
 
 
 class ElementRect:
-
     def __init__(self, element, aliases=None):
         default_aliases = {
-            't': 'top',
-            'l': 'left',
-            'x': 'left',
-            'y': 'top',
-            'w': 'width',
-            'h': 'height',
-            'r': 'right',
-            'b': 'bottom',
+            "t": "top",
+            "l": "left",
+            "x": "left",
+            "y": "top",
+            "w": "width",
+            "h": "height",
+            "r": "right",
+            "b": "bottom",
         }
         aliases = dict(default_aliases, **(aliases or {}))
         self.alias_map = {}
@@ -69,7 +73,8 @@ class ElementRect:
         self.refresh()
 
     def refresh(self):
-        rect_dict = (self.selenium.execute_script("""
+        rect_dict = self.selenium.execute_script(
+            """
             return (function(e, w, de) {
                 var r = e.getBoundingClientRect(),
                     wh = (w.innerHeight || de.clientHeight),
@@ -86,11 +91,13 @@ class ElementRect:
                     bottom: r.bottom
                 };
             })(arguments[0], window, document.documentElement)
-            """, self._element))
+            """,
+            self._element,
+        )
         self.rect = Rect(**rect_dict)
         for k, v in rect_dict.items():
             setattr(self, k, v)
-            for alias in (self.alias_map.get(k) or []):
+            for alias in self.alias_map.get(k) or []:
                 setattr(self, alias, v)
 
     def __str__(self):
@@ -102,6 +109,4 @@ class ElementRect:
 
 def ensure_element_is_in_view(element):
     if not ElementRect(element).visible:
-        element.parent.execute_script(
-            'arguments[0].scrollIntoView()',
-            element)
+        element.parent.execute_script("arguments[0].scrollIntoView()", element)

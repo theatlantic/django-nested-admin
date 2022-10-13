@@ -26,15 +26,15 @@ class LevelOne(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
     position = models.PositiveIntegerField()
-    parent_level = ForeignKey(TopLevel, related_name='children', on_delete=CASCADE)
+    parent_level = ForeignKey(TopLevel, related_name="children", on_delete=CASCADE)
 
     def __str__(self):
-        if 'A' in type(self).__name__:
-            prefix = '(A) '
-        if 'B' in type(self).__name__:
-            prefix = '(B) '
+        if "A" in type(self).__name__:
+            prefix = "(A) "
+        if "B" in type(self).__name__:
+            prefix = "(B) "
         else:
-            prefix = ''
+            prefix = ""
         parts = ["%s%s[%d]" % (prefix, self.name, self.position)]
         if self.parent_level:
             parts.insert(0, "%s" % self.parent_level)
@@ -53,15 +53,15 @@ class LevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
     position = models.PositiveIntegerField()
-    parent_level = ForeignKey(LevelOne, related_name='children', on_delete=CASCADE)
+    parent_level = ForeignKey(LevelOne, related_name="children", on_delete=CASCADE)
 
     def __str__(self):
-        if 'C' in type(self).__name__:
-            prefix = '(C) '
-        if 'D' in type(self).__name__:
-            prefix = '(D) '
+        if "C" in type(self).__name__:
+            prefix = "(C) "
+        if "D" in type(self).__name__:
+            prefix = "(D) "
         else:
-            prefix = ''
+            prefix = ""
         parts = ["%s%s[%d]" % (prefix, self.name, self.position)]
         if self.parent_level:
             parts.insert(0, "%s" % self.parent_level)
@@ -80,15 +80,15 @@ class ALevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
     position = models.PositiveIntegerField()
-    polymorphic_parent = ForeignKey(LevelOneA, related_name='a_set', on_delete=CASCADE)
+    polymorphic_parent = ForeignKey(LevelOneA, related_name="a_set", on_delete=CASCADE)
 
     def __str__(self):
-        if 'C' in type(self).__name__:
-            prefix = '(C) '
-        if 'D' in type(self).__name__:
-            prefix = '(D) '
+        if "C" in type(self).__name__:
+            prefix = "(C) "
+        if "D" in type(self).__name__:
+            prefix = "(D) "
         else:
-            prefix = ''
+            prefix = ""
         parts = ["%s%s[%d]" % (prefix, self.name, self.position)]
         if self.polymorphic_parent:
             parts.insert(0, "%s" % self.polymorphic_parent)
@@ -107,7 +107,7 @@ class GFKX(models.Model):
     content_object = GenericForeignKey()
 
     class Meta:
-        ordering = ['object_id', 'position']
+        ordering = ["object_id", "position"]
 
     def __str__(self):
         parts = ["%s[%d]" % (self.name, self.position)]
@@ -125,15 +125,15 @@ class BLevelTwo(PolymorphicModel):
 
     name = models.CharField(max_length=200, blank=True)
     position = models.PositiveIntegerField()
-    polymorphic_parent = ForeignKey(LevelOneB, related_name='b_set', on_delete=CASCADE)
+    polymorphic_parent = ForeignKey(LevelOneB, related_name="b_set", on_delete=CASCADE)
 
     def __str__(self):
-        if 'C' in type(self).__name__:
-            prefix = '(C) '
-        if 'D' in type(self).__name__:
-            prefix = '(D) '
+        if "C" in type(self).__name__:
+            prefix = "(C) "
+        if "D" in type(self).__name__:
+            prefix = "(D) "
         else:
-            prefix = ''
+            prefix = ""
         parts = ["%s%s[%d]" % (prefix, self.name, self.position)]
         if self.polymorphic_parent:
             parts.insert(0, "%s" % self.polymorphic_parent)

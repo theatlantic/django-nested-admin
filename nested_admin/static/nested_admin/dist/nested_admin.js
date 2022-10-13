@@ -19,7 +19,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function grp$($sel) {
-  if (typeof window.grp === 'undefined') {
+  if (typeof window.grp === "undefined") {
     return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_0__["default"])($sel);
   }
 
@@ -85,30 +85,30 @@ __webpack_require__.r(__webpack_exports__);
  // const grp = require('grp');
 // const grp$ = require('./grp$');
 
-var pluginName = 'djangoFormset';
+var pluginName = "djangoFormset";
 
 var DjangoFormset = /*#__PURE__*/function () {
   function DjangoFormset(inline) {
     this.opts = {
-      emptyClass: 'empty-form grp-empty-form djn-empty-form',
-      predeleteClass: 'grp-predelete'
+      emptyClass: "empty-form grp-empty-form djn-empty-form",
+      predeleteClass: "grp-predelete"
     };
     this.$inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(inline);
     this.prefix = this.$inline.djangoFormsetPrefix();
-    this._$totalForms = this.$inline.find('#id_' + this.prefix + '-TOTAL_FORMS');
+    this._$totalForms = this.$inline.find("#id_" + this.prefix + "-TOTAL_FORMS");
 
-    this._$totalForms.attr('autocomplete', 'off');
+    this._$totalForms.attr("autocomplete", "off");
 
-    this._$template = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + this.prefix + '-empty');
-    var inlineModelClassName = this.$inline.djnData('inlineModel');
+    this._$template = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + this.prefix + "-empty");
+    var inlineModelClassName = this.$inline.djnData("inlineModel");
     this.opts = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].extend({}, this.opts, {
-      childTypes: this.$inline.data('inlineFormset').options.childTypes,
-      formsetFkModel: this.$inline.djnData('formsetFkModel'),
-      addButtonSelector: '.djn-add-handler.djn-model-' + inlineModelClassName,
-      removeButtonSelector: '.djn-remove-handler.djn-model-' + inlineModelClassName,
-      deleteButtonSelector: '.djn-delete-handler.djn-model-' + inlineModelClassName,
-      formClass: 'dynamic-form grp-dynamic-form djn-dynamic-form-' + inlineModelClassName,
-      formClassSelector: '.djn-dynamic-form-' + inlineModelClassName
+      childTypes: this.$inline.data("inlineFormset").options.childTypes,
+      formsetFkModel: this.$inline.djnData("formsetFkModel"),
+      addButtonSelector: ".djn-add-handler.djn-model-" + inlineModelClassName,
+      removeButtonSelector: ".djn-remove-handler.djn-model-" + inlineModelClassName,
+      deleteButtonSelector: ".djn-delete-handler.djn-model-" + inlineModelClassName,
+      formClass: "dynamic-form grp-dynamic-form djn-dynamic-form-" + inlineModelClassName,
+      formClassSelector: ".djn-dynamic-form-" + inlineModelClassName
     });
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initRelatedFields(this.prefix, this.$inline.djnData());
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initAutocompleteFields(this.prefix, this.$inline.djnData());
@@ -121,46 +121,46 @@ var DjangoFormset = /*#__PURE__*/function () {
 
     this._initializeForms();
 
-    this.$inline.find('.djn-items:not([id*="-empty"])').trigger('djnesting:init'); // initialize nested formsets
+    this.$inline.find('.djn-items:not([id*="-empty"])').trigger("djnesting:init"); // initialize nested formsets
 
     this.$inline.find('.djn-group[id$="-group"][id^="' + this.prefix + '"][data-inline-formset]:not([id*="-empty"])').each(function () {
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this)[pluginName]();
     });
 
-    if (this.$inline.is('.djn-group-root')) {
+    if (this.$inline.is(".djn-group-root")) {
       _utils__WEBPACK_IMPORTED_MODULE_9__["default"].createSortable(this.$inline);
     }
 
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:initialized', [this.$inline, this]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:initialized", [this.$inline, this]);
   }
 
   var _proto = DjangoFormset.prototype;
 
   _proto._setupPolymorphic = function _setupPolymorphic() {
     if (!this.opts.childTypes) {
-      throw Error('The polymorphic fieldset options.childTypes is not defined!');
+      throw Error("The polymorphic fieldset options.childTypes is not defined!");
     }
 
     var menu = '<div class="polymorphic-type-menu" style="display: none"><ul>';
     this.opts.childTypes.forEach(function (c) {
       menu += "<li><a href=\"#\" data-type=\"" + c.type + "\">" + c.name + "</a></li>";
     });
-    menu += '</ul></div>';
+    menu += "</ul></div>";
     var $addButton = this.$inline.find(this.opts.addButtonSelector);
     var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(menu);
     $addButton.after($menu);
   };
 
   _proto._initializeForms = function _initializeForms() {
-    var totalForms = this.mgmtVal('TOTAL_FORMS');
-    var maxForms = this.mgmtVal('MAX_NUM_FORMS');
+    var totalForms = this.mgmtVal("TOTAL_FORMS");
+    var maxForms = this.mgmtVal("MAX_NUM_FORMS");
 
     if (maxForms <= totalForms) {
-      this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
+      this.$inline.find(this.opts.addButtonSelector).parents(".djn-add-item").hide();
     }
 
     for (var i = 0; i < totalForms; i++) {
-      this._initializeForm('#' + this.prefix + '-' + i);
+      this._initializeForm("#" + this.prefix + "-" + i);
     }
   };
 
@@ -169,16 +169,16 @@ var DjangoFormset = /*#__PURE__*/function () {
     var formPrefix = $form.djangoFormPrefix();
     $form.addClass(this.opts.formClass);
 
-    if ($form.hasClass('has_original')) {
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE:checked').toggleClass(this.opts.predeleteClass);
+    if ($form.hasClass("has_original")) {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + formPrefix + "DELETE:checked").toggleClass(this.opts.predeleteClass);
     }
 
-    var minForms = this.mgmtVal('MIN_NUM_FORMS');
-    var totalForms = this.mgmtVal('TOTAL_FORMS');
+    var minForms = this.mgmtVal("MIN_NUM_FORMS");
+    var totalForms = this.mgmtVal("TOTAL_FORMS");
     var self = this;
     var hideRemoveButton = totalForms <= minForms;
     this.$inline.djangoFormsetForms().each(function () {
-      var showHideMethod = hideRemoveButton ? 'hide' : 'show';
+      var showHideMethod = hideRemoveButton ? "hide" : "show";
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).find(self.opts.removeButtonSelector)[showHideMethod]();
     });
   };
@@ -186,46 +186,46 @@ var DjangoFormset = /*#__PURE__*/function () {
   _proto._bindEvents = function _bindEvents($el) {
     var self = this;
 
-    if (typeof $el == 'undefined') {
+    if (typeof $el == "undefined") {
       $el = this.$inline;
     }
 
     var $addButton = $el.find(this.opts.addButtonSelector);
-    $addButton.off('click.djnesting').on('click.djnesting', function (e) {
+    $addButton.off("click.djnesting").on("click.djnesting", function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).next('.polymorphic-type-menu');
+      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).next(".polymorphic-type-menu");
 
       if (!$menu.length) {
         self.add();
       } else {
-        if (!$menu.is(':visible')) {
+        if (!$menu.is(":visible")) {
           var hideMenu = function hideMenu() {
             $menu.hide();
-            (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).off('click', hideMenu);
+            (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).off("click", hideMenu);
           };
 
-          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).on('click', hideMenu);
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).on("click", hideMenu);
         }
 
         $menu.show();
       }
     });
-    var $menuButtons = $addButton.parent().find('> .polymorphic-type-menu a');
-    $menuButtons.off('click.djnesting').on('click.djnesting', function (e) {
+    var $menuButtons = $addButton.parent().find("> .polymorphic-type-menu a");
+    $menuButtons.off("click.djnesting").on("click.djnesting", function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var polymorphicType = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr('data-type');
+      var polymorphicType = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr("data-type");
       self.add(null, polymorphicType);
-      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(e.target).closest('.polymorphic-type-menu');
+      var $menu = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(e.target).closest(".polymorphic-type-menu");
 
-      if ($menu.is(':visible')) {
+      if ($menu.is(":visible")) {
         $menu.hide();
       }
     });
     $el.find(this.opts.removeButtonSelector).filter(function () {
-      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest('.djn-empty-form').length;
-    }).off('click.djnesting').on('click.djnesting', function (e) {
+      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(".djn-empty-form").length;
+    }).off("click.djnesting").on("click.djnesting", function (e) {
       e.preventDefault();
       e.stopPropagation();
       var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(self.opts.formClassSelector);
@@ -236,39 +236,39 @@ var DjangoFormset = /*#__PURE__*/function () {
       e.preventDefault();
       e.stopImmediatePropagation();
       var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(self.opts.formClassSelector);
-      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + $form.djangoFormPrefix() + 'DELETE');
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + $form.djangoFormPrefix() + "DELETE");
 
-      if (!$deleteInput.is(':checked')) {
-        self['delete']($form);
+      if (!$deleteInput.is(":checked")) {
+        self["delete"]($form);
       } else {
         self.undelete($form);
       }
     };
 
     var $deleteButton = $el.find(this.opts.deleteButtonSelector).filter(function () {
-      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest('.djn-empty-form').length;
+      return !(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).closest(".djn-empty-form").length;
     });
-    $deleteButton.off('click.djnesting').on('click.djnesting', deleteClickHandler);
-    $deleteButton.find('[id$="-DELETE"]').on('mousedown.djnesting', deleteClickHandler);
+    $deleteButton.off("click.djnesting").on("click.djnesting", deleteClickHandler);
+    $deleteButton.find('[id$="-DELETE"]').on("mousedown.djnesting", deleteClickHandler);
   };
 
   _proto.remove = function remove(form) {
     var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form);
-    var totalForms = this.mgmtVal('TOTAL_FORMS');
-    var minForms = this.mgmtVal('MIN_NUM_FORMS');
-    var maxForms = this.mgmtVal('MAX_NUM_FORMS');
+    var totalForms = this.mgmtVal("TOTAL_FORMS");
+    var minForms = this.mgmtVal("MIN_NUM_FORMS");
+    var maxForms = this.mgmtVal("MAX_NUM_FORMS");
     var index = $form.djangoFormIndex();
-    var isInitial = $form.data('isInitial'); // Clearing out the form HTML itself using DOM APIs is much faster
+    var isInitial = $form.data("isInitial"); // Clearing out the form HTML itself using DOM APIs is much faster
     // than using jQuery to remove the element. Using jQuery is so
     // slow that it hangs the page.
 
     $form[0].innerHTML = "";
     $form.remove();
     totalForms -= 1;
-    this.mgmtVal('TOTAL_FORMS', totalForms);
+    this.mgmtVal("TOTAL_FORMS", totalForms);
 
     if (maxForms - totalForms >= 0) {
-      this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').show();
+      this.$inline.find(this.opts.addButtonSelector).parents(".djn-add-item").show();
     }
 
     this._fillGap(index, isInitial);
@@ -276,72 +276,72 @@ var DjangoFormset = /*#__PURE__*/function () {
     var self = this;
     var hideRemoveButton = totalForms <= minForms;
     this.$inline.djangoFormsetForms().each(function () {
-      var showHideMethod = hideRemoveButton ? 'hide' : 'show';
+      var showHideMethod = hideRemoveButton ? "hide" : "show";
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).find(self.opts.removeButtonSelector)[showHideMethod]();
     });
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]); // Also fire using the events that were added in Django 1.9
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]); // Also fire using the events that were added in Django 1.9
 
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:removed', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:removed", [$form, this.prefix]);
   };
 
   _proto.delete = function _delete(form) {
     var self = this,
         $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form),
         formPrefix = $form.djangoFormPrefix(),
-        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
+        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + formPrefix + "DELETE");
 
     if ($form.hasClass(this.opts.predeleteClass)) {
       return;
     }
 
-    if (!$form.data('isInitial')) {
+    if (!$form.data("isInitial")) {
       return;
     }
 
-    $deleteInput.attr('checked', 'checked');
+    $deleteInput.attr("checked", "checked");
 
     if ($deleteInput.length) {
       $deleteInput[0].checked = true;
     }
 
     $form.addClass(this.opts.predeleteClass);
-    $form.find('.djn-group').each(function () {
+    $form.find(".djn-group").each(function () {
       var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       $childInline.djangoFormsetForms().each(function () {
         if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).hasClass(self.opts.predeleteClass)) {
-          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted', true);
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data("alreadyDeleted", true);
         } else {
           childFormset.delete(this);
         }
       });
     });
-    $form.find('.cropduster-form').each(function () {
-      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + '-0-';
-      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
-      $deleteInput.attr('checked', 'checked');
+    $form.find(".cropduster-form").each(function () {
+      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + "-0-";
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + formPrefix + "DELETE");
+      $deleteInput.attr("checked", "checked");
 
       if ($deleteInput.length) {
         $deleteInput[0].checked = true;
       }
     });
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:deleted', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:deleted", [$form, this.prefix]);
   };
 
   _proto.undelete = function undelete(form) {
     var $form = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form),
         formPrefix = $form.djangoFormPrefix(),
-        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
+        $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + formPrefix + "DELETE");
 
-    if ($form.parent().closest('.' + this.opts.predeleteClass).length) {
+    if ($form.parent().closest("." + this.opts.predeleteClass).length) {
       return;
     }
 
-    if ($form.hasClass('has_original')) {
-      $deleteInput.removeAttr('checked');
+    if ($form.hasClass("has_original")) {
+      $deleteInput.removeAttr("checked");
 
       if ($deleteInput.length) {
         $deleteInput[0].checked = false;
@@ -350,30 +350,30 @@ var DjangoFormset = /*#__PURE__*/function () {
       $form.removeClass(this.opts.predeleteClass);
     }
 
-    $form.data('alreadyDeleted', false);
-    $form.find('.djn-group').each(function () {
+    $form.data("alreadyDeleted", false);
+    $form.find(".djn-group").each(function () {
       var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       $childInline.djangoFormsetForms().each(function () {
-        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted')) {
-          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data('alreadyDeleted', false);
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data("alreadyDeleted")) {
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).data("alreadyDeleted", false);
         } else {
           childFormset.undelete(this);
         }
       });
     });
-    $form.find('.cropduster-form').each(function () {
-      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + '-0-';
-      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#id_' + formPrefix + 'DELETE');
-      $deleteInput.removeAttr('checked');
+    $form.find(".cropduster-form").each(function () {
+      var formPrefix = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).djangoFormsetPrefix() + "-0-";
+      var $deleteInput = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#id_" + formPrefix + "DELETE");
+      $deleteInput.removeAttr("checked");
 
       if ($deleteInput.length) {
         $deleteInput[0].checked = false;
       }
     });
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:undeleted', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:undeleted", [$form, this.prefix]);
   };
 
   _proto.add = function add(spliceIndex, ctype) {
@@ -383,44 +383,44 @@ var DjangoFormset = /*#__PURE__*/function () {
     // the same as django.jQuery, we must copy any prepopulated_field
     // dependency data from grp.jQuery to the cloned nodes.
 
-    (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($template).find(':data(dependency_ids)').each(function () {
-      var id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr('id');
+    (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($template).find(":data(dependency_ids)").each(function () {
+      var id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).attr("id");
       var $el = $form.find("#" + id);
       (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($el).data(_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].extend({}, $el.data(), (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])(this).data()));
     });
-    var index = this.mgmtVal('TOTAL_FORMS');
-    var maxForms = this.mgmtVal('MAX_NUM_FORMS');
-    var isNested = this.$inline.hasClass('djn-group-nested');
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:beforeadded', [this.$inline, $form]);
+    var index = this.mgmtVal("TOTAL_FORMS");
+    var maxForms = this.mgmtVal("MAX_NUM_FORMS");
+    var isNested = this.$inline.hasClass("djn-group-nested");
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:beforeadded", [this.$inline, $form]);
     $form.removeClass(this.opts.emptyClass);
-    $form.addClass('djn-item');
-    $form.attr('id', $form.attr('id').replace(/\-empty.*?$/, '-' + index));
+    $form.addClass("djn-item");
+    $form.attr("id", $form.attr("id").replace(/\-empty.*?$/, "-" + index));
 
     if (isNested) {
       $form.append(_utils__WEBPACK_IMPORTED_MODULE_9__["default"].createContainerElement());
     }
 
-    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, new RegExp('([#_]id_|[\\#]|^id_|\"|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + '\\-(?:__prefix__|empty)\\-', 'g'), '$1' + this.prefix + '-' + index + '-');
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, new RegExp('([#_]id_|[\\#]|^id_|"|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + "\\-(?:__prefix__|empty)\\-", "g"), "$1" + this.prefix + "-" + index + "-");
     var $firstTemplate = this._$template;
 
     if (this.opts.childTypes) {
-      $firstTemplate = $template.closest('.djn-group').find('> .djn-items > [id*="-empty"], > .djn-fieldset > .djn-items > [id*="-empty"]').eq(0);
+      $firstTemplate = $template.closest(".djn-group").find('> .djn-items > [id*="-empty"], > .djn-fieldset > .djn-items > [id*="-empty"]').eq(0);
     }
 
     if (this.opts.childTypes) {
-      var compatibleParents = this.$inline.djnData('compatibleParents') || {};
-      $form.find('> .djn-group').each(function (i, el) {
-        var fkModel = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(el).djnData('formsetFkModel');
+      var compatibleParents = this.$inline.djnData("compatibleParents") || {};
+      $form.find("> .djn-group").each(function (i, el) {
+        var fkModel = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(el).djnData("formsetFkModel");
         var compatModels = compatibleParents[ctype] || [];
         var $el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(el);
-        var parentModel = $el.djnData('inlineParentModel');
-        var isPolymorphic = !!$el.data('inlineFormset').options.childTypes;
-        var formPrefix = $el.data('inlineFormset').options.prefix;
+        var parentModel = $el.djnData("inlineParentModel");
+        var isPolymorphic = !!$el.data("inlineFormset").options.childTypes;
+        var formPrefix = $el.data("inlineFormset").options.prefix;
 
         if (parentModel !== ctype || isPolymorphic && fkModel !== ctype && compatModels.indexOf(fkModel) === -1) {
           $el.find('input[id$="_FORMS"]').each(function (i, input) {
             input.value = 0;
-            input.setAttribute('value', '0');
+            input.setAttribute("value", "0");
             el.parentNode.appendChild(input);
           });
           el.parentNode.removeChild(el);
@@ -429,10 +429,10 @@ var DjangoFormset = /*#__PURE__*/function () {
     }
 
     $form.insertBefore($firstTemplate);
-    this.mgmtVal('TOTAL_FORMS', index + 1);
+    this.mgmtVal("TOTAL_FORMS", index + 1);
 
     if (maxForms - (index + 1) <= 0) {
-      this.$inline.find(this.opts.addButtonSelector).parents('.djn-add-item').hide();
+      this.$inline.find(this.opts.addButtonSelector).parents(".djn-add-item").hide();
     }
 
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
@@ -440,7 +440,7 @@ var DjangoFormset = /*#__PURE__*/function () {
     if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].isNumeric(spliceIndex)) {
       this.spliceInto($form, spliceIndex, true);
     } else {
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]);
     }
 
     if (grappelli__WEBPACK_IMPORTED_MODULE_10__) {
@@ -454,19 +454,19 @@ var DjangoFormset = /*#__PURE__*/function () {
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].initAutocompleteFields(this.prefix);
 
     if ((grp__WEBPACK_IMPORTED_MODULE_11___default()) && (grp__WEBPACK_IMPORTED_MODULE_11___default().jQuery.fn.grp_collapsible)) {
-      var addBackMethod = (grp__WEBPACK_IMPORTED_MODULE_11___default().jQuery.fn.addBack) ? 'addBack' : 'andSelf';
+      var addBackMethod = (grp__WEBPACK_IMPORTED_MODULE_11___default().jQuery.fn.addBack) ? "addBack" : "andSelf";
       (0,_grp$__WEBPACK_IMPORTED_MODULE_12__["default"])($form).find('.grp-collapse:not([id$="-empty"]):not([id*="-empty-"])')[addBackMethod]().grp_collapsible({
-        toggle_handler_slctr: '.grp-collapse-handler:first',
-        closed_css: 'closed grp-closed',
-        open_css: 'open grp-open',
+        toggle_handler_slctr: ".grp-collapse-handler:first",
+        closed_css: "closed grp-closed",
+        open_css: "open grp-open",
         on_toggle: function on_toggle() {
-          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:toggle', [self.$inline]);
+          (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:toggle", [self.$inline]);
         }
       });
     }
 
-    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.curated_content_type == 'function') {
-      $form.find('.curated-content-type-select').each(function () {
+    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.curated_content_type == "function") {
+      $form.find(".curated-content-type-select").each(function () {
         (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this).curated_content_type();
       });
     }
@@ -476,8 +476,8 @@ var DjangoFormset = /*#__PURE__*/function () {
     this._bindEvents($form);
 
     if (ctype) {
-      var formsetModelClassName = this.$inline.djnData('inlineModel');
-      var inlineModelClassName = $form.attr('data-inline-model');
+      var formsetModelClassName = this.$inline.djnData("inlineModel");
+      var inlineModelClassName = $form.attr("data-inline-model");
       var $buttons = $form.find(".djn-model-" + formsetModelClassName);
       $buttons.addClass("djn-model-" + inlineModelClassName);
       $form.addClass("djn-dynamic-form-" + inlineModelClassName);
@@ -489,9 +489,9 @@ var DjangoFormset = /*#__PURE__*/function () {
     }); // Fire an event on the document so other javascript applications
     // can be alerted to the newly inserted inline
 
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:added', [this.$inline, $form]); // Also fire using the events that were added in Django 1.9
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:added", [this.$inline, $form]); // Also fire using the events that were added in Django 1.9
 
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('formset:added', [$form, this.prefix]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:added", [$form, this.prefix]);
     return $form;
   };
 
@@ -510,7 +510,7 @@ var DjangoFormset = /*#__PURE__*/function () {
         return;
       }
 
-      if ($form.data('isInitial')) {
+      if ($form.data("isInitial")) {
         $initialForm = $form;
       } else {
         $newForm = $form;
@@ -523,16 +523,16 @@ var DjangoFormset = /*#__PURE__*/function () {
     }
 
     var oldIndex = $form.djangoFormIndex();
-    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix + '-' + oldIndex) + '(?!\\-\\d)');
-    $form.attr('id', this.prefix + '-' + index);
-    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, '$1' + this.prefix + '-' + index); // Update prefixes on nested DjangoFormset objects
+    var oldFormPrefixRegex = new RegExp("([\\#_]|^)" + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix + "-" + oldIndex) + "(?!\\-\\d)");
+    $form.attr("id", this.prefix + "-" + index);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, "$1" + this.prefix + "-" + index); // Update prefixes on nested DjangoFormset objects
 
-    $form.find('.djn-group').each(function () {
+    $form.find(".djn-group").each(function () {
       var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       childFormset.prefix = $childInline.djangoFormsetPrefix();
     });
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:attrchange", [this.$inline, $form]);
 
     if (isInitial && $initialForm && $newForm) {
       this._fillGap(oldIndex, false);
@@ -540,25 +540,25 @@ var DjangoFormset = /*#__PURE__*/function () {
   };
 
   _proto._makeRoomForInsert = function _makeRoomForInsert() {
-    var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
-        totalFormCount = this.mgmtVal('TOTAL_FORMS'),
+    var initialFormCount = this.mgmtVal("INITIAL_FORMS"),
+        totalFormCount = this.mgmtVal("TOTAL_FORMS"),
         gapIndex = initialFormCount,
-        $existingForm = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + this.prefix + '-' + gapIndex);
+        $existingForm = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + this.prefix + "-" + gapIndex);
 
     if (!$existingForm.length) {
       return;
     }
 
-    var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + '-' + gapIndex + '(?!\\-\\d)');
-    $existingForm.attr('id', this.prefix + '-' + totalFormCount);
-    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($existingForm, oldFormPrefixRegex, '$1' + this.prefix + '-' + totalFormCount); // Update prefixes on nested DjangoFormset objects
+    var oldFormPrefixRegex = new RegExp("([\\#_]|^)" + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])(this.prefix) + "-" + gapIndex + "(?!\\-\\d)");
+    $existingForm.attr("id", this.prefix + "-" + totalFormCount);
+    _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($existingForm, oldFormPrefixRegex, "$1" + this.prefix + "-" + totalFormCount); // Update prefixes on nested DjangoFormset objects
 
-    $existingForm.find('.djn-group').each(function () {
+    $existingForm.find(".djn-group").each(function () {
       var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
       var childFormset = $childInline.djangoFormset();
       childFormset.prefix = $childInline.djangoFormsetPrefix();
     });
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $existingForm]);
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:attrchange", [this.$inline, $existingForm]);
   }
   /**
    * Splice a form into the current formset at new position `index`.
@@ -566,54 +566,54 @@ var DjangoFormset = /*#__PURE__*/function () {
   ;
 
   _proto.spliceInto = function spliceInto($form, index, isNewAddition) {
-    var initialFormCount = this.mgmtVal('INITIAL_FORMS'),
-        totalFormCount = this.mgmtVal('TOTAL_FORMS'),
+    var initialFormCount = this.mgmtVal("INITIAL_FORMS"),
+        totalFormCount = this.mgmtVal("TOTAL_FORMS"),
         oldFormsetPrefix = $form.djangoFormsetPrefix(),
         newFormsetPrefix = this.prefix,
-        isInitial = $form.data('isInitial'),
+        isInitial = $form.data("isInitial"),
         newIndex,
         $before; // Make sure the form being spliced is from a different inline
 
     if ($form.djangoFormsetPrefix() == this.prefix) {
-      var currentPosition = $form.prevAll('.djn-item:not(.djn-no-drag,.djn-thead)').length;
+      var currentPosition = $form.prevAll(".djn-item:not(.djn-no-drag,.djn-thead)").length;
 
-      if (currentPosition === index || typeof index == 'undefined') {
+      if (currentPosition === index || typeof index == "undefined") {
         _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(newFormsetPrefix);
         return;
       }
 
-      $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item:not(#' + $form.attr('id') + ')').eq(index);
+      $before = this.$inline.find("> .djn-items, > .tabular > .module > .djn-items").find("> .djn-item:not(#" + $form.attr("id") + ")").eq(index);
       $before.after($form);
     } else {
-      var $oldInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + oldFormsetPrefix + '-group');
-      var $currentFormInline = $form.closest('.djn-group');
+      var $oldInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + oldFormsetPrefix + "-group");
+      var $currentFormInline = $form.closest(".djn-group");
 
       if ($currentFormInline.djangoFormsetPrefix() != newFormsetPrefix) {
-        $before = this.$inline.find('> .djn-items, > .tabular > .module > .djn-items').find('> .djn-item').eq(index);
+        $before = this.$inline.find("> .djn-items, > .tabular > .module > .djn-items").find("> .djn-item").eq(index);
         $before.after($form);
       }
 
       var oldDjangoFormset = $oldInline.djangoFormset();
-      oldDjangoFormset.mgmtVal('TOTAL_FORMS', oldDjangoFormset.mgmtVal('TOTAL_FORMS') - 1);
+      oldDjangoFormset.mgmtVal("TOTAL_FORMS", oldDjangoFormset.mgmtVal("TOTAL_FORMS") - 1);
 
       oldDjangoFormset._fillGap($form.djangoFormIndex(), isInitial);
 
       if (isInitial) {
-        oldDjangoFormset.mgmtVal('INITIAL_FORMS', oldDjangoFormset.mgmtVal('INITIAL_FORMS') - 1);
-        var $parentInline = this.$inline.parent().closest('.djn-group');
+        oldDjangoFormset.mgmtVal("INITIAL_FORMS", oldDjangoFormset.mgmtVal("INITIAL_FORMS") - 1);
+        var $parentInline = this.$inline.parent().closest(".djn-group");
 
         if ($parentInline.length) {
-          var $parentForm = this.$inline.closest('.djn-inline-form');
-          var parentPkField = ($parentInline.djnData('fieldNames') || {}).pk;
+          var $parentForm = this.$inline.closest(".djn-inline-form");
+          var parentPkField = ($parentInline.djnData("fieldNames") || {}).pk;
           var $parentPk = $parentForm.djangoFormField(parentPkField);
 
           if (!$parentPk.val()) {
-            $form.data('isInitial', false);
-            $form.attr('data-is-initial', 'false');
+            $form.data("isInitial", false);
+            $form.attr("data-is-initial", "false");
             isInitial = false; // Set initial form counts to 0 on nested DjangoFormsets
 
             setTimeout(function () {
-              $form.find('[name^="' + $form.djangoFormPrefix() + '"][name$="-INITIAL_FORMS"]').val('0').trigger('change');
+              $form.find('[name^="' + $form.djangoFormPrefix() + '"][name$="-INITIAL_FORMS"]').val("0").trigger("change");
             }, 0);
           }
         }
@@ -624,41 +624,41 @@ var DjangoFormset = /*#__PURE__*/function () {
       } // Replace the ids for the splice form
 
 
-      var oldFormPrefixRegex = new RegExp('([\\#_]|^)' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])($form.attr('id')) + '(?!\\-\\d)');
+      var oldFormPrefixRegex = new RegExp("([\\#_]|^)" + (0,_regexquote__WEBPACK_IMPORTED_MODULE_8__["default"])($form.attr("id")) + "(?!\\-\\d)");
       newIndex = isInitial ? initialFormCount : totalFormCount;
-      $form.attr('id', newFormsetPrefix + '-' + newIndex);
-      _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, '$1' + newFormsetPrefix + '-' + newIndex); // Update prefixes on nested DjangoFormset objects
+      $form.attr("id", newFormsetPrefix + "-" + newIndex);
+      _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updateFormAttributes($form, oldFormPrefixRegex, "$1" + newFormsetPrefix + "-" + newIndex); // Update prefixes on nested DjangoFormset objects
 
-      $form.find('.djn-group').each(function () {
+      $form.find(".djn-group").each(function () {
         var $childInline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var childFormset = $childInline.djangoFormset();
         childFormset.prefix = $childInline.djangoFormsetPrefix();
       });
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:attrchange', [this.$inline, $form]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:attrchange", [this.$inline, $form]);
 
       if (isInitial) {
-        this.mgmtVal('INITIAL_FORMS', initialFormCount + 1);
+        this.mgmtVal("INITIAL_FORMS", initialFormCount + 1);
       }
 
-      this.mgmtVal('TOTAL_FORMS', totalFormCount + 1);
+      this.mgmtVal("TOTAL_FORMS", totalFormCount + 1);
       _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(oldFormsetPrefix);
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [$oldInline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [$oldInline]);
     }
 
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(newFormsetPrefix);
 
     if (!isNewAddition) {
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger('djnesting:mutate', [this.$inline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]);
     }
   };
 
   _proto.mgmtVal = function mgmtVal(name, newValue) {
-    var $field = this.$inline.find('#id_' + this.prefix + '-' + name);
+    var $field = this.$inline.find("#id_" + this.prefix + "-" + name);
 
-    if (typeof newValue == 'undefined') {
+    if (typeof newValue == "undefined") {
       return parseInt($field.val(), 10);
     } else {
-      return parseInt($field.val(newValue).trigger('change').val(), 10);
+      return parseInt($field.val(newValue).trigger("change").val(), 10);
     }
   };
 
@@ -669,7 +669,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[pluginName] = functio
   var options, fn, args;
   var $el = this.eq(0);
 
-  if (arguments.length === 0 || arguments.length === 1 && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].type(arguments[0]) != 'string') {
+  if (arguments.length === 0 || arguments.length === 1 && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].type(arguments[0]) != "string") {
     options = arguments[0];
     var djangoFormset = $el.data(pluginName);
 
@@ -687,7 +687,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[pluginName] = functio
   if (fn in DjangoFormset.prototype) {
     return $el.data(pluginName)[fn](args);
   } else {
-    throw new Error('Unknown function call ' + fn + ' for $.fn.' + pluginName);
+    throw new Error("Unknown function call " + fn + " for $.fn." + pluginName);
   }
 };
 
@@ -723,7 +723,7 @@ __webpack_require__.r(__webpack_exports__);
 var prefixCache = {};
 
 _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djnData = function (name) {
-  var inlineFormsetData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).data('inlineFormset') || {},
+  var inlineFormsetData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).data("inlineFormset") || {},
       nestedOptions = inlineFormsetData.nestedOptions || {};
 
   if (!name) {
@@ -735,9 +735,9 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djnData = function (n
 
 _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoPrefixIndex = function () {
   var $this = this.length > 1 ? this.first() : this;
-  var id = $this.attr('id'),
-      name = $this.attr('name'),
-      forattr = $this.attr('for'),
+  var id = $this.attr("id"),
+      name = $this.attr("name"),
+      forattr = $this.attr("for"),
       prefix,
       $form,
       $group,
@@ -754,7 +754,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoPrefixIndex = f
     prefix = (id.match(/^(.*)\-group$/) || [null, null])[1];
   }
 
-  if (id && !prefix && $this.is('.djn-item') && id.match(/\d+$/)) {
+  if (id && !prefix && $this.is(".djn-item") && id.match(/\d+$/)) {
     var _ref = id.match(/(.*?)\-(\d+)$/) || [null, null, null];
 
     cacheKey = _ref[0];
@@ -763,30 +763,30 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoPrefixIndex = f
   }
 
   if (!prefix) {
-    $form = $this.closest('.djn-inline-form');
+    $form = $this.closest(".djn-inline-form");
 
     if ($form.length) {
-      var _ref2 = $form.attr('id').match(/(.*?)\-(\d+)$/) || [null, null, null];
+      var _ref2 = $form.attr("id").match(/(.*?)\-(\d+)$/) || [null, null, null];
 
       cacheKey = _ref2[0];
       prefix = _ref2[1];
       index = _ref2[2];
     } else {
-      $group = $this.closest('.djn-group');
+      $group = $this.closest(".djn-group");
 
       if (!$group.length) {
         return null;
       }
 
-      groupId = $group.attr('id') || '';
+      groupId = $group.attr("id") || "";
       prefix = (groupId.match(/^(.*)\-group$/) || [null, null])[1];
     }
   } else {
-    if (prefix.substr(0, 3) == 'id_') {
+    if (prefix.substr(0, 3) == "id_") {
       prefix = prefix.substr(3);
     }
 
-    if (!document.getElementById(prefix + '-group')) {
+    if (!document.getElementById(prefix + "-group")) {
       return null;
     }
   }
@@ -805,7 +805,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormPrefix = fu
     return null;
   }
 
-  return prefixIndex[0] + '-' + prefixIndex[1] + '-';
+  return prefixIndex[0] + "-" + prefixIndex[1] + "-";
 };
 
 _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormIndex = function () {
@@ -819,7 +819,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormsetPrefix =
 };
 
 var filterDjangoFormsetForms = function filterDjangoFormsetForms(form, $group, formsetPrefix) {
-  var formId = form.getAttribute('id'),
+  var formId = form.getAttribute("id"),
       formIndex = formId.substr(formsetPrefix.length + 1); // Check if form id matches /{prefix}-\d+/
 
   if (formId.indexOf(formsetPrefix) !== 0) {
@@ -836,10 +836,10 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormsetForms = 
   this.each(function () {
     var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this),
         formsetPrefix = $this.djangoFormsetPrefix(),
-        $group = formsetPrefix ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + formsetPrefix + '-group') : null,
+        $group = formsetPrefix ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#" + formsetPrefix + "-group") : null,
         $forms;
     if (!formsetPrefix || !$group.length) return;
-    $forms = $group.find('.djn-inline-form').filter(function () {
+    $forms = $group.find(".djn-inline-form").filter(function () {
       return filterDjangoFormsetForms(this, $group, formsetPrefix);
     });
     var sortedForms = $forms.toArray().sort(function (a, b) {
@@ -850,7 +850,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormsetForms = 
   return this.pushStack(forms);
 };
 
-if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField != "function") {
   _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormField = function (fieldName, prefix, index) {
     var $empty = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])([]),
         matches;
@@ -866,34 +866,34 @@ if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].djangoFormFie
       return $empty;
     }
 
-    var namePrefix = prefix + '-' + index + '-';
+    var namePrefix = prefix + "-" + index + "-";
 
-    if (fieldName == '*') {
+    if (fieldName == "*") {
       return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('*[name^="' + namePrefix + '"]').filter(function () {
-        var fieldPart = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).attr('name').substring(namePrefix.length);
-        return fieldPart.indexOf('-') === -1;
+        var fieldPart = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).attr("name").substring(namePrefix.length);
+        return fieldPart.indexOf("-") === -1;
       });
     }
 
-    var $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#id_' + namePrefix + fieldName);
+    var $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#id_" + namePrefix + fieldName);
 
-    if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-      var $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + prefix + '-group'),
-          fieldNameData = $group.djnData('fieldNames') || {};
+    if (!$field.length && (fieldName == "pk" || fieldName == "position")) {
+      var $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#" + prefix + "-group"),
+          fieldNameData = $group.djnData("fieldNames") || {};
       fieldName = fieldNameData[fieldName];
 
       if (!fieldName) {
         return $empty;
       }
 
-      $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#id_' + namePrefix + fieldName);
+      $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#id_" + namePrefix + fieldName);
     }
 
     return $field;
   };
 }
 
-if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormField != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoFormField != "function") {
   /**
    * Given a django model's field name, and the forms index in the
    * formset, returns the field's input element, or an empty jQuery
@@ -915,10 +915,10 @@ if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoForm
 
     var prefix = prefixAndIndex[0];
 
-    if (typeof index == 'undefined') {
+    if (typeof index == "undefined") {
       index = prefixAndIndex[1];
 
-      if (typeof index == 'undefined') {
+      if (typeof index == "undefined") {
         return $empty;
       }
     }
@@ -927,37 +927,37 @@ if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.djangoForm
   };
 }
 
-if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.filterDjangoField != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.filterDjangoField != "function") {
   var djRegexCache = {};
 
   _jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"].fn.filterDjangoField = function (prefix, fieldName, index) {
     var $field, fieldNameData;
 
-    if (typeof index != 'undefined') {
-      if (typeof index == 'string') {
+    if (typeof index != "undefined") {
+      if (typeof index == "string") {
         index = parseInt(index, 10);
       }
 
-      if (typeof index == 'number' && !isNaN(index)) {
-        var fieldId = 'id_' + prefix + '-' + index + '-' + fieldName;
-        $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + fieldId);
+      if (typeof index == "number" && !isNaN(index)) {
+        var fieldId = "id_" + prefix + "-" + index + "-" + fieldName;
+        $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#" + fieldId);
       }
     } else {
-      if (typeof djRegexCache[prefix] != 'object') {
+      if (typeof djRegexCache[prefix] != "object") {
         djRegexCache[prefix] = {};
       }
 
-      if (typeof djRegexCache[prefix][fieldName] == 'undefined') {
-        djRegexCache[prefix][fieldName] = new RegExp('^' + prefix + '-\\d+-' + fieldName + '$');
+      if (typeof djRegexCache[prefix][fieldName] == "undefined") {
+        djRegexCache[prefix][fieldName] = new RegExp("^" + prefix + "-\\d+-" + fieldName + "$");
       }
 
       $field = this.find('input[name$="' + fieldName + '"]').filter(function () {
-        return this.getAttribute('name').match(djRegexCache[prefix][fieldName]);
+        return this.getAttribute("name").match(djRegexCache[prefix][fieldName]);
       });
     }
 
-    if (!$field.length && (fieldName == 'pk' || fieldName == 'position')) {
-      fieldNameData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])('#' + prefix + '-group').djnData('fieldNames') || {};
+    if (!$field.length && (fieldName == "pk" || fieldName == "position")) {
+      fieldNameData = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])("#" + prefix + "-group").djnData("fieldNames") || {};
 
       if (typeof fieldNameData[fieldName] && fieldNameData[fieldName] != fieldName) {
         $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_5__["default"])(this).filterDjangoField(prefix, fieldNameData[fieldName], index);
@@ -1028,6 +1028,7 @@ __webpack_require__.r(__webpack_exports__);
 
 if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui === undefined) {
   var jQuery = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"];
+  /* eslint-disable */
 
   (function (e, t) {
     function i(t, i) {
@@ -1720,6 +1721,8 @@ if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui === undefined) {
       t.appendChild(o), i = r || document.documentElement, i.insertBefore(t, i.firstChild), o.style.cssText = "position: absolute; left: 10.7432222px;", a = e(o).offset().left, e.support.offsetFractions = a > 10 && 11 > a, t.innerHTML = "", i.removeChild(t);
     }();
   })(jQuery);
+  /* eslint-enable */
+
 }
 
 _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable", _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.mouse, {
@@ -1731,7 +1734,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     axis: false,
     connectWith: false,
     containment: false,
-    cursor: 'auto',
+    cursor: "auto",
     cursorAt: false,
     dropOnEmpty: true,
     forcePlaceholderSize: false,
@@ -1739,7 +1742,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     grid: false,
     handle: false,
     helper: "original",
-    items: '> *',
+    items: "> *",
     opacity: false,
     placeholder: false,
     revert: false,
@@ -1760,7 +1763,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
     this.refresh(); //Let's determine if the items are being displayed horizontally
 
-    this.floating = this.items.length ? o.axis === 'x' || /left|right/.test(this.items[0].item.css('float')) || /inline|table-cell/.test(this.items[0].item.css('display')) : false; //Let's determine the parent's offset
+    this.floating = this.items.length ? o.axis === "x" || /left|right/.test(this.items[0].item.css("float")) || /inline|table-cell/.test(this.items[0].item.css("display")) : false; //Let's determine the parent's offset
 
     this.offset = this.element.offset(); //Initialize mouse events for interaction
 
@@ -1796,24 +1799,24 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       return false;
     }
 
-    if (this.options.disabled || this.options.type == 'static') return false; //We have to refresh the items data once first
+    if (this.options.disabled || this.options.type == "static") return false; //We have to refresh the items data once first
 
     this._refreshItems(event); //Find out if the clicked node (or one of its parents) is a actual item in this.items
 
 
     var currentItem = null,
         nodes = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(event.target).parents().each(function () {
-      if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(this, that.widgetName + '-item') == that) {
+      if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(this, that.widgetName + "-item") == that) {
         currentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this);
         return false;
       }
     });
-    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(event.target, that.widgetName + '-item') == that) currentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(event.target);
+    if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(event.target, that.widgetName + "-item") == that) currentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(event.target);
     if (!currentItem) return false;
 
     if (this.options.handle && !overrideHandle) {
       var validHandle = false;
-      var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].fn.addBack ? 'addBack' : 'andSelf';
+      var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].fn.addBack ? "addBack" : "andSelf";
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.handle, currentItem).find("*")[addBackMethod]().each(function () {
         if (this == event.target) validHandle = true;
       });
@@ -1890,8 +1893,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
     if (o.cursor) {
       // cursor option
-      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor")) this._storedCursor = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor");
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor", o.cursor);
+      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])("body").css("cursor")) this._storedCursor = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])("body").css("cursor");
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])("body").css("cursor", o.cursor);
     }
 
     if (o.opacity) {
@@ -1907,7 +1910,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     } //Prepare scrolling
 
 
-    if (this.scrollParent[0] != document && this.scrollParent[0].tagName != 'HTML') this.overflowOffset = this.scrollParent.offset(); //Call callbacks
+    if (this.scrollParent[0] != document && this.scrollParent[0].tagName != "HTML") this.overflowOffset = this.scrollParent.offset(); //Call callbacks
 
     this._trigger("start", event, this._uiHash()); //Recache the helper size
 
@@ -1945,7 +1948,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       var o = this.options,
           scrolled = false;
 
-      if (this.scrollParent[0] != document && this.scrollParent[0].tagName != 'HTML') {
+      if (this.scrollParent[0] != document && this.scrollParent[0].tagName != "HTML") {
         if (this.overflowOffset.top + this.scrollParent[0].offsetHeight - event.pageY < o.scrollSensitivity) this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop + o.scrollSpeed;else if (event.pageY - this.overflowOffset.top < o.scrollSensitivity) this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop - o.scrollSpeed;
         if (this.overflowOffset.left + this.scrollParent[0].offsetWidth - event.pageX < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft + o.scrollSpeed;else if (event.pageX - this.overflowOffset.left < o.scrollSensitivity) this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft - o.scrollSpeed;
       } else {
@@ -1959,8 +1962,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
     this.positionAbs = this._convertPositionTo("absolute"); //Set the helper position
 
-    if (!this.options.axis || this.options.axis != "y") this.helper[0].style.left = this.position.left + 'px';
-    if (!this.options.axis || this.options.axis != "x") this.helper[0].style.top = this.position.top + 'px'; //Rearrange
+    if (!this.options.axis || this.options.axis != "y") this.helper[0].style.left = this.position.left + "px";
+    if (!this.options.axis || this.options.axis != "x") this.helper[0].style.top = this.position.top + "px"; //Rearrange
 
     for (var i = this.items.length - 1; i >= 0; i--) {
       //Cache variables and intersection, continue if no intersection
@@ -1978,10 +1981,10 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
       if (item.instance !== this.currentContainer) continue;
 
-      if (itemElement != this.currentItem[0] //cannot intersect with itself
-      && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-      && !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-      && (this.options.type == 'semi-dynamic' ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.element[0], itemElement) : true) //&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
+      if (itemElement != this.currentItem[0] && //cannot intersect with itself
+      this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement && //no useless actions that have been done before
+      !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.placeholder[0], itemElement) && ( //no action if the item moved is the parent of the item checked
+      this.options.type == "semi-dynamic" ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.element[0], itemElement) : true) //&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
       ) {
         this.direction = intersection == 1 ? "down" : "up";
 
@@ -2003,7 +2006,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
     if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager) _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ddmanager.drag(this, event); //Call callbacks
 
-    this._trigger('sort', event, this._uiHash());
+    this._trigger("sort", event, this._uiHash());
 
     this.lastPositionAbs = this.positionAbs;
     return false;
@@ -2074,15 +2077,15 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     var str = [];
     o = o || {};
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(items).each(function () {
-      var res = ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || /(.+)[-=_](.+)/);
-      if (res) str.push((o.key || res[1] + '[]') + '=' + (o.key && o.expression ? res[1] : res[2]));
+      var res = ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || "id") || "").match(o.expression || /(.+)[-=_](.+)/);
+      if (res) str.push((o.key || res[1] + "[]") + "=" + (o.key && o.expression ? res[1] : res[2]));
     });
 
     if (!str.length && o.key) {
-      str.push(o.key + '=');
+      str.push(o.key + "=");
     }
 
-    return str.join('&');
+    return str.join("&");
   },
   toArray: function toArray(o) {
     var items = this._getItemsAsjQuery(o && o.connected);
@@ -2090,7 +2093,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     var ret = [];
     o = o || {};
     items.each(function () {
-      ret.push((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || 'id') || '');
+      ret.push((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.item || this).attr(o.attribute || "id") || "");
     });
     return ret;
   },
@@ -2109,18 +2112,18 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
         dxClick = this.offset.click.left;
     var isOverElement = y1 + dyClick > t && y1 + dyClick < b && x1 + dxClick > l && x1 + dxClick < r;
 
-    if (this.options.tolerance == "pointer" || this.options.forcePointerForContainers || this.options.tolerance != "pointer" && this.helperProportions[this.floating ? 'width' : 'height'] > item[this.floating ? 'width' : 'height']) {
+    if (this.options.tolerance == "pointer" || this.options.forcePointerForContainers || this.options.tolerance != "pointer" && this.helperProportions[this.floating ? "width" : "height"] > item[this.floating ? "width" : "height"]) {
       return isOverElement;
     } else {
-      return l < x1 + this.helperProportions.width / 2 // Right Half
-      && x2 - this.helperProportions.width / 2 < r // Left Half
-      && t < y1 + this.helperProportions.height / 2 // Bottom Half
-      && y2 - this.helperProportions.height / 2 < b; // Top Half
+      return l < x1 + this.helperProportions.width / 2 && // Right Half
+      x2 - this.helperProportions.width / 2 < r && // Left Half
+      t < y1 + this.helperProportions.height / 2 && // Bottom Half
+      y2 - this.helperProportions.height / 2 < b; // Top Half
     }
   },
   _intersectsWithPointer: function _intersectsWithPointer(item) {
-    var isOverElementHeight = this.options.axis === 'x' || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, Math.max(10, item.height)),
-        isOverElementWidth = this.options.axis === 'y' || this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
+    var isOverElementHeight = this.options.axis === "x" || this._isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, Math.max(10, item.height)),
+        isOverElementWidth = this.options.axis === "y" || this._isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
         isOverElement = isOverElementHeight && isOverElementWidth,
         verticalDirection = this._getDragVerticalDirection(),
         horizontalDirection = this._getDragHorizontalDirection();
@@ -2172,20 +2175,16 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
           var inst = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].data(cur[j], this.widgetName);
 
           if (inst && inst != this && !inst.options.disabled) {
-            queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(inst.options.items) ? inst.options.items.call(inst.element) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
+            queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(inst.options.items) ? inst.options.items.call(inst.element) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(inst.options.items, inst.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"), inst]);
           }
         }
-
-        ;
       }
-
-      ;
     }
 
     queries.push([_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(this.options.items) ? this.options.items.call(this.element, null, {
       options: this.options,
       item: this.currentItem
-    }) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.items, this.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), this]);
+    }) : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(this.options.items, this.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"), this]);
 
     for (var i = queries.length - 1; i >= 0; i--) {
       queries[i][0].each(function () {
@@ -2193,7 +2192,6 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       });
     }
 
-    ;
     return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(items);
   },
   _removeCurrentsFromItems: function _removeCurrentsFromItems() {
@@ -2203,7 +2201,6 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
         if (list[j] == item.item[0]) return false;
       }
 
-      ;
       return true;
     });
   },
@@ -2232,11 +2229,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
             this.containers.push(inst);
           }
         }
-
-        ;
       }
-
-      ;
     }
 
     for (var i = queries.length - 1; i >= 0; i--) {
@@ -2245,7 +2238,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
       for (var j = 0, queriesLength = _queries.length; j < queriesLength; j++) {
         var item = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(_queries[j]);
-        item.data(this.widgetName + '-item', targetData); // Data for target checking (mouse manager)
+        item.data(this.widgetName + "-item", targetData); // Data for target checking (mouse manager)
 
         items.push({
           item: item,
@@ -2256,11 +2249,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
           top: 0
         });
       }
-
-      ;
     }
-
-    ;
   },
   refreshPositions: function refreshPositions(fast) {
     //This has to be redone because due to the item being moved out/into the offsetParent, the offsetParent's position will change
@@ -2284,8 +2273,6 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       item.top = p.top;
     }
 
-    ;
-
     if (this.options.custom && this.options.custom.refreshContainers) {
       this.options.custom.refreshContainers.call(this);
     } else {
@@ -2296,8 +2283,6 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
         this.containers[i].containerCache.width = this.containers[i].element.outerWidth();
         this.containers[i].containerCache.height = this.containers[i].element.outerHeight();
       }
-
-      ;
     }
 
     return this;
@@ -2320,16 +2305,12 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
           if (className && !o.forcePlaceholderSize) return; //If the element doesn't have a actual height by itself (without styles coming from a stylesheet), it receives the inline height from the dragged item
 
           if (!p.height()) {
-            p.height(that.currentItem.innerHeight() - parseInt(that.currentItem.css('paddingTop') || 0, 10) - parseInt(that.currentItem.css('paddingBottom') || 0, 10));
+            p.height(that.currentItem.innerHeight() - parseInt(that.currentItem.css("paddingTop") || 0, 10) - parseInt(that.currentItem.css("paddingBottom") || 0, 10));
           }
-
-          ;
 
           if (!p.width()) {
-            p.width(that.currentItem.innerWidth() - parseInt(that.currentItem.css('paddingLeft') || 0, 10) - parseInt(that.currentItem.css('paddingRight') || 0, 10));
+            p.width(that.currentItem.innerWidth() - parseInt(that.currentItem.css("paddingLeft") || 0, 10) - parseInt(that.currentItem.css("paddingRight") || 0, 10));
           }
-
-          ;
         }
       };
     } //Create the placeholder
@@ -2376,8 +2357,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       //When entering a new container, we will find the item with the least distance and append our item near it
       var dist = 10000;
       var itemWithLeastDistance = null;
-      var posProperty = this.containers[innermostIndex].floating ? 'left' : 'top';
-      var sizeProperty = this.containers[innermostIndex].floating ? 'width' : 'height';
+      var posProperty = this.containers[innermostIndex].floating ? "left" : "top";
+      var sizeProperty = this.containers[innermostIndex].floating ? "width" : "height";
       var base = this.positionAbs[posProperty] + this.offset.click[posProperty];
 
       for (var j = this.items.length - 1; j >= 0; j--) {
@@ -2417,9 +2398,9 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
   },
   _createHelper: function _createHelper(event) {
     var o = this.options;
-    var helper = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(o.helper) ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == 'clone' ? this.currentItem.clone() : this.currentItem;
-    if (!helper.parents('body').length) //Add the helper to the DOM if that didn't happen already
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
+    var helper = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isFunction(o.helper) ? (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.helper.apply(this.element[0], [event, this.currentItem])) : o.helper == "clone" ? this.currentItem.clone() : this.currentItem;
+    if (!helper.parents("body").length) //Add the helper to the DOM if that didn't happen already
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.appendTo != "parent" ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
     if (helper[0] == this.currentItem[0]) this._storedCSS = {
       width: this.currentItem[0].style.width,
       height: this.currentItem[0].style.height,
@@ -2427,13 +2408,13 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       top: this.currentItem.css("top"),
       left: this.currentItem.css("left")
     };
-    if (helper[0].style.width == '' || o.forceHelperSize) helper.width(this.currentItem.width());
-    if (helper[0].style.height == '' || o.forceHelperSize) helper.height(this.currentItem.height());
+    if (helper[0].style.width == "" || o.forceHelperSize) helper.width(this.currentItem.width());
+    if (helper[0].style.height == "" || o.forceHelperSize) helper.height(this.currentItem.height());
     return helper;
   },
   _adjustOffsetFromHelper: function _adjustOffsetFromHelper(obj) {
-    if (typeof obj == 'string') {
-      obj = obj.split(' ');
+    if (typeof obj == "string") {
+      obj = obj.split(" ");
     }
 
     if (_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].isArray(obj)) {
@@ -2443,19 +2424,19 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
       };
     }
 
-    if ('left' in obj) {
+    if ("left" in obj) {
       this.offset.click.left = obj.left + this.margins.left;
     }
 
-    if ('right' in obj) {
+    if ("right" in obj) {
       this.offset.click.left = this.helperProportions.width - obj.right + this.margins.left;
     }
 
-    if ('top' in obj) {
+    if ("top" in obj) {
       this.offset.click.top = obj.top + this.margins.top;
     }
 
-    if ('bottom' in obj) {
+    if ("bottom" in obj) {
       this.offset.click.top = this.helperProportions.height - obj.bottom + this.margins.top;
     }
   },
@@ -2467,13 +2448,13 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     // 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't the document, which means that
     //    the scroll is included in the initial calculation of the offset of the parent, and never recalculated upon drag
 
-    if (this.cssPosition == 'absolute' && this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) {
+    if (this.cssPosition == "absolute" && this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) {
       po.left += this.scrollParent.scrollLeft();
       po.top += this.scrollParent.scrollTop();
     }
 
-    if (this.offsetParent[0] == document.body //This needs to be actually done for all browsers, since pageX/pageY includes this information
-    || this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ie) //Ugly IE fix
+    if (this.offsetParent[0] == document.body || //This needs to be actually done for all browsers, since pageX/pageY includes this information
+    this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == "html" && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].ui.ie) //Ugly IE fix
       po = {
         top: 0,
         left: 0
@@ -2511,13 +2492,13 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
   },
   _setContainment: function _setContainment() {
     var o = this.options;
-    if (o.containment == 'parent') o.containment = this.helper[0].parentNode;
-    if (o.containment == 'document' || o.containment == 'window') this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left, ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
+    if (o.containment == "parent") o.containment = this.helper[0].parentNode;
+    if (o.containment == "document" || o.containment == "window") this.containment = [0 - this.offset.relative.left - this.offset.parent.left, 0 - this.offset.relative.top - this.offset.parent.top, (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == "document" ? document : window).width() - this.helperProportions.width - this.margins.left, ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment == "document" ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top];
 
     if (!/^(document|window|parent)$/.test(o.containment)) {
       var ce = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment)[0];
       var co = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(o.containment).offset();
-      var over = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("overflow") != 'hidden';
+      var over = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("overflow") != "hidden";
       this.containment = [co.left + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderLeftWidth"), 10) || 0) + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingLeft"), 10) || 0) - this.margins.left, co.top + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderTopWidth"), 10) || 0) + (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingTop"), 10) || 0) - this.margins.top, co.left + (over ? Math.max(ce.scrollWidth, ce.offsetWidth) : ce.offsetWidth) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderLeftWidth"), 10) || 0) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingRight"), 10) || 0) - this.helperProportions.width - this.margins.left, co.top + (over ? Math.max(ce.scrollHeight, ce.offsetHeight) : ce.offsetHeight) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("borderTopWidth"), 10) || 0) - (parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])(ce).css("paddingBottom"), 10) || 0) - this.helperProportions.height - this.margins.top];
     }
   },
@@ -2525,28 +2506,28 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     if (!pos) pos = this.position;
     var mod = d == "absolute" ? 1 : -1;
     var o = this.options,
-        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+        scroll = this.cssPosition == "absolute" && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
         scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName);
     return {
-      top: pos.top // The absolute mouse position
-      + this.offset.relative.top * mod // Only for relative positioned nodes: Relative offset from element to offset parent
-      + this.offset.parent.top * mod // The offsetParent's offset without borders (offset + border)
-      - (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()) * mod,
-      left: pos.left // The absolute mouse position
-      + this.offset.relative.left * mod // Only for relative positioned nodes: Relative offset from element to offset parent
-      + this.offset.parent.left * mod // The offsetParent's offset without borders (offset + border)
-      - (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod
+      top: pos.top + // The absolute mouse position
+      this.offset.relative.top * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+      this.offset.parent.top * mod - // The offsetParent's offset without borders (offset + border)
+      (this.cssPosition == "fixed" ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()) * mod,
+      left: pos.left + // The absolute mouse position
+      this.offset.relative.left * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+      this.offset.parent.left * mod - // The offsetParent's offset without borders (offset + border)
+      (this.cssPosition == "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod
     };
   },
   _generatePosition: function _generatePosition(event) {
     var o = this.options,
-        scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
+        scroll = this.cssPosition == "absolute" && !(this.scrollParent[0] != document && _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent,
         scrollIsRootNode = /(html|body)/i.test(scroll[0].tagName); // This is another very weird special case that only happens for relative elements:
     // 1. If the css position is relative
     // 2. and the scroll parent is the document or similar to the offset parent
     // we have to refresh the relative offset during the scroll so there are no jumps
 
-    if (this.cssPosition == 'relative' && !(this.scrollParent[0] != document && this.scrollParent[0] != this.offsetParent[0])) {
+    if (this.cssPosition == "relative" && !(this.scrollParent[0] != document && this.scrollParent[0] != this.offsetParent[0])) {
       this.offset.relative = this._getRelativeOffset();
     }
 
@@ -2575,20 +2556,20 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     }
 
     return {
-      top: pageY // The absolute mouse position
-      - this.offset.click.top // Click offset (relative to the element)
-      - this.offset.relative.top // Only for relative positioned nodes: Relative offset from element to offset parent
-      - this.offset.parent.top // The offsetParent's offset without borders (offset + border)
-      + (this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()),
-      left: pageX // The absolute mouse position
-      - this.offset.click.left // Click offset (relative to the element)
-      - this.offset.relative.left // Only for relative positioned nodes: Relative offset from element to offset parent
-      - this.offset.parent.left // The offsetParent's offset without borders (offset + border)
-      + (this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())
+      top: pageY - // The absolute mouse position
+      this.offset.click.top - // Click offset (relative to the element)
+      this.offset.relative.top - // Only for relative positioned nodes: Relative offset from element to offset parent
+      this.offset.parent.top + ( // The offsetParent's offset without borders (offset + border)
+      this.cssPosition == "fixed" ? -this.scrollParent.scrollTop() : scrollIsRootNode ? 0 : scroll.scrollTop()),
+      left: pageX - // The absolute mouse position
+      this.offset.click.left - // Click offset (relative to the element)
+      this.offset.relative.left - // Only for relative positioned nodes: Relative offset from element to offset parent
+      this.offset.parent.left + ( // The offsetParent's offset without borders (offset + border)
+      this.cssPosition == "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())
     };
   },
   _rearrange: function _rearrange(event, i, a, hardRefresh) {
-    a ? a[0].appendChild(this.placeholder[0]) : i.item[0].parentNode.insertBefore(this.placeholder[0], this.direction == 'down' ? i.item[0] : i.item[0].nextSibling); //Various things done here to improve the performance:
+    a ? a[0].appendChild(this.placeholder[0]) : i.item[0].parentNode.insertBefore(this.placeholder[0], this.direction == "down" ? i.item[0] : i.item[0].nextSibling); //Various things done here to improve the performance:
     // 1. we create a setTimeout, that calls refreshPositions
     // 2. on the instance, we have a counter variable, that get's higher after every append
     // 3. on the local scope, we copy the counter variable, and check in the timeout, if it's still the same
@@ -2613,7 +2594,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
     if (this.helper[0] == this.currentItem[0]) {
       for (var i in this._storedCSS) {
-        if (this._storedCSS[i] == 'auto' || this._storedCSS[i] == 'static') this._storedCSS[i] = '';
+        if (this._storedCSS[i] == "auto" || this._storedCSS[i] == "static") this._storedCSS[i] = "";
       }
 
       this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper");
@@ -2667,11 +2648,11 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     } //Do what was originally in plugins
 
 
-    if (this._storedCursor) (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])('body').css("cursor", this._storedCursor); //Reset cursor
+    if (this._storedCursor) (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"])("body").css("cursor", this._storedCursor); //Reset cursor
 
     if (this._storedOpacity) this.helper.css("opacity", this._storedOpacity); //Reset opacity
 
-    if (this._storedZIndex) this.helper.css("zIndex", this._storedZIndex == 'auto' ? '' : this._storedZIndex); //Reset z-index
+    if (this._storedZIndex) this.helper.css("zIndex", this._storedZIndex == "auto" ? "" : this._storedZIndex); //Reset z-index
 
     this.dragging = false;
 
@@ -2681,9 +2662,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
 
         for (var i = 0; i < delayedTriggers.length; i++) {
           delayedTriggers[i].call(this, event);
-        }
+        } //Trigger all delayed events
 
-        ; //Trigger all delayed events
 
         this._trigger("stop", event, this._uiHash());
       }
@@ -2701,9 +2681,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_6__["default"].widget("ui.djnsortable",
     if (!noPropagation) {
       for (var i = 0; i < delayedTriggers.length; i++) {
         delayedTriggers[i].call(this, event);
-      }
+      } //Trigger all delayed events
 
-      ; //Trigger all delayed events
 
       this._trigger("stop", event, this._uiHash());
     }
@@ -2776,7 +2755,7 @@ __webpack_require__.r(__webpack_exports__);
  * Copyright 2010-2011, Manuele J Sarfatti
  */
 
-if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].fn.nearest != 'function') {
+if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].fn.nearest != "function") {
   /**
    * Returns the descendant(s) matching a given selector which are the
    * shortest distance from the search context element (in otherwords,
@@ -2796,7 +2775,7 @@ if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].fn.nearest !=
         nearest.push(this);
       }
     });
-    return this.pushStack(nearest, 'nearest', [selector]);
+    return this.pushStack(nearest, "nearest", [selector]);
   };
 }
 
@@ -2838,9 +2817,9 @@ var createChildNestedSortable = function createChildNestedSortable(parent, child
 _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortable", _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable, {
   options: {
     tabSize: 20,
-    disableNesting: 'ui-nestedSortable-no-nesting',
-    errorClass: 'ui-nestedSortable-error',
-    nestedContainerSelector: ':not(*)',
+    disableNesting: "ui-nestedSortable-no-nesting",
+    errorClass: "ui-nestedSortable-error",
+    nestedContainerSelector: ":not(*)",
     // Whether to clear empty list item and container elements
     doNotClear: false,
 
@@ -2853,14 +2832,14 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
      * @return DOMElement - The new element.
      */
     createContainerElement: function createContainerElement(parent) {
-      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement('ol'));
+      return (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement("ol"));
     },
     // Selector which matches all container elements in the nestedSortable
-    containerElementSelector: 'ol',
+    containerElementSelector: "ol",
     // Selector which matches all list items (draggables) in the nestedSortable
-    listItemSelector: 'li',
+    listItemSelector: "li",
     // Selector which, when applied to a container, returns its child list items
-    items: '> li',
+    items: "> li",
     maxLevels: 0,
     revertOnError: 1,
     protectRoot: false,
@@ -2876,8 +2855,8 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       return true;
     },
     canConnectWith: function canConnectWith(container1, container2, instance) {
-      var model1 = container1.data('inlineModel');
-      var model2 = container2.data('inlineModel');
+      var model1 = container1.data("inlineModel");
+      var model2 = container2.data("inlineModel");
 
       if (model1 !== model2) {
         return false;
@@ -2900,7 +2879,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
   },
   _createWidget: function _createWidget(options, element) {
     var $element = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element || this.defaultElement || this),
-        dataOptions = $element.data('djnsortableOptions');
+        dataOptions = $element.data("djnsortableOptions");
     element = $element[0];
 
     if (dataOptions) {
@@ -2910,18 +2889,18 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
     return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype._createWidget.call(this, options, element);
   },
   _create: function _create() {
-    if (this.element.data('uiNestedSortable')) {
-      this.element.data('nestedSortable', this.element.data('uiNestedSortable'));
+    if (this.element.data("uiNestedSortable")) {
+      this.element.data("nestedSortable", this.element.data("uiNestedSortable"));
     }
 
-    if (this.element.data('ui-nestedSortable')) {
-      this.element.data('nestedSortable', this.element.data('ui-nestedSortable'));
+    if (this.element.data("ui-nestedSortable")) {
+      this.element.data("nestedSortable", this.element.data("ui-nestedSortable"));
     }
 
-    this.element.data('djnsortable', this.element.data('nestedSortable'));
+    this.element.data("djnsortable", this.element.data("nestedSortable"));
 
-    if (this.element.data('uiNestedSortable')) {
-      this.element.data('uiSortable', this.element.data('nestedSortable'));
+    if (this.element.data("uiNestedSortable")) {
+      this.element.data("uiSortable", this.element.data("nestedSortable"));
     } // if (!this.element.is(this.options.containerElementSelector)) {
     //  throw new Error('nestedSortable: Please check that the ' +
     //                  'containerElementSelector option matches ' +
@@ -2937,10 +2916,10 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
         $document = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document);
     var originalConnectWith = o.connectWith;
 
-    if (!originalConnectWith || typeof originalConnectWith == 'string') {
+    if (!originalConnectWith || typeof originalConnectWith == "string") {
       this.options.connectWith = [];
 
-      if (typeof originalConnectWith == 'string') {
+      if (typeof originalConnectWith == "string") {
         var connected = this._connectWith();
 
         for (var i = 0; i < connected.length; i++) {
@@ -2949,11 +2928,11 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       } // HACK!! FIX!! (django-specific logic)
 
 
-      $document.on('djnesting:init.nestedSortable', o.containerElementSelector, function (event) {
+      $document.on("djnesting:init.nestedSortable", o.containerElementSelector, function (event) {
         createChildNestedSortable(self, this);
       });
-      this.element.find(o.containerElementSelector + ':not(.subarticle-wrapper)').each(function (i, el) {
-        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(el).closest('[data-inline-formset]').attr('id').indexOf('-empty') > -1) {
+      this.element.find(o.containerElementSelector + ":not(.subarticle-wrapper)").each(function (i, el) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(el).closest("[data-inline-formset]").attr("id").indexOf("-empty") > -1) {
           return;
         }
 
@@ -2961,15 +2940,15 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       });
     }
 
-    $document.trigger('nestedSortable:created', [this]);
-    $document.on('nestedSortable:created.nestedSortable', function (e, instance) {
+    $document.trigger("nestedSortable:created", [this]);
+    $document.on("nestedSortable:created.nestedSortable", function (e, instance) {
       instance.addToConnectWith(self.element);
       self.addToConnectWith(instance.element);
     });
   },
   addToConnectWith: function addToConnectWith(element) {
     var self = this,
-        $element = typeof element.selector != 'undefined' ? element : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element),
+        $element = typeof element.selector != "undefined" ? element : (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element),
         uniqueId;
 
     if ($element.length > 1) {
@@ -2981,11 +2960,11 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
 
     uniqueId = element[0][expando];
 
-    if (typeof uniqueId == 'undefined') {
+    if (typeof uniqueId == "undefined") {
       uniqueId = element[0][expando] = ++counter;
     }
 
-    if (typeof this.options.connectWith == 'string') {
+    if (typeof this.options.connectWith == "string") {
       return;
     }
 
@@ -2998,7 +2977,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
   },
   _destroy: function _destroy() {
     this.element.removeData("nestedSortable").unbind(".nestedSortable");
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).unbind('.nestedSortable');
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).unbind(".nestedSortable");
     return _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].ui.djnsortable.prototype.destroy.apply(this, arguments);
   },
 
@@ -3033,13 +3012,13 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
     if (o.fixedNestingDepth && this._getLevel(this.currentItem) === 1 + this._getLevel($itemElement)) {
       $itemElement = function () {
         var containerSel = o.containerElementSelector;
-        var $childItems = $itemElement.find('.djn-item');
+        var $childItems = $itemElement.find(".djn-item");
 
         if ($childItems.length != 1) {
           return $itemElement;
         }
 
-        if (!$childItems.is('.djn-no-drag,.djn-thead')) {
+        if (!$childItems.is(".djn-no-drag,.djn-thead")) {
           return $itemElement;
         }
 
@@ -3060,12 +3039,12 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       itemElement = $itemElement[0];
     }
 
-    if (itemElement != this.currentItem[0] //cannot intersect with itself
-    && this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-    && !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-    && (this.options.type == 'semi-dynamic' ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) //only rearrange items within the same container
-    && (!o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) //maintain the nesting level of node
-    && (o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
+    if (itemElement != this.currentItem[0] && //cannot intersect with itself
+    this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement && //no useless actions that have been done before
+    !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.placeholder[0], itemElement) && ( //no action if the item moved is the parent of the item checked
+    this.options.type == "semi-dynamic" ? !_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].contains(this.element[0], itemElement) : true) && (!o.keepInParent || itemElement.parentNode == this.placeholder[0].parentNode) && ( //only rearrange items within the same container
+    !o.fixedNestingDepth || this._getLevel(this.currentItem) === this._getLevel($itemElement)) && ( //maintain the nesting level of node
+    o.showErrorDiv || o.isAllowed.call(this, this.currentItem[0], itemElement.parentNode, this.placeholder))) {
       this.lastItemElement = itemElement;
       return intersection;
     } else {
@@ -3082,11 +3061,11 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
 
     var o = this.options,
         _parentItem = this.placeholder.closest(o.listItemSelector),
-        parentItem = _parentItem.length && _parentItem.closest('.ui-sortable').length ? _parentItem : null,
+        parentItem = _parentItem.length && _parentItem.closest(".ui-sortable").length ? _parentItem : null,
         level = this._getLevel(this.placeholder),
         childLevels = this._getChildLevels(this.helper);
 
-    var placeholderClassName = this.placeholder.attr('class');
+    var placeholderClassName = this.placeholder.attr("class");
     var phClassSearch = " " + placeholderClassName + " "; // If the current level class isn't already set
 
     if (phClassSearch.indexOf(" ui-sortable-nested-level-" + level + " ") == -1) {
@@ -3101,7 +3080,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       } // Add new level to class
 
 
-      this.placeholder.attr('class', phOrigClassName + ' ui-sortable-nested-level-' + level);
+      this.placeholder.attr("class", phOrigClassName + " ui-sortable-nested-level-" + level);
     } // To find the previous sibling in the list, keep backtracking until we hit a valid list item.
 
 
@@ -3149,7 +3128,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
 
       this._trigger("change", event, this._uiHash());
     } // If the item is below a sibling and is moved to the right, make it a child of that sibling.
-    else if (!o.fixedNestingDepth && previousItem != null && !previousItem.is('.djn-no-drag,.djn-thead') && (o.rtl && this.positionAbs.left + this.helper.outerWidth() < previousItem.offset().left + previousItem.outerWidth() - o.tabSize || !o.rtl && this.positionAbs.left > previousItem.offset().left + o.tabSize)) {
+    else if (!o.fixedNestingDepth && previousItem != null && !previousItem.is(".djn-no-drag,.djn-thead") && (o.rtl && this.positionAbs.left + this.helper.outerWidth() < previousItem.offset().left + previousItem.outerWidth() - o.tabSize || !o.rtl && this.positionAbs.left > previousItem.offset().left + o.tabSize)) {
       this._isAllowed(previousItem, level, level + childLevels);
 
       if (this.beyondMaxLevels > 0) {
@@ -3186,15 +3165,15 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
     // Cache the rearranged element for the call to _clear()
     var o = this.options;
 
-    if (item && typeof item == 'object' && item.item) {
+    if (item && typeof item == "object" && item.item) {
       this.lastRearrangedElement = item.item[0];
     }
 
-    if (item && typeof item == 'object' && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
+    if (item && typeof item == "object" && item.item && this.placeholder.closest(o.nestedContainerSelector).length) {
       // This means we have been dropped into a nested container down a level
       // from the parent.
       var placeholderParentItem = this.placeholder.closest(o.listItemSelector);
-      var comparisonElement = this.direction == 'down' ? placeholderParentItem.next(o.nestedContainerSelector) : placeholderParentItem;
+      var comparisonElement = this.direction == "down" ? placeholderParentItem.next(o.nestedContainerSelector) : placeholderParentItem;
 
       if (comparisonElement.length && comparisonElement[0] == item.item[0]) {
         //Various things done here to improve the performance:
@@ -3227,7 +3206,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
     // (i.e., hasn't been removed)
 
 
-    if (typeof this.lastRearrangedElement == 'object' && this.lastRearrangedElement.ownerDocument) {
+    if (typeof this.lastRearrangedElement == "object" && this.lastRearrangedElement.ownerDocument) {
       this._clearEmpty(this.lastRearrangedElement);
     }
   },
@@ -3260,11 +3239,11 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
         ret = [],
         left = 2;
     ret.push({
-      "item_id": o.rootID,
-      "parent_id": 'none',
-      "depth": sDepth,
-      "left": '1',
-      "right": ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(o.listItemSelector, this.element).length + 1) * 2
+      item_id: o.rootID,
+      parent_id: "none",
+      depth: sDepth,
+      left: "1",
+      right: ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(o.listItemSelector, this.element).length + 1) * 2
     });
 
     var _recursiveArray = function _recursiveArray(item, depth, left) {
@@ -3281,22 +3260,22 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
         depth--;
       }
 
-      id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+      id = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).attr(o.attribute || "id").match(o.expression || /(.+)[-=_](.+)/);
 
       if (depth === sDepth + 1) {
         pid = o.rootID;
       } else {
-        var parentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || 'id').match(o.expression || /(.+)[-=_](.+)/);
+        var parentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(item).parent(o.containerElementSelector).parent(o.items).attr(o.attribute || "id").match(o.expression || /(.+)[-=_](.+)/);
         pid = parentItem[2];
       }
 
       if (id) {
         ret.push({
-          "item_id": id[2],
-          "parent_id": pid,
-          "depth": depth,
-          "left": left,
-          "right": right
+          item_id: id[2],
+          parent_id: pid,
+          depth: depth,
+          left: left,
+          right: right
         });
       }
 
@@ -3325,7 +3304,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
       if (!$childContainer.children().length) {
         var instance = $childContainer.data(this.widgetName);
 
-        if (typeof instance == 'object' && instance.destroy) {
+        if (typeof instance == "object" && instance.destroy) {
           instance.destroy();
         }
 
@@ -3345,7 +3324,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
     if (o.containerElementSelector) {
       list = item.closest(o.containerElementSelector);
 
-      while (list && list.length > 0 && !list.parent().is('.djn-group-root')) {
+      while (list && list.length > 0 && !list.parent().is(".djn-group-root")) {
         // if (!list.is(o.nestedContainerSelector)) {
         level++; // }
 
@@ -3361,7 +3340,7 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
         result = 0;
     depth = depth || 0;
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(parent).nearest(o.containerElementSelector).first().find(o.items).each(function (index, child) {
-      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(child).is('.djn-no-drag,.djn-thead')) {
+      if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(child).is(".djn-no-drag,.djn-thead")) {
         return;
       }
 
@@ -3371,14 +3350,14 @@ _jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"].widget("ui.nestedSortabl
   },
   _isAllowed: function _isAllowed(parentItem, level, levels) {
     var o = this.options,
-        isRoot = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.domPosition.parent).hasClass('ui-sortable') ? true : false; // this takes into account the maxLevels set to the recipient list
+        isRoot = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this.domPosition.parent).hasClass("ui-sortable") ? true : false; // this takes into account the maxLevels set to the recipient list
     // var maxLevels = this.placeholder.closest('.ui-sortable').nestedSortable('option', 'maxLevels');
 
     var maxLevels = o.maxLevels; // Is the root protected?
     // Are we trying to nest under a no-nest?
     // Are we nesting too deep?
 
-    if (parentItem && typeof parentItem == 'object' && typeof parentItem.selector == 'undefined') {
+    if (parentItem && typeof parentItem == "object" && typeof parentItem.selector == "undefined") {
       parentItem = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(parentItem);
     }
 
@@ -3465,7 +3444,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function regexQuote(str) {
-  return (str + '').replace(/([\.\?\*\+\^\$\[\]\\\(\)\{\}\|\-])/g, '\\$1');
+  return (str + "").replace(/([\.\?\*\+\^\$\[\]\\\(\)\{\}\|\-])/g, "\\$1");
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (regexQuote);
@@ -3506,7 +3485,7 @@ __webpack_require__.r(__webpack_exports__);
 function updatePositions(prefix) {
   var position = 0,
       count = 1,
-      $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + prefix + '-group'),
+      $group = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("#" + prefix + "-group"),
       groupData = $group.djnData(),
       fieldNames = groupData.fieldNames,
       groupFkName = groupData.formsetFkName,
@@ -3520,23 +3499,23 @@ function updatePositions(prefix) {
   sortableExcludes.push(groupFkName);
 
   if (parentPrefix) {
-    var $parentGroup = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + parentPrefix + '-group');
-    var parentFieldNames = $parentGroup.djnData('fieldNames');
+    var $parentGroup = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("#" + parentPrefix + "-group");
+    var parentFieldNames = $parentGroup.djnData("fieldNames");
     var parentPkFieldName = parentFieldNames.pk;
     var parentPkField = $parentGroup.filterDjangoField(parentPrefix, parentPkFieldName, index);
     parentPkVal = parentPkField.val();
   }
 
-  if (groupFkName && typeof parentPkVal != 'undefined') {
-    $group.filterDjangoField(prefix, groupFkName).val(parentPkVal).trigger('change');
+  if (groupFkName && typeof parentPkVal != "undefined") {
+    $group.filterDjangoField(prefix, groupFkName).val(parentPkVal).trigger("change");
   }
 
-  $group.find('.djn-inline-form').each(function () {
-    if (!this.id || this.id.substr(-6) == '-empty') {
+  $group.find(".djn-inline-form").each(function () {
+    if (!this.id || this.id.substr(-6) == "-empty") {
       return true; // Same as continue
     }
 
-    var regex = new RegExp('^(?:id_)?' + (0,_regexquote__WEBPACK_IMPORTED_MODULE_5__["default"])(prefix) + '\\-\\d+$');
+    var regex = new RegExp("^(?:id_)?" + (0,_regexquote__WEBPACK_IMPORTED_MODULE_5__["default"])(prefix) + "\\-\\d+$");
 
     if (!this.id.match(regex)) {
       return true;
@@ -3547,21 +3526,21 @@ function updatePositions(prefix) {
         _ref2 = $this.djangoPrefixIndex() || [null, null],
         formPrefix = _ref2[0],
         index = _ref2[1],
-        namePrefix = formPrefix + '-' + index + '-';
+        namePrefix = formPrefix + "-" + index + "-";
 
     if (!formPrefix) {
       return;
     } // Set header position for stacked inlines in Django 1.9+
 
 
-    var $inlineLabel = $this.find('> h3 > .inline_label');
+    var $inlineLabel = $this.find("> h3 > .inline_label");
 
     if ($inlineLabel.length) {
-      $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, '#' + count));
+      $inlineLabel.html($inlineLabel.html().replace(/(#\d+)/g, "#" + count));
     }
 
     count++;
-    var $fields = $this.djangoFormField('*'),
+    var $fields = $this.djangoFormField("*"),
         $positionField,
         setPosition = false; // position is being updated if
     // a) the field has a value
@@ -3570,12 +3549,12 @@ function updatePositions(prefix) {
     $fields.each(function () {
       var $field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this);
 
-      if (!$field.is(':input[type!=radio][type!=checkbox],input:checked')) {
+      if (!$field.is(":input[type!=radio][type!=checkbox],input:checked")) {
         return;
       }
 
-      var hasValue = $field.val() || $field.attr('type') == 'file' && $field.siblings('a').length,
-          fieldName = $field.attr('name').substring(namePrefix.length);
+      var hasValue = $field.val() || $field.attr("type") == "file" && $field.siblings("a").length,
+          fieldName = $field.attr("name").substring(namePrefix.length);
 
       if (fieldName == fieldNames.position) {
         $positionField = $field;
@@ -3590,15 +3569,15 @@ function updatePositions(prefix) {
       return;
     }
 
-    $positionField.val(position).trigger('change');
+    $positionField.val(position).trigger("change");
     position++;
   });
 }
 
 function createSortable($group) {
-  var isPolymorphic = $group.is('.djn-is-polymorphic');
-  return $group.find('> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items').nestedSortable({
-    handle: ['> h3.djn-drag-handler', '> .djn-tools .drag-handler', '> .djn-td > .djn-tools .djn-drag-handler', '> .djn-tr > .is-sortable > .djn-drag-handler', '> .djn-tr > .grp-tools-container .djn-drag-handler'].join(', '),
+  var isPolymorphic = $group.is(".djn-is-polymorphic");
+  return $group.find("> .djn-items, > .djn-fieldset > .djn-items, > .tabular > .module > .djn-items").nestedSortable({
+    handle: ["> h3.djn-drag-handler", "> .djn-tools .drag-handler", "> .djn-td > .djn-tools .djn-drag-handler", "> .djn-tr > .is-sortable > .djn-drag-handler", "> .djn-tr > .grp-tools-container .djn-drag-handler"].join(", "),
 
     /**
      * items: The selector for ONLY the items underneath a given
@@ -3606,22 +3585,22 @@ function createSortable($group) {
      *        listItemSelector, which is the selector for all list
      *        items in the nestedSortable
      */
-    items: '> .djn-item',
+    items: "> .djn-item",
     forcePlaceholderSize: true,
     placeholder: {
       element: function element($currentItem) {
-        var el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + ' ui-sortable-placeholder').removeClass('ui-sortable-helper')[0];
+        var el = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document.createElement($currentItem[0].nodeName)).addClass($currentItem[0].className + " ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];
 
-        if ($currentItem.is('.djn-tbody')) {
-          var $originalTr = $currentItem.children('.djn-tr').eq(0);
-          var trTagName = $originalTr.prop('tagName').toLowerCase();
+        if ($currentItem.is(".djn-tbody")) {
+          var $originalTr = $currentItem.children(".djn-tr").eq(0);
+          var trTagName = $originalTr.prop("tagName").toLowerCase();
           var $tr = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("<" + trTagName + "></" + trTagName + ">");
-          $tr.addClass($originalTr.attr('class'));
-          var $originalTd = $originalTr.children('.djn-td').eq(0);
-          var tdTagName = $originalTd.prop('tagName').toLowerCase();
+          $tr.addClass($originalTr.attr("class"));
+          var $originalTd = $originalTr.children(".djn-td").eq(0);
+          var tdTagName = $originalTd.prop("tagName").toLowerCase();
           var numColumns = 0;
-          $originalTr.children('.djn-td').each(function (i, td) {
-            numColumns += parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(td).attr('colspan'), 10) || 1;
+          $originalTr.children(".djn-td").each(function (i, td) {
+            numColumns += parseInt((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(td).attr("colspan"), 10) || 1;
           });
           $tr.append((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("<" + tdTagName + " colspan=\"" + numColumns + "\" class=\"djn-td grp-td\"></" + tdTagName + ">"));
           el.appendChild($tr[0]);
@@ -3643,9 +3622,9 @@ function createSortable($group) {
 
         if (opts.className && !opts.forcePlaceholderSize) return;
 
-        if ($placeholder.is('.djn-tbody')) {
+        if ($placeholder.is(".djn-tbody")) {
           // debugger;
-          $placeholder = $placeholder.children('.djn-tr').eq(0).children('.djn-td').eq(0);
+          $placeholder = $placeholder.children(".djn-tr").eq(0).children(".djn-td").eq(0);
         } // If the element doesn't have a actual height by itself
         // (without styles coming from a stylesheet), it receives
         // the inline height from the dragged item
@@ -3653,34 +3632,34 @@ function createSortable($group) {
 
         if (!$placeholder.height()) {
           var innerHeight = $currItem.innerHeight(),
-              paddingTop = parseInt($currItem.css('paddingTop') || 0, 10),
-              paddingBottom = parseInt($currItem.css('paddingBottom') || 0, 10);
+              paddingTop = parseInt($currItem.css("paddingTop") || 0, 10),
+              paddingBottom = parseInt($currItem.css("paddingBottom") || 0, 10);
           $placeholder.height(innerHeight - paddingTop - paddingBottom);
         }
 
         if (!$placeholder.width()) {
           var innerWidth = $currItem.innerWidth(),
-              paddingLeft = parseInt($currItem.css('paddingLeft') || 0, 10),
-              paddingRight = parseInt($currItem.css('paddingRight') || 0, 10);
+              paddingLeft = parseInt($currItem.css("paddingLeft") || 0, 10),
+              paddingRight = parseInt($currItem.css("paddingRight") || 0, 10);
           $placeholder.width(innerWidth - paddingLeft - paddingRight);
         }
       }
     },
-    helper: 'clone',
+    helper: "clone",
     opacity: 0.6,
     maxLevels: 0,
-    connectWith: '.djn-items',
-    tolerance: 'intersection',
+    connectWith: ".djn-items",
+    tolerance: "intersection",
     // Don't allow dragging beneath an inline that is marked for deletion
     isAllowed: function isAllowed(currentItem, parentItem) {
-      if (parentItem && parentItem.hasClass('predelete')) {
+      if (parentItem && parentItem.hasClass("predelete")) {
         return false;
       }
 
-      var $parentGroup = parentItem.closest('.djn-group');
-      var parentModel = $parentGroup.data('inlineModel');
-      var childModels = $parentGroup.djnData('childModels');
-      var currentModel = currentItem.data('inlineModel');
+      var $parentGroup = parentItem.closest(".djn-group");
+      var parentModel = $parentGroup.data("inlineModel");
+      var childModels = $parentGroup.djnData("childModels");
+      var currentModel = currentItem.data("inlineModel");
       var isPolymorphicChild = childModels && childModels.indexOf(currentModel) !== -1;
 
       if (currentModel !== parentModel && !isPolymorphicChild) {
@@ -3693,22 +3672,22 @@ function createSortable($group) {
     // Prevents dragging items up or down levels
     fixedNestingDepth: true,
     // The selector for ALL list containers in the nested sortable.
-    containerElementSelector: '.djn-items',
+    containerElementSelector: ".djn-items",
     // The selector for ALL list items in the nested sortable.
-    listItemSelector: '.djn-item',
+    listItemSelector: ".djn-item",
     start: function start(event, ui) {
-      ui.item.addClass('djn-item-dragging');
+      ui.item.addClass("djn-item-dragging");
       ui.item.show();
     },
     stop: function stop(event, ui) {
-      ui.item.removeClass('djn-item-dragging');
+      ui.item.removeClass("djn-item-dragging");
     },
 
     /**
      * Triggered when a sortable is dropped into a container
      */
     receive: function receive(event, ui) {
-      var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this).closest('.djn-group');
+      var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(this).closest(".djn-group");
       $inline.djangoFormset().spliceInto(ui.item);
       updatePositions(ui.item.djangoFormsetPrefix());
     },
@@ -3718,26 +3697,26 @@ function createSortable($group) {
       // is another <div class='djn-item'/> before the
       // .do-not-drag element then the drag-and-drop placeholder
       // margins don't work correctly.
-      var $nextItem = ui.item.nextAll('.djn-item').first();
+      var $nextItem = ui.item.nextAll(".djn-item").first();
 
-      if ($nextItem.is('.djn-no-drag,.djn-thead')) {
+      if ($nextItem.is(".djn-no-drag,.djn-thead")) {
         var nextItem = $nextItem[0];
         var parent = nextItem.parentNode;
         parent.insertBefore(nextItem, parent.firstChild);
       }
 
-      var groupId = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(event.target).closest('.djn-group').attr('id'),
+      var groupId = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(event.target).closest(".djn-group").attr("id"),
           $form = ui.item,
-          $parentGroup = $form.closest('#' + groupId);
+          $parentGroup = $form.closest("#" + groupId);
 
-      if ($form.data('updateOperation') == 'removed') {
-        $form.removeAttr('data-update-operation');
+      if ($form.data("updateOperation") == "removed") {
+        $form.removeAttr("data-update-operation");
       } else if (!$parentGroup.length) {
-        $form.attr('data-update-operation', 'removed');
+        $form.attr("data-update-operation", "removed");
       }
 
       updatePositions($form.djangoFormsetPrefix());
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).trigger('djnesting:mutate', [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])('#' + $form.djangoFormsetPrefix() + '-group')]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])(document).trigger("djnesting:mutate", [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_4__["default"])("#" + $form.djangoFormsetPrefix() + "-group")]);
     }
   });
 }
@@ -3787,7 +3766,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var DJNesting = typeof window.DJNesting != 'undefined' ? window.DJNesting : {};
+var DJNesting = typeof window.DJNesting != "undefined" ? window.DJNesting : {};
 DJNesting.regexQuote = _regexquote__WEBPACK_IMPORTED_MODULE_10__["default"];
 DJNesting.createSortable = _sortable__WEBPACK_IMPORTED_MODULE_9__.createSortable;
 DJNesting.updatePositions = _sortable__WEBPACK_IMPORTED_MODULE_9__.updatePositions;
@@ -3797,30 +3776,30 @@ DJNesting.updatePositions = _sortable__WEBPACK_IMPORTED_MODULE_9__.updatePositio
 
 DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   if (!selector) {
-    selector = [':input', 'span', 'table', 'iframe', 'label', 'a', 'ul', 'p', 'img', '.djn-group', '.djn-inline-form', '.cropduster-form', '.dal-forward-conf'].join(',');
+    selector = [":input", "span", "table", "iframe", "label", "a", "ul", "p", "img", ".djn-group", ".djn-inline-form", ".cropduster-form", ".dal-forward-conf"].join(",");
   }
 
-  var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.addBack ? 'addBack' : 'andSelf';
+  var addBackMethod = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn.addBack ? "addBack" : "andSelf";
   $elem.find(selector)[addBackMethod]().each(function () {
     var $node = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
-        attrs = ['id', 'name', 'for', 'href', 'class', 'onclick', 'data-inline-formset'];
+        attrs = ["id", "name", "for", "href", "class", "onclick", "data-inline-formset"];
     _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(attrs, function (i, attrName) {
       var attrVal = $node.attr(attrName);
 
       if (attrVal) {
         $node.attr(attrName, attrVal.replace(search, replace));
 
-        if (attrName === 'data-inline-formset') {
-          $node.data('inlineFormset', JSON.parse($node.attr(attrName)));
+        if (attrName === "data-inline-formset") {
+          $node.data("inlineFormset", JSON.parse($node.attr(attrName)));
         }
       }
     });
   }); // update prepopulate ids for function initPrepopulatedFields
 
-  $elem.find('.prepopulated_field').each(function () {
+  $elem.find(".prepopulated_field").each(function () {
     var $node = (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(this);
-    var dependencyIds = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].makeArray($node.data('dependency_ids') || []);
-    $node.data('dependency_ids', _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].map(dependencyIds, function (id) {
+    var dependencyIds = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].makeArray($node.data("dependency_ids") || []);
+    $node.data("dependency_ids", _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].map(dependencyIds, function (id) {
       return id.replace(search, replace);
     }));
   });
@@ -3843,12 +3822,12 @@ DJNesting.createContainerElement = function () {
 
 
 DJNesting.initRelatedFields = function (prefix, groupData) {
-  if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
+  if (typeof DJNesting.LOOKUP_URLS != "object" || !DJNesting.LOOKUP_URLS.related) {
     return;
   }
 
   var lookupUrls = DJNesting.LOOKUP_URLS;
-  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + prefix + '-group');
+  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + prefix + "-group");
 
   if (!groupData) {
     groupData = $inline.djnData();
@@ -3879,9 +3858,9 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
         var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var index = $this.djangoFormIndex();
 
-        if ($this.hasClass('grp-has-related-lookup')) {
-          $this.parent().find('a.related-lookup').remove();
-          $this.parent().find('.grp-placeholder-related-generic').remove();
+        if ($this.hasClass("grp-has-related-lookup")) {
+          $this.parent().find("a.related-lookup").remove();
+          $this.parent().find(".grp-placeholder-related-generic").remove();
         }
 
         (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])($this).grp_related_generic({
@@ -3895,12 +3874,12 @@ DJNesting.initRelatedFields = function (prefix, groupData) {
 };
 
 DJNesting.initAutocompleteFields = function (prefix, groupData) {
-  if (typeof DJNesting.LOOKUP_URLS != 'object' || !DJNesting.LOOKUP_URLS.related) {
+  if (typeof DJNesting.LOOKUP_URLS != "object" || !DJNesting.LOOKUP_URLS.related) {
     return;
   }
 
   var lookupUrls = DJNesting.LOOKUP_URLS;
-  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + prefix + '-group');
+  var $inline = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + prefix + "-group");
 
   if (!groupData) {
     groupData = $inline.djnData();
@@ -3911,9 +3890,9 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.fk || [], function (i, fk) {
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(fk).each(function () {
         var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
-            id = $this.attr('id'); // An autocomplete widget has already been initialized, return
+            id = $this.attr("id"); // An autocomplete widget has already been initialized, return
 
-        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + id + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + id + "-autocomplete").length) {
           return;
         }
 
@@ -3926,9 +3905,9 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
     _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(lookupFields.m2m || [], function (i, m2m) {
       (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(form).djangoFormField(m2m).each(function () {
         var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
-            id = $this.attr('id'); // An autocomplete widget has already been initialized, return
+            id = $this.attr("id"); // An autocomplete widget has already been initialized, return
 
-        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + id + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + id + "-autocomplete").length) {
           return;
         }
 
@@ -3947,7 +3926,7 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
         var $this = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this);
         var index = $this.djangoFormIndex(); // An autocomplete widget has already been initialized, return
 
-        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('#' + $this.attr('id') + '-autocomplete').length) {
+        if ((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + $this.attr("id") + "-autocomplete").length) {
           return;
         }
 
@@ -3966,11 +3945,11 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
 
 DJNesting.DjangoInlines = {
   initPrepopulatedFields: function initPrepopulatedFields(row) {
-    row.find('.prepopulated_field').each(function () {
+    row.find(".prepopulated_field").each(function () {
       var field = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(this),
-          input = field.is(':input') ? field : field.find(':input'),
+          input = field.is(":input") ? field : field.find(":input"),
           $input = (0,_grp$__WEBPACK_IMPORTED_MODULE_11__["default"])(input),
-          dependencyList = $input.data('dependency_list') || [],
+          dependencyList = $input.data("dependency_list") || [],
           formPrefix = input.djangoFormPrefix(),
           dependencies = [];
 
@@ -3979,31 +3958,31 @@ DJNesting.DjangoInlines = {
       }
 
       _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].each(dependencyList, function (i, fieldName) {
-        dependencies.push('#id_' + formPrefix + fieldName);
+        dependencies.push("#id_" + formPrefix + fieldName);
       });
 
       if (dependencies.length) {
-        $input.prepopulate(dependencies, input.attr('maxlength'));
+        $input.prepopulate(dependencies, input.attr("maxlength"));
       }
     });
   },
   reinitDateTimeShortCuts: function reinitDateTimeShortCuts() {
     // Reinitialize the calendar and clock widgets by force
-    if (typeof window.DateTimeShortcuts !== 'undefined') {
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])('.datetimeshortcuts').remove();
+    if (typeof window.DateTimeShortcuts !== "undefined") {
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(".datetimeshortcuts").remove();
       DateTimeShortcuts.init();
     }
   },
   updateSelectFilter: function updateSelectFilter($form) {
     // If any SelectFilter widgets are a part of the new form,
     // instantiate a new SelectFilter instance for it.
-    if (typeof window.SelectFilter !== 'undefined') {
-      $form.find('.selectfilter').each(function (index, value) {
-        var namearr = value.name.split('-');
+    if (typeof window.SelectFilter !== "undefined") {
+      $form.find(".selectfilter").each(function (index, value) {
+        var namearr = value.name.split("-");
         SelectFilter.init(value.id, namearr[namearr.length - 1], false);
       });
-      $form.find('.selectfilterstacked').each(function (index, value) {
-        var namearr = value.name.split('-');
+      $form.find(".selectfilterstacked").each(function (index, value) {
+        var namearr = value.name.split("-");
         SelectFilter.init(value.id, namearr[namearr.length - 1], true);
       });
     }
@@ -4022,24 +4001,24 @@ function patchSelectFilter() {
   }(window.SelectFilter.init);
 }
 
-if (typeof window.SelectFilter !== 'undefined') {
+if (typeof window.SelectFilter !== "undefined") {
   patchSelectFilter();
 } else {
   setTimeout(function () {
-    if (typeof window.SelectFilter !== 'undefined') {
+    if (typeof window.SelectFilter !== "undefined") {
       patchSelectFilter();
     }
   }, 12);
 }
 
-var djangoFuncs = ['prepopulate', 'djangoAdminSelect2'];
+var djangoFuncs = ["prepopulate", "djangoAdminSelect2"];
 djangoFuncs.forEach(function (funcName) {
   (function patchDjangoFunction(callCount) {
     if (callCount > 2) {
       return;
     }
 
-    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName] === 'undefined') {
+    if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName] === "undefined") {
       return setTimeout(function () {
         return patchDjangoFunction(callCount++);
       }, 12);
@@ -4052,14 +4031,14 @@ djangoFuncs.forEach(function (funcName) {
     }(_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].fn[funcName]);
   })(0);
 });
-var grpFuncs = ['grp_autocomplete_fk', 'grp_autocomplete_generic', 'grp_autocomplete_m2m', 'grp_collapsible', 'grp_collapsible_group', 'grp_inline', 'grp_related_fk', 'grp_related_generic', 'grp_related_m2m', 'grp_timepicker', 'datepicker', 'prepopulate', 'djangoAdminSelect2'];
+var grpFuncs = ["grp_autocomplete_fk", "grp_autocomplete_generic", "grp_autocomplete_m2m", "grp_collapsible", "grp_collapsible_group", "grp_inline", "grp_related_fk", "grp_related_generic", "grp_related_m2m", "grp_timepicker", "datepicker", "prepopulate", "djangoAdminSelect2"];
 grpFuncs.forEach(function (funcName) {
   (function patchGrpFunction(callCount) {
     if (callCount > 2) {
       return;
     }
 
-    if (typeof window.grp === 'undefined' || typeof window.grp.jQuery.fn[funcName] === 'undefined') {
+    if (typeof window.grp === "undefined" || typeof window.grp.jQuery.fn[funcName] === "undefined") {
       return setTimeout(function () {
         return patchGrpFunction(callCount++);
       }, 12);
@@ -6055,30 +6034,30 @@ __webpack_require__.r(__webpack_exports__);
 _utils__WEBPACK_IMPORTED_MODULE_4__["default"].DjangoFormset = _jquery_djangoformset__WEBPACK_IMPORTED_MODULE_5__["default"];
 (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).ready(function () {
   // Remove the border on any empty fieldsets
-  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('fieldset.grp-module, fieldset.module').filter(function (i, element) {
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])("fieldset.grp-module, fieldset.module").filter(function (i, element) {
     return element.childNodes.length == 0;
-  }).css('border-width', '0'); // Set predelete class on any form elements with the DELETE input checked.
+  }).css("border-width", "0"); // Set predelete class on any form elements with the DELETE input checked.
   // These can occur on forms rendered after a validation error.
 
-  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest('.djn-inline-form').addClass('grp-predelete');
-  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).on('djnesting:initialized djnesting:mutate', function onMutate(e, $inline) {
-    var $items = $inline.find('> .djn-items, > .tabular > .module > .djn-items');
-    var $rows = $items.children('.djn-tbody');
-    $rows.removeClass('row1 row2');
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('input[name$="-DELETE"]:checked').not('[name*="__prefix__"]').closest(".djn-inline-form").addClass("grp-predelete");
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).on("djnesting:initialized djnesting:mutate", function onMutate(e, $inline) {
+    var $items = $inline.find("> .djn-items, > .tabular > .module > .djn-items");
+    var $rows = $items.children(".djn-tbody");
+    $rows.removeClass("row1 row2");
     $rows.each(function (i, row) {
       var n = 1 + i % 2;
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(row).addClass('row' + n);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(row).addClass("row" + n);
     });
   }); // Register the nested formset on top level djnesting-stacked elements.
   // It will handle recursing down the nested inlines.
 
-  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.djn-group-root').each(function (i, rootGroup) {
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(".djn-group-root").each(function (i, rootGroup) {
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(rootGroup).djangoFormset();
   });
-  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('form').on('submit.djnesting', function (e) {
-    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.djn-group').each(function () {
+  (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])("form").on("submit.djnesting", function (e) {
+    (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(".djn-group").each(function () {
       _utils__WEBPACK_IMPORTED_MODULE_4__["default"].updatePositions((0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this).djangoFormsetPrefix());
-      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).trigger('djnesting:mutate', [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this).djangoFormset().$inline]);
+      (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(document).trigger("djnesting:mutate", [(0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this).djangoFormset().$inline]);
     });
   });
 });

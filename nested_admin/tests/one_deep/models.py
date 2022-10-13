@@ -19,7 +19,7 @@ class ChildAbstract(models.Model):
     position = models.PositiveIntegerField()
     boolean = models.BooleanField(default=False)
     readonly = models.CharField(max_length=255)
-    text = models.TextField(default='')
+    text = models.TextField(default="")
 
     class Meta:
         abstract = True
@@ -32,64 +32,60 @@ class ChildAbstract(models.Model):
 
 
 class PlainStackedRoot(RootAbstract):
-
     class Meta:
         verbose_name = "Stacked Root"
         verbose_name_plural = "Stacked Roots"
 
 
 class PlainStackedChild(ChildAbstract):
-    root = ForeignKey(PlainStackedRoot, related_name='children', on_delete=CASCADE)
+    root = ForeignKey(PlainStackedRoot, related_name="children", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('root', 'position')
+        ordering = ("root", "position")
         verbose_name = "Stacked Child"
         verbose_name_plural = "Stacked Children"
 
-class PlainTabularRoot(RootAbstract):
 
+class PlainTabularRoot(RootAbstract):
     class Meta:
         verbose_name = "Tabular Root"
         verbose_name_plural = "Tabular Roots"
 
 
-
 class PlainTabularChild(ChildAbstract):
-    root = ForeignKey(PlainTabularRoot, related_name='children', on_delete=CASCADE)
+    root = ForeignKey(PlainTabularRoot, related_name="children", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('root', 'position')
+        ordering = ("root", "position")
         verbose_name = "Tabular Child"
         verbose_name_plural = "Tabular Children"
 
 
 class NestedStackedRoot(RootAbstract):
-
     class Meta:
         verbose_name = "Stacked Root"
         verbose_name_plural = "Stacked Roots"
 
 
 class NestedStackedChild(ChildAbstract):
-    root = ForeignKey(NestedStackedRoot, related_name='children', on_delete=CASCADE)
+    root = ForeignKey(NestedStackedRoot, related_name="children", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('root', 'position')
+        ordering = ("root", "position")
         verbose_name = "Stacked Child"
         verbose_name_plural = "Stacked Children"
 
 
 class NestedTabularRoot(RootAbstract):
-
     class Meta:
         verbose_name = "Tabular Root"
         verbose_name_plural = "Tabular Roots"
 
 
 class NestedTabularChild(ChildAbstract):
-    root = ForeignKey(NestedTabularRoot, related_name='children', on_delete=CASCADE)
+    root = ForeignKey(NestedTabularRoot, related_name="children", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('root', 'position')
+        ordering = ("root", "position")
         verbose_name = "Tabular Child"
         verbose_name_plural = "Tabular Children"

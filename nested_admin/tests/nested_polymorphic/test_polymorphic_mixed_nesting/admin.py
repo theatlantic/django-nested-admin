@@ -2,19 +2,38 @@ import nested_admin
 from django.contrib import admin
 
 from .models import (
-    Block, BlockMarkdown, BlockRadioGroup, BlockRadioButton,
-    Questionnaire, SurveyStep)
+    Block,
+    BlockMarkdown,
+    BlockRadioGroup,
+    BlockRadioButton,
+    Questionnaire,
+    SurveyStep,
+)
 
 
-class BlockRadioButtonInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+class BlockRadioButtonInline(
+    nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline
+):
     model = BlockRadioButton
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = (
+        "collapse",
+        "open",
+        "grp-collapse",
+        "grp-open",
+    )
     extra = 0
 
 
-class BlockInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedPolymorphicInline):
+class BlockInline(
+    nested_admin.SortableHiddenMixin, nested_admin.NestedStackedPolymorphicInline
+):
     model = Block
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = (
+        "collapse",
+        "open",
+        "grp-collapse",
+        "grp-open",
+    )
     extra = 0
     sortable_field_name = "position"
 
@@ -34,7 +53,12 @@ class BlockInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedPo
 class SurveyStepInline(nested_admin.NestedStackedInline):
     model = SurveyStep
     inlines = [BlockInline]
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open",)
+    inline_classes = (
+        "collapse",
+        "open",
+        "grp-collapse",
+        "grp-open",
+    )
     extra = 0
     sortable_field_name = "position"
 

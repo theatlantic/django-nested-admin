@@ -1,7 +1,11 @@
 try:
     from distutils.spawn import find_executable
 except:
-    find_executable = lambda f: None
+
+    def find_executable(arg):
+        return None
+
+
 import inspect
 import logging
 import os
@@ -27,10 +31,13 @@ try:
 except:
     S3Boto3Storage = None
 
-from nested_admin.tests.base import (
-    BaseNestedAdminTestCase, get_model_name)
+from nested_admin.tests.base import BaseNestedAdminTestCase, get_model_name
 from .models import (
-    PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot)
+    PlainStackedRoot,
+    PlainTabularRoot,
+    NestedStackedRoot,
+    NestedTabularRoot,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -38,39 +45,45 @@ logger = logging.getLogger(__name__)
 
 def strip_query_from_url(url):
     parts = list(urlparse(url))
-    parts[ParseResult._fields.index('query')] = ''
+    parts[ParseResult._fields.index("query")] = ""
     return urlunparse(parts)
 
 
 class disable_string_if_invalid_for_grappelli(override_settings):
-
     def __init__(self):
         self.options = {"TEMPLATES": [settings.TEMPLATES[0].copy()]}
-        if 'grappelli' in settings.INSTALLED_APPS:
-            self.options['TEMPLATES'][0]['OPTIONS'].pop('string_if_invalid')
+        if "grappelli" in settings.INSTALLED_APPS:
+            self.options["TEMPLATES"][0]["OPTIONS"].pop("string_if_invalid")
 
 
 @disable_string_if_invalid_for_grappelli()
 class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
     root_model = None
-    root_models = [PlainStackedRoot, PlainTabularRoot, NestedStackedRoot, NestedTabularRoot]
+    root_models = [
+        PlainStackedRoot,
+        PlainTabularRoot,
+        NestedStackedRoot,
+        NestedTabularRoot,
+    ]
     storage = None
 
     window_size = (1200, 800)
 
     @classmethod
     def setUpClass(cls):
-        cls.pixelmatch_bin = os.environ.get('PIXELMATCH_BIN')
+        cls.pixelmatch_bin = os.environ.get("PIXELMATCH_BIN")
         if not cls.pixelmatch_bin:
-            cls.pixelmatch_bin = find_executable('pixelmatch')
+            cls.pixelmatch_bin = find_executable("pixelmatch")
         if not cls.pixelmatch_bin or not os.path.exists(cls.pixelmatch_bin):
             raise SkipTest("pixelmatch not installed")
-        cls.screenshot_output_dir = os.environ.get('SCREENSHOT_OUTPUT_DIR', '/tmp/djn-tests')
+        cls.screenshot_output_dir = os.environ.get(
+            "SCREENSHOT_OUTPUT_DIR", "/tmp/djn-tests"
+        )
         super(BaseNestedAdminTestCase, cls).setUpClass()
         cls.root_temp_dir = tempfile.mkdtemp()
 
-        if os.environ.get('TRAVIS_BUILD_NUMBER'):
+        if os.environ.get("TRAVIS_BUILD_NUMBER"):
             # For some reason these tests fail on travis when Django > 1.11
             raise SkipTest("Issue with travis and Django >= 1.11")
         else:
@@ -83,7 +96,9 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
 
-        if all(os.environ.get(k) for k in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']):
+        if all(
+            os.environ.get(k) for k in ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+        ):
             try:
                 storage = S3Boto3Storage()
                 bucket = storage.bucket  # noqa
@@ -100,7 +115,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
 
             def descend_admin_inlines(admin):
                 data = [admin.model, []]
-                for inline in (getattr(admin, 'inlines', None) or []):
+                for inline in getattr(admin, "inlines", None) or []:
                     data[1].append(descend_admin_inlines(inline))
                 return data
 
@@ -133,21 +148,26 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         an element from the diff
         """
         el = self.selenium.find_element_by_css_selector(selector)
-        return ['--block-out', "{x},{y},{w},{h}".format(
-            x=el.location['x'],
-            y=el.location['y'],
-            w=el.size['width'],
-            h=el.size['height'],
-        )]
+        return [
+            "--block-out",
+            "{x},{y},{w},{h}".format(
+                x=el.location["x"],
+                y=el.location["y"],
+                w=el.size["width"],
+                h=el.size["height"],
+            ),
+        ]
 
     def exclude_from_screenshots(self, imgs, exclude=None):
-        pixel_density = self.selenium.execute_script('return window.devicePixelRatio') or 1
+        pixel_density = (
+            self.selenium.execute_script("return window.devicePixelRatio") or 1
+        )
         exclude = exclude or []
         rects = []
         for selector in exclude:
             el = self.selenium.find_element_by_css_selector(selector)
-            x0, y0 = el.location['x'], el.location['y']
-            w, h = el.size['width'], el.size['height']
+            x0, y0 = el.location["x"], el.location["y"]
+            w, h = el.size["width"], el.size["height"]
             x1, y1 = x0 + w, y0 + h
             coords = [v * pixel_density for v in [x0, y0, x1, y1]]
             rects.append(coords)
@@ -155,20 +175,20 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             im = PIL.Image.open(img_path)
             draw = PIL.ImageDraw.Draw(im)
             for rect in rects:
-                draw.rectangle(rect, fill='black')
+                draw.rectangle(rect, fill="black")
             im.save(img_path)
 
     def assertSameScreenshot(self, a, b, exclude=None):
-        diff_output_path = a.replace('_a.png', '_diff.png')
-        args = [self.pixelmatch_bin, a, b, diff_output_path, 'threshold=0']
+        diff_output_path = a.replace("_a.png", "_diff.png")
+        args = [self.pixelmatch_bin, a, b, diff_output_path, "threshold=0"]
 
         exclude = exclude or []
         self.exclude_from_screenshots([a, b], exclude)
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, _ = p.communicate()
-        stdout = stdout.decode('utf-8')
-        diff_pixels = int(re.search(r'different pixels: (\d+)', stdout).group(1))
+        stdout = stdout.decode("utf-8")
+        diff_pixels = int(re.search(r"different pixels: (\d+)", stdout).group(1))
         if diff_pixels == 0:
             # No differences found
             if self.screenshot_output_dir:
@@ -179,8 +199,10 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         else:
             msg = "Screenshots do not match (%d pixels differ)" % diff_pixels
             if self.storage:
-                s3_name = "{}/{}".format(self.path_prefix, os.path.basename(diff_output_path))
-                with open(diff_output_path, 'rb') as f:
+                s3_name = "{}/{}".format(
+                    self.path_prefix, os.path.basename(diff_output_path)
+                )
+                with open(diff_output_path, "rb") as f:
                     s3_name = self.storage.save(s3_name, f)
                 s3_url = strip_query_from_url(self.storage.url(s3_name))
                 msg = "{} (See <{}>)".format(msg, s3_url)
@@ -191,15 +213,18 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def get_admin_screenshot(self):
         name = inspect.stack()[1][3]
         prefix = "%s/py%s%s_dj%s%s" % (
-            (self.path_prefix,) + sys.version_info[:2] + django.VERSION[:2])
+            (self.path_prefix,) + sys.version_info[:2] + django.VERSION[:2]
+        )
         if self.has_grappelli:
             prefix += "_grp"
         output_dir = self.screenshot_output_dir or self.temp_dir
-        suffix = ('a' if self.root_model.__name__.startswith('Plain') else 'b')
-        image_path = os.path.join(output_dir, "{}_{}_{}.png".format(prefix, name, suffix))
+        suffix = "a" if self.root_model.__name__.startswith("Plain") else "b"
+        image_path = os.path.join(
+            output_dir, "{}_{}_{}.png".format(prefix, name, suffix)
+        )
         # Move mouse to a consistent place, to avoid hover styles confusing things
         # body_element = self.selenium.execute_script('return document.body')
-        self.selenium.execute_script('document.body.scrollTop = 0')
+        self.selenium.execute_script("document.body.scrollTop = 0")
         self.selenium.execute_script('$("*:focus").blur()')
         time.sleep(0.2)
         self.selenium.save_screenshot(image_path)
@@ -208,7 +233,9 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
     def add_inline(self):
         child_model = self.models[1][0][0]
         verbose_name = child_model._meta.verbose_name.title()
-        with self.clickable_xpath('//a[contains(string(.), "Add another %s")]' % verbose_name) as el:
+        with self.clickable_xpath(
+            '//a[contains(string(.), "Add another %s")]' % verbose_name
+        ) as el:
             el.click()
 
     def test_stacked_empty(self):
@@ -232,8 +259,8 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         for model in [PlainTabularRoot, NestedTabularRoot]:
             self.root_model = model
             child_model = self.models[1][0][0]
-            root = model.objects.create(slug='a')
-            child_model.objects.create(slug='b', root=root, position=0)
+            root = model.objects.create(slug="a")
+            child_model.objects.create(slug="b", root=root, position=0)
             self.load_admin(obj=root)
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
@@ -243,8 +270,8 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         for model in [PlainStackedRoot, NestedStackedRoot]:
             self.root_model = model
             child_model = self.models[1][0][0]
-            root = model.objects.create(slug='a')
-            child_model.objects.create(slug='b', root=root, position=0)
+            root = model.objects.create(slug="a")
+            child_model.objects.create(slug="b", root=root, position=0)
             self.load_admin(obj=root)
             screenshots.append(self.get_admin_screenshot())
         self.assertSameScreenshot(*screenshots)
@@ -273,10 +300,10 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             self.root_model = model
             self.load_admin()
             self.add_inline()
-            with self.clickable_selector('#id_slug') as el:
-                el.send_keys('a')
-            with self.clickable_selector('#id_children-0-slug') as el:
-                el.send_keys('b')
+            with self.clickable_selector("#id_slug") as el:
+                el.send_keys("a")
+            with self.clickable_selector("#id_children-0-slug") as el:
+                el.send_keys("b")
             self.save_form()
             screenshots.append(self.get_admin_screenshot())
         exclude = []
@@ -284,7 +311,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            exclude += ['#children-0 .delete']
+            exclude += ["#children-0 .delete"]
         self.assertSameScreenshot(*screenshots, exclude=exclude)
 
     def test_stacked_validation_error(self):
@@ -293,10 +320,10 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             self.root_model = model
             self.load_admin()
             self.add_inline()
-            with self.clickable_selector('#id_slug') as el:
-                el.send_keys('a')
-            with self.clickable_selector('#id_children-0-slug') as el:
-                el.send_keys('b')
+            with self.clickable_selector("#id_slug") as el:
+                el.send_keys("a")
+            with self.clickable_selector("#id_children-0-slug") as el:
+                el.send_keys("b")
             self.save_form()
             screenshots.append(self.get_admin_screenshot())
         exclude = []
@@ -304,5 +331,5 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
             # django has a bug where it doesn't show the 'Remove' link
             # if there is a validationerror on a newly added inline
             # see <https://code.djangoproject.com/ticket/15910>
-            exclude += ['.inline-related:not(.empty-form) > h3']
+            exclude += [".inline-related:not(.empty-form) > h3"]
         self.assertSameScreenshot(*screenshots, exclude=exclude)

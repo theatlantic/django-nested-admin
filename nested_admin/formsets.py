@@ -13,6 +13,7 @@ from .compat import ensure_merge_safe_media
 try:
     from polymorphic.utils import get_base_polymorphic_model
 except ImportError:
+
     def get_base_polymorphic_model(ChildModel, allow_abstract=False):
         return None
 
@@ -20,7 +21,7 @@ except ImportError:
 @contextlib.contextmanager
 def mutable_querydict(qd):
     orig_mutable = None
-    if getattr(qd, '_mutable', None) is False:
+    if getattr(qd, "_mutable", None) is False:
         orig_mutable = False
         qd._mutable = True
     yield
@@ -44,7 +45,7 @@ class FixDjango2MultipartFormMixin:
             Exists to prevent infinite recursion in the formset's is_multipart
             lookup.
         """
-        parent_formset = getattr(self, 'parent_formset', None)
+        parent_formset = getattr(self, "parent_formset", None)
         if check_formset and parent_formset:
             return parent_formset.is_multipart()
         else:
@@ -59,9 +60,12 @@ class NestedInlineFormSetMixin:
         super().__init__(*args, **kwargs)
         if PATCH_FORM_IS_MULTIPART:
             self.form = type(
-                self.form.__name__, (FixDjango2MultipartFormMixin, self.form), {
-                    'parent_formset': self,
-                })
+                self.form.__name__,
+                (FixDjango2MultipartFormMixin, self.form),
+                {
+                    "parent_formset": self,
+                },
+            )
 
     @property
     def media(self):
@@ -70,8 +74,8 @@ class NestedInlineFormSetMixin:
 
     def _construct_form(self, i, **kwargs):
         defaults = {}
-        if '-empty-' in self.prefix:
-            defaults['empty_permitted'] = True
+        if "-empty-" in self.prefix:
+            defaults["empty_permitted"] = True
         defaults.update(kwargs)
         return super()._construct_form(i, **defaults)
 
@@ -82,10 +86,10 @@ class NestedInlineFormSetMixin:
         else:
             try:
                 forms = [f for f in self]
-            except:
+            except Exception:
                 forms = []
             if not forms:
-                if hasattr(type(self), 'empty_forms'):
+                if hasattr(type(self), "empty_forms"):
                     forms = self.empty_forms  # django-polymorphic compat
                 else:
                     forms = [self.empty_form]
@@ -97,7 +101,7 @@ class NestedInlineFormSetMixin:
                 if form_is_multipart:
                     return True
 
-        for nested_formset in getattr(self, 'nested_formsets', []):
+        for nested_formset in getattr(self, "nested_formsets", []):
             if nested_formset.is_multipart():
                 return True
 
@@ -115,9 +119,11 @@ class NestedInlineFormSetMixin:
         # Copied lines are from BaseModelFormSet.save()
         if not commit:
             self.saved_forms = []
+
             def save_m2m():
                 for form in self.saved_forms:
                     form.save_m2m()
+
             self.save_m2m = save_m2m
         # End copied lines from BaseModelFormSet.save()
 
@@ -173,10 +179,10 @@ class NestedInlineFormSetMixin:
 
         Returns list of forms.
         """
-        sort_field = getattr(self, 'sortable_field_name', None)
+        sort_field = getattr(self, "sortable_field_name", None)
 
         def get_position(form):
-            return getattr(form, 'cleaned_data', {sort_field: 0}).get(sort_field, 0)
+            return getattr(form, "cleaned_data", {sort_field: 0}).get(sort_field, 0)
 
         if sort_field is not None:
             forms.sort(key=get_position)
@@ -201,7 +207,7 @@ class NestedInlineFormSetMixin:
                         form.data[form.add_prefix(sort_field)] = str(i)
 
                     # Force recalculation of changed_data
-                    form.__dict__.pop('changed_data', None)
+                    form.__dict__.pop("changed_data", None)
 
                 i += 1
 
@@ -212,7 +218,7 @@ class NestedInlineFormSetMixin:
         if form.instance and form.instance._meta.pk:
             pk_name = form.instance._meta.pk.name
         pk_val = None
-        if not form.errors and hasattr(form, 'cleaned_data'):
+        if not form.errors and hasattr(form, "cleaned_data"):
             pk_val = form.cleaned_data.get(pk_name)
         # Inherited models will show up as instances of the parent in
         # cleaned_data
@@ -245,10 +251,14 @@ class NestedInlineFormSetMixin:
         if not self.data:
             return super().get_queryset()
 
-        if not hasattr(self, '__queryset'):
-            pk_keys = ["{}-{}".format(self.add_prefix(i), self.model._meta.pk.name)
-                       for i in range(0, self.initial_form_count())]
-            pk_vals = [self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)]
+        if not hasattr(self, "__queryset"):
+            pk_keys = [
+                "{}-{}".format(self.add_prefix(i), self.model._meta.pk.name)
+                for i in range(0, self.initial_form_count())
+            ]
+            pk_vals = [
+                self.data.get(pk_key) for pk_key in pk_keys if self.data.get(pk_key)
+            ]
 
             qs = self.model._default_manager.get_queryset()
             qs = qs.filter(pk__in=pk_vals)
@@ -277,10 +287,11 @@ class NestedInlineFormSetMixin:
         for form in initial_forms:
             pk_name = self._pk_field.name
 
-            if not hasattr(form, '_raw_value'):
+            if not hasattr(form, "_raw_value"):
                 # Django 1.9+
                 raw_pk_value = form.fields[pk_name].widget.value_from_datadict(
-                    form.data, form.files, form.add_prefix(pk_name))
+                    form.data, form.files, form.add_prefix(pk_name)
+                )
             else:
                 raw_pk_value = form._raw_value(pk_name)
 
@@ -297,14 +308,14 @@ class NestedInlineFormSetMixin:
                     # fail (because the instance has been deleted). To get
                     # around this we clear the pk and save it as if it were new.
                     with mutable_querydict(form.data):
-                        form.data[form.add_prefix(pk_name)] = ''
+                        form.data[form.add_prefix(pk_name)] = ""
 
                     if not form.has_changed():
-                        form.__dict__['changed_data'].append(pk_name)
+                        form.__dict__["changed_data"].append(pk_name)
 
                     saved_instances.extend(self.save_new_objects([form], commit))
                     continue
-                pk_value = getattr(pk_value, 'pk', pk_value)
+                pk_value = getattr(pk_value, "pk", pk_value)
 
             obj = None
             if obj is None and form.instance and pk_value:
@@ -335,14 +346,16 @@ class NestedInlineFormSetMixin:
                 continue
 
             # fk_val: The value one should find in the form's foreign key field
-            old_ct_val = ct_val = ContentType.objects.get_for_model(self.instance.__class__).pk
+            old_ct_val = ct_val = ContentType.objects.get_for_model(
+                self.instance.__class__
+            ).pk
             old_fk_val = fk_val = self.instance.pk
             if form.instance.pk:
                 original_instance = self.model.objects.get(pk=form.instance.pk)
-                fk_field = getattr(self, 'fk', getattr(self, 'ct_fk_field', None))
+                fk_field = getattr(self, "fk", getattr(self, "ct_fk_field", None))
                 if fk_field:
                     old_fk_val = getattr(original_instance, fk_field.get_attname())
-                ct_field = getattr(self, 'ct_field', None)
+                ct_field = getattr(self, "ct_field", None)
                 if ct_field:
                     old_ct_val = getattr(original_instance, ct_field.get_attname())
 
@@ -383,22 +396,27 @@ class NestedInlineFormSet(NestedInlineFormSetMixin, BaseInlineFormSet):
     """
     The nested InlineFormSet for the common case (ForeignKey inlines)
     """
+
     pass
 
 
 class NestedBaseGenericInlineFormSetMixin(NestedInlineFormSetMixin):
-
     def save_existing(self, form, instance, commit=True):
         """Saves and returns an existing model instance for the given form."""
-        setattr(form.instance, self.ct_field.get_attname(),
-            ContentType.objects.get_for_model(self.instance).pk)
-        setattr(form.instance, self.ct_fk_field.get_attname(),
-            self.instance.pk)
+        setattr(
+            form.instance,
+            self.ct_field.get_attname(),
+            ContentType.objects.get_for_model(self.instance).pk,
+        )
+        setattr(form.instance, self.ct_fk_field.get_attname(), self.instance.pk)
         return form.save(commit=commit)
 
 
-class NestedBaseGenericInlineFormSet(NestedBaseGenericInlineFormSetMixin, BaseGenericInlineFormSet):
+class NestedBaseGenericInlineFormSet(
+    NestedBaseGenericInlineFormSetMixin, BaseGenericInlineFormSet
+):
     """
     The nested InlineFormSet for inlines of generic content-type relations
     """
+
     pass

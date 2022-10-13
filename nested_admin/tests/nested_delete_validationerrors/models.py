@@ -11,11 +11,11 @@ class Parent(models.Model):
 
 class Child(models.Model):
     name = models.CharField(max_length=128)
-    parent = ForeignKey(Parent, on_delete=CASCADE, related_name='children')
+    parent = ForeignKey(Parent, on_delete=CASCADE, related_name="children")
     position = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         return self.name
@@ -23,11 +23,11 @@ class Child(models.Model):
 
 class GrandChild(models.Model):
     name = models.CharField(max_length=128)
-    parent = ForeignKey(Child, on_delete=CASCADE, related_name='children')
+    parent = ForeignKey(Child, on_delete=CASCADE, related_name="children")
     position = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         return self.name

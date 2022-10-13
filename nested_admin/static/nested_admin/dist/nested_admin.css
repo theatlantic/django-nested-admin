@@ -1,6 +1,7 @@
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/sass-loader/dist/cjs.js!./nested_admin/static/nested_admin/src/nested_admin.scss ***!
   \***********************************************************************************************************************************************************************************************************************/
+/* stylelint-disable no-descending-specificity */
 .djn-group .djn-group-nested {
   float: none;
   width: auto;
@@ -33,11 +34,13 @@
 .djn-group-nested div.items .module:first-child {
   margin-top: 0 !important; }
 
-.nested-placeholder, .djn-group .ui-sortable-placeholder {
+.nested-placeholder,
+.djn-group .ui-sortable-placeholder {
   margin-bottom: 5px;
   background: #9f9f9f !important; }
 
-.djn-group .ui-nestedsortable-error, .djn-group .ui-nestedSortable-error {
+.djn-group .ui-nestedsortable-error,
+.djn-group .ui-nestedSortable-error {
   background: #9f6464 !important; }
 
 .ui-sortable .grp-module.ui-sortable-placeholder.ui-nestedSortable-error {
@@ -108,10 +111,20 @@
   padding-top: 1px;
   padding-bottom: 1px; }
 
-#grp-content .grp-tabular .grp-table.djn-table .grp-thead > .grp-tr > .grp-th:last-of-type {
+#grp-content
+.grp-tabular
+.grp-table.djn-table
+.grp-thead
+> .grp-tr
+> .grp-th:last-of-type {
   border-right: 0; }
 
-#grp-content .grp-tabular .grp-table.djn-table .grp-tbody > .grp-tr > .grp-td:first-of-type {
+#grp-content
+.grp-tabular
+.grp-table.djn-table
+.grp-tbody
+> .grp-tr
+> .grp-td:first-of-type {
   border-left: 1px solid #d4d4d4 !important; }
 
 table.djn-table.grp-table td div.grp-readonly,
@@ -164,7 +177,8 @@ table.djn-table.grp-table th p > input[type="button"] {
   margin-top: 0 !important;
   margin-bottom: 0 !important; }
 
-.djn-empty-form, .djn-empty-form * {
+.djn-empty-form,
+.djn-empty-form * {
   display: none !important; }
 
 #content.colM .inline-group .tabular .ui-sortable-placeholder tr.has_original td {
@@ -266,7 +280,7 @@ table.djn-table.grp-table th p > input[type="button"] {
   border: 2px solid #ccc;
   margin-bottom: 5px; }
   #grp-content .grp-group > .grp-items > .grp-module > .grp-tabular::after {
-    content: '';
+    content: "";
     display: block;
     clear: both; }
 

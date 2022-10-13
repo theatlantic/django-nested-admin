@@ -64,7 +64,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: nested_admin/tests/static
-        key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'frontend/**') }}
+        key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'nested_admin/static/nested_admin/src/**/*.*s') }}
 
     - name: Cache node_modules
       id: cache-node_modules
@@ -73,19 +73,20 @@ jobs:
         path: node_modules
         key: node_modules-${{ hashFiles('package-lock.json') }}
 
-    - name: Setup nodejs 14
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
-      uses: actions/setup-node@v2
+    - name: Setup nodejs
+      if: steps.cache-test-dist.outputs.cache-hit != 'true'
+      uses: actions/setup-node@v3
       with:
-        node-version: '14'
+        node-version: '16'
+        cache: 'npm'
 
     - name: npm ci
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      if: steps.cache-test-dist.outputs.cache-hit != 'true' && steps.cache-node_modules.outputs.cache-hit != 'true'
       run: |
         npm ci || npm ci || npm ci
 
     - name: Build instrumented static files
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      if: steps.cache-test-dist.outputs.cache-hit != 'true'
       run: |
         npm run build
 
@@ -115,6 +116,76 @@ jobs:
       env:
         CODECOV_NAME: ${{ github.workflow }}
 
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tool: ["flake8", "black", "eslint", "stylelint"]
+        include:
+          - tool: flake8
+            language: python
+          - tool: black
+            language: python
+          - tool: eslint
+            language: javascript
+          - tool: stylelint
+            language: javascript
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      if: matrix.language == 'python'
+      with:
+        python-version: 3.9
+
+    - name: Cache node_modules
+      if: matrix.language == 'javascript'
+      id: cache-node_modules
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: node_modules-${{ hashFiles('package-lock.json') }}-lint
+        restore-keys: |
+          node_modules-${{ hashFiles('package-lock.json') }}
+
+    - name: Setup nodejs
+      if: matrix.language == 'javascript'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'npm'
+
+    - name: npm ci
+      if: matrix.language == 'javascript' && steps.cache-node_modules.outputs.cache-hit != 'true'
+      run: |
+        npm ci || npm ci || npm ci
+
+    - name: Run black
+      if: matrix.tool == 'black'
+      uses: psf/black@stable
+      with:
+        src: "nested_admin docs setup.py"
+        version: "22.8.0"
+
+    - name: Install flake8
+      if: matrix.tool == 'flake8'
+      run: pip install flake8
+
+    - name: Run flake8
+      if: matrix.tool == 'flake8'
+      uses: suo/flake8-github-action@releases/v1
+      with:
+        checkName: 'lint'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run ${{ matrix.tool }}
+      if: matrix.language == 'javascript'
+      run: |
+        npm run lint:${{ matrix.tool }}
+
   report:
     if: always()
     needs: build
@@ -126,16 +197,15 @@ jobs:
           name: junit-reports
 
       - name: Publish tests report
-        uses: mikepenz/action-junit-report@5703ba1461f35871cde0208140d737d3e1eef38f
+        uses: mikepenz/action-junit-report@1a91e26932fb7ba410a31fab1f09266a96d29971
         with:
           report_paths: ./*.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           require_tests: true
           fail_on_failure: true
           check_name: Test Report
 
   success:
-    needs: report
+    needs: [lint, report]
     runs-on: ubuntu-latest
     name: Test Successful
     steps:

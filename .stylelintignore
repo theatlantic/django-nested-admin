@@ -1,0 +1,8 @@
+/nested_admin/tests/static
+/nested_admin/static/nested_admin/dist
+node_modules
+venv
+.tox
+**/*.js
+**/*.html
+**/*.xml

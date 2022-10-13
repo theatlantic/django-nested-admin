@@ -16,7 +16,7 @@ class CuratedGroup(models.Model):
     position = models.PositiveSmallIntegerField()
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         return self.name
@@ -28,7 +28,7 @@ class CuratedList(models.Model):
     group = models.ForeignKey(CuratedGroup, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
 
 class CuratedItem(models.Model):
@@ -38,7 +38,7 @@ class CuratedItem(models.Model):
     name = models.CharField(max_length=64, blank=True)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         if self.name:

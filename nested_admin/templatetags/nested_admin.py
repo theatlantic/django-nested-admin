@@ -4,7 +4,6 @@ import json
 
 import django
 from django import template
-from django.conf import settings
 from django.contrib.admin.options import InlineModelAdmin
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -30,7 +29,7 @@ def form_index(form):
 
     and the form's index is '2'
     """
-    matches = re.search(r'\-(\d+)$', form.prefix)
+    matches = re.search(r"\-(\d+)$", form.prefix)
     if not matches:
         raise Exception("Form with invalid prefix passed to templatetag")
     return int(matches.group(1))
@@ -39,18 +38,22 @@ def form_index(form):
 @register.filter
 def strip_parent_name(nested_name, parent_name):
     if nested_name.find(parent_name + " ") == 0:
-        return nested_name[len(parent_name)+1:]
+        return nested_name[len(parent_name) + 1 :]
     else:
         return nested_name
+
+
 strip_parent_name.is_safe = True
 
 # These tags are defined in grappelli.templatetags.grp_tags. The issue is that
 # they are wrapped in mark_safe(), so we can't use them reliably inside of
 # attributes.
 
+
 @register.filter
 def json_encode(data):
     return escape(json.dumps(data))
+
 
 def json_else_list_tag(f):
     """
@@ -58,12 +61,14 @@ def json_else_list_tag(f):
     Try: Return value of the decorated function json encoded.
     Except: Return []
     """
+
     @wraps(f)
     def inner(model_admin):
         try:
             return mark_safe(escape(json.dumps(f(model_admin))))
-        except:
+        except Exception:
             return []
+
     return register.simple_tag(inner)
 
 
@@ -83,6 +88,7 @@ def get_safe_related_lookup_fields_generic(model_admin):
 
 
 # AUTOCOMPLETES
+
 
 @json_else_list_tag
 def get_safe_autocomplete_lookup_fields_fk(model_admin):
@@ -137,7 +143,6 @@ def cell_count(inline_admin_form):
 
 
 class IfConditionNode(template.Node):
-
     def __init__(self, nodelist_true, nodelist_false, value):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
@@ -151,7 +156,7 @@ class IfConditionNode(template.Node):
 
 
 def str_to_version(string):
-    return tuple([int(s) for s in string.split('.')])
+    return tuple([int(s) for s in string.split(".")])
 
 
 @register.filter
@@ -176,11 +181,13 @@ def django_version_gte(string):
 
 @register.tag
 def ifinlineclasses(parser, token):
-    nodelist_true = parser.parse(('else', 'endifinlineclasses'))
+    nodelist_true = parser.parse(("else", "endifinlineclasses"))
     token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endifinlineclasses',))
+    if token.contents == "else":
+        nodelist_false = parser.parse(("endifinlineclasses",))
         parser.delete_first_token()
     else:
         nodelist_false = template.NodeList()
-    return IfConditionNode(nodelist_true, nodelist_false, hasattr(InlineModelAdmin, 'classes'))
+    return IfConditionNode(
+        nodelist_true, nodelist_false, hasattr(InlineModelAdmin, "classes")
+    )

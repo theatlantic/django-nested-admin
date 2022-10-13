@@ -7,7 +7,6 @@
 # This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
 #
 # Also included is a monkey-patch for django.forms.formsets.all_valid().
-import pkg_resources
 import sys
 from types import ModuleType
 
@@ -15,33 +14,46 @@ import django
 import django.forms.formsets
 import monkeybiz
 
-__version__ = '3.4.0'
+__version__ = "3.4.0"
 
 # import mapping to objects in other modules
 all_by_module = {
-    'nested_admin.forms': (
-        'SortableHiddenMixin',),
-    'nested_admin.formsets': (
-        'NestedInlineFormSet', 'NestedBaseGenericInlineFormSet'),
-    'nested_admin.nested': (
-        'NestedModelAdmin', 'NestedModelAdminMixin', 'NestedInlineAdminFormset',
-        'NestedInlineModelAdmin', 'NestedStackedInline', 'NestedTabularInline',
-        'NestedInlineModelAdminMixin', 'NestedGenericInlineModelAdmin',
-        'NestedGenericStackedInline', 'NestedGenericTabularInline',
-        'NestedStackedInlineMixin', 'NestedTabularInlineMixin',
-        'NestedGenericStackedInline', 'NestedGenericTabularInline',
-        'NestedGenericStackedInlineMixin', 'NestedGenericTabularInlineMixin',
-        'NestedGenericInlineModelAdminMixin', 'NestedInlineAdminFormsetMixin'),
+    "nested_admin.forms": ("SortableHiddenMixin",),
+    "nested_admin.formsets": ("NestedInlineFormSet", "NestedBaseGenericInlineFormSet"),
+    "nested_admin.nested": (
+        "NestedModelAdmin",
+        "NestedModelAdminMixin",
+        "NestedInlineAdminFormset",
+        "NestedInlineModelAdmin",
+        "NestedStackedInline",
+        "NestedTabularInline",
+        "NestedInlineModelAdminMixin",
+        "NestedGenericInlineModelAdmin",
+        "NestedGenericStackedInline",
+        "NestedGenericTabularInline",
+        "NestedStackedInlineMixin",
+        "NestedTabularInlineMixin",
+        "NestedGenericStackedInline",
+        "NestedGenericTabularInline",
+        "NestedGenericStackedInlineMixin",
+        "NestedGenericTabularInlineMixin",
+        "NestedGenericInlineModelAdminMixin",
+        "NestedInlineAdminFormsetMixin",
+    ),
 }
 
-all_by_module['nested_admin.polymorphic'] = (
-    'NestedPolymorphicInlineAdminFormset', 'NestedPolymorphicInlineModelAdmin',
-    'NestedStackedPolymorphicInline', 'NestedPolymorphicInlineSupportMixin',
-    'NestedPolymorphicModelAdmin', 'NestedGenericPolymorphicInlineModelAdmin',
-    'NestedGenericStackedPolymorphicInline')
+all_by_module["nested_admin.polymorphic"] = (
+    "NestedPolymorphicInlineAdminFormset",
+    "NestedPolymorphicInlineModelAdmin",
+    "NestedStackedPolymorphicInline",
+    "NestedPolymorphicInlineSupportMixin",
+    "NestedPolymorphicModelAdmin",
+    "NestedGenericPolymorphicInlineModelAdmin",
+    "NestedGenericStackedPolymorphicInline",
+)
 
 # modules that should be imported when accessed as attributes of nested_admin
-attribute_modules = frozenset(['forms', 'formsets', 'nested', 'polymorphic'])
+attribute_modules = frozenset(["forms", "formsets", "nested", "polymorphic"])
 
 object_origins = {}
 for module, items in all_by_module.items():
@@ -50,13 +62,22 @@ for module, items in all_by_module.items():
 
 
 class module(ModuleType):
-
     def __dir__(self):
         """Just show what we want to show."""
         result = list(new_module.__all__)
-        result.extend(('__file__', '__path__', '__doc__', '__all__',
-                       '__docformat__', '__name__', '__path__',
-                       '__package__', '__version__'))
+        result.extend(
+            (
+                "__file__",
+                "__path__",
+                "__doc__",
+                "__all__",
+                "__docformat__",
+                "__name__",
+                "__path__",
+                "__package__",
+                "__version__",
+            )
+        )
         return result
 
     def __getattr__(self, name):
@@ -66,7 +87,7 @@ class module(ModuleType):
                 setattr(self, extra_name, getattr(module, extra_name))
             return getattr(module, name)
         elif name in attribute_modules:
-            __import__('nested_admin.' + name)
+            __import__("nested_admin." + name)
         return ModuleType.__getattribute__(self, name)
 
 
@@ -75,27 +96,29 @@ old_module = sys.modules[__name__]
 
 # setup the new module and patch it into the dict of loaded modules
 new_module = sys.modules[__name__] = module(__name__)
-new_module.__dict__.update({
-    '__file__':         __file__,
-    '__package__':      'nested_admin',
-    '__path__':         __path__,
-    '__doc__':          __doc__,
-    '__version__':      __version__,
-    '__all__':          tuple(object_origins) + tuple(attribute_modules),
-    '__docformat__':    'restructuredtext en',
-})
+new_module.__dict__.update(
+    {
+        "__file__": __file__,
+        "__package__": "nested_admin",
+        "__path__": __path__,
+        "__doc__": __doc__,
+        "__version__": __version__,
+        "__all__": tuple(object_origins) + tuple(attribute_modules),
+        "__docformat__": "restructuredtext en",
+    }
+)
 
 all_valid_patch_modules = [django.forms.formsets]
 
 # If django.contrib.admin.options has already been imported, we'll need to
 # monkeypatch all_valid in that module as well
-admin_module = sys.modules.get('django.contrib.admin.options')
+admin_module = sys.modules.get("django.contrib.admin.options")
 if admin_module:
     all_valid_patch_modules.append(admin_module)
 
 
 def descend_form(form):
-    for formset in getattr(form, 'nested_formsets', None) or []:
+    for formset in getattr(form, "nested_formsets", None) or []:
         yield from descend_formset(formset)
 
 
@@ -130,15 +153,15 @@ def all_valid(original_all_valid, formsets):
     by descendent inlines of deleted forms.
     """
     if not original_all_valid(formsets):
-        if len(formsets) and getattr(formsets[0], 'data', None):
-            has_delete = any(k for k in formsets[0].data if k.endswith('-DELETE'))
+        if len(formsets) and getattr(formsets[0], "data", None):
+            has_delete = any(k for k in formsets[0].data if k.endswith("-DELETE"))
             if has_delete:
                 patch_delete_children_empty_permitted(formsets)
                 return original_all_valid(formsets)
         return False
 
     for formset in formsets:
-        if formset.has_changed() and getattr(formset, 'parent_form', None):
+        if formset.has_changed() and getattr(formset, "parent_form", None):
             parent_form = formset.parent_form
 
             while True:
@@ -150,11 +173,11 @@ def all_valid(original_all_valid, formsets):
                         # Force Django to try to save the instance,
                         # since we need it for the fk to work
                         changed_data = parent_form.fields.keys()
-                        parent_form.__dict__['changed_data'] = changed_data
-                if not hasattr(parent_form, 'parent_formset'):
+                        parent_form.__dict__["changed_data"] = changed_data
+                if not hasattr(parent_form, "parent_formset"):
                     break
                 parent_form.parent_formset._errors = None
-                if not hasattr(parent_form.parent_formset, 'parent_form'):
+                if not hasattr(parent_form.parent_formset, "parent_form"):
                     break
                 parent_form = parent_form.parent_formset.parent_form
 
