@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**4.0.0 (unreleased)**
+**4.0.0 (Oct 14, 2022)**
 
 * Officially support Django 4.1
 * Fixed: Django 4.1 autocomplete on newly added nested inlines by dispatching
