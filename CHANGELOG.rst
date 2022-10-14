@@ -5,6 +5,11 @@ Changelog
 
 * Remove python 2.x compatibility, drop support for EOL Django versions
   (all versions before 3.2)
+* Fixed: Django 4.1 autocomplete on newly added nested inlines by dispatching
+  native javascript CustomEvent events for ``formset:added`` and
+  ``formset:removed``. Fixes `#229`_.
+
+.. _#229: https://github.com/theatlantic/django-nested-admin/issues/229
 
 **3.4.0 (Dec 20, 2021)**
 

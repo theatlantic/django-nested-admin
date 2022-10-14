@@ -283,6 +283,11 @@ var DjangoFormset = /*#__PURE__*/function () {
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:mutate", [this.$inline]); // Also fire using the events that were added in Django 1.9
 
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:removed", [$form, this.prefix]);
+    document.dispatchEvent(new CustomEvent("formset:removed", {
+      detail: {
+        formsetName: this.prefix
+      }
+    }));
   };
 
   _proto.delete = function _delete(form) {
@@ -492,6 +497,16 @@ var DjangoFormset = /*#__PURE__*/function () {
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("djnesting:added", [this.$inline, $form]); // Also fire using the events that were added in Django 1.9
 
     (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])(document).trigger("formset:added", [$form, this.prefix]);
+
+    try {
+      $form.get(0).dispatchEvent(new CustomEvent("formset:added", {
+        bubbles: true,
+        detail: {
+          formsetName: this.prefix
+        }
+      }));
+    } catch (e) {}
+
     return $form;
   };
 

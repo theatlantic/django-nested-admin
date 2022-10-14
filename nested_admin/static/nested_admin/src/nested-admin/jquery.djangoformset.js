@@ -228,6 +228,14 @@ class DjangoFormset {
 
     // Also fire using the events that were added in Django 1.9
     $(document).trigger("formset:removed", [$form, this.prefix]);
+
+    document.dispatchEvent(
+      new CustomEvent("formset:removed", {
+        detail: {
+          formsetName: this.prefix,
+        },
+      })
+    );
   }
   delete(form) {
     var self = this,
@@ -461,6 +469,17 @@ class DjangoFormset {
 
     // Also fire using the events that were added in Django 1.9
     $(document).trigger("formset:added", [$form, this.prefix]);
+
+    try {
+      $form.get(0).dispatchEvent(
+        new CustomEvent("formset:added", {
+          bubbles: true,
+          detail: {
+            formsetName: this.prefix,
+          },
+        })
+      );
+    } catch (e) {}
 
     return $form;
   }
