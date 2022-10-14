@@ -27,7 +27,7 @@
             {% if forloop.first %}
             <div class="djn-item djn-no-drag"><div></div></div>
             {% endif %}
-            <div class="{% if not forloop.last or not inline_admin_formset.has_add_permission %}djn-item{% endif %} grp-module djn-module djn-inline-form {% if inline_admin_formset.opts.inline_classes %}{{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }}{% else %}grp-collapse grp-closed{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} djn-empty-form grp-empty-form{% endif %} inline-related"
+            <div class="{% if not forloop.last or not inline_admin_formset.has_add_permission %}djn-item{% endif %} grp-module djn-module djn-inline-form {% if inline_admin_formset.opts.inline_classes %}{{ inline_admin_formset.opts.inline_classes|join:" "|default:"grp-collapse grp-closed" }}{% else %}grp-collapse grp-closed{% endif %}{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form djn-empty-form grp-empty-form{% endif %} inline-related"
                  data-inline-model="{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}"
                  {% if inline_admin_form.pk_field.field %}
                  data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"

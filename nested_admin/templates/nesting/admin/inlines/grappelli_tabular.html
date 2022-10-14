@@ -40,7 +40,7 @@
 
         {% with inline_admin_formset.opts.sortable_field_name|default:"" as sortable_field_name %}
         {% for inline_admin_form in inline_admin_formset|formsetsort:sortable_field_name %}
-            <tbody class="grp-tbody djn-tbody{% if not forloop.last or not inline_admin_formset.has_add_permission %} djn-item{% endif %} form-row grp-module djn-inline-form{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} djn-empty-form grp-empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
+            <tbody class="grp-tbody djn-tbody{% if not forloop.last or not inline_admin_formset.has_add_permission %} djn-item{% endif %} form-row grp-module djn-inline-form{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form djn-empty-form grp-empty-form{% endif %}{% if inline_admin_form.form.inlines %} djn-has-inlines{% endif %}"
                 data-inline-model="{{ inline_admin_form.model_admin.opts.app_label }}-{{ inline_admin_form.model_admin.opts.model_name }}"
                 {% if inline_admin_form.pk_field.field %}
                 data-is-initial="{% if inline_admin_form.pk_field.field.value %}true{% else %}false{% endif %}"

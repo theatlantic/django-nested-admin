@@ -5,8 +5,7 @@ import DJNesting from "./utils";
 import * as grappelli from "grappelli";
 import grp from "grp";
 import grp$ from "./grp$";
-// const grp = require('grp');
-// const grp$ = require('./grp$');
+import django$ from "./django$";
 
 var pluginName = "djangoFormset";
 
@@ -416,7 +415,7 @@ class DjangoFormset {
     if (grappelli) {
       grappelli.reinitDateTimeFields(grp$($form));
     }
-    DJNesting.DjangoInlines.initPrepopulatedFields($form);
+    DJNesting.DjangoInlines.initPrepopulatedFields(django$($form));
     DJNesting.DjangoInlines.reinitDateTimeShortCuts();
     DJNesting.DjangoInlines.updateSelectFilter($form);
     DJNesting.initRelatedFields(this.prefix);
