@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 from html import unescape
 import time
-from unittest import SkipTest
 
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -402,8 +401,6 @@ class Widgets(BaseWidgetTestCase):
         self.check_gfk_related_lookup([1, 0, [1, 0]])
 
     def test_nested_autocomplete_extra(self):
-        if self.has_grappelli:
-            raise SkipTest("Not testing autocomplete on grappelli")
         self.load_admin()
         self.add_inline([0, [0]])
         self.add_inline([0, 1, [0]])

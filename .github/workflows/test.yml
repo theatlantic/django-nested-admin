@@ -7,38 +7,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        django-version: ["2.2", "3.2", "4.0", "4.1"]
         grappelli: ["0"]
-        exclude:
-          - python-version: "3.7"
-            django-version: "4.0"
-          - python-version: "3.7"
-            django-version: "4.1"
-          - python-version: "3.10"
-            django-version: "2.2"
-          # Exclude some version combos that don't need to be tested (since
-          # the combination of python and django versions is unlikely to
-          # be germane to django-nested-admin)
-          - python-version: "3.8"
-            django-version: "3.2"
-          - python-version: "3.8"
-            django-version: "4.1"
-          - python-version: "3.9"
-            django-version: "4.0"
-          - python-version: "3.9"
-            django-version: "4.1"
+        python-version: ["3.8"]
+        django-version: ["3.2"]
         include:
           - grappelli: "0"
             name-suffix: ""
+          - python-version: "3.9"
+            django-version: "4.0"
+          - python-version: "3.10"
+            django-version: "4.1"
           - grappelli: "1"
             name-suffix: " + grappelli"
             python-version: "3.7"
-            django-version: "2.2"
-          # - grappelli: "1"
-          #   name-suffix: " + grappelli"
-          #   python-version: "3.10"
-          #   django-version: "3.2"
+            django-version: "3.2"
+          - grappelli: "1"
+            name-suffix: " + grappelli"
+            python-version: "3.8"
+            django-version: "4.0"
 
     runs-on: ubuntu-latest
     name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.name-suffix }}

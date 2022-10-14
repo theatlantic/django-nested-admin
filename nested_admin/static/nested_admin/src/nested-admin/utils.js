@@ -3,6 +3,7 @@ import $ from "jquery";
 import "./jquery.djnutils";
 import { createSortable, updatePositions } from "./sortable";
 import regexQuote from "./regexquote";
+import django$ from "./django$";
 import grp$ from "./grp$";
 
 var DJNesting = typeof window.DJNesting != "undefined" ? window.DJNesting : {};
@@ -61,6 +62,9 @@ DJNesting.updateFormAttributes = function ($elem, search, replace, selector) {
   // update prepopulate ids for function initPrepopulatedFields
   $elem.find(".prepopulated_field").each(function () {
     var $node = grp$(this);
+    if (typeof $node.prepopulate !== "function") {
+      $node = django$(this);
+    }
     var dependencyIds = $.makeArray($node.data("dependency_ids") || []);
     $node.data(
       "dependency_ids",
@@ -212,25 +216,82 @@ DJNesting.initAutocompleteFields = function (prefix, groupData) {
   });
 };
 
+function getLevelPrefix(id) {
+  return id
+    .replace(/^\#?id_/, "")
+    .split(/-(?:empty|__prefix__|\d+)-/g)
+    .slice(0, -1)
+    .join("-");
+}
+
 // I very much regret that these are basically copy-pasted from django's
 // inlines.js, but they're hidden in closure scope so I don't have much choice.
 DJNesting.DjangoInlines = {
   initPrepopulatedFields: function (row) {
+    const formPrefix = row.djangoFormPrefix();
+    if (!formPrefix) return;
+    const fields = $("#django-admin-prepopulated-fields-constants").data(
+      "prepopulatedFields"
+    );
+    const fieldNames = new Set();
+    const fieldDependencies = {};
+
+    if (Array.isArray(fields)) {
+      fields.forEach(
+        ({ id, name, dependency_list, maxLength, allowUnicode }) => {
+          fieldNames.add(name);
+          const levelPrefix = getLevelPrefix(id);
+          if (typeof fieldDependencies[levelPrefix] !== "object") {
+            fieldDependencies[levelPrefix] = {};
+          }
+          fieldDependencies[levelPrefix][name] = {
+            dependency_list,
+            maxLength,
+            allowUnicode,
+          };
+        }
+      );
+      fieldNames.forEach((name) => {
+        row
+          .find(`.form-row .field-${name}, .form-row.field-${name}`)
+          .each(function () {
+            const $el = $(this);
+            const prefix = $el.djangoFormPrefix();
+            if (!prefix) return;
+            const levelPrefix = getLevelPrefix(prefix);
+            const dep = (fieldDependencies[levelPrefix] || {})[name];
+            if (dep) {
+              $el.addClass("prepopulated_field");
+              const $field = $el.is(":input") ? $el : $el.find(":input");
+              $field.data("dependency_list", dep.dependency_list);
+              $field.data("maxLength", dep.maxLength);
+              $field.data("allowUnicode", dep.allowUnicode);
+            }
+          });
+      });
+    }
+    if (formPrefix.match(/__prefix__/)) return;
     row.find(".prepopulated_field").each(function () {
       var field = $(this),
         input = field.is(":input") ? field : field.find(":input"),
         $input = grp$(input),
+        inputFormPrefix = input.djangoFormPrefix(),
         dependencyList = $input.data("dependency_list") || [],
-        formPrefix = input.djangoFormPrefix(),
         dependencies = [];
-      if (!formPrefix || formPrefix.match(/__prefix__/)) {
-        return;
+      if (!inputFormPrefix || inputFormPrefix.match(/__prefix__/)) return;
+      if (!dependencyList.length || !$input.prepopulate) {
+        $input = django$(input);
+        dependencyList = $input.data("dependency_list") || [];
       }
       $.each(dependencyList, function (i, fieldName) {
-        dependencies.push("#id_" + formPrefix + fieldName);
+        dependencies.push("#id_" + inputFormPrefix + fieldName);
       });
       if (dependencies.length) {
-        $input.prepopulate(dependencies, input.attr("maxlength"));
+        $input.prepopulate(
+          dependencies,
+          $input.data("maxLength") || $input.attr("maxlength"),
+          $input.data("allowUnicode")
+        );
       }
     });
   },

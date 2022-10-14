@@ -3,11 +3,13 @@ Changelog
 
 **4.0.0 (unreleased)**
 
-* Remove python 2.x compatibility, drop support for EOL Django versions
-  (all versions before 3.2)
+* Officially support Django 4.1
 * Fixed: Django 4.1 autocomplete on newly added nested inlines by dispatching
   native javascript CustomEvent events for ``formset:added`` and
   ``formset:removed``. Fixes `#229`_.
+* Fixed: prepopulated fields in django-grappelli 2.15+
+* Remove python 2.x compatibility, drop support for EOL Django versions
+  (all versions before 3.2)
 
 .. _#229: https://github.com/theatlantic/django-nested-admin/issues/229
 
