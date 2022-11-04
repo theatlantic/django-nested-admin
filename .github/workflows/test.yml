@@ -37,10 +37,10 @@ jobs:
       NODE_ENV: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -53,14 +53,14 @@ jobs:
 
     - name: Cache instrumented static files
       id: cache-test-dist
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: nested_admin/tests/static
         key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'nested_admin/static/nested_admin/src/**/*.*s') }}
 
     - name: Cache node_modules
       id: cache-node_modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: node_modules
         key: node_modules-${{ hashFiles('package-lock.json') }}
@@ -91,7 +91,7 @@ jobs:
 
     - name: Upload junit xml
       if: always()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: junit-reports
         path: reports/*.xml
@@ -125,9 +125,9 @@ jobs:
             language: javascript
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       if: matrix.language == 'python'
       with:
         python-version: 3.9
@@ -135,7 +135,7 @@ jobs:
     - name: Cache node_modules
       if: matrix.language == 'javascript'
       id: cache-node_modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: node_modules
         key: node_modules-${{ hashFiles('package-lock.json') }}-lint
@@ -184,7 +184,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Report Test Results"
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: junit-reports
 
