@@ -377,8 +377,12 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes, is_group=True)
         new_index = self.get_num_inlines(indexes)
         model_name = indexes[-1]
-        add_selector = "#{} .djn-add-item a.djn-add-handler.djn-model-{}".format(
-            self.get_group(indexes).get_attribute("id"), model_name
+        add_selector = (
+            "#{} .djn-add-item a.djn-add-handler.djn-model-{}.djn-level-{}".format(
+                self.get_group(indexes).get_attribute("id"),
+                model_name,
+                len(indexes),
+            )
         )
         with self.clickable_selector(add_selector) as el:
             self.click(el)
@@ -392,8 +396,8 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def remove_inline(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
-        remove_selector = "#{} .djn-remove-handler.djn-model-{}".format(
-            self.get_item(indexes).get_attribute("id"), model_name
+        remove_selector = "#{} .djn-remove-handler.djn-model-{}.djn-level-{}".format(
+            self.get_item(indexes).get_attribute("id"), model_name, len(indexes)
         )
         with self.clickable_selector(remove_selector) as el:
             self.click(el)
@@ -402,16 +406,14 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute("id")
-        delete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
-            item_id, model_name
+        delete_selector = "#{} .djn-delete-handler.djn-model-{}.djn-level-{}".format(
+            item_id, model_name, len(indexes)
         )
         with self.clickable_selector(delete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            undelete_selector = (
-                "#{}.grp-predelete .grp-delete-handler.djn-model-{}".format(
-                    item_id, model_name
-                )
+            undelete_selector = "#{}.grp-predelete .grp-delete-handler.djn-model-{}.djn-level-{}".format(
+                item_id, model_name, len(indexes)
             )
             self.wait_until_clickable_selector(undelete_selector)
 
@@ -419,16 +421,14 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         indexes = self._normalize_indexes(indexes)
         model_name = indexes[-1][0]
         item_id = self.get_item(indexes).get_attribute("id")
-        undelete_selector = "#{} .djn-delete-handler.djn-model-{}".format(
-            item_id, model_name
+        undelete_selector = "#{} .djn-delete-handler.djn-model-{}.djn-level-{}".format(
+            item_id, model_name, len(indexes)
         )
         with self.clickable_selector(undelete_selector) as el:
             self.click(el)
         if self.has_grappelli:
-            delete_selector = (
-                "#{}:not(.grp-predelete) .grp-delete-handler.djn-model-{}".format(
-                    item_id, model_name
-                )
+            delete_selector = "#{}:not(.grp-predelete) .grp-delete-handler.djn-model-{}.djn-level-{}".format(
+                item_id, model_name, len(indexes)
             )
             self.wait_until_clickable_selector(delete_selector)
 

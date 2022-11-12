@@ -24,15 +24,15 @@ class DjangoFormset {
     this._$template = $("#" + this.prefix + "-empty");
 
     var inlineModelClassName = this.$inline.djnData("inlineModel");
+    const nestingLevel = this.$inline.djnData("nestingLevel");
+    const handlerSelector = `.djn-model-${inlineModelClassName}.djn-level-${nestingLevel}`;
 
     this.opts = $.extend({}, this.opts, {
       childTypes: this.$inline.data("inlineFormset").options.childTypes,
       formsetFkModel: this.$inline.djnData("formsetFkModel"),
-      addButtonSelector: ".djn-add-handler.djn-model-" + inlineModelClassName,
-      removeButtonSelector:
-        ".djn-remove-handler.djn-model-" + inlineModelClassName,
-      deleteButtonSelector:
-        ".djn-delete-handler.djn-model-" + inlineModelClassName,
+      addButtonSelector: ".djn-add-handler" + handlerSelector,
+      removeButtonSelector: ".djn-remove-handler" + handlerSelector,
+      deleteButtonSelector: ".djn-delete-handler" + handlerSelector,
       formClass:
         "dynamic-form grp-dynamic-form djn-dynamic-form-" +
         inlineModelClassName,
@@ -209,7 +209,7 @@ class DjangoFormset {
     if (maxForms - totalForms >= 0) {
       this.$inline
         .find(this.opts.addButtonSelector)
-        .parents(".djn-add-item")
+        .parent(".djn-add-item,li")
         .show();
     }
 
@@ -400,7 +400,7 @@ class DjangoFormset {
     if (maxForms - (index + 1) <= 0) {
       this.$inline
         .find(this.opts.addButtonSelector)
-        .parents(".djn-add-item")
+        .parent(".djn-add-item,li")
         .hide();
     }
 
