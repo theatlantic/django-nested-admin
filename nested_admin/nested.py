@@ -218,7 +218,13 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
     @property
     def handler_classes(self):
         classes = set(getattr(self.opts, "handler_classes", None) or [])
-        return tuple(classes | {"djn-model-%s" % self.inline_model_id})
+        return tuple(
+            classes
+            | {
+                "djn-model-%s" % self.inline_model_id,
+                "djn-level-%s" % getattr(self.formset, "nesting_depth", 0),
+            }
+        )
 
 
 class NestedBaseInlineAdminFormSet(helpers.InlineAdminFormSet):

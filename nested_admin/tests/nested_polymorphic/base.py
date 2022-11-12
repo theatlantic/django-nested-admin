@@ -196,6 +196,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         )
 
         if indexes:
+            level = len(self._normalize_indexes(indexes, is_group=True))
             item = self.get_item(indexes)
             ctx_id = item.get_attribute("id")
             group_el = self.selenium.execute_script(
@@ -204,11 +205,14 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         else:
             group_el = self.get_group([base_model_identifier])
             ctx_id = group_el.get_attribute("id")
+            level = 1
 
         error_desc = "{} in inline {}".format(model, indexes)
 
-        add_selector = "#{} .djn-add-item a.djn-add-handler.djn-model-{}".format(
-            ctx_id, base_model_identifier
+        add_selector = (
+            "#{} .djn-add-item a.djn-add-handler.djn-model-{}.djn-level-{}".format(
+                ctx_id, base_model_identifier, level
+            )
         )
         add_els = self.selenium.find_elements_by_css_selector(add_selector)
         self.assertNotEqual(

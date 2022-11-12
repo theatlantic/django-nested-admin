@@ -137,12 +137,14 @@ var DjangoFormset = /*#__PURE__*/function () {
 
     this._$template = (0,_jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"])("#" + this.prefix + "-empty");
     var inlineModelClassName = this.$inline.djnData("inlineModel");
+    var nestingLevel = this.$inline.djnData("nestingLevel");
+    var handlerSelector = ".djn-model-" + inlineModelClassName + ".djn-level-" + nestingLevel;
     this.opts = _jquery_shim_js__WEBPACK_IMPORTED_MODULE_7__["default"].extend({}, this.opts, {
       childTypes: this.$inline.data("inlineFormset").options.childTypes,
       formsetFkModel: this.$inline.djnData("formsetFkModel"),
-      addButtonSelector: ".djn-add-handler.djn-model-" + inlineModelClassName,
-      removeButtonSelector: ".djn-remove-handler.djn-model-" + inlineModelClassName,
-      deleteButtonSelector: ".djn-delete-handler.djn-model-" + inlineModelClassName,
+      addButtonSelector: ".djn-add-handler" + handlerSelector,
+      removeButtonSelector: ".djn-remove-handler" + handlerSelector,
+      deleteButtonSelector: ".djn-delete-handler" + handlerSelector,
       formClass: "dynamic-form grp-dynamic-form djn-dynamic-form-" + inlineModelClassName,
       formClassSelector: ".djn-dynamic-form-" + inlineModelClassName
     });
@@ -304,7 +306,7 @@ var DjangoFormset = /*#__PURE__*/function () {
     this.mgmtVal("TOTAL_FORMS", totalForms);
 
     if (maxForms - totalForms >= 0) {
-      this.$inline.find(this.opts.addButtonSelector).parents(".djn-add-item").show();
+      this.$inline.find(this.opts.addButtonSelector).parent(".djn-add-item,li").show();
     }
 
     this._fillGap(index, isInitial);
@@ -473,7 +475,7 @@ var DjangoFormset = /*#__PURE__*/function () {
     this.mgmtVal("TOTAL_FORMS", index + 1);
 
     if (maxForms - (index + 1) <= 0) {
-      this.$inline.find(this.opts.addButtonSelector).parents(".djn-add-item").hide();
+      this.$inline.find(this.opts.addButtonSelector).parent(".djn-add-item,li").hide();
     }
 
     _utils__WEBPACK_IMPORTED_MODULE_9__["default"].updatePositions(this.prefix);
