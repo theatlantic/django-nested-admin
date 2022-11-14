@@ -1,7 +1,7 @@
 Changelog
 =========
 
-**4.0.1 (Nov 14, 2022)**
+**4.0.2 (Nov 14, 2022)**
 
 * Fixed: ``max_num`` now works as expected on models with self-nested models.
   Fixes `#230`_.
