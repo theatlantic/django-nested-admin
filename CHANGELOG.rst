@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**4.0.1 (Nov 14, 2022)**
+
+* Fixed: ``max_num`` now works as expected on models with self-nested models.
+  Fixes `#230`_.
+
+.. _#230: https://github.com/theatlantic/django-nested-admin/issues/230
+
 **4.0.0 (Oct 14, 2022)**
 
 * Officially support Django 4.1
