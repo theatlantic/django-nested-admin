@@ -512,6 +512,8 @@ class NestedInlineModelAdminMixin:
 
     if "grappelli" in settings.INSTALLED_APPS:
         fieldset_template = "nesting/admin/includes/grappelli_inline.html"
+    elif "jazzmin" in settings.INSTALLED_APPS:
+        fieldset_template = "nesting/admin/includes/jazzmin_inline.html"
     else:
         fieldset_template = "nesting/admin/includes/inline.html"
 
@@ -561,6 +563,8 @@ class NestedStackedInlineMixin(NestedInlineModelAdminMixin):
 
     if "grappelli" in settings.INSTALLED_APPS:
         template = "nesting/admin/inlines/grappelli_stacked.html"
+    elif "jazzmin" in settings.INSTALLED_APPS:
+        template = "nesting/admin/inlines/jazzmin_stacked.html"
     else:
         template = "nesting/admin/inlines/stacked.html"
 
@@ -597,6 +601,8 @@ class NestedGenericStackedInlineMixin(NestedGenericInlineModelAdminMixin):
 
     if "grappelli" in settings.INSTALLED_APPS:
         template = "nesting/admin/inlines/grappelli_stacked.html"
+    elif "jazzmin" in settings.INSTALLED_APPS:
+        template = "nesting/admin/inlines/jazzmin_stacked.html"
     else:
         template = "nesting/admin/inlines/stacked.html"
 
