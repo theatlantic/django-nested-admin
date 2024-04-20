@@ -152,7 +152,7 @@ class NestedPolymorphicInlineModelAdmin(
 
             if self.sortable_field_name:
 
-                class FormSet(BaseFormSet):
+                class FormSet(BaseFormSet):  # noqa: F811
                     sortable_field_name = self.sortable_field_name
 
             kwargs["formset"] = FormSet
@@ -190,7 +190,7 @@ class NestedGenericPolymorphicInlineModelAdmin(
 
             if self.sortable_field_name:
 
-                class FormSet(BaseFormSet):
+                class FormSet(BaseFormSet):  # noqa: F811
                     sortable_field_name = self.sortable_field_name
 
             kwargs["formset"] = FormSet

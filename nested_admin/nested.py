@@ -193,9 +193,11 @@ class NestedInlineAdminFormsetMixin(NestedAdminMixin):
                     "lookupAutocomplete": getattr(
                         self.opts, "autocomplete_lookup_fields", {}
                     ),
-                    "formsetFkName": self.formset.fk.name
-                    if getattr(self.formset, "fk", None)
-                    else "",
+                    "formsetFkName": (
+                        self.formset.fk.name
+                        if getattr(self.formset, "fk", None)
+                        else ""
+                    ),
                     "formsetFkModel": formset_fk_model,
                     "nestingLevel": getattr(self.formset, "nesting_depth", 0),
                     "fieldNames": {
@@ -542,7 +544,7 @@ class NestedInlineModelAdminMixin:
 
         if self.sortable_field_name:
 
-            class FormSet(BaseFormSet):
+            class FormSet(BaseFormSet):  # noqa: F811
                 sortable_field_name = self.sortable_field_name
 
         kwargs["formset"] = FormSet
