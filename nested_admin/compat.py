@@ -4,6 +4,7 @@ A backport of the fix in Django 2.0 that retains the order of form media.
 See https://github.com/django/django/commit/c19b56f633e172b3c02094cbe12d28865ee57772
 and https://code.djangoproject.com/ticket/28377
 """
+
 from collections import defaultdict, OrderedDict
 import warnings
 
