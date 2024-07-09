@@ -107,7 +107,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
             now_link_xpath = "following-sibling::*[1]/a[1]"
         date_el.clear()
         time_el.clear()
-        self.click(date_el.find_element_by_xpath(now_link_xpath))
+        self.click(date_el.find_element(By.XPATH, now_link_xpath))
         if self.has_grappelli:
             selector = "#ui-datepicker-div .ui-state-highlight"
             with self.clickable_selector(selector, timeout=1) as el:
@@ -119,7 +119,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
                     "Datepicker widget did not close",
                 )
         time.sleep(0.2)
-        self.click(time_el.find_element_by_xpath(now_link_xpath))
+        self.click(time_el.find_element(By.XPATH, now_link_xpath))
         if self.has_grappelli:
             selector = "#ui-timepicker .ui-state-active"
             with self.clickable_selector(selector, timeout=1) as el:
@@ -153,7 +153,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
     def check_fk(self, indexes):
         field = self.get_field("fk1", indexes)
         parent = field.get_property("parentNode").get_property("parentNode")
-        add_related = parent.find_element_by_css_selector(".add-related")
+        add_related = parent.find_element(By.CSS_SELECTOR, ".add-related")
         if self.has_grappelli:
             # Grappelli can be very slow to initialize fk bindings, particularly
             # when run on travis-ci
@@ -185,7 +185,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
             % object_id_field_id,
         )
 
-        lookup_el = self.selenium.find_element_by_css_selector(related_lookup_selector)
+        lookup_el = self.selenium.find_element(By.CSS_SELECTOR, related_lookup_selector)
         lookup_el.click()
         with self.switch_to_popup_window():
             with self.clickable_xpath('//tr//a[text()="Zither"]') as el:
@@ -195,7 +195,7 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         z_pk = "%s" % WidgetsM2M.objects.get(name="Zither").pk
 
         def element_value_populated(d):
-            el = d.find_element_by_css_selector("#%s" % object_id_field_id)
+            el = d.find_element(By.CSS_SELECTOR, "#%s" % object_id_field_id)
             return el.get_attribute("value")
 
         self.wait_until(
@@ -376,8 +376,8 @@ class Widgets(BaseWidgetTestCase):
         self.load_admin()
         self.add_inline()
         self.add_inline([1])
-        autocomplete_elements = self.selenium.find_elements_by_xpath(
-            '//*[@id="id_widgetsa_set-1-widgetsb_set-0-fk2-autocomplete"]'
+        autocomplete_elements = self.selenium.find_elements(
+            By.XPATH, '//*[@id="id_widgetsa_set-1-widgetsb_set-0-fk2-autocomplete"]'
         )
         self.assertNotEqual(
             len(autocomplete_elements), 0, "Zero autocomplete fields initialized"
@@ -405,7 +405,7 @@ class Widgets(BaseWidgetTestCase):
         self.add_inline([0, [0]])
         self.add_inline([0, 1, [0]])
         select_field = self.get_field("fk3", indexes=[0, 1, [0, 0]])
-        select_parent = select_field.find_element_by_xpath("parent::*")
+        select_parent = select_field.find_element(By.XPATH, "parent::*")
         select_parent.click()
         select2_is_active = self.selenium.execute_script(
             'return $(".select2-search__field").length > 0'
