@@ -13,6 +13,7 @@ from django.contrib.admin.sites import site as admin_site
 
 from selenosis import AdminSelenosisTestCase
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from .drag_drop import DragAndDropAction
 from .utils import xpath_item, is_sequence, is_integer, is_str, ElementRect
 
@@ -34,6 +35,20 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+        # Increase speed of move_to_element action
+        PointerInput.DEFAULT_MOVE_DURATION = 5
+
+        if not hasattr(PointerInput.create_pointer_move, "_patched"):
+            orig_create_pointer_move = PointerInput.create_pointer_move
+
+            def create_pointer_move(self, *args, **kwargs):
+                kwargs["duration"] = 1
+                return orig_create_pointer_move(self, *args, **kwargs)
+
+            create_pointer_move._patched = True
+
+            PointerInput.create_pointer_move = create_pointer_move
 
         root_admin = admin_site._registry[cls.root_model]
 
