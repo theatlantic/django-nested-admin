@@ -37,7 +37,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
         super().setUpClass()
 
         # Increase speed of move_to_element action
-        PointerInput.DEFAULT_MOVE_DURATION = 5
+        PointerInput.DEFAULT_MOVE_DURATION = 1
 
         if not hasattr(PointerInput.create_pointer_move, "_patched"):
             orig_create_pointer_move = PointerInput.create_pointer_move

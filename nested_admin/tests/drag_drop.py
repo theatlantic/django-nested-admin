@@ -141,6 +141,10 @@ class DragAndDropAction:
                 document.documentElement.scrollTop += (top - 16);
             } else {
                 el.scrollIntoView();
+                top = el.getBoundingClientRect().top;
+                if (top <= 15) {
+                    document.documentElement.scrollTop += (top - 16);
+                }
             }
         """,
             source,
@@ -149,15 +153,15 @@ class DragAndDropAction:
 
         (
             ActionChains(self.selenium)
-            .move_to_element_with_offset(source, 5, 5)
+            .move_to_element_with_offset(source, 3, 3)
             .click_and_hold()
             .perform()
         )
 
         time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, -15).perform()
+        ActionChains(self.selenium).move_by_offset(0, -10).perform()
         time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, 15).perform()
+        ActionChains(self.selenium).move_by_offset(0, 10).perform()
 
         with self.test_case.visible_selector(".ui-sortable-helper") as el:
             return el
@@ -190,7 +194,7 @@ class DragAndDropAction:
             15, min(viewport_height // 3, (2 * inline_height) // 3, abs(dy) // 2)
         )
 
-        max_iter = 50
+        max_iter = 120
         i = 0
         prev_pos_diff = None
         direction = None
@@ -221,9 +225,9 @@ class DragAndDropAction:
                 if flip_count > 3:
                     increment = 10
                 elif flip_count > 5:
-                    increment = 5
+                    increment = 2
                 else:
-                    increment = max(abs(dy // 2), flip_count * flip_multiplier)
+                    increment = min(abs(dy // 2), flip_count * flip_multiplier)
                 direction_flip *= -1
             direction = pos_diff * direction_flip
             inc = increment * direction
