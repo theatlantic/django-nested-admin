@@ -141,6 +141,10 @@ class DragAndDropAction:
                 document.documentElement.scrollTop += (top - 16);
             } else {
                 el.scrollIntoView();
+                top = el.getBoundingClientRect().top;
+                if (top <= 15) {
+                    document.documentElement.scrollTop += (top - 16);
+                }
             }
         """,
             source,
@@ -149,15 +153,15 @@ class DragAndDropAction:
 
         (
             ActionChains(self.selenium)
-            .move_to_element_with_offset(source, 5, 5)
+            .move_to_element_with_offset(source, 3, 3)
             .click_and_hold()
             .perform()
         )
 
         time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, -15).perform()
+        ActionChains(self.selenium).move_by_offset(0, -10).perform()
         time.sleep(0.05)
-        ActionChains(self.selenium).move_by_offset(0, 15).perform()
+        ActionChains(self.selenium).move_by_offset(0, 10).perform()
 
         with self.test_case.visible_selector(".ui-sortable-helper") as el:
             return el
