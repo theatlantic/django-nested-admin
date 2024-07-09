@@ -45,7 +45,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Setup chromedriver
-      uses: nanasess/setup-chromedriver@v1.0.5
+      # uses: nanasess/setup-chromedriver@v2.2.2
+      uses: nanasess/setup-chromedriver@42cc2998329f041de87dc3cfa33a930eacd57eaa
 
     - name: Install tox
       run: |
