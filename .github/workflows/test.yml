@@ -7,27 +7,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        grappelli: ["0"]
-        python-version: ["3.8"]
-        django-version: ["3.2"]
+        grappelli: ["0", "1"]
+        python-version: ["3.11"]
+        django-version: ["4.2"]
+        exclude:
+          - python-version: "3.11"
+            grappelli: "1"
         include:
-          - grappelli: "0"
-            name-suffix: ""
           - python-version: "3.9"
-            django-version: "4.0"
+            django-version: "4.2"
+            grappelli: "1"
+          - python-version: "3.9"
+            django-version: "5.0"
+            grappelli: "0"
           - python-version: "3.10"
-            django-version: "4.1"
-          - grappelli: "1"
-            name-suffix: " + grappelli"
-            python-version: "3.7"
-            django-version: "3.2"
-          - grappelli: "1"
-            name-suffix: " + grappelli"
-            python-version: "3.8"
-            django-version: "4.0"
+            django-version: "5.0"
+            grappelli: "1"
+          - python-version: "3.12"
+            django-version: "5.1"
+            grappelli: "0"
 
     runs-on: ubuntu-latest
-    name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.name-suffix }}
+    name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.grappelli == '1' && ' + grappelli' || '' }}
 
     env:
       DJANGO: ${{ matrix.django-version }}
