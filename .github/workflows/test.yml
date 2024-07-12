@@ -86,7 +86,7 @@ jobs:
 
     - name: Run tests
       run: |
-        tox -- -vvv --selenosis-driver=chrome-headless --numprocesses=4 --exitfirst || \
+        tox -- -vvv --selenosis-driver=chrome-headless || \
         tox -- -vvv --selenosis-driver=chrome-headless
       env:
         PIXELMATCH_BIN: ${{ env.GITHUB_WORKSPACE }}/node_modules/.bin/pixelmatch
