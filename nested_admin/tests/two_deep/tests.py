@@ -2,6 +2,7 @@ import os
 import tempfile
 import time
 from unittest import SkipTest
+from selenium.webdriver.common.by import By
 
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from .models import (
@@ -997,7 +998,7 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
         ) as el:
             el.send_keys("Test 2")
 
-        inline_label = self.get_item([0, 1]).find_element_by_class_name("inline_label")
+        inline_label = self.get_item([0, 1]).find_element(By.CLASS_NAME, "inline_label")
         self.assertEqual(inline_label.text, "#2")
 
     def test_upload_file(self):

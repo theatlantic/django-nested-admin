@@ -12,6 +12,8 @@ from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
 
 from selenosis import AdminSelenosisTestCase
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from .drag_drop import DragAndDropAction
 from .utils import xpath_item, is_sequence, is_integer, is_str, ElementRect
 
@@ -33,6 +35,20 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+        # Increase speed of move_to_element action
+        PointerInput.DEFAULT_MOVE_DURATION = 1
+
+        if not hasattr(PointerInput.create_pointer_move, "_patched"):
+            orig_create_pointer_move = PointerInput.create_pointer_move
+
+            def create_pointer_move(self, *args, **kwargs):
+                kwargs["duration"] = 1
+                return orig_create_pointer_move(self, *args, **kwargs)
+
+            create_pointer_move._patched = True
+
+            PointerInput.create_pointer_move = create_pointer_move
 
         root_admin = admin_site._registry[cls.root_model]
 
@@ -180,7 +196,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             )
         )
         name_attr = "_continue" if has_continue else "_save"
-        self.click(self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr))
+        self.click(self.selenium.find_element(By.XPATH, '//*[@name="%s"]' % name_attr))
         if has_continue:
             self.wait_page_loaded()
             self.initialize_page()
@@ -362,15 +378,15 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             ]
         expr_parts += ["/*[@data-inline-model='%s']" % model_name]
         expr = "/%s" % ("/".join(expr_parts))
-        return self.selenium.find_element_by_xpath(expr)
+        return self.selenium.find_element(By.XPATH, expr)
 
     def get_item(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name, item_index = indexes.pop()
         indexes.append(model_name)
         group = self.get_group(indexes=indexes)
-        return group.find_element_by_xpath(
-            ".//*[%s][%d]" % (xpath_item(model_name), item_index + 1)
+        return group.find_element(
+            By.XPATH, ".//*[%s][%d]" % (xpath_item(model_name), item_index + 1)
         )
 
     def add_inline(self, indexes=None, name=None, slug=None):
@@ -442,7 +458,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def get_field(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)
         field_selector = self.get_form_field_selector(attname, indexes=indexes)
-        return self.selenium.find_element_by_css_selector(field_selector)
+        return self.selenium.find_element(By.CSS_SELECTOR, field_selector)
 
     def set_field(self, attname, value, indexes=None):
         indexes = self._normalize_indexes(indexes)

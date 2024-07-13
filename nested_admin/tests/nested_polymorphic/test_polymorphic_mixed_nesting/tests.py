@@ -1,5 +1,6 @@
 from unittest import SkipTest
 from django.test import TestCase
+from selenium.webdriver.common.by import By
 
 from .models import (
     Block,
@@ -47,8 +48,8 @@ class PolymorphicMixedNestingTestCase(BaseNestedPolymorphicTestCase):
 
         inline_ids = [
             el.get_attribute("id")
-            for el in self.selenium.find_elements_by_css_selector(
-                '.djn-group:not([id*="-empty-"]'
+            for el in self.selenium.find_elements(
+                By.CSS_SELECTOR, '.djn-group:not([id*="-empty-"]'
             )
         ]
 
@@ -64,8 +65,8 @@ class PolymorphicMixedNestingTestCase(BaseNestedPolymorphicTestCase):
 
         inline_ids = [
             el.get_attribute("id")
-            for el in self.selenium.find_elements_by_css_selector(
-                '.djn-group:not([id*="-empty-"]'
+            for el in self.selenium.find_elements(
+                By.CSS_SELECTOR, '.djn-group:not([id*="-empty-"]'
             )
         ]
 

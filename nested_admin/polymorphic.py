@@ -148,13 +148,15 @@ class NestedPolymorphicInlineModelAdmin(
         formset = NestedBasePolymorphicInlineFormSet
 
         def get_formset(self, request, obj=None, **kwargs):
-            FormSet = BaseFormSet = kwargs.pop("formset", self.formset)
+            BaseFormSet = kwargs.pop("formset", self.formset)
 
             if self.sortable_field_name:
 
                 class FormSet(BaseFormSet):
                     sortable_field_name = self.sortable_field_name
 
+            else:
+                FormSet = BaseFormSet
             kwargs["formset"] = FormSet
             return super(PolymorphicInlineModelAdmin.Child, self).get_formset(
                 request, obj, **kwargs
@@ -186,12 +188,15 @@ class NestedGenericPolymorphicInlineModelAdmin(
         formset = NestedBaseGenericPolymorphicInlineFormSet
 
         def get_formset(self, request, obj=None, **kwargs):
-            FormSet = BaseFormSet = kwargs.pop("formset", self.formset)
+            BaseFormSet = kwargs.pop("formset", self.formset)
 
             if self.sortable_field_name:
 
                 class FormSet(BaseFormSet):
                     sortable_field_name = self.sortable_field_name
+
+            else:
+                FormSet = BaseFormSet
 
             kwargs["formset"] = FormSet
             return super(GenericPolymorphicInlineModelAdmin.Child, self).get_formset(
