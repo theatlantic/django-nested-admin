@@ -406,7 +406,11 @@ class Widgets(BaseWidgetTestCase):
         self.add_inline([0, 1, [0]])
         select_field = self.get_field("fk3", indexes=[0, 1, [0, 0]])
         select_parent = select_field.find_element(By.XPATH, "parent::*")
-        select_parent.click()
+        self.selenium.execute_script(
+            "return arguments[0].querySelector('.select2-selection') || arguments[0]",
+            select_parent,
+        ).click()
+
         select2_is_active = self.selenium.execute_script(
             'return $(".select2-search__field").length > 0'
         )

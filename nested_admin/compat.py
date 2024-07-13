@@ -4,6 +4,7 @@ A backport of the fix in Django 2.0 that retains the order of form media.
 See https://github.com/django/django/commit/c19b56f633e172b3c02094cbe12d28865ee57772
 and https://code.djangoproject.com/ticket/28377
 """
+
 from collections import defaultdict, OrderedDict
 import warnings
 
@@ -23,16 +24,22 @@ else:
     MergeSafeMedia = django.forms.Media
 
 try:
-    from django.utils.topological_sort import (
+    from django.utils.topological_sort import (  # noqa: F401
         CyclicDependencyError,
         stable_topological_sort,
     )
+
+    has_topological_sort = True
 except ImportError:
+    try:
+        from django.forms.widgets import TopologicalSorter  # noqa: F401
+    except ImportError:
+        has_topological_sort = False
+    else:
+        has_topological_sort = True
 
     class CyclicDependencyError(ValueError):
         pass
-
-    stable_topological_sort = None
 
 
 class OrderedSet(_OrderedSet):
@@ -46,7 +53,7 @@ class OrderedSet(_OrderedSet):
         return "OrderedSet(%r)" % list(self)
 
 
-if MergeSafeMedia is None or stable_topological_sort is None:
+if MergeSafeMedia is None or not has_topological_sort:
 
     def linearize_as_needed(l, dependency_graph):
         # Algorithm: DFS Topological sort
