@@ -1,3 +1,4 @@
+{% load nested_admin %}
 <fieldset class="module aligned djn-module {{ fieldset.classes }}{% if inline_admin_form.form.inlines %} has-inlines{% endif %}">
     {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
     {% if fieldset.description %}
@@ -5,10 +6,14 @@
     {% endif %}
     {% for line in fieldset %}
         <div class="form-row{% if line.fields|length == 1 and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}{% if forloop.last and forloop.parentloop.last %} djn-form-row-last{% endif %}">
-            {% if line.fields|length == 1 %}{{ line.errors }}{% endif %}
+            {% if line.fields|length == 1 %}{{ line.errors }}{% elif "4.2"|django_version_gte %}<div class="flex-container form-multiline">{% endif %}
             {% for field in line %}
-                <div class="{% if line.fields|length == 1 and field.is_checkbox %}checkbox-row{% else %}{% if not line.fields|length == 1 %}fieldBox{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %} {% endif %}field-{{ field.field.name }}{% endif %}">
-                    {% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
+                {% if "4.2"|django_version_gte %}
+                <div>
+                {% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
+                {% endif %}
+                <div class="{% if "4.2"|django_version_gte %}flex-container {% endif %}{% if line.fields|length == 1 and field.is_checkbox %}checkbox-row{% else %}{% if not line.fields|length == 1 %}fieldBox{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %} {% endif %}field-{{ field.field.name }}{% endif %}">
+                    {% if "4.2"|django_version_lt %}{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}{% endif %}
                     {% if field.is_checkbox %}
                         {{ field.field }}{{ field.label_tag }}
                     {% else %}
@@ -19,13 +24,15 @@
                             {{ field.field }}
                         {% endif %}
                     {% endif %}
-                    {% if field.field.help_text %}
-                        <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
-                            {{ field.field.help_text|safe }}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if field.field.help_text %}
+                    <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                        {{ field.field.help_text|safe }}
+                    </div>
+                {% endif %}
+                {% if "4.2"|django_version_gte %}</div>{% endif %}
             {% endfor %}
+            {% if "4.2"|django_version_gte %}{% if not line.fields|length == 1 %}</div>{% endif %}{% endif %}
         </div>
     {% endfor %}
 </fieldset>
