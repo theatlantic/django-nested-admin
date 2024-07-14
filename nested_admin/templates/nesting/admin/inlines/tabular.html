@@ -10,11 +10,13 @@
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
     data-inline-model="{{ inline_admin_formset.inline_model_id }}">
     <div class="tabular inline-related {% if forloop.last and inline_admin_formset.has_add_permission %}last-related{% endif %}">
-    <fieldset class="module djn-fieldset {{ inline_admin_formset.classes }}">
+    <fieldset class="module djn-fieldset {{ inline_admin_formset.classes }}" aria-labelledby="{{ inline_admin_formset.formset.prefix }}-heading">
+    {% if inline_admin_formset.is_collapsible %}<details><summary>{% endif %}
 
-    <h2>
+    <h2 id="{{ inline_admin_formset.formset.prefix }}-heading" class="inline-heading"></h2>
         {% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}
     </h2>
+    {% if inline_admin_formset.is_collapsible %}</summary>{% endif %}
 
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
@@ -128,7 +130,7 @@
         {% endwith %}
 
     </table>
-
+    {% if inline_admin_formset.is_collapsible %}</details>{% endif %}
     </fieldset>
     </div>
 

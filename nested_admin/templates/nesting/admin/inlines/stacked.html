@@ -8,10 +8,12 @@
     data-inline-formset="{{ inline_admin_formset.inline_formset_data }}"
     data-inline-model="{{ inline_admin_formset.inline_model_id }}">
 
-    {% ifinlineclasses %}<fieldset class="djn-fieldset module {{ inline_admin_formset.classes }}">{% endifinlineclasses %}
-    <h2>
-        {% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}
+    {% ifinlineclasses %}<fieldset class="djn-fieldset module {{ inline_admin_formset.classes }}" aria-labelledby="{{ inline_admin_formset.formset.prefix }}-heading">{% endifinlineclasses %}
+    {% if inline_admin_formset.is_collapsible %}<details><summary>{% endif %}
+    <h2 id="{{ inline_admin_formset.formset.prefix }}-heading" class="inline-heading">
+    {% if inline_admin_formset.opts.title %}{{ inline_admin_formset.opts.title }}{% else %}{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}{% endif %}
     </h2>
+    {% if inline_admin_formset.is_collapsible %}</summary>{% endif %}
 
     {{ inline_admin_formset.formset.management_form }}
     {{ inline_admin_formset.formset.non_form_errors }}
@@ -49,9 +51,17 @@
                     </ul>
                 {% endif %}
 
+                {% if "5.1"|django_version_gte %}
+                {% with parent_counter=forloop.counter0 %}
+                    {% for fieldset in inline_admin_form %}
+                        {% include inline_admin_formset.opts.fieldset_template with heading_level=4 id_prefix=parent_counter id_suffix=forloop.counter0 %}
+                    {% endfor %}
+                {% endwith %}
+                {% else %}
                 {% for fieldset in inline_admin_form %}
                     {% include inline_admin_formset.opts.fieldset_template %}
                 {% endfor %}
+                {% endif %}
                 {% if inline_admin_form.has_auto_field or inline_admin_form.needs_explicit_pk_field %}
                     {{ inline_admin_form.pk_field.field }}
                 {% endif %}
@@ -71,6 +81,7 @@
             {% blocktrans with inline_admin_formset.opts.verbose_name|strip_parent_name:inline_opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}
         </a>
     </div>
+    {% if inline_admin_formset.is_collapsible %}</details>{% endif %}
     {% ifinlineclasses %}</fieldset>{% endifinlineclasses %}
 </div>
 {% endwith %}{# ends with inline_admin_formset.opts as inline_opts #}

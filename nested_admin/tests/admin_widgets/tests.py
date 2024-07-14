@@ -230,7 +230,7 @@ class Widgets(BaseWidgetTestCase):
                 )
             else:
                 collapse_handler = self.selenium.execute_script(
-                    'return $(arguments[0]).find("> fieldset > h2 > .collapse-toggle")[0]',
+                    'return $(arguments[0]).find("> fieldset > h2 > .collapse-toggle, > fieldset > details > summary")[0]',
                     self.get_group(),
                 )
 
