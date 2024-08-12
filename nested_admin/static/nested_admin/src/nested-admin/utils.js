@@ -348,7 +348,7 @@ djangoFuncs.forEach((funcName) => {
       return;
     }
     if (typeof $.fn[funcName] === "undefined") {
-      return setTimeout(() => patchDjangoFunction(callCount++), 12);
+      return setTimeout(() => patchDjangoFunction(++callCount), 12);
     }
     $.fn[funcName] = (function (oldFn) {
       return function django_fn_patch() {
@@ -388,7 +388,7 @@ grpFuncs.forEach((funcName) => {
       typeof window.grp === "undefined" ||
       typeof window.grp.jQuery.fn[funcName] === "undefined"
     ) {
-      return setTimeout(() => patchGrpFunction(callCount++), 12);
+      return setTimeout(() => patchGrpFunction(++callCount), 12);
     }
     window.grp.jQuery.fn[funcName] = (function (oldFn) {
       return function grp_fn_patch() {

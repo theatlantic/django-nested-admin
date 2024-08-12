@@ -4150,7 +4150,7 @@ djangoFuncs.forEach(function (funcName) {
 
     if (typeof _jquery_shim_js__WEBPACK_IMPORTED_MODULE_13__["default"].fn[funcName] === "undefined") {
       return setTimeout(function () {
-        return patchDjangoFunction(callCount++);
+        return patchDjangoFunction(++callCount);
       }, 12);
     }
 
@@ -4170,7 +4170,7 @@ grpFuncs.forEach(function (funcName) {
 
     if (typeof window.grp === "undefined" || typeof window.grp.jQuery.fn[funcName] === "undefined") {
       return setTimeout(function () {
-        return patchGrpFunction(callCount++);
+        return patchGrpFunction(++callCount);
       }, 12);
     }
 
