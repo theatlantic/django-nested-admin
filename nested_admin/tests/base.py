@@ -13,6 +13,7 @@ import unittest
 import django
 from django.conf import settings
 from django.contrib.admin.sites import site as admin_site
+from selenium.webdriver.common.by import By
 
 import six
 from selenosis import AdminSelenosisTestCase
@@ -167,7 +168,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             self.selenium.execute_script(
                 'return django.jQuery("[name=_continue]").length'))
         name_attr = "_continue" if has_continue else "_save"
-        self.click(self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr))
+        self.click(self.selenium.find_element(By.XPATH, '//*[@name="%s"]' % name_attr))
         if has_continue:
             self.wait_page_loaded()
             self.initialize_page()
@@ -330,14 +331,14 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
             expr_parts += ["/*[%s][%d]" % (xpath_item(parent_model), parent_item_index + 1)]
         expr_parts += ["/*[@data-inline-model='%s']" % model_name]
         expr = "/%s" % ("/".join(expr_parts))
-        return self.selenium.find_element_by_xpath(expr)
+        return self.selenium.find_element(By.XPATH, expr)
 
     def get_item(self, indexes):
         indexes = self._normalize_indexes(indexes)
         model_name, item_index = indexes.pop()
         indexes.append(model_name)
         group = self.get_group(indexes=indexes)
-        return group.find_element_by_xpath(".//*[%s][%d]" % (xpath_item(model_name), item_index + 1))
+        return group.find_element(By.XPATH, ".//*[%s][%d]" % (xpath_item(model_name), item_index + 1))
 
     def add_inline(self, indexes=None, name=None, slug=None):
         indexes = self._normalize_indexes(indexes, is_group=True)
@@ -397,7 +398,7 @@ class BaseNestedAdminTestCase(AdminSelenosisTestCase):
     def get_field(self, attname, indexes=None):
         indexes = self._normalize_indexes(indexes)
         field_selector = self.get_form_field_selector(attname, indexes=indexes)
-        return self.selenium.find_element_by_css_selector(field_selector)
+        return self.selenium.find_element(By.CSS_SELECTOR, field_selector)
 
     def set_field(self, attname, value, indexes=None):
         indexes = self._normalize_indexes(indexes)

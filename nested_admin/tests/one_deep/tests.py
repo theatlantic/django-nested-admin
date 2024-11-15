@@ -137,7 +137,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         Generate the --block-out argument passed to pixelmatch that excludes
         an element from the diff
         """
-        el = self.selenium.find_element_by_css_selector(selector)
+        el = self.selenium.find_element(By.CSS_SELECTOR, selector)
         return ['--block-out', "%(x)s,%(y)s,%(w)s,%(h)s" % {
             'x': el.location['x'],
             'y': el.location['y'],
@@ -150,7 +150,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         exclude = exclude or []
         rects = []
         for selector in exclude:
-            el = self.selenium.find_element_by_css_selector(selector)
+            el = self.selenium.find_element(By.CSS_SELECTOR, selector)
             x0, y0 = el.location['x'], el.location['y']
             w, h = el.size['width'], el.size['height']
             x1, y1 = x0 + w, y0 + h

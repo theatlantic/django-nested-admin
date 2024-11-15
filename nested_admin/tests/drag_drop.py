@@ -3,6 +3,7 @@ import time
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 
 from .utils import (
     xpath_cls, xpath_item, is_integer, Position, Size, ElementRect)
@@ -94,7 +95,7 @@ class DragAndDropAction(object):
                     "*[%s]" % xpath_cls("is-sortable"),
                     "*[%s]" % xpath_cls("djn-drag-handler"),
                 ])
-            self._source = source_item.find_element_by_xpath(drag_handler_xpath)
+            self._source = source_item.find_element(By.XPATH, drag_handler_xpath)
         return self._source
 
     @property
@@ -111,7 +112,7 @@ class DragAndDropAction(object):
                     'item_pred': xpath_item(),
                     'item_pos': self.to_indexes[-1][1] + 1,
                 }
-            self._target = target_inline_parent.find_element_by_xpath(target_xpath)
+            self._target = target_inline_parent.find_element(By.XPATH, target_xpath)
         return self._target
 
     def initialize_drag(self):
@@ -225,7 +226,7 @@ class DragAndDropAction(object):
         is extraordinarily slow. So we just grab all siblings and iterate
         through the elements in python.
         """
-        siblings = ctx.find_element_by_xpath('parent::*').find_elements_by_xpath('*')
+        siblings = ctx.find_element(By.XPATH, 'parent::*').find_elements(By.XPATH, '*')
         count = 0
         for el in siblings:
             if el.id == ctx.id:
@@ -250,7 +251,7 @@ class DragAndDropAction(object):
 
     @property
     def current_position(self):
-        placeholder = self.selenium.find_element_by_css_selector(
+        placeholder = self.selenium.find_element(By.CSS_SELECTOR, 
             '.ui-sortable-placeholder')
         pos = []
         ctx = None
@@ -259,9 +260,9 @@ class DragAndDropAction(object):
             if ctx is None:
                 ctx = placeholder
             else:
-                ctx = ctx.find_element_by_xpath(ancestor_xpath)
+                ctx = ctx.find_element(By.XPATH, ancestor_xpath)
             item_index = self._num_preceding_djn_items(ctx)
-            ctx = ctx.find_element_by_xpath('ancestor::*[%s][1]' % xpath_cls("djn-group"))
+            ctx = ctx.find_element(By.XPATH, 'ancestor::*[%s][1]' % xpath_cls("djn-group"))
             inline_index = self._num_preceding_djn_groups(ctx)
             pos.insert(0, (inline_index, item_index))
         return tuple(pos)

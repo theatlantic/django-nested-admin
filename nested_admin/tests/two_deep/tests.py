@@ -832,7 +832,7 @@ class TestStackedInlineAdmin(InlineAdminTestCaseMixin, BaseNestedAdminTestCase):
         with self.clickable_xpath('//input[@name="section_set-0-item_set-0-name"]') as el:
             el.send_keys("Test 2")
 
-        inline_label = self.get_item([0, 1]).find_element_by_class_name('inline_label')
+        inline_label = self.get_item([0, 1]).find_element(By.XPATH, by_class_name('inline_label')
         self.assertEqual(inline_label.text, '#2')
 
     def test_upload_file(self):

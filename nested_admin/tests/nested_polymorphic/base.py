@@ -5,6 +5,7 @@ import django
 from django.conf import settings
 from django.apps import apps
 from polymorphic.utils import get_base_polymorphic_model
+from selenium.webdriver.common.by import By
 
 from nested_admin.tests.base import BaseNestedAdminTestCase
 from nested_admin.tests.utils import xpath_item, xpath_cls, is_sequence, is_integer, is_str
@@ -153,12 +154,12 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         except TypeError:
             group = self.get_group(indexes=group_indexes + [model_id])
         group_id = group.get_attribute('id')
-        djn_items = self.selenium.find_element_by_css_selector(
+        djn_items = self.selenium.find_element(By.CSS_SELECTOR, 
             "#%(id)s > .djn-fieldset > .djn-items, "
             "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             "#%(id)s > .djn-items" % {'id': group_id})
         model_name, item_index = indexes[-1]
-        return djn_items.find_element_by_xpath(
+        return djn_items.find_element(By.XPATH, 
             "./*[%s][%d]" % (xpath_item(), item_index + 1))
 
     def delete_inline(self, indexes):
@@ -204,7 +205,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
 
         add_selector = "#%s .djn-add-item a.djn-add-handler.djn-model-%s" % (
             ctx_id, base_model_identifier)
-        add_els = self.selenium.find_elements_by_css_selector(add_selector)
+        add_els = self.selenium.find_elements(By.CSS_SELECTOR, add_selector)
         self.assertNotEqual(len(add_els), 0,
             "No inline add handlers found for %s" % (error_desc))
         self.click(add_els[0])
@@ -222,12 +223,12 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
             'return $(arguments[0]).closest(".djn-group")[0]', add_els[0])
         group_id = group_el.get_attribute('id')
 
-        items_el = self.selenium.find_element_by_css_selector(
+        items_el = self.selenium.find_element(By.CSS_SELECTOR, 
             '#%(id)s > .djn-fieldset > .djn-items, '
             "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             '#%(id)s > .djn-items' % {'id': group_id})
 
-        num_inlines = len(items_el.find_elements_by_xpath(
+        num_inlines = len(items_el.find_elements(By.XPATH, 
             './*[%s and not(%s)]' % (xpath_item(), xpath_cls('djn-empty-form'))))
 
         new_index = num_inlines - 1
@@ -247,7 +248,7 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
     def get_num_inlines(self, indexes=None):
         group = self.get_group(indexes=indexes)
         group_id = group.get_attribute('id')
-        djn_items = self.selenium.find_element_by_css_selector(
+        djn_items = self.selenium.find_element(By.CSS_SELECTOR, 
             "#%(id)s > .djn-fieldset > .djn-items, "
             "#%(id)s > .tabular.inline-related > .djn-fieldset > .djn-items, "
             "#%(id)s > .djn-items" % {'id': group_id})
@@ -266,4 +267,4 @@ class BaseNestedPolymorphicTestCase(BaseNestedAdminTestCase):
         expr_parts += ["/*[@data-inline-model='%s' and %s]"
             % (model_name, xpath_cls('djn-group'))]
         expr = "/%s" % ("/".join(expr_parts))
-        return self.selenium.find_element_by_xpath(expr)
+        return self.selenium.find_element(By.XPATH, expr)

@@ -1,5 +1,6 @@
 from unittest import SkipTest
 from django.test import TestCase
+from selenium.webdriver.common.by import By
 
 from .models import (
     Block, BlockMarkdown, BlockRadioGroup, BlockRadioButton,
@@ -39,7 +40,7 @@ class PolymorphicMixedNestingTestCase(BaseNestedPolymorphicTestCase):
 
         inline_ids = [
             el.get_attribute('id') for el in
-            self.selenium.find_elements_by_css_selector(
+            self.selenium.find_elements(By.CSS_SELECTOR, 
                 '.djn-group:not([id*="-empty-"]')]
 
         expected_inline_ids = [
@@ -53,7 +54,7 @@ class PolymorphicMixedNestingTestCase(BaseNestedPolymorphicTestCase):
 
         inline_ids = [
             el.get_attribute('id') for el in
-            self.selenium.find_elements_by_css_selector(
+            self.selenium.find_elements(By.CSS_SELECTOR, 
                 '.djn-group:not([id*="-empty-"]')]
 
         assert "surveystep_set-0-block_set-0-blockradiobutton_set-group" not in inline_ids, (
