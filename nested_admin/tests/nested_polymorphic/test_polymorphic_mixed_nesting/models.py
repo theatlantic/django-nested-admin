@@ -1,7 +1,6 @@
 import django
 from django.db import models
 
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 try:
     from polymorphic.models import PolymorphicModel
@@ -19,7 +18,7 @@ class SurveyStep(models.Model):
     title = models.CharField(max_length=255)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def serialize(self):
         blocks = [b.serialize() for b in self.block_set.all()]
@@ -34,7 +33,7 @@ class Block(PolymorphicModel):
     survey_step = models.ForeignKey("SurveyStep", models.CASCADE)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
 
 class BlockMarkdown(Block):
@@ -65,13 +64,12 @@ class BlockRadioButton(models.Model):
     position = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def serialize(self):
         return self.label
 
 
-@python_2_unicode_compatible
 class Questionnaire(models.Model):
     title = models.CharField(max_length=255)
 

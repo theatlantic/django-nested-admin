@@ -8,23 +8,26 @@ from .models import Root, A, AX, AY, B, BX, BY
 class BXModelForm(forms.ModelForm):
     class Meta:
         model = BX
-        exclude = ['b_type']
+        exclude = ["b_type"]
 
 
 class BYModelForm(forms.ModelForm):
     class Meta:
         model = BY
-        exclude = ['b_type']
+        exclude = ["b_type"]
 
 
 class BInline(nested_admin.NestedStackedInline):
     model = B
     extra = 0
     sortable_field_name = "position"
-    inline_classes = ("collapse", "open", )
+    inline_classes = (
+        "collapse",
+        "open",
+    )
 
     def get_queryset(self, request):
-        qset = super(BInline, self).get_queryset(request)
+        qset = super().get_queryset(request)
         return qset.filter(b_type=self.model.default_b_type)
 
 
@@ -42,13 +45,13 @@ class BYInline(BInline):
 class AXModelForm(forms.ModelForm):
     class Meta:
         model = AX
-        exclude = ['a_type']
+        exclude = ["a_type"]
 
 
 class AYModelForm(forms.ModelForm):
     class Meta:
         model = AY
-        exclude = ['a_type']
+        exclude = ["a_type"]
 
 
 class AInline(nested_admin.NestedStackedInline):
@@ -56,10 +59,13 @@ class AInline(nested_admin.NestedStackedInline):
     extra = 0
     inlines = [BXInline, BYInline]
     sortable_field_name = "position"
-    inline_classes = ("collapse", "open", )
+    inline_classes = (
+        "collapse",
+        "open",
+    )
 
     def get_queryset(self, request):
-        qset = super(AInline, self).get_queryset(request)
+        qset = super().get_queryset(request)
         return qset.filter(a_type=self.model.default_a_type)
 
 

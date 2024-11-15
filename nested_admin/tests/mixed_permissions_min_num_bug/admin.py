@@ -8,28 +8,28 @@ from .models import CuratedGroupCollection, CuratedGroup, CuratedList, CuratedIt
 class CuratedItemInline(NestedTabularInline):
 
     model = CuratedItem
-    sortable_field_name = 'position'
+    sortable_field_name = "position"
     extra = 0
-    inline_classes = ['grp-open']
+    inline_classes = ["grp-open"]
 
 
 class CuratedListInline(NestedStackedInline):
 
     model = CuratedList
-    sortable_field_name = 'position'
+    sortable_field_name = "position"
     inlines = [CuratedItemInline]
     min_num = 1
     extra = 0
-    inline_classes = ['grp-open']
+    inline_classes = ["grp-open"]
 
 
 class CuratedGroupInline(NestedStackedInline):
 
     inlines = [CuratedListInline]
     model = CuratedGroup
-    sortable_field_name = 'position'
+    sortable_field_name = "position"
     extra = 0
-    inline_classes = ['grp-open']
+    inline_classes = ["grp-open"]
 
 
 @admin.register(CuratedGroupCollection)

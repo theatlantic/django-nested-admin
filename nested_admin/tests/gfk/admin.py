@@ -7,7 +7,12 @@ class GFKBInline(NestedGenericStackedInline):
     model = GFKB
     extra = 0
     sortable_field_name = "position"
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open", )
+    inline_classes = (
+        "collapse",
+        "open",
+        "grp-collapse",
+        "grp-open",
+    )
 
 
 class GFKAInline(NestedGenericStackedInline):
@@ -15,7 +20,12 @@ class GFKAInline(NestedGenericStackedInline):
     extra = 0
     sortable_field_name = "position"
     inlines = [GFKBInline]
-    inline_classes = ("collapse", "open", "grp-collapse", "grp-open", )
+    inline_classes = (
+        "collapse",
+        "open",
+        "grp-collapse",
+        "grp-open",
+    )
 
 
 @admin.register(GFKRoot)

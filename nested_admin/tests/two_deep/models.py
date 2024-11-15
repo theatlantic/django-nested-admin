@@ -1,11 +1,7 @@
-from __future__ import unicode_literals
-
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class GroupAbstract(models.Model):
 
     slug = models.CharField(max_length=128)
@@ -17,7 +13,6 @@ class GroupAbstract(models.Model):
         return self.slug
 
 
-@python_2_unicode_compatible
 class SectionAbstract(models.Model):
 
     slug = models.CharField(max_length=128)
@@ -33,7 +28,6 @@ class SectionAbstract(models.Model):
         return "/".join(parts)
 
 
-@python_2_unicode_compatible
 class ItemAbstract(models.Model):
 
     name = models.CharField(max_length=128)
@@ -54,18 +48,18 @@ class StackedGroup(GroupAbstract):
 
 
 class StackedSection(SectionAbstract):
-    group = ForeignKey(StackedGroup, related_name='section_set', on_delete=CASCADE)
+    group = ForeignKey(StackedGroup, related_name="section_set", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('group', 'position')
+        ordering = ("group", "position")
 
 
 class StackedItem(ItemAbstract):
-    section = ForeignKey(StackedSection, related_name='item_set', on_delete=CASCADE)
-    upload = models.FileField(blank=True, null=True, upload_to='foo')
+    section = ForeignKey(StackedSection, related_name="item_set", on_delete=CASCADE)
+    upload = models.FileField(blank=True, null=True, upload_to="foo")
 
     class Meta:
-        ordering = ('section', 'position')
+        ordering = ("section", "position")
 
 
 class TabularGroup(GroupAbstract):
@@ -73,17 +67,17 @@ class TabularGroup(GroupAbstract):
 
 
 class TabularSection(SectionAbstract):
-    group = ForeignKey(TabularGroup, related_name='section_set', on_delete=CASCADE)
+    group = ForeignKey(TabularGroup, related_name="section_set", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('group', 'position')
+        ordering = ("group", "position")
 
 
 class TabularItem(ItemAbstract):
-    section = ForeignKey(TabularSection, related_name='item_set', on_delete=CASCADE)
+    section = ForeignKey(TabularSection, related_name="item_set", on_delete=CASCADE)
 
     class Meta:
-        ordering = ('section', 'position')
+        ordering = ("section", "position")
 
 
 class SortableWithExtraRoot(models.Model):
@@ -94,7 +88,7 @@ class SortableWithExtraChild(models.Model):
     slug = models.CharField(max_length=128)
     root = ForeignKey(SortableWithExtraRoot, on_delete=CASCADE)
     position = models.PositiveIntegerField()
-    foo = models.CharField(max_length=128, default='bar')
+    foo = models.CharField(max_length=128, default="bar")
 
     class Meta:
-        ordering = ('position', )
+        ordering = ("position",)

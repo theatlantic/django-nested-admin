@@ -6,7 +6,7 @@ from .models import User, Project, Document
 class DocumentInline(nested_admin.NestedTabularInline):
     model = Document
     extra = 0
-    classes = ('grp-collapse grp-closed',)
+    classes = ("grp-collapse grp-closed",)
 
 
 class ProjectInline(nested_admin.NestedStackedInline):
@@ -22,8 +22,8 @@ class UserAdmin(nested_admin.NestedModelAdmin):
 class DocumentNonNestedInline(admin.TabularInline):
     model = Document
     extra = 0
-    classes = ('grp-collapse grp-closed',)
-    sortable_field_name = ''
+    classes = ("grp-collapse grp-closed",)
+    sortable_field_name = ""
 
 
 @admin.register(Project)

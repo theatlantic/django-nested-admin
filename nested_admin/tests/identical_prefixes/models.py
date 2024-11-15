@@ -1,26 +1,23 @@
 from django.db import models
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Root(models.Model):
     slug = models.SlugField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return "%s(%s)" % (type(self).__name__, self.slug)
+        return "{}({})".format(type(self).__name__, self.slug)
 
 
-@python_2_unicode_compatible
 class A(models.Model):
     root = models.ForeignKey(Root, related_name="a_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
 
     foo = models.CharField(max_length=10, blank=True, null=True)
-    a_type = models.CharField(max_length=1, choices=(('X', 'X'), ('Y', 'Y')))
+    a_type = models.CharField(max_length=1, choices=(("X", "X"), ("Y", "Y")))
     default_a_type = None
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         parts = ["A%s[%d](%s)" % (self.a_type, self.position, self.foo)]
@@ -30,20 +27,20 @@ class A(models.Model):
 
     def save(self, **kwargs):
         self.a_type = self.default_a_type
-        super(A, self).save(**kwargs)
+        super().save(**kwargs)
 
 
 class AManager(models.Manager):
     def __init__(self, a_type):
         self.a_type = a_type
-        super(AManager, self).__init__()
+        super().__init__()
 
     def get_queryset(self):
-        return super(AManager, self).get_queryset().filter(a_type=self.a_type)
+        return super().get_queryset().filter(a_type=self.a_type)
 
 
 class AX(A):
-    default_a_type = 'X'
+    default_a_type = "X"
     objects = AManager(default_a_type)
 
     class Meta:
@@ -51,24 +48,23 @@ class AX(A):
 
 
 class AY(A):
-    default_a_type = 'Y'
+    default_a_type = "Y"
     objects = AManager(default_a_type)
 
     class Meta:
         proxy = True
 
 
-@python_2_unicode_compatible
 class B(models.Model):
     a = models.ForeignKey(A, related_name="b_set", on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
 
     bar = models.CharField(max_length=10, blank=True, null=True)
-    b_type = models.CharField(max_length=1, choices=(('X', 'X'), ('Y', 'Y')))
+    b_type = models.CharField(max_length=1, choices=(("X", "X"), ("Y", "Y")))
     default_b_type = None
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self):
         parts = ["B%s[%d](%s)" % (self.b_type, self.position, self.bar)]
@@ -78,20 +74,20 @@ class B(models.Model):
 
     def save(self, **kwargs):
         self.b_type = self.default_b_type
-        super(B, self).save(**kwargs)
+        super().save(**kwargs)
 
 
 class BManager(models.Manager):
     def __init__(self, b_type):
         self.b_type = b_type
-        super(BManager, self).__init__()
+        super().__init__()
 
     def get_queryset(self):
-        return super(BManager, self).get_queryset().filter(b_type=self.b_type)
+        return super().get_queryset().filter(b_type=self.b_type)
 
 
 class BX(B):
-    default_b_type = 'X'
+    default_b_type = "X"
     objects = BManager(default_b_type)
 
     class Meta:
@@ -99,7 +95,7 @@ class BX(B):
 
 
 class BY(B):
-    default_b_type = 'Y'
+    default_b_type = "Y"
     objects = BManager(default_b_type)
 
     class Meta:

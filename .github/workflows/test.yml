@@ -45,15 +45,16 @@ jobs:
       NODE_ENV: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Setup chromedriver
-      uses: nanasess/setup-chromedriver@v1.0.5
+      # uses: nanasess/setup-chromedriver@v2.2.2
+      uses: nanasess/setup-chromedriver@42cc2998329f041de87dc3cfa33a930eacd57eaa
 
     - name: Install tox
       run: |
@@ -61,31 +62,32 @@ jobs:
 
     - name: Cache instrumented static files
       id: cache-test-dist
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: nested_admin/tests/static
-        key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'frontend/**') }}
+        key: test-dist-${{ hashFiles('package-lock.json', '.github/workflows/test.yml', 'webpack.config.js', 'package.json', '.*rc*', 'nested_admin/static/nested_admin/src/**/*.*s') }}
 
     - name: Cache node_modules
       id: cache-node_modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: node_modules
         key: node_modules-${{ hashFiles('package-lock.json') }}
 
-    - name: Setup nodejs 12
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
-      uses: actions/setup-node@v2
+    - name: Setup nodejs
+      if: steps.cache-test-dist.outputs.cache-hit != 'true'
+      uses: actions/setup-node@v3
       with:
-        node-version: '12'
+        node-version: '16'
+        cache: 'npm'
 
     - name: npm ci
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      if: steps.cache-test-dist.outputs.cache-hit != 'true' && steps.cache-node_modules.outputs.cache-hit != 'true'
       run: |
         npm ci || npm ci || npm ci
 
     - name: Build instrumented static files
-      if: steps.cache-test-dist.outputs.cache-hit != 'true' || steps.cache-node_modules.outputs.cache-hit != 'true'
+      if: steps.cache-test-dist.outputs.cache-hit != 'true'
       run: |
         npm run build
 
@@ -98,7 +100,7 @@ jobs:
 
     - name: Upload junit xml
       if: always()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: junit-reports
         path: reports/*.xml
@@ -121,15 +123,14 @@ jobs:
     runs-on: ubuntu-latest
     name: "Report Test Results"
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: junit-reports
 
       - name: Publish tests report
-        uses: mikepenz/action-junit-report@5703ba1461f35871cde0208140d737d3e1eef38f
+        uses: mikepenz/action-junit-report@1a91e26932fb7ba410a31fab1f09266a96d29971
         with:
           report_paths: ./*.xml
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           require_tests: true
           fail_on_failure: true
           check_name: Test Report

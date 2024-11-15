@@ -1,13 +1,9 @@
-from __future__ import unicode_literals
-
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
-from nested_admin.tests.compat import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class GFKB(models.Model):
     name = models.CharField(max_length=255)
     position = models.PositiveIntegerField()
@@ -16,7 +12,7 @@ class GFKB(models.Model):
     content_object = GenericForeignKey()
 
     class Meta:
-        ordering = ['object_id', 'position']
+        ordering = ["object_id", "position"]
 
     def __str__(self):
         parts = ["%s[%d]" % (self.name, self.position)]
@@ -25,7 +21,6 @@ class GFKB(models.Model):
         return "/".join(parts)
 
 
-@python_2_unicode_compatible
 class GFKA(models.Model):
     slug = models.CharField(max_length=255)
     position = models.PositiveIntegerField()
@@ -35,7 +30,7 @@ class GFKA(models.Model):
     b_set = GenericRelation(GFKB)
 
     class Meta:
-        ordering = ['object_id', 'position']
+        ordering = ["object_id", "position"]
 
     def __str__(self):
         parts = ["%s[%d]" % (self.slug, self.position)]
@@ -44,7 +39,6 @@ class GFKA(models.Model):
         return "/".join(parts)
 
 
-@python_2_unicode_compatible
 class GFKRoot(models.Model):
     slug = models.CharField(max_length=255)
     a_set = GenericRelation(GFKA)
