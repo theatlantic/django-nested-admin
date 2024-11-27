@@ -4,7 +4,7 @@ from django.contrib import admin
 try:
     from django.urls import re_path, include
 except ImportError:
-    from django.conf.urls import include, url as re_path
+    from django.conf.urls import url as re_path
 
 # Explicitly import to register the admins for the test models
 for app in settings.INSTALLED_APPS:
@@ -13,7 +13,7 @@ for app in settings.INSTALLED_APPS:
 
 
 urlpatterns = [
-    re_path(r"^_nesting/", include("nested_admin.urls")),
+    path("_nesting/", include("nested_admin.urls")),
     re_path(r"^admin/", admin.site.urls),
 ]
 
@@ -22,4 +22,4 @@ try:
 except ImportError:
     pass
 else:
-    urlpatterns += [re_path(r"^grappelli/", include("grappelli.urls"))]
+    urlpatterns += [path("grappelli/", include("grappelli.urls"))]

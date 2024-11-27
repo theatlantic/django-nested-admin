@@ -6,10 +6,7 @@ try:
     from polymorphic.models import PolymorphicModel
 except:
     # Temporary until django-polymorphic supports django 3.1
-    if django.VERSION < (3, 1):
-        raise
-    else:
-        PolymorphicModel = models.Model
+    PolymorphicModel = models.Model
 
 
 def NON_POLYMORPHIC_CASCADE(collector, field, sub_objs, using):
