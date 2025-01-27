@@ -363,11 +363,6 @@ class NestedModelAdminMixin(NestedAdminMixin):
                         is_empty_form = True
                     InlineFormSet = inline.get_formset(request, form_obj)
 
-                    prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
-                    prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                    if prefixes[prefix] != 1:
-                        prefix = "%s-%s" % (prefix, prefixes[prefix])
-
                     # Check if we're dealing with a polymorphic instance, and if
                     # so, skip inlines for other child models
                     if hasattr(form_obj, 'get_real_instance'):
@@ -377,6 +372,11 @@ class NestedModelAdminMixin(NestedAdminMixin):
                                 continue
                         if not isinstance(form_obj, inline.parent_model):
                             continue
+
+                    prefix = '%s-%s' % (form_prefix, InlineFormSet.get_default_prefix())
+                    prefixes[prefix] = prefixes.get(prefix, 0) + 1
+                    if prefixes[prefix] != 1:
+                        prefix = "%s-%s" % (prefix, prefixes[prefix])
 
                     formset_params = {
                         'instance': form_obj,
