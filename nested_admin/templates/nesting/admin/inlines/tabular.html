@@ -71,7 +71,13 @@
                 {% for fieldset in inline_admin_form %}
                     {% for line in fieldset %}
                         {% for field in line %}
-                            {% if field.field.is_hidden %} {{ field.field }} {% endif %}
+                            {% if field.field.is_hidden %}
+                                {% if field.is_readonly %}
+                                    {{ field.form|get_field_instance:field.field.name }}
+                                {% else %}
+                                    {{ field.field }}
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                     {% endfor %}
                 {% endfor %}

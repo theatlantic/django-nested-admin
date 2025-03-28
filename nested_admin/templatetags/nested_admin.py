@@ -179,6 +179,11 @@ def django_version_gte(string):
     return django_version >= str_to_version(string)
 
 
+@register.filter
+def get_field_instance(fields_container, field_label):
+    return fields_container.__getitem__(field_label)
+
+
 @register.tag
 def ifinlineclasses(parser, token):
     nodelist_true = parser.parse(("else", "endifinlineclasses"))
