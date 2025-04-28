@@ -186,26 +186,8 @@ jobs:
       run: |
         npm run lint:${{ matrix.tool }}
 
-  report:
-    if: always()
-    needs: build
-    runs-on: ubuntu-latest
-    name: "Report Test Results"
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: junit-reports
-
-      - name: Publish tests report
-        uses: mikepenz/action-junit-report@1a91e26932fb7ba410a31fab1f09266a96d29971
-        with:
-          report_paths: ./*.xml
-          require_tests: true
-          fail_on_failure: true
-          check_name: Test Report
-
   success:
-    needs: [lint, report]
+    needs: [lint, build]
     runs-on: ubuntu-latest
     name: Test Successful
     steps:
