@@ -101,10 +101,16 @@ jobs:
       env:
         CODECOV_NAME: ${{ github.workflow }}
 
-    - name: Upload js coverage
-      run: npm run report && npm run codecov
-      env:
-        CODECOV_NAME: ${{ github.workflow }}
+    - name: Generate js coverage report
+      run: npm run report
+
+    - uses: codecov/codecov-action@v5
+      name: Upload js coverage
+      with:
+        files: coverage/lcov.info
+        flags: javascript
+        name: ${{ github.workflow }}
+        verbose: true
 
   lint:
     runs-on: ubuntu-latest
