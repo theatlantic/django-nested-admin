@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from html import unescape
 import time
 
+import django
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.text import slugify
@@ -135,8 +136,12 @@ class BaseWidgetTestCase(BaseNestedAdminTestCase):
         self.assertNotEqual(time_el.get_attribute("value"), "", "Time was not set")
 
     def check_m2m(self, indexes):
-        add_all_link = self.get_field("m2m_add_all_link", indexes)
-        remove_all_link = self.get_field("m2m_remove_all_link", indexes)
+        if django.VERSION >= (5, 2):
+            add_all_link = self.get_field("m2m_add_all", indexes)
+            remove_all_link = self.get_field("m2m_remove_all", indexes)
+        else:
+            add_all_link = self.get_field("m2m_add_all_link", indexes)
+            remove_all_link = self.get_field("m2m_remove_all_link", indexes)
         self.click(remove_all_link)
         self.click(add_all_link)
         m2m_to_sel = self.get_form_field_selector("m2m_to", indexes)

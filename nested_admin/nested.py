@@ -56,6 +56,7 @@ class NestedAdminMixin:
             "admin/js/jquery.init.js",
             "admin/js/prepopulate.js",
             "admin/js/prepopulate.min.js",
+            "admin/js/SelectBox.js",
             "admin/js/SelectFilter2.js",
             "admin/js/autocomplete.js",
             "jquery.grp.autocomplete_fk.js",
