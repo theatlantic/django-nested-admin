@@ -94,13 +94,6 @@ jobs:
       env:
         PIXELMATCH_BIN: ${{ env.GITHUB_WORKSPACE }}/node_modules/.bin/pixelmatch
 
-    - name: Upload junit xml
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: junit-reports
-        path: reports/*.xml
-
     - name: Upload python coverage
       run: |
         tox -e coverage-report
