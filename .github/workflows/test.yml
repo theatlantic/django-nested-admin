@@ -91,12 +91,18 @@ jobs:
       env:
         PIXELMATCH_BIN: ${{ env.GITHUB_WORKSPACE }}/node_modules/.bin/pixelmatch
 
-    - name: Upload python coverage
+    - name: Generate python coverage
       run: |
         tox -e coverage-report
-        tox -e codecov
-      env:
-        CODECOV_NAME: ${{ github.workflow }}
+
+    - uses: codecov/codecov-action@v5
+      name: Upload python coverage
+      with:
+        files: .tox/coverage/coverage.xml
+        flags: python
+        name: ${{ github.workflow }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
 
     - name: Generate js coverage report
       run: npm run report
@@ -107,6 +113,7 @@ jobs:
         files: coverage/lcov.info
         flags: javascript
         name: ${{ github.workflow }}
+        token: ${{ secrets.CODECOV_TOKEN }}
         verbose: true
 
   lint:
