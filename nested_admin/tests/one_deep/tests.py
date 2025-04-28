@@ -226,7 +226,7 @@ class VisualComparisonTestCase(BaseNestedAdminTestCase):
         # Move mouse to a consistent place, to avoid hover styles confusing things
         # body_element = self.selenium.execute_script('return document.body')
         self.selenium.execute_script("document.body.scrollTop = 0")
-        self.selenium.execute_script('$("*:focus").blur()')
+        self.selenium.execute_script("document.activeElement.blur()")
         time.sleep(0.2)
         self.selenium.save_screenshot(image_path)
         return image_path

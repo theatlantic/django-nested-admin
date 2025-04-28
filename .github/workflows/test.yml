@@ -16,15 +16,15 @@ jobs:
         include:
           - python-version: "3.9"
             django-version: "4.2"
-            grappelli: "1"
-          - python-version: "3.9"
-            django-version: "5.0"
             grappelli: "0"
           - python-version: "3.10"
-            django-version: "5.0"
+            django-version: "4.2"
             grappelli: "1"
-          - python-version: "3.12"
+          - python-version: "3.11"
             django-version: "5.1"
+            grappelli: "0"
+          - python-version: "3.13"
+            django-version: "5.2"
             grappelli: "0"
 
     runs-on: ubuntu-latest
@@ -86,29 +86,35 @@ jobs:
 
     - name: Run tests
       run: |
-        tox -- -vvv --selenosis-driver=chrome-headless || \
-        tox -- -vvv --selenosis-driver=chrome-headless
+        tox -- -vvv --selenosis-driver=chrome-headless --retries 3 || \
+        tox -- -vvv --selenosis-driver=chrome-headless --retries 3
       env:
         PIXELMATCH_BIN: ${{ env.GITHUB_WORKSPACE }}/node_modules/.bin/pixelmatch
 
-    - name: Upload junit xml
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: junit-reports
-        path: reports/*.xml
-
-    - name: Upload python coverage
+    - name: Generate python coverage
       run: |
         tox -e coverage-report
-        tox -e codecov
-      env:
-        CODECOV_NAME: ${{ github.workflow }}
 
-    - name: Upload js coverage
-      run: npm run report && npm run codecov
-      env:
-        CODECOV_NAME: ${{ github.workflow }}
+    - uses: codecov/codecov-action@v5
+      name: Upload python coverage
+      with:
+        files: .tox/coverage/coverage.xml
+        flags: python
+        name: ${{ github.workflow }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
+
+    - name: Generate js coverage report
+      run: npm run report
+
+    - uses: codecov/codecov-action@v5
+      name: Upload js coverage
+      with:
+        files: coverage/lcov.info
+        flags: javascript
+        name: ${{ github.workflow }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
 
   lint:
     runs-on: ubuntu-latest
@@ -180,26 +186,8 @@ jobs:
       run: |
         npm run lint:${{ matrix.tool }}
 
-  report:
-    if: always()
-    needs: build
-    runs-on: ubuntu-latest
-    name: "Report Test Results"
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: junit-reports
-
-      - name: Publish tests report
-        uses: mikepenz/action-junit-report@1a91e26932fb7ba410a31fab1f09266a96d29971
-        with:
-          report_paths: ./*.xml
-          require_tests: true
-          fail_on_failure: true
-          check_name: Test Report
-
   success:
-    needs: [lint, report]
+    needs: [lint, build]
     runs-on: ubuntu-latest
     name: Test Successful
     steps:
