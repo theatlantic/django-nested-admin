@@ -1,6 +1,50 @@
 Changelog
 =========
 
+**4.1.2 (Aug 8, 2025)**
+
+* Fixed: compatibility with Django 5.2+ (`#269`_).
+
+.. _#269: https://github.com/theatlantic/django-nested-admin/pull/269
+
+**4.1.1 (Aug 12, 2024)**
+
+* Fixed: display of headings in tabular inline template (`#259`_). Fixes
+  issue `#261`_. Thanks `@drikusroor`_!
+* Fixed: possible infinite loop in patch function (`#263`_). Fixes issue
+  `#262`_.
+
+.. _#259: https://github.com/theatlantic/django-nested-admin/pull/259
+.. _#261: https://github.com/theatlantic/django-nested-admin/issues/261
+.. _#262: https://github.com/theatlantic/django-nested-admin/issues/262
+.. _#263: https://github.com/theatlantic/django-nested-admin/pull/263
+.. _@drikusroor: https://github.com/drikusroor
+
+**4.1.0 (Jul 14, 2024)**
+
+* Fixed: Remove use of deprecated ``length_is`` filter (`#238`_). Fixes
+  issue `#236`_. Thanks
+  `@riconnon`_!
+* Fixed: update ``formfield_for_dbfield`` signature (`#248`_). Thanks
+  `@frnhr`_!
+* Fixed: compatibility with Django 5.x autocomplete (`#253`). Fixes issue
+  `#244`_.
+* Fixed: Django 5.1+ collapsible inlines (`#254`_).
+* Fixed: alignment of inline labels and fields in Django 4.2+ (`#255`_).
+  Fixes issues `#241`_ and `#243`_.
+
+.. _#236: https://github.com/theatlantic/django-nested-admin/issues/236
+.. _#238: https://github.com/theatlantic/django-nested-admin/pull/238
+.. _#241: https://github.com/theatlantic/django-nested-admin/issues/241
+.. _#243: https://github.com/theatlantic/django-nested-admin/issues/243
+.. _#244: https://github.com/theatlantic/django-nested-admin/issues/244
+.. _#248: https://github.com/theatlantic/django-nested-admin/pull/248
+.. _#253: https://github.com/theatlantic/django-nested-admin/pull/253
+.. _#254: https://github.com/theatlantic/django-nested-admin/pull/254
+.. _#255: https://github.com/theatlantic/django-nested-admin/pull/255
+.. _@riconnon: https://github.com/riconnon
+.. _@frnhr: https://github.com/frnhr
+
 **4.0.2 (Nov 14, 2022)**
 
 * Fixed: ``max_num`` now works as expected on models with self-nested models.
