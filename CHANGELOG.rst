@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**4.1.3 (Aug 12, 2025)**
+
+* Fixed: correct field help text layout on Django 5.2 (`#273`_). Thanks
+  `@pandafy`_!
+
+.. _#273: https://github.com/theatlantic/django-nested-admin/pull/273
+.. _@pandafy: https://github.com/pandafy
+
 **4.1.2 (Aug 8, 2025)**
 
 * Fixed: compatibility with Django 5.2+ (`#269`_).

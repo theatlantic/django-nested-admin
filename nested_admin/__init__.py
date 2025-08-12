@@ -14,7 +14,7 @@ import django
 import django.forms.formsets
 import monkeybiz
 
-__version__ = "4.1.2"
+__version__ = "4.1.3"
 
 # import mapping to objects in other modules
 all_by_module = {
