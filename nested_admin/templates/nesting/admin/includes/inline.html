@@ -27,6 +27,7 @@
                             {{ field.field }}
                         {% endif %}
                     {% endif %}
+                    {% if "5.0"|django_version_gte %}</div>{% endif %}
                     {% if field.field.help_text %}
                         <div class="help{% if field.field.is_hidden %} hidden{% endif %}"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
                             {% if "5.0"|django_version_lt %}
@@ -36,7 +37,6 @@
                             {% endif %}
                         </div>
                     {% endif %}
-                    {% if "5.0"|django_version_gte %}</div>{% endif %}
                 </div>
             {% endfor %}
             {% if "5.0"|django_version_gte and not line.fields|length == 1 %}</div>{% endif %}
