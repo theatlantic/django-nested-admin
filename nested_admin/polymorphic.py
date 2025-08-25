@@ -1,5 +1,4 @@
 import json
-import six
 
 from django.conf import settings
 from polymorphic.formsets import (
@@ -23,10 +22,7 @@ from .nested import (
     NestedInlineAdminFormset,
 )
 
-if six.PY2:
-    from django.utils.encoding import force_text as force_str
-else:
-    from django.utils.encoding import force_str
+from django.utils.encoding import force_str
 
 
 def get_base_polymorphic_models(child_model):
