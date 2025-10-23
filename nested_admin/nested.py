@@ -375,6 +375,8 @@ class NestedModelAdminMixin(NestedAdminMixin):
                             rel_model = InlineFormSet.fk.remote_field.model
                             if not isinstance(form_obj, rel_model):
                                 continue
+                        elif not isinstance(form_obj, inline.parent_model):
+                            continue
 
                     prefix = "{}-{}".format(
                         form_prefix, InlineFormSet.get_default_prefix()
