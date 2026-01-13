@@ -50,7 +50,7 @@ def get_child_polymorphic_models(model):
 
 
 def get_polymorphic_related_models(model):
-    return model()._get_inheritance_relation_fields_and_models().values()
+    return model._meta.parents.keys()
 
 
 def get_compatible_parents(model):
