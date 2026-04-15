@@ -50,7 +50,9 @@ def get_child_polymorphic_models(model):
 
 
 def get_polymorphic_related_models(model):
-    return model()._get_inheritance_relation_fields_and_models().values()
+    model_cls = model().__class__
+    subclasses = model_cls.__subclasses__()
+    return [sub_cls for sub_cls in subclasses if model_cls in sub_cls._meta.parents]
 
 
 def get_compatible_parents(model):
@@ -87,11 +89,11 @@ class NestedPolymorphicInlineAdminFormset(
             formset_fk_model = ""
             parent_models = []
         compatible_parents = get_compatible_parents(self.formset.model)
-        sub_models = self.formset.model()._get_inheritance_relation_fields_and_models()
+        sub_models = get_polymorphic_related_models(self.formset.model)
         data["nestedOptions"].update(
             {
                 "parentModel": get_model_id(formset_fk_model),
-                "childModels": [get_model_id(m) for m in sub_models.values()],
+                "childModels": [get_model_id(m) for m in sub_models],
                 "parentModels": [get_model_id(m) for m in parent_models],
                 "compatibleParents": {
                     get_model_id(k): [get_model_id(m) for m in v]
